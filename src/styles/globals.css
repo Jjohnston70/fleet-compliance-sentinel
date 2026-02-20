@@ -1,0 +1,711 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Note: Google fonts (Inter, Montserrat) are loaded via Next.js next/font for optimal performance */
+
+:root {
+  --color-primary: #008c9e; /* Updated for WCAG AA compliance - 4.5:1 contrast */
+  --color-primary-light: #00acc1;
+  --color-dark-blue: #0e1b3d;
+  --color-darker-blue: #081029;
+  --color-card-bg: #132046;
+  --color-text: #f8f9fa;
+  --color-text-secondary: #d1d5db;
+  --color-success: #16803c; /* Updated for WCAG AA compliance - 4.5:1 contrast */
+  --color-success-light: #28a745;
+  --color-warning: #ff9800;
+  --color-danger: #f44336;
+}
+
+body {
+  font-family: 'Inter', sans-serif;
+  color: var(--color-text);
+  background: var(--color-darker-blue);
+  min-height: 100vh;
+  line-height: 1.6;
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--color-darker-blue);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--color-primary);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-primary-light);
+}
+
+/* Button styles - 48px min height for mobile touch targets */
+.btn-primary {
+  @apply bg-tn-teal text-white px-4 py-2 rounded-md font-medium hover:bg-tn-teal-light transition-colors min-h-[48px] inline-flex items-center justify-center;
+}
+
+.btn-outline {
+  @apply border border-tn-teal text-tn-teal px-4 py-2 rounded-md font-medium hover:bg-tn-teal hover:text-white transition-colors min-h-[48px] inline-flex items-center justify-center;
+}
+
+/* Card styles */
+.card {
+  @apply bg-card-bg rounded-lg p-6 border border-gray-800 border-opacity-30 transition-all;
+}
+
+.card-hover:hover {
+  @apply transform -translate-y-1 shadow-lg border-tn-teal border-opacity-30;
+}
+
+/* Background gradients */
+.section-gradient {
+  @apply bg-gradient-to-br from-darker-blue to-dark-blue;
+}
+
+.bg-gradient-card {
+  @apply bg-card-bg border border-white border-opacity-5;
+}
+
+/* Hero section */
+.hero-pattern {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%2300acc1' fill-opacity='0.1'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+  opacity: 0.05;
+}
+
+.hero-glow {
+  position: absolute;
+  top: -50%;
+  left: -10%;
+  width: 80%;
+  height: 200%;
+  background: radial-gradient(circle, rgba(0, 172, 193, 0.2) 0%, rgba(8, 16, 41, 0) 70%);
+  z-index: 1;
+}
+
+/* CTA card */
+.cta-card {
+  @apply bg-gradient-to-br from-dark-blue to-darker-blue rounded-xl relative overflow-hidden;
+}
+
+/* Table styles */
+.table {
+  @apply w-full border-collapse my-6;
+}
+
+.table th,
+.table td {
+  @apply p-4 text-left border-b border-white border-opacity-5;
+}
+
+.table th {
+  @apply bg-tn-teal bg-opacity-10 font-semibold text-tn-teal;
+}
+
+.table tr:hover {
+  @apply bg-white bg-opacity-[0.02];
+}
+
+/* Metric card */
+.metric-card {
+  @apply bg-white bg-opacity-5 p-6 rounded-lg text-center transition-all border border-white border-opacity-5;
+}
+
+.metric-card:hover {
+  @apply transform -translate-y-1 shadow-lg border-tn-teal border-opacity-30;
+}
+
+.metric-value {
+  @apply text-4xl font-bold text-tn-teal mb-2;
+}
+
+.metric-label {
+  @apply text-gray-300;
+}
+
+/* Phase card */
+.phase-card {
+  @apply bg-tn-teal bg-opacity-5 border-l-4 border-tn-teal p-6 mb-6 rounded-r-lg;
+}
+
+.phase-title {
+  @apply text-xl font-semibold text-tn-teal mb-2;
+}
+
+/* Cursor trail effect */
+.cursor-trail {
+  @apply fixed pointer-events-none z-50;
+}
+
+/* Animation for cursor trail */
+@keyframes fadeOut {
+  0% { opacity: 1; }
+  100% { opacity: 0; }
+}
+
+.cursor-dot {
+  @apply absolute rounded-full bg-tn-teal;
+  animation: fadeOut 1s forwards;
+}
+
+/* Status Color Utilities */
+.text-success {
+  @apply text-green-500;
+}
+
+.text-warning {
+  @apply text-yellow-500;
+}
+
+.text-danger {
+  @apply text-red-500;
+}
+
+/* Feature Card */
+.feature-card {
+  @apply bg-card-bg rounded-lg p-6 border border-gray-800 border-opacity-30 transition-all hover:border-tn-teal hover:border-opacity-30 hover:shadow-lg;
+}
+
+.feature-icon {
+  @apply text-4xl text-tn-teal mb-4;
+}
+
+/* Dashboard Tab Styles */
+.dashboard-tab {
+  @apply px-6 py-4 cursor-pointer whitespace-nowrap transition-colors;
+}
+
+.dashboard-tab.active {
+  @apply text-tn-teal border-b-2 border-tn-teal font-medium;
+}
+
+.dashboard-tab:not(.active) {
+  @apply text-gray-300 hover:text-tn-teal;
+}
+
+/* Chart Container */
+.chart-container {
+  @apply bg-white bg-opacity-[0.02] p-4 rounded-lg h-72 relative;
+}
+
+/* Metric Grid */
+.metric-grid {
+  @apply grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4;
+}
+
+/* Data Connection Box */
+.connection-box {
+  @apply bg-tn-teal bg-opacity-5 border border-tn-teal border-opacity-20 p-6 rounded-lg mb-8;
+}
+
+/* Email Card */
+.email-card {
+  @apply p-4 bg-card-bg rounded-md border border-gray-800 border-opacity-30 transition-all hover:border-tn-teal hover:border-opacity-20;
+}
+
+.email-tag {
+  @apply px-2 py-1 text-white text-xs rounded-md;
+}
+
+@layer base {
+  :root {
+    --background: 0 0% 100%;
+    --foreground: 222.2 84% 4.9%;
+    --card: 0 0% 100%;
+    --card-foreground: 222.2 84% 4.9%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 222.2 84% 4.9%;
+    --primary: 221.2 83.2% 53.3%;
+    --primary-foreground: 210 40% 98%;
+    --secondary: 210 40% 96.1%;
+    --secondary-foreground: 222.2 47.4% 11.2%;
+    --muted: 210 40% 96.1%;
+    --muted-foreground: 215.4 16.3% 46.9%;
+    --accent: 210 40% 96.1%;
+    --accent-foreground: 222.2 47.4% 11.2%;
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 210 40% 98%;
+    --border: 214.3 31.8% 91.4%;
+    --input: 214.3 31.8% 91.4%;
+    --ring: 221.2 83.2% 53.3%;
+    --radius: 0.5rem;
+    --chart-1: 12 76% 61%;
+    --chart-2: 173 58% 39%;
+    --chart-3: 197 37% 24%;
+    --chart-4: 43 74% 66%;
+    --chart-5: 27 87% 67%;
+  }
+
+  .dark {
+    /* True North dark theme colors */
+    --background: 220 60% 0%; /* Pure black */
+    --foreground: 0 0% 100%; /* White text */
+    --card: 220 60% 2%; /* Very dark card background */
+    --card-foreground: 0 0% 100%; /* White text on cards */
+    --popover: 220 60% 2%; /* Very dark popover background */
+    --popover-foreground: 0 0% 100%; /* White text on popovers */
+    --primary: 180 80% 40%; /* True North teal */
+    --primary-foreground: 220 60% 5%; /* Dark text on primary buttons */
+    --secondary: 220 40% 15%; /* Dark navy secondary */
+    --secondary-foreground: 0 0% 100%; /* White text on secondary */
+    --muted: 220 40% 10%; /* Muted dark navy */
+    --muted-foreground: 215 20.2% 75%; /* Light gray muted text */
+    --accent: 180 80% 40%; /* True North teal accent */
+    --accent-foreground: 220 60% 5%; /* Dark text on accent */
+    --destructive: 0 62.8% 30.6%; /* Dark red */
+    --destructive-foreground: 0 0% 100%; /* White text on destructive */
+    --border: 180 80% 20%; /* Darker teal border */
+    --input: 220 40% 10%; /* Dark input background */
+    --ring: 180 80% 40%; /* Teal ring */
+    
+    /* Chart colors */
+    --chart-1: 180 80% 40%; /* Teal */
+    --chart-2: 190 70% 35%; /* Darker blue */
+    --chart-3: 170 60% 30%; /* Green-blue */
+    --chart-4: 200 70% 40%; /* Bright blue */
+    --chart-5: 160 50% 35%; /* Green */
+
+    /* Custom True North colors */
+    --tn-teal: 180 80% 40%; /* Main teal/turquoise from the logo */
+    --tn-teal-light: 180 75% 55%; /* Lighter teal for hover states */
+    --tn-teal-dark: 180 85% 25%; /* Darker teal for contrast */
+    --tn-navy: 220 60% 10%; /* Dark navy/black background */
+    --tn-navy-light: 220 40% 15%; /* Slightly lighter navy for cards */
+    --tn-navy-dark: 220 80% 5%; /* Darker navy for contrast */
+    --tn-background: 220 60% 0%; /* Pure black background */
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  
+  body {
+    @apply bg-background text-foreground dark;
+    background: linear-gradient(to bottom, hsl(220, 60%, 0%) 0%, hsl(220, 60%, 3%) 30%, hsl(220, 60%, 8%) 100%);
+    background-attachment: fixed;
+  }
+  
+  /* Card styles with vertical gradients */
+  .card, 
+  .bg-card,
+  div[class*="bg-card"] {
+    background: linear-gradient(to bottom, rgba(0,0,0,0.95) 0%, hsl(var(--card) / 0.85) 100%);
+    backdrop-filter: blur(5px);
+  }
+  
+  /* Custom section gradient background */
+  .section-gradient {
+    background: linear-gradient(to bottom, rgba(0,0,0,0.9) 0%, rgba(5,18,32,0.7) 100%);
+  }
+  
+  /* Hero section styles */
+  .hero-section {
+    position: relative;
+    overflow: hidden;
+  }
+  
+  .hero-section::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: radial-gradient(circle at center, hsla(var(--tn-teal), 0.12) 0%, transparent 70%);
+    z-index: 1;
+  }
+  
+  /* Button styles */
+  .btn-primary {
+    @apply bg-primary text-primary-foreground hover:bg-primary/90;
+  }
+  
+  .btn-outline {
+    @apply border-2 border-primary bg-transparent text-primary hover:bg-primary/10;
+  }
+}
+
+/* Custom animations for compass elements */
+@keyframes pulse {
+  0%, 100% { opacity: 0.5; }
+  50% { opacity: 1; }
+}
+
+@keyframes rotate {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-10px); }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-100%);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-pulse-slow {
+  animation: pulse 5s infinite ease-in-out;
+}
+
+.animate-rotate-slow {
+  animation: rotate 30s infinite linear;
+}
+
+.animate-float {
+  animation: float 6s infinite ease-in-out;
+}
+
+.animate-fadeIn {
+  animation: fadeIn 0.5s ease-out forwards;
+}
+
+/* Custom utility classes */
+.text-tn-teal {
+  color: hsl(var(--tn-teal));
+}
+
+.bg-tn-teal {
+  background-color: hsl(var(--tn-teal));
+}
+
+.border-tn-teal {
+  border-color: hsl(var(--tn-teal));
+}
+
+.ring-tn-teal {
+  --tw-ring-color: hsl(var(--tn-teal));
+}
+
+.text-shadow {
+  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+}
+
+.bg-gradient-blue {
+  background: linear-gradient(135deg, #000000 0%, #051220 100%);
+}
+
+.bg-gradient-compass {
+  background: radial-gradient(circle at center, rgba(38, 182, 198, 0.12) 0%, transparent 70%);
+}
+
+/* Card hover effects */
+.card-hover {
+  transition: all 0.3s ease;
+  border: 1px solid rgba(38, 182, 198, 0.2);
+}
+
+.card-hover:hover {
+  border-color: hsl(var(--tn-teal));
+  box-shadow: 0 0 15px rgba(38, 182, 198, 0.2);
+}
+
+.card-icon {
+  background-color: rgba(38, 182, 198, 0.1);
+  color: hsl(var(--tn-teal));
+}
+
+/* CTA card styles */
+.cta-card {
+  background: linear-gradient(to bottom, rgba(0,0,0,0.95) 0%, rgba(5,18,32,0.85) 100%);
+  border: 1px solid rgba(38, 182, 198, 0.2);
+  position: relative;
+  overflow: hidden;
+}
+
+.cta-card::before {
+  content: '';
+  position: absolute;
+  top: -20%;
+  right: -10%;
+  width: 200px;
+  height: 200px;
+  background-color: rgba(255, 255, 255, 0.03);
+  border-radius: 50%;
+  z-index: 0;
+}
+
+.cta-card::after {
+  content: '';
+  position: absolute;
+  bottom: -30%;
+  left: -5%;
+  width: 150px;
+  height: 150px;
+  background-color: rgba(255, 255, 255, 0.03);
+  border-radius: 50%;
+  z-index: 0;
+}
+
+/* ================================================
+ * CLS PREVENTION - Phase 1 SEO Task 1.3
+ * Reserve space for dynamic content to prevent layout shift
+ * ================================================ */
+
+/* Prevent CLS for dynamic sections */
+.testimonial-container {
+  min-height: 300px;
+}
+
+.service-card {
+  min-height: 400px;
+}
+
+.async-content {
+  min-height: 200px;
+}
+
+/* Loading skeletons for better UX during async content load */
+.skeleton {
+  background: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0.05) 25%,
+    rgba(255, 255, 255, 0.1) 50%,
+    rgba(255, 255, 255, 0.05) 75%
+  );
+  background-size: 200% 100%;
+  animation: loading 1.5s ease-in-out infinite;
+}
+
+@keyframes loading {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+/* ================================================
+ * TOUCH TARGET OPTIMIZATION - Constitutional Article III.2
+ * Ensure touch targets meet minimum 44x44px for accessibility
+ * ================================================ */
+
+/* Ensure touch targets meet minimum size */
+button,
+a.btn-primary,
+a.btn-outline,
+.btn-primary,
+.btn-outline {
+  min-height: 44px;
+  min-width: 44px;
+  padding: 0.75rem 1.5rem; /* 12px 24px */
+}
+
+/* Mobile-specific overrides for better touch experience */
+@media (max-width: 640px) {
+  button,
+  a.btn-primary,
+  a.btn-outline,
+  .btn-primary,
+  .btn-outline {
+    min-height: 48px; /* Extra buffer on mobile */
+    padding: 0.875rem 1.75rem; /* 14px 28px */
+  }
+}
+
+/* ================================================
+ * ACCESSIBILITY - WCAG 2.1 AA Compliance
+ * Focus indicators, reduced motion, and screen reader utilities
+ * ================================================ */
+
+/* High-contrast focus indicators for keyboard navigation */
+*:focus {
+  outline: none;
+}
+
+*:focus-visible {
+  outline: 3px solid hsl(var(--tn-teal));
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+/* Ensure focus is visible on dark backgrounds */
+button:focus-visible,
+a:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible,
+[tabindex]:focus-visible {
+  outline: 3px solid hsl(var(--tn-teal));
+  outline-offset: 2px;
+  box-shadow: 0 0 0 6px rgba(0, 172, 193, 0.25);
+}
+
+/* Skip link styling (enhanced) */
+.skip-link {
+  position: absolute;
+  top: -40px;
+  left: 0;
+  background: hsl(var(--tn-teal));
+  color: #000;
+  padding: 8px 16px;
+  z-index: 100;
+  font-weight: 600;
+  text-decoration: none;
+  border-radius: 0 0 4px 0;
+}
+
+.skip-link:focus {
+  top: 0;
+}
+
+/* Screen reader only content */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.sr-only-focusable:focus {
+  position: static;
+  width: auto;
+  height: auto;
+  padding: inherit;
+  margin: inherit;
+  overflow: visible;
+  clip: auto;
+  white-space: normal;
+}
+
+/* Reduced motion preferences - WCAG 2.3.3 */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+
+  .animate-pulse-slow,
+  .animate-rotate-slow,
+  .animate-float,
+  .animate-fadeIn,
+  .cursor-dot,
+  .skeleton {
+    animation: none !important;
+  }
+
+  .cursor-trail {
+    display: none !important;
+  }
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+  :root {
+    --color-primary: #00d4e8;
+    --color-text: #ffffff;
+    --color-text-secondary: #ffffff;
+  }
+
+  .card,
+  .card-hover,
+  .feature-card,
+  .metric-card,
+  .cta-card {
+    border-width: 2px;
+    border-color: hsl(var(--tn-teal));
+  }
+
+  button,
+  a {
+    text-decoration: underline;
+  }
+}
+
+/* Form accessibility styles */
+label {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-weight: 500;
+}
+
+input:required,
+select:required,
+textarea:required {
+  border-left: 3px solid hsl(var(--tn-teal));
+}
+
+input[aria-invalid="true"],
+select[aria-invalid="true"],
+textarea[aria-invalid="true"] {
+  border-color: var(--color-danger);
+  border-left: 3px solid var(--color-danger);
+}
+
+.error-message {
+  color: var(--color-danger);
+  font-size: 0.875rem;
+  margin-top: 0.25rem;
+}
+
+/* Ensure sufficient color contrast for disabled states */
+button:disabled,
+input:disabled,
+select:disabled,
+textarea:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* Visible focus for checkbox and radio inputs */
+input[type="checkbox"]:focus-visible,
+input[type="radio"]:focus-visible {
+  outline: 3px solid hsl(var(--tn-teal));
+  outline-offset: 2px;
+}
+
+/* Table accessibility - ensure proper visual structure */
+table {
+  border-collapse: collapse;
+  width: 100%;
+}
+
+th {
+  text-align: left;
+  font-weight: 600;
+}
+
+/* Ensure links are distinguishable */
+a:not(.btn-primary):not(.btn-outline) {
+  text-decoration-skip-ink: auto;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+/* Selection contrast */
+::selection {
+  background: hsl(var(--tn-teal));
+  color: #000;
+}

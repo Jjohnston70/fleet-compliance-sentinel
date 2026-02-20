@@ -1,0 +1,14 @@
+# Security Contact Information for True North Data Strategies LLC
+# https://securitytxt.org/
+
+Contact: mailto:security@truenorthstrategyops.com
+Contact: mailto:jacob@truenorthstrategyops.com
+Expires: 2027-01-10T00:00:00.000Z
+Preferred-Languages: en
+Canonical: https://www.truenorthstrategyops.com/.well-known/security.txt
+Policy: https://www.truenorthstrategyops.com/privacy-policy
+
+# True North Data Strategies LLC
+# Colorado Springs, CO
+# VOSB/SDVOSB Certified
+# UEI: WKJXXACV8U43
