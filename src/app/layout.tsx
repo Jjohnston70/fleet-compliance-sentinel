@@ -22,6 +22,9 @@ export const metadata: Metadata = {
     default: 'True North Data Strategies | PipelineX — Your Business, Organized',
     template: '%s | True North Data Strategies',
   },
+  icons: {
+    icon: '/favicon.ico',
+  },
   description:
     'PipelineX connects your tools, documents, and data into one system you can actually talk to. Ask it a question, get a real answer. Veteran-owned. Based in Colorado Springs.',
   keywords: [

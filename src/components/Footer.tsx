@@ -14,6 +14,22 @@ export default function Footer() {
               Veteran-owned. Based in Colorado Springs.
             </p>
             <div className="flex gap-3 mt-4">
+              <a
+                href="https://www.bbb.org/us/co/colorado-springs/profile/consultant/true-north-data-strategies-llc-0785-1000034167#sealclick"
+                target="_blank"
+                rel="nofollow noopener noreferrer"
+                aria-label="Better Business Bureau Accredited Business - True North Data Strategies LLC"
+                className="inline-flex items-center"
+              >
+                <img
+                  src="https://seal-southerncolorado.bbb.org/seals/blue-seal-200-42-bbb-1000034167.png"
+                  alt="True North Data Strategies LLC BBB Business Review"
+                  width={160}
+                  height={34}
+                  loading="lazy"
+                  style={{ border: 0 }}
+                />
+              </a>
               <Image src="/Veteran-Owned Certified.png" alt="VOSB Certified" width={64} height={64} className="h-12 w-auto" />
               <Image src="/Service-Disabled Veteran-Owned-Certified.png" alt="SDVOSB Certified" width={64} height={64} className="h-12 w-auto" />
             </div>
