@@ -7,6 +7,26 @@ export const metadata: Metadata = {
   title: 'PipelineX — Your Business Knowledge Hub',
   description:
     'PipelineX connects your documents, data, and tools into one system you can talk to. Ask questions in plain English, generate proposals, send follow-ups — all from one place.',
+  alternates: {
+    canonical: '/pipelinex',
+  },
+  openGraph: {
+    title: 'PipelineX — Your Business Knowledge Hub | True North Data Strategies',
+    description:
+      'PipelineX connects your documents, data, and tools into one system you can talk to. Ask questions in plain English, generate proposals, send follow-ups — all from one place.',
+    url: '/pipelinex',
+    siteName: 'True North Data Strategies',
+    type: 'website',
+    locale: 'en_US',
+    images: [{ url: '/og-default.png', width: 1200, height: 630, alt: 'True North Data Strategies' }],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'PipelineX — Your Business Knowledge Hub | True North Data Strategies',
+    description:
+      'PipelineX connects your documents, data, and tools into one system you can talk to. Ask questions in plain English, generate proposals, send follow-ups — all from one place.',
+    images: ['/og-default.png'],
+  },
 };
 
 const includedFeatures = [

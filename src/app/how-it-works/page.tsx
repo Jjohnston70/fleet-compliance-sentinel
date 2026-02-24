@@ -5,6 +5,26 @@ export const metadata: Metadata = {
   title: 'How It Works — From First Call to Go-Live',
   description:
     'Five steps from "is there a fit?" to a live system running your business. Fixed scope, fixed price, no surprises.',
+  alternates: {
+    canonical: '/how-it-works',
+  },
+  openGraph: {
+    title: 'How It Works — From First Call to Go-Live | True North Data Strategies',
+    description:
+      'Five steps from "is there a fit?" to a live system running your business. Fixed scope, fixed price, no surprises.',
+    url: '/how-it-works',
+    siteName: 'True North Data Strategies',
+    type: 'website',
+    locale: 'en_US',
+    images: [{ url: '/og-default.png', width: 1200, height: 630, alt: 'True North Data Strategies' }],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'How It Works — From First Call to Go-Live | True North Data Strategies',
+    description:
+      'Five steps from "is there a fit?" to a live system running your business. Fixed scope, fixed price, no surprises.',
+    images: ['/og-default.png'],
+  },
 };
 
 const steps = [

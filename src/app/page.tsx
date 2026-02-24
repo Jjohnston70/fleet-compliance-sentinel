@@ -3,9 +3,31 @@ import Image from 'next/image';
 import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
-  title: 'True North Data Strategies | Your Business, Organized',
+  title: {
+    absolute: 'True North Data Strategies | Your Business, Organized',
+  },
   description:
     'PipelineX connects your tools, your documents, and your data into one system you can actually talk to. Veteran-owned. Colorado Springs.',
+  alternates: {
+    canonical: '/',
+  },
+  openGraph: {
+    title: 'True North Data Strategies | Your Business, Organized',
+    description:
+      'PipelineX connects your tools, your documents, and your data into one system you can actually talk to. Veteran-owned. Colorado Springs.',
+    url: '/',
+    siteName: 'True North Data Strategies',
+    type: 'website',
+    locale: 'en_US',
+    images: [{ url: '/og-default.png', width: 1200, height: 630, alt: 'True North Data Strategies' }],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'True North Data Strategies | Your Business, Organized',
+    description:
+      'PipelineX connects your tools, your documents, and your data into one system you can actually talk to. Veteran-owned. Colorado Springs.',
+    images: ['/og-default.png'],
+  },
 };
 
 export default function HomePage() {

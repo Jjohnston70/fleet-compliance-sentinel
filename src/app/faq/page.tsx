@@ -4,6 +4,26 @@ export const metadata: Metadata = {
   title: 'FAQ — Common Questions About PipelineX and Business Automation',
   description:
     'Honest answers to the questions small business owners ask before working with True North Data Strategies. No jargon.',
+  alternates: {
+    canonical: '/faq',
+  },
+  openGraph: {
+    title: 'FAQ — Common Questions About PipelineX and Business Automation | True North Data Strategies',
+    description:
+      'Honest answers to the questions small business owners ask before working with True North Data Strategies. No jargon.',
+    url: '/faq',
+    siteName: 'True North Data Strategies',
+    type: 'website',
+    locale: 'en_US',
+    images: [{ url: '/og-default.png', width: 1200, height: 630, alt: 'True North Data Strategies' }],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'FAQ — Common Questions About PipelineX and Business Automation | True North Data Strategies',
+    description:
+      'Honest answers to the questions small business owners ask before working with True North Data Strategies. No jargon.',
+    images: ['/og-default.png'],
+  },
 };
 
 const faqs = [

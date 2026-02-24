@@ -3,6 +3,24 @@ import type { Metadata } from 'next';
 export const metadata: Metadata = {
   title: 'Legal — Privacy Policy, Terms of Service, Accessibility',
   description: 'Privacy policy, terms of service, and accessibility statement for True North Data Strategies LLC.',
+  alternates: {
+    canonical: '/legal',
+  },
+  openGraph: {
+    title: 'Legal — Privacy Policy, Terms of Service, Accessibility | True North Data Strategies',
+    description: 'Privacy policy, terms of service, and accessibility statement for True North Data Strategies LLC.',
+    url: '/legal',
+    siteName: 'True North Data Strategies',
+    type: 'website',
+    locale: 'en_US',
+    images: [{ url: '/og-default.png', width: 1200, height: 630, alt: 'True North Data Strategies' }],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Legal — Privacy Policy, Terms of Service, Accessibility | True North Data Strategies',
+    description: 'Privacy policy, terms of service, and accessibility statement for True North Data Strategies LLC.',
+    images: ['/og-default.png'],
+  },
 };
 
 export default function LegalPage() {

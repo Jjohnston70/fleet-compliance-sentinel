@@ -6,6 +6,26 @@ export const metadata: Metadata = {
   title: 'Contact — Talk to Jacob',
   description:
     'Call Jacob at 555-555-5555 or book a free 15-minute call. No pitch. Just an honest conversation about what\'s going on in your business.',
+  alternates: {
+    canonical: '/contact',
+  },
+  openGraph: {
+    title: 'Contact — Talk to Jacob | True North Data Strategies',
+    description:
+      'Call Jacob at 555-555-5555 or book a free 15-minute call. No pitch. Just an honest conversation about what\'s going on in your business.',
+    url: '/contact',
+    siteName: 'True North Data Strategies',
+    type: 'website',
+    locale: 'en_US',
+    images: [{ url: '/og-default.png', width: 1200, height: 630, alt: 'True North Data Strategies' }],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Contact — Talk to Jacob | True North Data Strategies',
+    description:
+      'Call Jacob at 555-555-5555 or book a free 15-minute call. No pitch. Just an honest conversation about what\'s going on in your business.',
+    images: ['/og-default.png'],
+  },
 };
 
 export default function ContactPage() {

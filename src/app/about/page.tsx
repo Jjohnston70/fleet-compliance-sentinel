@@ -3,9 +3,31 @@ import Link from 'next/link';
 import Image from 'next/image';
 
 export const metadata: Metadata = {
-  title: 'About Jacob Johnston — True North Data Strategies',
+  title: {
+    absolute: 'About Jacob Johnston — True North Data Strategies',
+  },
   description:
     '20-year Army veteran, Bronze Star recipient, self-taught developer. Jacob Johnston built True North Data Strategies to help small businesses stop drowning in spreadsheets.',
+  alternates: {
+    canonical: '/about',
+  },
+  openGraph: {
+    title: 'About Jacob Johnston — True North Data Strategies',
+    description:
+      '20-year Army veteran, Bronze Star recipient, self-taught developer. Jacob Johnston built True North Data Strategies to help small businesses stop drowning in spreadsheets.',
+    url: '/about',
+    siteName: 'True North Data Strategies',
+    type: 'website',
+    locale: 'en_US',
+    images: [{ url: '/og-default.png', width: 1200, height: 630, alt: 'True North Data Strategies' }],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'About Jacob Johnston — True North Data Strategies',
+    description:
+      '20-year Army veteran, Bronze Star recipient, self-taught developer. Jacob Johnston built True North Data Strategies to help small businesses stop drowning in spreadsheets.',
+    images: ['/og-default.png'],
+  },
 };
 
 export default function AboutPage() {
