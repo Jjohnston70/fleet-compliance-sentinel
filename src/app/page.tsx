@@ -190,8 +190,8 @@ export default function HomePage() {
                 see what was actually happening, and expensive software that nobody used.
               </p>
               <p className="text-gray-300 mb-4">
-                At 53, I taught myself to code. Not to become a software engineer — to fix the problem.
-                I&apos;ve built 50+ systems running real businesses. Fixed scope, fixed price. You own what we build.
+                I built systems to fix the problem.
+                I&apos;ve deployed 50+ systems running real businesses. Fixed scope, fixed price. You own what we build.
               </p>
               <Link href="/about" className="text-tn-teal hover:underline text-sm">
                 Read the full story →

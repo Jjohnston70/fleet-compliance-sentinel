@@ -5,7 +5,7 @@ import Image from 'next/image';
 export const metadata: Metadata = {
   title: 'About Jacob Johnston — True North Data Strategies',
   description:
-    '20-year Army veteran, Bronze Star recipient, self-taught developer at 53. Jacob Johnston built True North Data Strategies to help small businesses stop drowning in spreadsheets.',
+    '20-year Army veteran, Bronze Star recipient, self-taught developer. Jacob Johnston built True North Data Strategies to help small businesses stop drowning in spreadsheets.',
 };
 
 export default function AboutPage() {
@@ -49,16 +49,15 @@ export default function AboutPage() {
                 I saw firsthand how businesses waste thousands of hours on manual work that could be automated in minutes.
               </p>
               <p className="text-gray-300">
-                At 53, I taught myself to code. Not to become a software engineer — to solve the problem.
-                Started with Google Apps Script because it worked with tools businesses already used.
-                Built 50+ systems now running in real businesses.
+                I started with Google Apps Script because it worked with tools businesses already used.
+                That turned into 50+ systems now running in real businesses.
               </p>
               <p className="text-gray-300">
                 I founded True North Data Strategies because every business owner deserves to see what&apos;s
                 happening in their operation — and to be able to take a day off.
               </p>
               <blockquote className="border-l-4 border-tn-teal pl-4 text-tn-teal italic">
-                &ldquo;I learned to code because I was tired of watching businesses drown in spreadsheets.
+                &ldquo;I was tired of watching businesses drown in spreadsheets.
                 Now I build simple systems that help owners take a day off.&rdquo;
               </blockquote>
             </div>
@@ -67,7 +66,7 @@ export default function AboutPage() {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
             {[
               { icon: '🪖', title: 'Military Veteran', desc: '20 years Airborne Infantry. Combat deployments. Bronze Star. Discipline and systems thinking — applied to your business.' },
-              { icon: '💻', title: 'Self-Taught at 53', desc: 'Learned to code because I needed to solve a real problem. Proof that it\'s never too late, and practical beats theoretical every time.' },
+              { icon: '💻', title: 'Practical Systems Builder', desc: 'Built systems to solve real business problems. Practical execution over buzzwords.' },
               { icon: '🏗️', title: '50+ Systems Deployed', desc: 'Not demos. Not prototypes. Real systems running real businesses every day.' },
             ].map((v) => (
               <div key={v.title} className="card text-center">

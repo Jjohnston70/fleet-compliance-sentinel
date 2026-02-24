@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import PipelineXDemo from '@/components/PipelineXDemo';
+import PipelineXVisualTabs from '@/components/PipelineXVisualTabs';
 
 export const metadata: Metadata = {
   title: 'PipelineX — Your Business Knowledge Hub',
@@ -79,6 +80,17 @@ export default function PipelineXPage() {
             Click a prompt below to see a real response from PipelineX. These are actual outputs — not marketing copy.
           </p>
           <PipelineXDemo />
+        </div>
+      </section>
+
+      {/* PRODUCT VIEWS */}
+      <section className="py-16 px-4 section-gradient">
+        <div className="container mx-auto max-w-5xl">
+          <h2 className="text-3xl font-heading font-bold text-white mb-3 text-center">PipelineX Product Views</h2>
+          <p className="text-gray-400 text-center mb-8">
+            A quick look at the tabbed workspace style from the PipelineX template.
+          </p>
+          <PipelineXVisualTabs />
         </div>
       </section>
 
