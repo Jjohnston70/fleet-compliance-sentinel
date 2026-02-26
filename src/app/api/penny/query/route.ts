@@ -2,9 +2,11 @@
 // Proxies chat queries to Pipeline Penny FastAPI backend on Railway
 // Keeps PENNY_API_URL server-side, adds Clerk auth verification
 
-import { auth } from '@clerk/nextjs/server';
+import { auth, currentUser } from '@clerk/nextjs/server';
 import { NextRequest, NextResponse } from 'next/server';
 import { isClerkEnabled } from '@/lib/clerk';
+import { canAccessPenny, canBypassPennyRoleByEmail, resolvePennyRole } from '@/lib/penny-access';
+import { listFilesInFolder } from '@/lib/drive';
 
 const PENNY_API_URL = process.env.PENNY_API_URL || 'http://localhost:8000';
 const PENNY_API_KEY = process.env.PENNY_API_KEY || '';
@@ -44,6 +46,30 @@ function normalizeSource(source: BackendSource): string {
   return '';
 }
 
+function isResourceListQuery(query: string): boolean {
+  const q = query.toLowerCase();
+  return (
+    q.includes('resource') ||
+    q.includes('knowledge base') ||
+    q.includes('knowledge resources') ||
+    q.includes('list files') ||
+    q.includes('what documents')
+  );
+}
+
+function isKnowledgeCatalogQuery(query: string): boolean {
+  const q = query.toLowerCase();
+  return (
+    q.includes('list knowledge') ||
+    q.includes('knowledge items') ||
+    q.includes('knowledge base items') ||
+    q.includes('what knowledge') ||
+    q.includes('what docs') ||
+    q.includes('what documents do you have') ||
+    q.includes('show knowledge')
+  );
+}
+
 export async function POST(request: NextRequest) {
   const hasClerk = isClerkEnabled();
   if (!hasClerk) {
@@ -56,13 +82,13 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
-  // Get role from Clerk metadata
-  const metadata = (sessionClaims as any)?.metadata || {};
-  const role = metadata.role || 'member';
+  const user = await currentUser();
+  const role = resolvePennyRole(sessionClaims, user);
+  const hasEmailBypass = canBypassPennyRoleByEmail(user);
+  const effectiveRole = canAccessPenny(role) ? role : hasEmailBypass ? 'admin' : role;
 
   // Only allowed roles can query
-  const allowedRoles = ['admin', 'demo', 'client'];
-  if (!allowedRoles.includes(role)) {
+  if (!canAccessPenny(role) && !hasEmailBypass) {
     return NextResponse.json({ error: 'Insufficient permissions' }, { status: 403 });
   }
 
@@ -74,6 +100,39 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Query is required' }, { status: 400 });
     }
 
+    if (isKnowledgeCatalogQuery(query)) {
+      const catalogRes = await fetch(`${PENNY_API_URL}/catalog?limit=40`, {
+        headers: PENNY_API_KEY ? { 'X-Penny-Api-Key': PENNY_API_KEY } : {},
+      });
+
+      if (catalogRes.ok) {
+        const catalog = await catalogRes.json();
+        const categories = Array.isArray(catalog?.categories) ? catalog.categories : [];
+        const documents = Array.isArray(catalog?.documents) ? catalog.documents : [];
+        const total = typeof catalog?.knowledge_docs === 'number' ? catalog.knowledge_docs : documents.length;
+
+        if (documents.length > 0) {
+          const categoryLine = categories
+            .slice(0, 10)
+            .map((cat: any) => `${cat.name} (${cat.count})`)
+            .join(', ');
+          const docList = documents
+            .slice(0, 20)
+            .map((doc: any, idx: number) => `${idx + 1}. ${doc.title}`)
+            .join('\n');
+
+          return NextResponse.json({
+            answer:
+              `I currently have ${total} indexed knowledge documents.` +
+              (categoryLine ? `\n\nTop categories: ${categoryLine}` : '') +
+              `\n\nSample documents:\n${docList}\n\nUse /resources for file browsing and ask me to summarize any listed document by name.`,
+            sources: documents.slice(0, 8).map((doc: any) => doc.title),
+            mode: 'catalog',
+          });
+        }
+      }
+    }
+
     // Forward to Pipeline Penny backend
     const res = await fetch(`${PENNY_API_URL}/query`, {
       method: 'POST',
@@ -81,7 +140,7 @@ export async function POST(request: NextRequest) {
         'Content-Type': 'application/json',
         // Pass user context to backend
         'X-User-Id': userId,
-        'X-User-Role': role,
+        'X-User-Role': effectiveRole,
         ...(PENNY_API_KEY ? { 'X-Penny-Api-Key': PENNY_API_KEY } : {}),
       },
       body: JSON.stringify({
@@ -107,6 +166,26 @@ export async function POST(request: NextRequest) {
     const sources = rawSources
       .map(normalizeSource)
       .filter((item): item is string => Boolean(item));
+
+    // If the backend knowledge store is empty, still answer "list resources" prompts
+    // using the protected Google Drive resources folder.
+    if (sources.length === 0 && isResourceListQuery(query)) {
+      const folderId = process.env.GOOGLE_DRIVE_PUBLIC_RESOURCES_FOLDER_ID || '';
+      const resources = await listFilesInFolder(folderId);
+      const names = resources.files
+        .map((file) => file.name?.trim())
+        .filter((name): name is string => Boolean(name))
+        .slice(0, 20);
+
+      if (names.length > 0) {
+        const numberedList = names.map((name, idx) => `${idx + 1}. ${name}`).join('\n');
+        return NextResponse.json({
+          answer: `Here are the resources currently available:\n${numberedList}\n\nOpen /resources to view and open each file.`,
+          sources: names,
+          mode: 'drive-list',
+        });
+      }
+    }
 
     return NextResponse.json({
       answer:

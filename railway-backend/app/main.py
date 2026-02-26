@@ -2,6 +2,7 @@ import json
 import os
 import time
 import uuid
+from collections import defaultdict
 from pathlib import Path
 from typing import List, Optional
 
@@ -67,6 +68,19 @@ def write_knowledge_store(rows: List[KnowledgeDoc]) -> None:
 
 
 KNOWLEDGE = read_knowledge_store()
+
+
+def doc_key(title: str, source: Optional[str]) -> str:
+    return f"{title.strip().lower()}::{(source or '').strip().lower()}"
+
+
+def infer_category(source: Optional[str]) -> str:
+    if not source:
+        return "General"
+    first = source.split("/", 1)[0].strip()
+    if not first:
+        return "General"
+    return first.replace("_", " ").replace("-", " ").strip() or "General"
 
 
 def verify_api_key(x_penny_api_key: Optional[str]) -> None:
@@ -165,6 +179,37 @@ def status(x_penny_api_key: Optional[str] = Header(default=None)):
     }
 
 
+@app.get("/catalog")
+def catalog(
+    x_penny_api_key: Optional[str] = Header(default=None),
+    limit: int = 120,
+):
+    verify_api_key(x_penny_api_key)
+    safe_limit = max(1, min(limit, 400))
+
+    rows = []
+    category_counts = defaultdict(int)
+    for doc in KNOWLEDGE[:safe_limit]:
+        category = infer_category(doc.source)
+        category_counts[category] += 1
+        rows.append(
+            {
+                "title": doc.title,
+                "source": doc.source,
+                "category": category,
+            }
+        )
+
+    categories = [{"name": key, "count": category_counts[key]} for key in sorted(category_counts.keys())]
+    return {
+        "status": "ok",
+        "knowledge_docs": len(KNOWLEDGE),
+        "returned_docs": len(rows),
+        "categories": categories,
+        "documents": rows,
+    }
+
+
 @app.post("/ingest")
 def ingest(
     payload: IngestRequest,
@@ -176,18 +221,46 @@ def ingest(
     if x_user_role != "admin":
         raise HTTPException(status_code=403, detail="Admin role required")
 
+    key_to_index = {doc_key(row.title, row.source): idx for idx, row in enumerate(KNOWLEDGE)}
+    inserted = 0
+    updated = 0
+
     for doc in payload.documents:
-        KNOWLEDGE.append(
-            KnowledgeDoc(
-                id=str(uuid.uuid4()),
-                title=doc.title.strip(),
-                content=doc.content.strip(),
-                source=doc.source.strip() if doc.source else None,
+        title = doc.title.strip()
+        content = doc.content.strip()
+        source = doc.source.strip() if doc.source else None
+        key = doc_key(title, source)
+
+        existing_idx = key_to_index.get(key)
+        if existing_idx is None:
+            KNOWLEDGE.append(
+                KnowledgeDoc(
+                    id=str(uuid.uuid4()),
+                    title=title,
+                    content=content,
+                    source=source,
+                )
             )
-        )
+            key_to_index[key] = len(KNOWLEDGE) - 1
+            inserted += 1
+        else:
+            current = KNOWLEDGE[existing_idx]
+            KNOWLEDGE[existing_idx] = KnowledgeDoc(
+                id=current.id,
+                title=title,
+                content=content,
+                source=source,
+            )
+            updated += 1
 
     write_knowledge_store(KNOWLEDGE)
-    return {"status": "ok", "ingested": len(payload.documents), "knowledge_docs": len(KNOWLEDGE)}
+    return {
+        "status": "ok",
+        "ingested": len(payload.documents),
+        "inserted": inserted,
+        "updated": updated,
+        "knowledge_docs": len(KNOWLEDGE),
+    }
 
 
 @app.post("/query")

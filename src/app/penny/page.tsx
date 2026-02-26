@@ -7,13 +7,7 @@ import { auth, currentUser } from '@clerk/nextjs/server';
 import { redirect } from 'next/navigation';
 import PennyChat from './PennyChat';
 import { isClerkEnabled } from '@/lib/clerk';
-
-// Helper to get user role from Clerk metadata
-async function getUserRole() {
-  const { sessionClaims } = await auth();
-  const metadata = (sessionClaims as any)?.metadata || {};
-  return metadata.role || 'member';
-}
+import { canAccessPenny, canBypassPennyRoleByEmail, resolvePennyRole } from '@/lib/penny-access';
 
 export default async function PennyPage() {
   const hasClerk = isClerkEnabled();
@@ -29,18 +23,18 @@ export default async function PennyPage() {
     );
   }
 
-  const { userId } = await auth();
+  const { userId, sessionClaims } = await auth();
 
   if (!userId) {
     redirect('/sign-in');
   }
 
   const user = await currentUser();
-  const role = await getUserRole();
+  const role = resolvePennyRole(sessionClaims, user);
+  const hasEmailBypass = canBypassPennyRoleByEmail(user);
 
   // Only admin, demo, and client roles can access Penny
-  const allowedRoles = ['admin', 'demo', 'client'];
-  if (!allowedRoles.includes(role)) {
+  if (!canAccessPenny(role) && !hasEmailBypass) {
     return (
       <div className="penny-container">
         <div className="penny-header">
@@ -58,13 +52,14 @@ export default async function PennyPage() {
     );
   }
 
-  const isDemo = role === 'demo';
+  const effectiveRole = canAccessPenny(role) ? role : 'admin';
+  const isDemo = effectiveRole === 'demo';
   const firstName = user?.firstName || 'there';
 
   return (
     <PennyChat
       userName={firstName}
-      userRole={role}
+      userRole={effectiveRole}
       isDemo={isDemo}
     />
   );

@@ -4,7 +4,7 @@
 
 'use client';
 
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, type ReactNode } from 'react';
 
 interface Message {
   id: string;
@@ -20,6 +20,44 @@ interface PennyChatProps {
   isDemo: boolean;
 }
 
+interface CatalogCategory {
+  name: string;
+  count: number;
+}
+
+interface CatalogDocument {
+  title: string;
+  source?: string;
+  category?: string;
+}
+
+const HELPER_QUESTIONS = [
+  'List the top knowledge categories you can answer from.',
+  'What are key Colorado real estate compliance resources in this knowledge base?',
+  'Summarize TNDS Direction Protocol for a new team member.',
+  'What documents should I review before handling a broker compliance question?',
+  'Show me a quick SOP-style checklist for client onboarding.',
+];
+
+function renderTextWithLinks(text: string): ReactNode[] {
+  const parts = text.split(/(https?:\/\/[^\s]+)/g);
+  return parts.map((part, idx) => {
+    if (/^https?:\/\/[^\s]+$/.test(part)) {
+      return (
+        <a key={`${part}-${idx}`} href={part} target="_blank" rel="noopener noreferrer" className="penny-link">
+          {part}
+        </a>
+      );
+    }
+    return <span key={`text-${idx}`}>{part}</span>;
+  });
+}
+
+function getSourceUrl(source: string): string | null {
+  const match = source.match(/https?:\/\/[^\s,]+/);
+  return match ? match[0] : null;
+}
+
 export default function PennyChat({ userName, userRole, isDemo }: PennyChatProps) {
   const [messages, setMessages] = useState<Message[]>([
     {
@@ -32,12 +70,17 @@ export default function PennyChat({ userName, userRole, isDemo }: PennyChatProps
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
   const [backendStatus, setBackendStatus] = useState<'online' | 'offline' | 'checking'>('checking');
+  const [catalogLoading, setCatalogLoading] = useState(false);
+  const [knowledgeDocs, setKnowledgeDocs] = useState<CatalogDocument[]>([]);
+  const [knowledgeCategories, setKnowledgeCategories] = useState<CatalogCategory[]>([]);
+  const [knowledgeDocCount, setKnowledgeDocCount] = useState(0);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
 
   // Check backend health on mount
   useEffect(() => {
     checkHealth();
+    loadCatalog();
   }, []);
 
   // Auto-scroll to bottom on new messages
@@ -58,8 +101,22 @@ export default function PennyChat({ userName, userRole, isDemo }: PennyChatProps
     }
   }
 
-  async function sendMessage() {
-    const query = input.trim();
+  async function loadCatalog() {
+    setCatalogLoading(true);
+    try {
+      const res = await fetch('/api/penny/catalog?limit=160');
+      if (!res.ok) return;
+      const data = await res.json();
+      setKnowledgeDocs(Array.isArray(data?.documents) ? data.documents : []);
+      setKnowledgeCategories(Array.isArray(data?.categories) ? data.categories : []);
+      setKnowledgeDocCount(typeof data?.knowledge_docs === 'number' ? data.knowledge_docs : 0);
+    } finally {
+      setCatalogLoading(false);
+    }
+  }
+
+  async function sendMessage(overrideQuery?: string) {
+    const query = (overrideQuery ?? input).trim();
     if (!query || loading) return;
 
     // Demo users get limited queries
@@ -134,82 +191,164 @@ export default function PennyChat({ userName, userRole, isDemo }: PennyChatProps
     }
   }
 
+  function selectHelperQuestion(question: string) {
+    setInput(question);
+    inputRef.current?.focus();
+  }
+
   return (
     <div className="penny-container">
-      <div className="penny-header">
-        <h1>Pipeline Penny</h1>
-        <p>Ask questions about your business knowledge base</p>
-        <div className="penny-status">
-          <span
-            className={`penny-status-dot ${
-              backendStatus === 'online'
-                ? ''
-                : backendStatus === 'checking'
-                ? 'loading'
-                : 'offline'
-            }`}
-          />
-          {backendStatus === 'online' && 'Connected'}
-          {backendStatus === 'offline' && 'Backend offline'}
-          {backendStatus === 'checking' && 'Connecting...'}
-        </div>
-      </div>
-
-      <div className="penny-messages">
-        {messages.map((msg) => (
-          <div key={msg.id} className="penny-msg">
-            <div className={`penny-msg-avatar ${msg.role === 'penny' ? 'penny' : 'user'}`}>
-              {msg.role === 'penny' ? 'PP' : userName.charAt(0).toUpperCase()}
+      <div className="penny-shell">
+        <section className="penny-main">
+          <div className="penny-header">
+            <h1>Pipeline Penny</h1>
+            <p>Ask questions about your business knowledge base</p>
+            <div className="penny-status">
+              <span
+                className={`penny-status-dot ${
+                  backendStatus === 'online'
+                    ? ''
+                    : backendStatus === 'checking'
+                    ? 'loading'
+                    : 'offline'
+                }`}
+              />
+              {backendStatus === 'online' && 'Connected'}
+              {backendStatus === 'offline' && 'Backend offline'}
+              {backendStatus === 'checking' && 'Connecting...'}
             </div>
-            <div className="penny-msg-body">
-              <p>{msg.content}</p>
-              {msg.sources && msg.sources.length > 0 && (
-                <div className="penny-msg-source">
-                  Sources: {msg.sources.join(', ')}
+          </div>
+
+          <div className="penny-messages">
+            {messages.map((msg) => (
+              <div key={msg.id} className="penny-msg">
+                <div className={`penny-msg-avatar ${msg.role === 'penny' ? 'penny' : 'user'}`}>
+                  {msg.role === 'penny' ? 'PP' : userName.charAt(0).toUpperCase()}
                 </div>
-              )}
+                <div className="penny-msg-body">
+                  <p className="penny-msg-text">{renderTextWithLinks(msg.content)}</p>
+                  {msg.sources && msg.sources.length > 0 && (
+                    <div className="penny-msg-source">
+                      <span className="penny-msg-source-label">Sources</span>
+                      <div className="penny-source-list">
+                        {msg.sources.map((source, idx) => {
+                          const url = getSourceUrl(source);
+                          if (url) {
+                            return (
+                              <a
+                                key={`${source}-${idx}`}
+                                href={url}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="penny-source-pill"
+                              >
+                                {source}
+                              </a>
+                            );
+                          }
+                          return (
+                            <span key={`${source}-${idx}`} className="penny-source-pill">
+                              {source}
+                            </span>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </div>
+            ))}
+
+            {loading && (
+              <div className="penny-msg">
+                <div className="penny-msg-avatar penny">PP</div>
+                <div className="penny-msg-body">
+                  <p style={{ color: 'var(--text-muted)' }}>Searching knowledge base...</p>
+                </div>
+              </div>
+            )}
+
+            <div ref={messagesEndRef} />
+          </div>
+
+          <div className="penny-input-area">
+            {isDemo && (
+              <div className="penny-demo-banner">
+                Demo mode — {10 - messages.filter((m) => m.role === 'user').length} queries remaining.{' '}
+                <a href="https://www.truenorthstrategyops.com/contact">Want this for your business?</a>
+              </div>
+            )}
+            <div className="penny-input-wrap" style={{ marginTop: isDemo ? '0.75rem' : 0 }}>
+              <textarea
+                ref={inputRef}
+                className="penny-input"
+                value={input}
+                onChange={(e) => setInput(e.target.value)}
+                onKeyDown={handleKeyDown}
+                placeholder="Ask Penny a question..."
+                rows={1}
+                disabled={loading || backendStatus === 'offline'}
+              />
+              <button
+                className="penny-send"
+                onClick={() => sendMessage()}
+                disabled={loading || !input.trim() || backendStatus === 'offline'}
+              >
+                Send
+              </button>
             </div>
           </div>
-        ))}
+        </section>
 
-        {loading && (
-          <div className="penny-msg">
-            <div className="penny-msg-avatar penny">PP</div>
-            <div className="penny-msg-body">
-              <p style={{ color: 'var(--text-muted)' }}>Searching knowledge base...</p>
+        <aside className="penny-sidebar">
+          <div className="penny-side-card">
+            <p className="penny-side-eyebrow">Try These</p>
+            <h2>Helper Questions</h2>
+            <div className="penny-side-list">
+              {HELPER_QUESTIONS.map((question) => (
+                <button
+                  key={question}
+                  type="button"
+                  className="penny-side-button"
+                  onClick={() => selectHelperQuestion(question)}
+                >
+                  {question}
+                </button>
+              ))}
             </div>
           </div>
-        )}
 
-        <div ref={messagesEndRef} />
-      </div>
-
-      <div className="penny-input-area">
-        {isDemo && (
-          <div className="penny-demo-banner">
-            Demo mode — {10 - messages.filter((m) => m.role === 'user').length} queries remaining.{' '}
-            <a href="https://www.truenorthstrategyops.com/contact">Want this for your business?</a>
+          <div className="penny-side-card">
+            <p className="penny-side-eyebrow">Current Corpus</p>
+            <h2>Knowledge in Penny</h2>
+            <p className="penny-side-note">
+              {catalogLoading
+                ? 'Loading knowledge index...'
+                : `${knowledgeDocCount} docs indexed${knowledgeCategories.length ? ` across ${knowledgeCategories.length} categories` : ''}.`}
+            </p>
+            {knowledgeCategories.length > 0 && (
+              <div className="penny-side-chip-row">
+                {knowledgeCategories.slice(0, 8).map((category) => (
+                  <span key={category.name} className="penny-side-chip">
+                    {category.name} ({category.count})
+                  </span>
+                ))}
+              </div>
+            )}
+            <div className="penny-side-list">
+              {knowledgeDocs.slice(0, 18).map((doc, idx) => (
+                <button
+                  key={`${doc.source || doc.title}-${idx}`}
+                  type="button"
+                  className="penny-side-button"
+                  onClick={() => sendMessage(`Summarize the document: ${doc.title}`)}
+                >
+                  {doc.title}
+                </button>
+              ))}
+            </div>
           </div>
-        )}
-        <div className="penny-input-wrap" style={{ marginTop: isDemo ? '0.75rem' : 0 }}>
-          <textarea
-            ref={inputRef}
-            className="penny-input"
-            value={input}
-            onChange={(e) => setInput(e.target.value)}
-            onKeyDown={handleKeyDown}
-            placeholder="Ask Penny a question..."
-            rows={1}
-            disabled={loading || backendStatus === 'offline'}
-          />
-          <button
-            className="penny-send"
-            onClick={sendMessage}
-            disabled={loading || !input.trim() || backendStatus === 'offline'}
-          >
-            Send
-          </button>
-        </div>
+        </aside>
       </div>
     </div>
   );
