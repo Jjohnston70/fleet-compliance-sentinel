@@ -7,6 +7,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { isClerkEnabled } from '@/lib/clerk';
 
 const PENNY_API_URL = process.env.PENNY_API_URL || 'http://localhost:8000';
+const PENNY_API_KEY = process.env.PENNY_API_KEY || '';
 
 export async function POST(request: NextRequest) {
   const hasClerk = isClerkEnabled();
@@ -46,6 +47,7 @@ export async function POST(request: NextRequest) {
         // Pass user context to backend
         'X-User-Id': userId,
         'X-User-Role': role,
+        ...(PENNY_API_KEY ? { 'X-Penny-Api-Key': PENNY_API_KEY } : {}),
       },
       body: JSON.stringify({ query }),
     });

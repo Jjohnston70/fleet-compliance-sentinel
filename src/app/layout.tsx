@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import { ClerkProvider } from '@clerk/nextjs';
 import '../styles/globals.css';
 import Navigation from '@/components/Navigation';
+import CookieConsent from '@/components/CookieConsent';
 import { isClerkEnabled } from '@/lib/clerk';
 
 export const metadata: Metadata = {
@@ -48,6 +49,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <>
       <Navigation clerkEnabled={hasClerk} />
       {children}
+      <CookieConsent />
     </>
   );
 

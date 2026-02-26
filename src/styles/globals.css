@@ -564,6 +564,50 @@ body {
   color: var(--text-muted);
 }
 
+.consent-banner {
+  position: fixed;
+  left: 1rem;
+  right: 1rem;
+  bottom: 1rem;
+  z-index: 1200;
+  margin: 0 auto;
+  max-width: 980px;
+  border: 1px solid var(--border);
+  background: var(--white);
+  border-radius: var(--radius);
+  padding: 1rem;
+  box-shadow: 0 14px 40px rgba(15, 36, 57, 0.16);
+}
+
+.consent-banner p {
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+  line-height: 1.5;
+}
+
+.consent-banner a {
+  color: var(--navy);
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.consent-banner a:hover {
+  text-decoration: underline;
+}
+
+.consent-actions {
+  display: flex;
+  gap: 0.6rem;
+  margin-top: 0.85rem;
+  flex-wrap: wrap;
+}
+
+.consent-actions .btn-primary,
+.consent-actions .btn-secondary {
+  padding: 0.55rem 1rem;
+  font-size: 0.85rem;
+}
+
 /* ===== LEGAL PAGES ===== */
 .legal-page {
   max-width: 900px;
@@ -961,5 +1005,12 @@ body {
     width: 100%;
     max-width: 300px;
     justify-content: center;
+  }
+
+  .consent-banner {
+    left: 0.6rem;
+    right: 0.6rem;
+    bottom: 0.6rem;
+    padding: 0.85rem;
   }
 }

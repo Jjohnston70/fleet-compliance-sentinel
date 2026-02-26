@@ -1,0 +1,214 @@
+import json
+import os
+import time
+import uuid
+from pathlib import Path
+from typing import List, Optional
+
+import httpx
+from fastapi import FastAPI, Header, HTTPException
+from fastapi.middleware.cors import CORSMiddleware
+from pydantic import BaseModel, Field
+
+APP_STARTED_AT = time.time()
+APP_VERSION = os.getenv("PENNY_API_VERSION", "0.1.0")
+PENNY_API_KEY = os.getenv("PENNY_API_KEY", "")
+ANTHROPIC_API_KEY = os.getenv("ANTHROPIC_API_KEY", "")
+ANTHROPIC_MODEL = os.getenv("ANTHROPIC_MODEL", "claude-3-5-haiku-latest")
+MAX_QUERY_CHARS = int(os.getenv("MAX_QUERY_CHARS", "2500"))
+DATA_PATH = Path(os.getenv("KNOWLEDGE_STORE_PATH", "./data/knowledge.json"))
+
+origins = [origin.strip() for origin in os.getenv("CORS_ORIGINS", "*").split(",") if origin.strip()]
+
+app = FastAPI(title="Pipeline Penny API", version=APP_VERSION)
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins if origins else ["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+
+class KnowledgeDoc(BaseModel):
+    id: str
+    title: str
+    content: str
+    source: Optional[str] = None
+
+
+class QueryRequest(BaseModel):
+    query: str = Field(..., min_length=2, max_length=MAX_QUERY_CHARS)
+
+
+class IngestDocRequest(BaseModel):
+    title: str = Field(..., min_length=1, max_length=250)
+    content: str = Field(..., min_length=1)
+    source: Optional[str] = None
+
+
+class IngestRequest(BaseModel):
+    documents: List[IngestDocRequest]
+
+
+def read_knowledge_store() -> List[KnowledgeDoc]:
+    if not DATA_PATH.exists():
+        return []
+    try:
+        raw = json.loads(DATA_PATH.read_text(encoding="utf-8"))
+        return [KnowledgeDoc(**row) for row in raw]
+    except Exception:
+        return []
+
+
+def write_knowledge_store(rows: List[KnowledgeDoc]) -> None:
+    DATA_PATH.parent.mkdir(parents=True, exist_ok=True)
+    DATA_PATH.write_text(json.dumps([row.model_dump() for row in rows], indent=2), encoding="utf-8")
+
+
+KNOWLEDGE = read_knowledge_store()
+
+
+def verify_api_key(x_penny_api_key: Optional[str]) -> None:
+    if not PENNY_API_KEY:
+        return
+    if x_penny_api_key != PENNY_API_KEY:
+        raise HTTPException(status_code=401, detail="Unauthorized")
+
+
+def search_docs(query: str, limit: int = 3) -> List[KnowledgeDoc]:
+    terms = [part.lower() for part in query.split() if len(part) > 2]
+    if not terms:
+        return []
+
+    scored = []
+    for doc in KNOWLEDGE:
+        haystack = f"{doc.title} {doc.content}".lower()
+        score = sum(haystack.count(term) for term in terms)
+        if score > 0:
+            scored.append((score, doc))
+
+    scored.sort(key=lambda item: item[0], reverse=True)
+    return [item[1] for item in scored[:limit]]
+
+
+def build_fallback_answer(query: str, hits: List[KnowledgeDoc]) -> str:
+    if not hits:
+        return (
+            "I could not find a confident answer in the current knowledge base. "
+            "Try adding supporting documents through /ingest."
+        )
+
+    top = hits[0]
+    preview = top.content[:380].strip()
+    return f"Based on '{top.title}', here is the closest match for '{query}':\n\n{preview}"
+
+
+async def build_anthropic_answer(query: str, hits: List[KnowledgeDoc]) -> str:
+    if not ANTHROPIC_API_KEY:
+        return build_fallback_answer(query, hits)
+
+    context_blocks = []
+    for doc in hits:
+        context_blocks.append(f"TITLE: {doc.title}\nSOURCE: {doc.source or 'n/a'}\nCONTENT:\n{doc.content[:3000]}")
+
+    context = "\n\n---\n\n".join(context_blocks) if context_blocks else "No matching docs were found."
+    payload = {
+        "model": ANTHROPIC_MODEL,
+        "max_tokens": 700,
+        "system": (
+            "You are Pipeline Penny. Answer using only provided knowledge snippets. "
+            "If the answer is missing, say that clearly."
+        ),
+        "messages": [{"role": "user", "content": f"User question: {query}\n\nKnowledge:\n{context}"}],
+    }
+
+    headers = {
+        "x-api-key": ANTHROPIC_API_KEY,
+        "anthropic-version": "2023-06-01",
+        "content-type": "application/json",
+    }
+
+    try:
+        async with httpx.AsyncClient(timeout=35.0) as client:
+            response = await client.post("https://api.anthropic.com/v1/messages", headers=headers, json=payload)
+            response.raise_for_status()
+            data = response.json()
+
+        parts = data.get("content", [])
+        text_parts = [part.get("text", "") for part in parts if part.get("type") == "text"]
+        answer = "\n".join(part.strip() for part in text_parts if part.strip())
+        return answer or build_fallback_answer(query, hits)
+    except Exception:
+        return build_fallback_answer(query, hits)
+
+
+@app.get("/health")
+def health():
+    return {
+        "status": "ok",
+        "version": APP_VERSION,
+        "uptime_seconds": round(time.time() - APP_STARTED_AT, 2),
+        "knowledge_docs": len(KNOWLEDGE),
+        "anthropic_configured": bool(ANTHROPIC_API_KEY),
+        "api_key_required": bool(PENNY_API_KEY),
+    }
+
+
+@app.get("/status")
+def status(x_penny_api_key: Optional[str] = Header(default=None)):
+    verify_api_key(x_penny_api_key)
+    return {
+        "status": "ok",
+        "knowledge_docs": len(KNOWLEDGE),
+        "knowledge_store_path": str(DATA_PATH),
+    }
+
+
+@app.post("/ingest")
+def ingest(
+    payload: IngestRequest,
+    x_penny_api_key: Optional[str] = Header(default=None),
+    x_user_role: Optional[str] = Header(default=None),
+):
+    verify_api_key(x_penny_api_key)
+
+    if x_user_role != "admin":
+        raise HTTPException(status_code=403, detail="Admin role required")
+
+    for doc in payload.documents:
+        KNOWLEDGE.append(
+            KnowledgeDoc(
+                id=str(uuid.uuid4()),
+                title=doc.title.strip(),
+                content=doc.content.strip(),
+                source=doc.source.strip() if doc.source else None,
+            )
+        )
+
+    write_knowledge_store(KNOWLEDGE)
+    return {"status": "ok", "ingested": len(payload.documents), "knowledge_docs": len(KNOWLEDGE)}
+
+
+@app.post("/query")
+async def query(
+    payload: QueryRequest,
+    x_penny_api_key: Optional[str] = Header(default=None),
+    x_user_id: Optional[str] = Header(default=None),
+    x_user_role: Optional[str] = Header(default=None),
+):
+    verify_api_key(x_penny_api_key)
+    query_text = payload.query.strip()
+    if not query_text:
+        raise HTTPException(status_code=400, detail="Query is required")
+
+    hits = search_docs(query_text, limit=3)
+    answer = await build_anthropic_answer(query_text, hits)
+
+    return {
+        "answer": answer,
+        "sources": [doc.title for doc in hits],
+        "query": query_text,
+        "user_id": x_user_id,
+        "user_role": x_user_role,
+    }

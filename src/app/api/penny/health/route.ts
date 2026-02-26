@@ -4,11 +4,13 @@
 import { NextResponse } from 'next/server';
 
 const PENNY_API_URL = process.env.PENNY_API_URL || 'http://localhost:8000';
+const PENNY_API_KEY = process.env.PENNY_API_KEY || '';
 
 export async function GET() {
   try {
     const res = await fetch(`${PENNY_API_URL}/health`, {
       method: 'GET',
+      headers: PENNY_API_KEY ? { 'X-Penny-Api-Key': PENNY_API_KEY } : {},
       // Short timeout for health checks
       signal: AbortSignal.timeout(5000),
     });
