@@ -1,248 +1,280 @@
+'use client';
+
+import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import type { Metadata } from 'next';
 
-export const metadata: Metadata = {
-  title: {
-    absolute: 'True North Data Strategies | Your Business, Organized',
+const productScreens = [
+  {
+    src: '/pipelinex-screenshots/command-post-welcome.png',
+    alt: 'PipelineX command post welcome screen',
+    label: 'Command Post',
   },
-  description:
-    'PipelineX connects your tools, your documents, and your data into one system you can actually talk to. Veteran-owned. Colorado Springs.',
-  alternates: {
-    canonical: '/',
+  {
+    src: '/pipelinex-screenshots/prompt-run-result.png',
+    alt: 'PipelineX prompt run result screen',
+    label: 'Prompt Run Result',
   },
-  openGraph: {
-    title: 'True North Data Strategies | Your Business, Organized',
-    description:
-      'PipelineX connects your tools, your documents, and your data into one system you can actually talk to. Veteran-owned. Colorado Springs.',
-    url: '/',
-    siteName: 'True North Data Strategies',
-    type: 'website',
-    locale: 'en_US',
-    images: [{ url: '/og-default.png', width: 1200, height: 630, alt: 'True North Data Strategies' }],
+  {
+    src: '/pipelinex-screenshots/sop-succeeded.png',
+    alt: 'PipelineX SOP success workflow screen',
+    label: 'SOP Workflow Success',
   },
-  twitter: {
-    card: 'summary_large_image',
-    title: 'True North Data Strategies | Your Business, Organized',
-    description:
-      'PipelineX connects your tools, your documents, and your data into one system you can actually talk to. Veteran-owned. Colorado Springs.',
-    images: ['/og-default.png'],
-  },
-};
+];
 
 export default function HomePage() {
+  const [activeScreen, setActiveScreen] = useState<number | null>(null);
+
+  useEffect(() => {
+    if (activeScreen === null) return;
+
+    const handleEscape = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') {
+        setActiveScreen(null);
+      }
+    };
+
+    window.addEventListener('keydown', handleEscape);
+    return () => window.removeEventListener('keydown', handleEscape);
+  }, [activeScreen]);
+
   return (
-    <>
-      {/* HERO */}
-      <section className="relative overflow-hidden py-20 md:py-28 px-4">
-        <div className="hero-glow" aria-hidden="true" />
-        <div className="container mx-auto max-w-4xl relative z-10 text-center">
-          <div className="inline-flex items-center gap-2 bg-tn-teal/10 border border-tn-teal/30 rounded-full px-4 py-1.5 mb-6 text-sm text-tn-teal font-medium">
-            SBA-Certified VOSB &amp; SDVOSB &nbsp;·&nbsp; Veteran-Owned &nbsp;·&nbsp; Colorado Springs
-          </div>
-          <h1 className="text-4xl md:text-5xl lg:text-6xl font-heading font-bold text-white mb-6 leading-tight">
-            Your business runs on spreadsheets, text messages, and somebody&apos;s memory.
-            <span className="text-tn-teal block mt-2">We fix that.</span>
-          </h1>
-          <p className="text-xl text-gray-300 mb-8 max-w-2xl mx-auto">
-            PipelineX connects your tools, your documents, and your data into one system
-            you can actually talk to — in plain English. No tech background required.
-          </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <a href="tel:555-555-5555" className="btn-primary text-lg px-8">
-              Call Jacob: 555-555-5555
-            </a>
-            <Link href="/contact" className="btn-outline text-lg px-8">
-              Book a Free 15-Min Call
-            </Link>
-          </div>
-          <p className="text-gray-500 text-sm mt-4">No pitch. No pressure. We talk, and I&apos;ll tell you if I can help.</p>
+    <main>
+      {/* Hero */}
+      <section className="hero">
+        <div className="hero-badge">By True North Data Strategies</div>
+        <div className="hero-logo-wrap">
+          <Image
+            src="/Pipeline Penny logo variations.png"
+            alt="Pipeline Penny logo"
+            width={220}
+            height={220}
+            className="hero-logo"
+            priority
+          />
+        </div>
+        <h1>Pipeline Penny</h1>
+        <p className="hero-sub">
+          Your business knowledge — searchable, queryable, and working for you.
+        </p>
+        <p className="hero-desc">
+          Upload your SOPs, pricing sheets, contracts, and playbooks.
+          Ask questions in plain English. Get answers from your actual documents — not guesses.
+        </p>
+        <div className="hero-actions">
+          <Link href="/sign-in" className="btn-primary">
+            Sign In
+          </Link>
+          <Link href="https://www.truenorthstrategyops.com/contact" className="btn-secondary">
+            Book a Call with Jacob
+          </Link>
         </div>
       </section>
 
-      {/* DOES THIS SOUND LIKE YOU */}
-      <section className="py-16 px-4 section-gradient">
-        <div className="container mx-auto max-w-4xl">
-          <h2 className="text-3xl md:text-4xl font-heading font-bold text-white mb-4 text-center">
-            Does This Sound Like Your Business?
-          </h2>
-          <p className="text-gray-400 text-center mb-10">If you said yes to any of these, keep reading.</p>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {[
-              "I can't tell if my team finished a job today without calling them.",
-              "I don't actually know how much money I made last month until my bookkeeper tells me.",
-              "If I take a week off, something falls apart.",
-              "My most important information lives in someone's head, a text thread, or a spreadsheet nobody else understands.",
-              "I've paid for software that nobody uses because it was too complicated.",
-              "I'm the only one who knows how to do half the things in this business.",
-            ].map((item, i) => (
-              <div key={i} className="card flex items-start gap-3">
-                <span className="text-tn-teal text-xl mt-0.5 flex-shrink-0">✓</span>
-                <p className="text-gray-200">{item}</p>
-              </div>
-            ))}
-          </div>
-          <p className="text-center text-tn-teal font-semibold mt-8 text-lg">
-            That&apos;s exactly the problem PipelineX was built to solve.
-          </p>
+      <section className="screenshots screenshots-top">
+        <h2>Product Preview</h2>
+        <p>Click any view to enlarge and read details.</p>
+        <div className="screenshot-grid">
+          {productScreens.map((screen, index) => (
+            <figure className="screenshot-card" key={screen.src}>
+              <button
+                className="screenshot-card-btn"
+                type="button"
+                onClick={() => setActiveScreen(index)}
+                aria-label={`Open ${screen.label} image`}
+              >
+                <Image
+                  src={screen.src}
+                  alt={screen.alt}
+                  width={1520}
+                  height={870}
+                />
+              </button>
+              <figcaption>{screen.label}</figcaption>
+            </figure>
+          ))}
         </div>
       </section>
 
-      {/* WHAT IS PIPELINEX */}
-      <section className="py-16 px-4">
-        <div className="container mx-auto max-w-4xl">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl md:text-4xl font-heading font-bold text-white mb-4">
-              What Is PipelineX?
-            </h2>
-            <p className="text-gray-300 text-lg max-w-2xl mx-auto">
-              Think of it like hiring a really organized assistant who read every document in your business,
-              connected to every tool you use, and is available 24/7 to answer questions and get things done.
-              Except it&apos;s software. And it doesn&apos;t call in sick.
+      {/* What It Does */}
+      <section className="features">
+        <h2>What Pipeline Penny Does</h2>
+        <div className="feature-grid">
+          <div className="feature-card">
+            <div className="feature-icon">01</div>
+            <h3>Reads Your Documents</h3>
+            <p>
+              Upload SOPs, contracts, price sheets, employee handbooks — anything your
+              business runs on. Penny reads them, indexes them, and makes them searchable.
             </p>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
-            {[
-              {
-                icon: '🗂️',
-                title: 'Your Documents, Searchable',
-                desc: 'Upload your SOPs, price sheets, contracts, and playbooks. PipelineX reads them and lets you ask questions in plain English.',
-              },
-              {
-                icon: '🔗',
-                title: 'Your Tools, Connected',
-                desc: 'Works with HubSpot, your CRM, Google Sheets, email, and more. No ripping out what you already use.',
-              },
-              {
-                icon: '💬',
-                title: 'Ask It Like a Person',
-                desc: '"What\'s the status of the Johnson proposal?" "What does our refund policy say?" Real answers, instantly.',
-              },
-            ].map((card) => (
-              <div key={card.title} className="card card-hover text-center">
-                <div className="text-4xl mb-4">{card.icon}</div>
-                <h3 className="text-tn-teal font-semibold text-lg mb-2">{card.title}</h3>
-                <p className="text-gray-300 text-sm">{card.desc}</p>
-              </div>
-            ))}
-          </div>
-          <div className="text-center">
-            <Link href="/pipelinex" className="btn-primary text-lg px-8">
-              See Everything PipelineX Does →
-            </Link>
-          </div>
-        </div>
-      </section>
-
-      {/* AI IS A TOOL, NOT A REPLACEMENT */}
-      <section className="py-16 px-4 section-gradient">
-        <div className="container mx-auto max-w-4xl">
-          <div className="card border-tn-teal/30 border-2">
-            <h2 className="text-2xl md:text-3xl font-heading font-bold text-white mb-4">
-              A Word About AI — Because You&apos;ve Probably Heard a Lot of Hype
-            </h2>
-            <p className="text-gray-300 mb-4">
-              AI is a tool. Like a really good calculator, or a really organized filing cabinet that can answer questions.
-              It doesn&apos;t replace your people. It doesn&apos;t make decisions for you. It doesn&apos;t run your business.
+          <div className="feature-card">
+            <div className="feature-icon">02</div>
+            <h3>Answers Your Questions</h3>
+            <p>
+              Ask in plain English: "What's our markup on residential jobs?" or
+              "What's the onboarding process for new hires?" Penny pulls the answer
+              from your actual documents.
             </p>
-            <p className="text-gray-300 mb-4">
-              What it does: it takes the information that already exists in your business — your documents, your data,
-              your processes — and makes it accessible in a way that saves your team hours every week.
+          </div>
+          <div className="feature-card">
+            <div className="feature-icon">03</div>
+            <h3>Doesn't Make Things Up</h3>
+            <p>
+              If Penny doesn't have the answer in your documents, she says so.
+              No hallucinations. No guesses. Just what you actually put in.
             </p>
-            <p className="text-tn-teal font-semibold">
-              Your people still do the work. PipelineX just makes sure they&apos;re not wasting time looking for information,
-              re-entering data, or asking you the same questions over and over.
+          </div>
+          <div className="feature-card">
+            <div className="feature-icon">04</div>
+            <h3>Your Data Stays Yours</h3>
+            <p>
+              Your documents are processed and stored securely. Nothing gets shared
+              with other users. Nothing gets used to train AI models. Period.
             </p>
           </div>
         </div>
       </section>
 
-      {/* HOW IT WORKS PREVIEW */}
-      <section className="py-16 px-4">
-        <div className="container mx-auto max-w-4xl">
-          <h2 className="text-3xl font-heading font-bold text-white mb-10 text-center">Here&apos;s How We Get You There</h2>
-          <div className="space-y-4">
-            {[
-              { step: '1', title: 'We talk. (15–20 minutes)', desc: 'No pitch. I ask you what\'s broken. You tell me. We figure out if there\'s a fit.' },
-              { step: '2', title: 'We dig in. (30 minutes)', desc: 'I learn how your operation actually works — where stuff lives, what gets dropped, what takes too long.' },
-              { step: '3', title: 'We map it. (90–120 minutes)', desc: 'Full picture of your operation. Where data lives, where it breaks, what\'s costing you time and money.' },
-              { step: '4', title: 'We show you the plan. (30–45 minutes)', desc: 'Here\'s what we found. Here\'s what we\'d build. Here\'s the fixed price. No surprises.' },
-              { step: '5', title: 'We build it.', desc: 'You go live. You see what\'s happening in your business for the first time. You start taking Fridays off.' },
-            ].map((s) => (
-              <div key={s.step} className="flex items-start gap-4 card">
-                <div className="bg-tn-teal/20 text-tn-teal font-bold text-lg rounded-full w-10 h-10 flex items-center justify-center flex-shrink-0">
-                  {s.step}
-                </div>
-                <div>
-                  <h3 className="text-white font-semibold mb-1">{s.title}</h3>
-                  <p className="text-gray-400 text-sm">{s.desc}</p>
-                </div>
-              </div>
-            ))}
+      {/* Who It's For */}
+      <section className="who">
+        <h2>Built for Business Owners Who...</h2>
+        <div className="who-grid">
+          <div className="who-item">
+            <span className="who-marker">&mdash;</span>
+            <p>Can't take a day off without things falling apart</p>
           </div>
-          <div className="text-center mt-8">
-            <Link href="/how-it-works" className="text-tn-teal hover:underline">
-              See the full process →
-            </Link>
+          <div className="who-item">
+            <span className="who-marker">&mdash;</span>
+            <p>Have critical knowledge trapped in one person's head</p>
+          </div>
+          <div className="who-item">
+            <span className="who-marker">&mdash;</span>
+            <p>Run on spreadsheets, text messages, and "ask Steve"</p>
+          </div>
+          <div className="who-item">
+            <span className="who-marker">&mdash;</span>
+            <p>Want AI that works for them — not another tool to learn</p>
           </div>
         </div>
       </section>
 
-      {/* WHY JACOB */}
-      <section className="py-16 px-4 section-gradient">
-        <div className="container mx-auto max-w-4xl">
-          <div className="flex flex-col md:flex-row gap-10 items-center">
-            <div className="flex-shrink-0">
-              <Image
-                src="/headshot.png"
-                alt="Jacob Johnston, Founder of True North Data Strategies"
-                width={200}
-                height={200}
-                className="rounded-full border-2 border-tn-teal/30 w-44 h-44 object-cover"
-              />
+      {/* How It Works */}
+      <section className="how">
+        <h2>How It Works</h2>
+        <div className="steps">
+          <div className="step">
+            <div className="step-num">1</div>
+            <div className="step-content">
+              <h3>We Talk</h3>
+              <p>15-minute call. You tell me what's broken. I tell you if Penny can fix it.</p>
             </div>
-            <div>
-              <h2 className="text-2xl md:text-3xl font-heading font-bold text-white mb-4">
-                Built by a Veteran Who Got Tired of Watching Businesses Drown in Spreadsheets
-              </h2>
-              <p className="text-gray-300 mb-3">
-                I spent 20 years in the Army — Airborne Infantry, multiple combat deployments, Bronze Star.
-                After I got out, I went to work in operations at a fuel distribution company.
-                Same problem everywhere I looked: talented people buried in manual work, owners who couldn&apos;t
-                see what was actually happening, and expensive software that nobody used.
+          </div>
+          <div className="step">
+            <div className="step-num">2</div>
+            <div className="step-content">
+              <h3>We Build It</h3>
+              <p>
+                I load your documents, configure your knowledge base, and set up
+                Penny for your business. Fixed scope. Fixed price. 2-4 weeks.
               </p>
-              <p className="text-gray-300 mb-4">
-                I built systems to fix the problem.
-                I&apos;ve deployed 50+ systems running real businesses. Fixed scope, fixed price. You own what we build.
+            </div>
+          </div>
+          <div className="step">
+            <div className="step-num">3</div>
+            <div className="step-content">
+              <h3>You Use It</h3>
+              <p>
+                Log in, ask questions, get answers. Your team can use it too.
+                No training required — if you can send an email, you can use Penny.
               </p>
-              <Link href="/about" className="text-tn-teal hover:underline text-sm">
-                Read the full story →
-              </Link>
             </div>
           </div>
         </div>
       </section>
 
-      {/* FINAL CTA */}
-      <section className="py-20 px-4">
-        <div className="container mx-auto max-w-2xl text-center cta-card rounded-2xl p-10">
-          <h2 className="text-3xl font-heading font-bold text-white mb-4">
-            Ready to Stop Guessing and Start Seeing?
-          </h2>
-          <p className="text-gray-300 mb-6">
-            Let&apos;s spend 15 minutes on the phone. You tell me what&apos;s going on, and I&apos;ll tell you if I can help.
-            No obligation. No sales deck.
-          </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <a href="tel:555-555-5555" className="btn-primary text-lg px-8">
-              Call Jacob: 555-555-5555
-            </a>
-            <Link href="/contact" className="btn-outline text-lg px-8">
-              Book a Free 15-Min Call
-            </Link>
+      {/* CTA */}
+      <section className="cta">
+        <h2>Ready to See It?</h2>
+        <p>
+          Every Pipeline Penny deployment starts with a conversation.
+          No pitch deck. No pressure. Just clarity.
+        </p>
+        <div className="cta-actions">
+          <Link href="https://www.truenorthstrategyops.com/contact" className="btn-primary">
+            Book a Free 15-Min Call
+          </Link>
+          <a href="tel:555-555-5555" className="btn-secondary">
+            Call Jacob: 555-555-5555
+          </a>
+        </div>
+        <p className="cta-note">
+          Fixed scope. Fixed price. No open-ended projects. No surprise invoices.
+        </p>
+      </section>
+
+      {/* Footer */}
+      <footer className="site-footer">
+        <div className="footer-brand">
+          <p>Pipeline Penny is a product of <a href="https://www.truenorthstrategyops.com">True North Data Strategies LLC</a></p>
+          <p className="footer-certs">SBA-Certified VOSB/SDVOSB &middot; Colorado Springs, CO</p>
+          <div className="footer-badges">
+            <Image
+              src="/Veteran-Owned Certified.png"
+              alt="Veteran-Owned Certified"
+              width={64}
+              height={80}
+            />
+            <Image
+              src="/Service-Disabled Veteran-Owned-Certified.png"
+              alt="Service-Disabled Veteran-Owned Certified"
+              width={64}
+              height={80}
+            />
           </div>
         </div>
-      </section>
-    </>
+        <div className="footer-links">
+          <Link href="/privacy">Privacy Policy</Link>
+          <Link href="/terms">Terms of Service</Link>
+          <Link href="/accessibility">Accessibility</Link>
+          <Link href="https://www.truenorthstrategyops.com">truenorthstrategyops.com</Link>
+        </div>
+        <p className="footer-copy">&copy; 2026 True North Data Strategies LLC. All rights reserved.</p>
+      </footer>
+
+      {activeScreen !== null && (
+        <div
+          className="lightbox"
+          role="dialog"
+          aria-modal="true"
+          aria-label={productScreens[activeScreen].label}
+        >
+          <button
+            type="button"
+            className="lightbox-backdrop"
+            onClick={() => setActiveScreen(null)}
+            aria-label="Close enlarged image"
+          />
+          <div className="lightbox-inner" role="document">
+            <button
+              type="button"
+              className="lightbox-close"
+              onClick={() => setActiveScreen(null)}
+              aria-label="Close enlarged image"
+            >
+              Close
+            </button>
+            <Image
+              src={productScreens[activeScreen].src}
+              alt={productScreens[activeScreen].alt}
+              width={3040}
+              height={1740}
+              className="lightbox-image"
+            />
+            <p className="lightbox-caption">{productScreens[activeScreen].label}</p>
+          </div>
+        </div>
+      )}
+    </main>
   );
 }
