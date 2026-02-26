@@ -11,7 +11,12 @@ export const metadata: Metadata = {
     template: '%s | Pipeline Penny',
   },
   icons: {
-    icon: '/favicon.ico',
+    icon: [
+      { url: '/PipelineX-penny.png', type: 'image/png' },
+      { url: '/favicon.ico' },
+    ],
+    shortcut: '/PipelineX-penny.png',
+    apple: '/PipelineX-penny.png',
   },
   description:
     'Pipeline Penny helps business owners search and query their SOPs, contracts, and internal knowledge in plain English.',

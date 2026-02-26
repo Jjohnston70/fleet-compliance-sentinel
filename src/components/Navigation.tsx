@@ -19,7 +19,7 @@ export default function Navigation({ clerkEnabled = true }: NavigationProps) {
       <nav className="nav">
         <Link href="/" className="nav-brand">
           <Image
-            src="/PPenny-Logo.png"
+            src="/PipelineX-penny.png"
             alt="Pipeline Penny"
             width={32}
             height={32}
@@ -46,7 +46,7 @@ export default function Navigation({ clerkEnabled = true }: NavigationProps) {
     <nav className="nav">
       <Link href="/" className="nav-brand">
         <Image
-          src="/PPenny-Logo.png"
+          src="/PipelineX-penny.png"
           alt="Pipeline Penny"
           width={32}
           height={32}

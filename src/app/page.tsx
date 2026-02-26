@@ -45,7 +45,7 @@ export default function HomePage() {
         <div className="hero-badge">By True North Data Strategies</div>
         <div className="hero-logo-wrap">
           <Image
-            src="/Pipeline Penny logo variations.png"
+            src="/PipelineX-penny.png"
             alt="Pipeline Penny logo"
             width={220}
             height={220}
