@@ -90,15 +90,21 @@ def verify_api_key(x_penny_api_key: Optional[str]) -> None:
         raise HTTPException(status_code=401, detail="Unauthorized")
 
 
-def search_docs(query: str, limit: int = 3) -> List[KnowledgeDoc]:
+def search_docs(query: str, limit: int = 5) -> List[KnowledgeDoc]:
     terms = [part.lower() for part in query.split() if len(part) > 2]
     if not terms:
         return []
 
     scored = []
     for doc in KNOWLEDGE:
-        haystack = f"{doc.title} {doc.content}".lower()
-        score = sum(haystack.count(term) for term in terms)
+        title_lower = doc.title.lower()
+        content_lower = doc.content.lower()
+
+        # Title matches are weighted 10x to prevent content-frequency false positives
+        title_score = sum(title_lower.count(term) * 10 for term in terms)
+        content_score = sum(content_lower.count(term) for term in terms)
+        score = title_score + content_score
+
         if score > 0:
             scored.append((score, doc))
 
@@ -124,15 +130,20 @@ async def build_anthropic_answer(query: str, hits: List[KnowledgeDoc]) -> str:
 
     context_blocks = []
     for doc in hits:
-        context_blocks.append(f"TITLE: {doc.title}\nSOURCE: {doc.source or 'n/a'}\nCONTENT:\n{doc.content[:3000]}")
+        context_blocks.append(f"TITLE: {doc.title}\nSOURCE: {doc.source or 'n/a'}\nCONTENT:\n{doc.content[:4000]}")
 
     context = "\n\n---\n\n".join(context_blocks) if context_blocks else "No matching docs were found."
     payload = {
         "model": ANTHROPIC_MODEL,
-        "max_tokens": 700,
+        "max_tokens": 2000,
         "system": (
-            "You are Pipeline Penny. Answer using only provided knowledge snippets. "
-            "If the answer is missing, say that clearly."
+            "You are Pipeline Penny, a business knowledge assistant for True North Data Strategies. "
+            "Answer ONLY from the provided knowledge snippets. "
+            "When answering, prioritize documents whose TITLE closely matches the user's question — "
+            "do not pull answers from loosely related documents. "
+            "Give complete, thorough answers — do not truncate or summarize prematurely. "
+            "If the answer is not in the provided snippets, say clearly: "
+            "'I don't have that information in the current knowledge base.'"
         ),
         "messages": [{"role": "user", "content": f"User question: {query}\n\nKnowledge:\n{context}"}],
     }

@@ -127,7 +127,7 @@ export default function PennyChat({ userName, userRole, isDemo }: PennyChatProps
           id: Date.now().toString(),
           role: 'penny',
           content:
-            "You've reached the demo query limit. Want Pipeline Penny for your own business? Talk to Jacob — truenorthstrategyops.com/contact",
+            "You've reached the demo query limit. Want Pipeline Penny for your own business? Talk to Jacob â€” truenorthstrategyops.com/contact",
           timestamp: new Date(),
         },
       ]);
@@ -192,8 +192,7 @@ export default function PennyChat({ userName, userRole, isDemo }: PennyChatProps
   }
 
   function selectHelperQuestion(question: string) {
-    setInput(question);
-    inputRef.current?.focus();
+    sendMessage(question);
   }
 
   return (
@@ -274,7 +273,7 @@ export default function PennyChat({ userName, userRole, isDemo }: PennyChatProps
           <div className="penny-input-area">
             {isDemo && (
               <div className="penny-demo-banner">
-                Demo mode — {10 - messages.filter((m) => m.role === 'user').length} queries remaining.{' '}
+                Demo mode â€” {10 - messages.filter((m) => m.role === 'user').length} queries remaining.{' '}
                 <a href="https://www.truenorthstrategyops.com/contact">Want this for your business?</a>
               </div>
             )}
