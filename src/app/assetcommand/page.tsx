@@ -60,7 +60,7 @@ export default function AssetCommandPage() {
       </section>
       <section className="py-20 px-6 bg-[#0a0f14]">
         <div className="max-w-5xl mx-auto">
-          <div className="text-xs text-[#3d8eb9] tracking-widest uppercase mb-4">// The Problem</div>
+          <div className="text-xs text-[#3d8eb9] tracking-widest uppercase mb-4><span>{"// The Problem"}</span></div>
           <h2 className="text-3xl font-black mb-12">Stop tracking your fleet in a group chat.</h2>
           <div className="space-y-px">
             {problems.map((p,i)=>(
@@ -89,7 +89,7 @@ export default function AssetCommandPage() {
       </section>
       <section className="py-20 px-6 bg-[#0a0f14]">
         <div className="max-w-3xl mx-auto">
-          <div className="text-xs text-[#3d8eb9] tracking-widest uppercase mb-4">// FAQ</div>
+          <div className="text-xs text-[#3d8eb9] tracking-widest uppercase mb-4><span>{"// FAQ"}</span></div>
           <h2 className="text-3xl font-black mb-12">Common questions.</h2>
           <div className="space-y-px">
             {faqs.map((faq,i)=>(
@@ -120,3 +120,4 @@ export default function AssetCommandPage() {
     </div>
   );
 }
+
