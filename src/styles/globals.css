@@ -1096,6 +1096,220 @@ a.penny-source-pill:hover {
   background: #f8fbfd;
 }
 
+/* ===== ASSETCOMMAND PAGE ===== */
+.asset-page {
+  background: var(--white);
+}
+
+.asset-wrap {
+  max-width: 980px;
+  margin: 0 auto;
+  padding: 0 1.5rem;
+}
+
+.asset-wrap-narrow {
+  max-width: 760px;
+}
+
+.asset-hero {
+  padding: 4.5rem 0 3.25rem;
+  background: linear-gradient(180deg, rgba(61, 142, 185, 0.08), rgba(61, 142, 185, 0));
+  border-bottom: 1px solid var(--border);
+}
+
+.asset-hero h1 {
+  font-size: clamp(2.4rem, 5.6vw, 4.1rem);
+  line-height: 1.06;
+  color: var(--navy);
+  letter-spacing: -0.03em;
+}
+
+.asset-stats {
+  margin-top: 2rem;
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 0.75rem;
+}
+
+.asset-stat-card {
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 0.9rem;
+  background: var(--white);
+}
+
+.asset-stat-card dt {
+  color: var(--text-muted);
+  font-size: 0.78rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.asset-stat-card dd {
+  color: var(--navy);
+  margin-top: 0.25rem;
+  font-weight: 700;
+  font-size: 1.35rem;
+}
+
+.asset-problems {
+  padding: 3.6rem 0;
+  background: var(--sand);
+}
+
+.asset-problems h2,
+.asset-features h2,
+.asset-deliverables h2,
+.asset-faq h2 {
+  color: var(--navy);
+  font-size: clamp(1.55rem, 3.6vw, 2.2rem);
+  line-height: 1.2;
+  letter-spacing: -0.02em;
+}
+
+.asset-problem-list {
+  margin-top: 1.5rem;
+  display: grid;
+  gap: 0.55rem;
+}
+
+.asset-problem-row {
+  display: grid;
+  grid-template-columns: 1.3fr 1fr;
+  border: 1px solid var(--border);
+  background: var(--white);
+}
+
+.asset-problem-row dt,
+.asset-problem-row dd {
+  padding: 0.9rem 1rem;
+  line-height: 1.5;
+}
+
+.asset-problem-row dt {
+  color: var(--text-secondary);
+  border-right: 1px solid var(--border);
+}
+
+.asset-problem-row dd {
+  color: var(--navy);
+  font-weight: 600;
+}
+
+.asset-features {
+  padding: 3.7rem 0;
+}
+
+.asset-feature-grid {
+  margin-top: 1.5rem;
+  display: grid;
+  gap: 0.9rem;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  list-style: none;
+}
+
+.asset-feature-card {
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 1.1rem;
+  background: var(--white);
+}
+
+.asset-feature-icon {
+  color: var(--teal);
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+.asset-feature-card h3 {
+  color: var(--navy);
+  margin-top: 0.35rem;
+  font-size: 1rem;
+}
+
+.asset-feature-card p {
+  color: var(--text-secondary);
+  margin-top: 0.35rem;
+  font-size: 0.9rem;
+  line-height: 1.55;
+}
+
+.asset-deliverables {
+  padding: 3.7rem 0;
+  background: var(--sand);
+}
+
+.asset-deliverable-list {
+  margin-top: 1.4rem;
+  list-style: none;
+  display: grid;
+  gap: 0.55rem;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.asset-deliverable-list li {
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--white);
+  display: flex;
+  gap: 0.75rem;
+  padding: 0.8rem 0.9rem;
+}
+
+.asset-deliverable-list li span {
+  font-family: var(--font-mono);
+  color: var(--teal);
+  font-size: 0.8rem;
+  font-weight: 600;
+  min-width: 1.9rem;
+}
+
+.asset-deliverable-list li p {
+  color: var(--text-secondary);
+  font-size: 0.88rem;
+  line-height: 1.45;
+}
+
+.asset-faq {
+  padding: 3.7rem 0;
+}
+
+.asset-faq dl {
+  margin-top: 1rem;
+  border-top: 1px solid var(--border);
+}
+
+.asset-faq-item {
+  border-bottom: 1px solid var(--border);
+}
+
+.asset-faq-item button {
+  width: 100%;
+  background: transparent;
+  border: none;
+  text-align: left;
+  color: var(--navy);
+  display: flex;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding: 0.9rem 0;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.asset-faq-item button span:last-child {
+  color: var(--teal);
+  min-width: 1.1rem;
+  text-align: right;
+}
+
+.asset-faq-item dd {
+  color: var(--text-secondary);
+  padding: 0 0 0.95rem;
+  line-height: 1.6;
+}
+
 /* ===== RESPONSIVE ===== */
 @media (max-width: 768px) {
   .nav {
@@ -1171,5 +1385,31 @@ a.penny-source-pill:hover {
     right: 0.6rem;
     bottom: 0.6rem;
     padding: 0.85rem;
+  }
+
+  .asset-wrap {
+    padding: 0 1rem;
+  }
+
+  .asset-hero {
+    padding: 3.2rem 0 2.4rem;
+  }
+
+  .asset-stats {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .asset-problem-row {
+    grid-template-columns: 1fr;
+  }
+
+  .asset-problem-row dt {
+    border-right: none;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .asset-feature-grid,
+  .asset-deliverable-list {
+    grid-template-columns: 1fr;
   }
 }

@@ -51,7 +51,7 @@ It is designed to help users:
 
 ## Current Knowledge Coverage
 
-Current indexed demo knowledge includes TNDS operational content and realty-focused documentation, including the `04_Realty` knowledge set.
+Current indexed demo knowledge includes TNDS operational content and realty-focused documentation, including the `01_realty-command` set at `knowledge/data/original_content/`.
 
 This gives demos realistic Q&A coverage for:
 

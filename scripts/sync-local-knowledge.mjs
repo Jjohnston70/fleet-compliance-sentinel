@@ -64,8 +64,9 @@ async function main() {
 
   const apiUrl = process.env.PENNY_API_URL || 'https://pipeline-punks-v2-production.up.railway.app';
   const apiKey = process.env.PENNY_API_KEY;
-  const root = process.env.KNOWLEDGE_ROOT || 'C:\\Users\\truenorth\\Desktop\\pipeline_penny\\knowledge\\data\\original_content';
-  const categoriesRaw = process.env.KNOWLEDGE_CATEGORIES || '02_TNDS-Protocols,04_Realty';
+  const defaultKnowledgeRoot = path.resolve(process.cwd(), 'knowledge', 'data', 'original_content');
+  const root = process.env.KNOWLEDGE_ROOT || defaultKnowledgeRoot;
+  const categoriesRaw = process.env.KNOWLEDGE_CATEGORIES;
   const batchSize = Number(process.env.KNOWLEDGE_BATCH_SIZE || 20);
   const maxChars = Number(process.env.KNOWLEDGE_MAX_CHARS || 18000);
   const limit = Number(process.env.KNOWLEDGE_FILE_LIMIT || 200);
@@ -80,12 +81,18 @@ async function main() {
   }
 
   const categories = categoriesRaw
-    .split(',')
-    .map((value) => value.trim())
-    .filter(Boolean);
+    ? categoriesRaw
+        .split(',')
+        .map((value) => value.trim())
+        .filter(Boolean)
+    : fs
+        .readdirSync(root, { withFileTypes: true })
+        .filter((entry) => entry.isDirectory())
+        .map((entry) => entry.name)
+        .sort();
 
   if (categories.length === 0) {
-    console.error('No categories selected. Set KNOWLEDGE_CATEGORIES.');
+    console.error(`No categories found in ${root}. Add directories or set KNOWLEDGE_CATEGORIES.`);
     process.exit(1);
   }
 
