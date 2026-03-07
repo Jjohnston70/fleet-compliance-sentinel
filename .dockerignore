@@ -1,0 +1,7 @@
+*
+!railway-backend/
+!railway-backend/app/
+!railway-backend/app/**
+!railway-backend/data/
+!railway-backend/data/**
+!railway-backend/requirements.txt
