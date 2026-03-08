@@ -52,6 +52,12 @@ class IngestRequest(BaseModel):
     documents: List[IngestDocRequest]
 
 
+class PruneRequest(BaseModel):
+    include_source_prefixes: List[str] = Field(default_factory=list)
+    exclude_source_prefixes: List[str] = Field(default_factory=list)
+    dry_run: bool = False
+
+
 def read_knowledge_store() -> List[KnowledgeDoc]:
     if not DATA_PATH.exists():
         return []
@@ -72,6 +78,17 @@ KNOWLEDGE = read_knowledge_store()
 
 def doc_key(title: str, source: Optional[str]) -> str:
     return f"{title.strip().lower()}::{(source or '').strip().lower()}"
+
+
+def normalize_prefixes(prefixes: List[str]) -> List[str]:
+    return [prefix.strip() for prefix in prefixes if prefix and prefix.strip()]
+
+
+def source_has_prefix(source: Optional[str], prefixes: List[str]) -> bool:
+    if not prefixes:
+        return False
+    source_value = (source or "").strip()
+    return any(source_value.startswith(prefix) for prefix in prefixes)
 
 
 def infer_category(source: Optional[str]) -> str:
@@ -271,6 +288,57 @@ def ingest(
         "inserted": inserted,
         "updated": updated,
         "knowledge_docs": len(KNOWLEDGE),
+    }
+
+
+@app.post("/admin/prune")
+def prune_knowledge(
+    payload: PruneRequest,
+    x_penny_api_key: Optional[str] = Header(default=None),
+    x_user_role: Optional[str] = Header(default=None),
+):
+    verify_api_key(x_penny_api_key)
+
+    if x_user_role != "admin":
+        raise HTTPException(status_code=403, detail="Admin role required")
+
+    include_prefixes = normalize_prefixes(payload.include_source_prefixes)
+    exclude_prefixes = normalize_prefixes(payload.exclude_source_prefixes)
+
+    kept: List[KnowledgeDoc] = []
+    removed: List[KnowledgeDoc] = []
+    removed_by_category = defaultdict(int)
+
+    for doc in KNOWLEDGE:
+        source = (doc.source or "").strip()
+
+        keep = True
+        if include_prefixes and not source_has_prefix(source, include_prefixes):
+            keep = False
+        if keep and exclude_prefixes and source_has_prefix(source, exclude_prefixes):
+            keep = False
+
+        if keep:
+            kept.append(doc)
+        else:
+            removed.append(doc)
+            removed_by_category[infer_category(doc.source)] += 1
+
+    if not payload.dry_run:
+        KNOWLEDGE[:] = kept
+        write_knowledge_store(KNOWLEDGE)
+
+    return {
+        "status": "ok",
+        "dry_run": payload.dry_run,
+        "before_count": len(KNOWLEDGE) if payload.dry_run else len(kept) + len(removed),
+        "after_count": len(kept),
+        "removed_count": len(removed),
+        "include_source_prefixes": include_prefixes,
+        "exclude_source_prefixes": exclude_prefixes,
+        "removed_by_category": [
+            {"name": key, "count": removed_by_category[key]} for key in sorted(removed_by_category.keys())
+        ],
     }
 
 
