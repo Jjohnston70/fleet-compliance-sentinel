@@ -5,7 +5,7 @@ import Link from 'next/link';
 
 const GUMROAD_URL = 'https://pipelinepunks.gumroad.com/l/izwdk';
 const ASSETCOMMAND_DASHBOARD_URL =
-  'https://script.google.com/macros/s/AKfycbxNKEBhIU6rrmdR2Uz-U2_e8CeiN8Fhf4WjQB9QiMTVSLMah15ckePnS4SNWemQuZ2N/exec';
+  'https://script.google.com/macros/s/AKfycbzVo8Yw1_tyy8NKsif_YnV3__ra0yhpwmTkRju3WipLo3W2IwNYZLwnlzbVwZ2vD0pt/exec';
 
 const features = [
   {
