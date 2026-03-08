@@ -32,11 +32,11 @@ interface CatalogDocument {
 }
 
 const HELPER_QUESTIONS = [
-  'List the top knowledge categories you can answer from.',
+  'List the top Colorado real estate knowledge categories you can answer from.',
+  'Summarize the document: Realty-Command Phase 2 and 4 Refresh Summary',
   'What are key Colorado real estate compliance resources in this knowledge base?',
-  'Summarize TNDS Direction Protocol for a new team member.',
   'What documents should I review before handling a broker compliance question?',
-  'Show me a quick SOP-style checklist for client onboarding.',
+  'Give me a checklist for lease and property management compliance in Colorado.',
 ];
 
 function renderTextWithLinks(text: string): ReactNode[] {
@@ -63,7 +63,7 @@ export default function PennyChat({ userName, userRole, isDemo }: PennyChatProps
     {
       id: 'welcome',
       role: 'penny',
-      content: `Hey ${userName}! I'm Pipeline Penny. Ask me anything about the knowledge base and I'll find the answer from your actual documents. What do you need?`,
+      content: `Hey ${userName}! I'm Pipeline Penny. Ask me anything about Colorado real estate, compliance, brokerage, or leasing and I'll answer from your indexed realty documents.`,
       timestamp: new Date(),
     },
   ]);
@@ -127,7 +127,7 @@ export default function PennyChat({ userName, userRole, isDemo }: PennyChatProps
           id: Date.now().toString(),
           role: 'penny',
           content:
-            "You've reached the demo query limit. Want Pipeline Penny for your own business? Talk to Jacob â€” truenorthstrategyops.com/contact",
+            "You've reached the demo query limit. Want Pipeline Penny for your own business? Talk to Jacob - truenorthstrategyops.com/contact",
           timestamp: new Date(),
         },
       ]);
@@ -201,7 +201,7 @@ export default function PennyChat({ userName, userRole, isDemo }: PennyChatProps
         <section className="penny-main">
           <div className="penny-header">
             <h1>Pipeline Penny</h1>
-            <p>Ask questions about your business knowledge base</p>
+            <p>Ask questions about your Colorado realty knowledge base</p>
             <div className="penny-status">
               <span
                 className={`penny-status-dot ${
@@ -273,7 +273,7 @@ export default function PennyChat({ userName, userRole, isDemo }: PennyChatProps
           <div className="penny-input-area">
             {isDemo && (
               <div className="penny-demo-banner">
-                Demo mode â€” {10 - messages.filter((m) => m.role === 'user').length} queries remaining.{' '}
+                Demo mode - {10 - messages.filter((m) => m.role === 'user').length} queries remaining.{' '}
                 <a href="https://www.truenorthstrategyops.com/contact">Want this for your business?</a>
               </div>
             )}

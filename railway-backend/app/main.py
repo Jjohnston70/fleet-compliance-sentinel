@@ -1,8 +1,10 @@
 import json
 import os
+import re
 import time
 import uuid
 from collections import defaultdict
+from difflib import SequenceMatcher
 from pathlib import Path
 from typing import List, Optional
 
@@ -75,6 +77,29 @@ def write_knowledge_store(rows: List[KnowledgeDoc]) -> None:
 
 KNOWLEDGE = read_knowledge_store()
 
+STOP_WORDS = {
+    "the",
+    "and",
+    "for",
+    "with",
+    "that",
+    "this",
+    "from",
+    "into",
+    "what",
+    "where",
+    "when",
+    "which",
+    "about",
+    "your",
+    "their",
+    "there",
+    "please",
+    "document",
+    "summary",
+    "summarize",
+}
+
 
 def doc_key(title: str, source: Optional[str]) -> str:
     return f"{title.strip().lower()}::{(source or '').strip().lower()}"
@@ -89,6 +114,66 @@ def source_has_prefix(source: Optional[str], prefixes: List[str]) -> bool:
         return False
     source_value = (source or "").strip()
     return any(source_value.startswith(prefix) for prefix in prefixes)
+
+
+def normalize_text(text: str) -> str:
+    cleaned = re.sub(r"[^a-z0-9]+", " ", text.lower())
+    return re.sub(r"\s+", " ", cleaned).strip()
+
+
+def tokenize_search_terms(text: str) -> List[str]:
+    tokens = normalize_text(text).split()
+    return [token for token in tokens if len(token) > 2 and token not in STOP_WORDS]
+
+
+def extract_document_title_intent(query: str) -> Optional[str]:
+    q = query.strip()
+    patterns = [
+        r"^\s*(?:please\s+)?summarize(?:\s+the)?\s+document\s*[:\-]\s*(.+)$",
+        r"^\s*(?:please\s+)?summarize(?:\s+the)?\s+document\s+titled\s+(.+)$",
+    ]
+    for pattern in patterns:
+        match = re.match(pattern, q, flags=re.IGNORECASE)
+        if not match:
+            continue
+        title = match.group(1).strip().strip("\"'“”")
+        if title:
+            return title
+    return None
+
+
+def find_best_title_match(title_query: str) -> Optional[KnowledgeDoc]:
+    target_norm = normalize_text(title_query)
+    if not target_norm:
+        return None
+
+    target_tokens = set(tokenize_search_terms(title_query))
+    best_doc: Optional[KnowledgeDoc] = None
+    best_score = 0.0
+
+    for doc in KNOWLEDGE:
+        title_norm = normalize_text(doc.title)
+        score = 0.0
+
+        if title_norm == target_norm:
+            return doc
+
+        if target_norm in title_norm or title_norm in target_norm:
+            score += 6.0
+
+        similarity = SequenceMatcher(None, target_norm, title_norm).ratio()
+        score += similarity * 4.0
+
+        if target_tokens:
+            doc_tokens = set(tokenize_search_terms(doc.title))
+            overlap = len(target_tokens & doc_tokens) / len(target_tokens)
+            score += overlap * 5.0
+
+        if score > best_score:
+            best_score = score
+            best_doc = doc
+
+    return best_doc if best_doc and best_score >= 5.0 else None
 
 
 def infer_category(source: Optional[str]) -> str:
@@ -108,19 +193,27 @@ def verify_api_key(x_penny_api_key: Optional[str]) -> None:
 
 
 def search_docs(query: str, limit: int = 5) -> List[KnowledgeDoc]:
-    terms = [part.lower() for part in query.split() if len(part) > 2]
+    title_intent = extract_document_title_intent(query)
+    if title_intent:
+        direct = find_best_title_match(title_intent)
+        if direct:
+            return [direct]
+
+    normalized_query = normalize_text(title_intent or query)
+    terms = tokenize_search_terms(title_intent or query)
     if not terms:
         return []
 
     scored = []
     for doc in KNOWLEDGE:
-        title_lower = doc.title.lower()
-        content_lower = doc.content.lower()
+        title_lower = normalize_text(doc.title)
+        content_lower = normalize_text(doc.content)
 
         # Title matches are weighted 10x to prevent content-frequency false positives
-        title_score = sum(title_lower.count(term) * 10 for term in terms)
+        title_score = sum(title_lower.count(term) * 12 for term in terms)
         content_score = sum(content_lower.count(term) for term in terms)
-        score = title_score + content_score
+        phrase_bonus = 18 if normalized_query and normalized_query in title_lower else 0
+        score = title_score + content_score + phrase_bonus
 
         if score > 0:
             scored.append((score, doc))
