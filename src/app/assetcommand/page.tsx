@@ -4,6 +4,8 @@ import { useState } from 'react';
 import Link from 'next/link';
 
 const GUMROAD_URL = 'https://pipelinepunks.gumroad.com/l/izwdk';
+const ASSETCOMMAND_DASHBOARD_URL =
+  'https://script.google.com/macros/s/AKfycbxNKEBhIU6rrmdR2Uz-U2_e8CeiN8Fhf4WjQB9QiMTVSLMah15ckePnS4SNWemQuZ2N/exec';
 
 const features = [
   {
@@ -190,6 +192,20 @@ export default function AssetCommandPage() {
               );
             })}
           </dl>
+        </div>
+      </section>
+
+      <section className="asset-features" aria-labelledby="asset-dashboard-heading">
+        <div className="asset-wrap asset-wrap-narrow">
+          <h2 id="asset-dashboard-heading">Live dashboard access</h2>
+          <p className="hero-desc">
+            Open the deployed AssetCommand dashboard web app in a new tab.
+          </p>
+          <div className="hero-actions">
+            <a href={ASSETCOMMAND_DASHBOARD_URL} target="_blank" rel="noopener noreferrer" className="btn-primary">
+              Open AssetCommand Dashboard
+            </a>
+          </div>
         </div>
       </section>
 
