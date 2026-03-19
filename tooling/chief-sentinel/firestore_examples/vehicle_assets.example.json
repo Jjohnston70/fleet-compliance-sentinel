@@ -1,0 +1,32 @@
+[
+  {
+    "assetId": "A-001",
+    "orgId": "example-fleet-co",
+    "unitNumber": "A-001",
+    "vehicleType": "Truck",
+    "year": 2023,
+    "make": "Ford",
+    "model": "F-150",
+    "vin": "1FTFW1E50PFA00123",
+    "licensePlate": "ABC1234",
+    "registrationExpiration": "2026-08-31",
+    "insurancePolicyNumber": "POL-TRUCK-001",
+    "insuranceExpiration": "2026-12-31",
+    "tankCapacityGallons": null,
+    "compartmentCount": null,
+    "pumpSystem": null,
+    "meterSystem": null,
+    "currentMileage": 45320,
+    "lastOilChange": "2024-10-31",
+    "nextOilChangeDue": "2025-01-29",
+    "lastDotInspection": "2025-09-15",
+    "nextDotInspectionDue": "2026-09-15",
+    "lastVaporTest": "2025-05-01",
+    "nextVaporTestDue": "2026-05-01",
+    "assignedDriverPersonId": "emp_drv_001",
+    "backupDriverPersonId": "emp_drv_002",
+    "status": "available",
+    "location": "Main Yard"
+  }
+]
+

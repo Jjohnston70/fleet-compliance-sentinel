@@ -1,0 +1,986 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Command Center Portal — TNDS Starter Template</title>
+<!--
+  =====================================================
+  COMMAND CENTER PORTAL — Starter Template
+  True North Data Strategies
+  =====================================================
+
+  ARCHITECTURE: FastAPI + HTMX + Native HTML
+
+  This is a SINGLE-FILE WORKING PROTOTYPE that demonstrates
+  all the patterns from both articles:
+
+  FROM ARTICLE 1 — "7 HTML Features That Replace JavaScript":
+    1. <details>      — Accordion/FAQ sections
+    2. <dialog>       — Modal dialogs
+    3. <datalist>     — Autocomplete search
+    4. <fieldset>     — Form section disable
+    5. input[capture] — Camera access (mobile)
+    6. [popover]      — Tooltips & menus
+    7. [inert]        — UI section disable
+
+  FROM ARTICLE 2 — "FastAPI + HTMX":
+    - Partial template pattern (simulated with JS swap)
+    - Inline editing
+    - Live comment/note adding
+    - Polling for status updates
+    - Modal content loading
+    - Pagination
+
+  TO CONVERT TO FASTAPI + JINJA2:
+    1. Move each <template> tag to templates/partials/[name].html
+    2. Replace simulateHTMX() calls with real hx-* attributes
+    3. Replace mock data arrays with FastAPI route responses
+    4. The HTML structure stays identical
+
+  See the "FASTAPI CONVERSION GUIDE" section at bottom of file.
+  =====================================================
+-->
+<script src="https://unpkg.com/htmx.org@2.0.4"></script>
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;700&family=Source+Sans+3:ital,wght@0,300;0,400;0,600;1,300&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --navy: #1a3a5c;
+  --navy-deep: #0d1f35;
+  --teal: #3d8eb9;
+  --teal-light: #5bb8db;
+  --white: #f0ece4;
+  --dim: rgba(240,236,228,.7);
+  --faint: rgba(240,236,228,.08);
+  --gold: #c8992a;
+  --gold-bright: #f0b830;
+  --green: #4caf50;
+  --red: #ef5350;
+  --orange: #ff9800;
+}
+
+* { margin:0; padding:0; box-sizing:border-box; }
+
+body {
+  font-family: 'Source Sans 3', sans-serif;
+  background: var(--navy-deep);
+  color: var(--white);
+  min-height: 100vh;
+}
+
+/* ── LAYOUT SHELL ── */
+.shell { display: grid; grid-template-columns: 240px 1fr; grid-template-rows: 56px 1fr; min-height: 100vh; }
+.topbar { grid-column: 1/-1; background: var(--navy); border-bottom: 1px solid rgba(240,236,228,.1); display: flex; align-items: center; justify-content: space-between; padding: 0 1.2rem; z-index: 10; }
+.sidebar { background: var(--navy); border-right: 1px solid rgba(240,236,228,.08); padding: 1rem 0; overflow-y: auto; }
+.main { padding: 1.4rem 1.8rem; overflow-y: auto; }
+
+/* ── TOPBAR ── */
+.logo { font-family: 'Oswald', sans-serif; font-size: 1rem; font-weight: 700; letter-spacing: .08em; color: var(--white); }
+.logo span { color: var(--teal); }
+.topbar-right { display: flex; align-items: center; gap: .8rem; }
+
+/* ── SEARCH with <datalist> — ARTICLE 1, FEATURE 3 ── */
+.search-wrap { position: relative; }
+.search-input {
+  background: rgba(0,0,0,.25); border: 1px solid rgba(240,236,228,.15);
+  border-radius: 4px; padding: .35rem .7rem .35rem 2rem;
+  color: var(--white); font-family: 'Source Sans 3', sans-serif; font-size: .85rem;
+  width: 260px; outline: none;
+}
+.search-input:focus { border-color: var(--teal); }
+.search-input::placeholder { color: rgba(240,236,228,.3); }
+.search-icon { position: absolute; left: .6rem; top: 50%; transform: translateY(-50%); color: rgba(240,236,228,.3); font-size: .8rem; }
+
+/* ── SIDEBAR NAV ── */
+.nav-section { padding: .6rem 1rem; font-family: 'Oswald', sans-serif; font-size: .65rem; letter-spacing: .16em; text-transform: uppercase; color: rgba(240,236,228,.35); margin-top: .6rem; }
+.nav-item {
+  display: flex; align-items: center; gap: .6rem;
+  padding: .5rem 1rem; font-size: .88rem; color: var(--dim);
+  cursor: pointer; transition: all .15s; border-left: 3px solid transparent;
+}
+.nav-item:hover { background: rgba(240,236,228,.05); color: var(--white); }
+.nav-item.active { background: rgba(61,142,185,.1); color: var(--teal-light); border-left-color: var(--teal); }
+.nav-icon { width: 18px; text-align: center; font-size: .8rem; }
+.nav-badge {
+  margin-left: auto; font-family: 'Oswald', sans-serif; font-size: .65rem;
+  background: rgba(239,83,80,.2); color: var(--red); padding: .1rem .35rem;
+  border-radius: 8px; letter-spacing: .04em;
+}
+
+/* ── CONTENT PANELS ── */
+.panel { display: none; }
+.panel.active { display: block; }
+.page-header { margin-bottom: 1.2rem; }
+.page-title { font-family: 'Oswald', sans-serif; font-size: 1.6rem; font-weight: 500; color: var(--white); letter-spacing: .02em; }
+.page-sub { font-size: .88rem; color: var(--dim); margin-top: .2rem; }
+
+/* ── CARDS ── */
+.card-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1rem; margin-bottom: 1.2rem; }
+.card {
+  background: var(--faint); border: 1px solid rgba(240,236,228,.08);
+  border-radius: 6px; padding: 1rem 1.2rem; transition: border-color .2s;
+}
+.card:hover { border-color: rgba(61,142,185,.3); }
+.card-label { font-family: 'Oswald', sans-serif; font-size: .65rem; letter-spacing: .14em; text-transform: uppercase; color: var(--teal); margin-bottom: .4rem; }
+.card-value { font-family: 'Oswald', sans-serif; font-size: 2rem; font-weight: 700; color: var(--white); line-height: 1; }
+.card-note { font-size: .8rem; color: var(--dim); margin-top: .3rem; }
+.card-value.green { color: var(--green); }
+.card-value.orange { color: var(--orange); }
+.card-value.red { color: var(--red); }
+
+/* ── STATUS PILLS ── */
+.status { display: inline-flex; align-items: center; gap: .3rem; font-size: .75rem; font-family: 'Oswald', sans-serif; letter-spacing: .06em; text-transform: uppercase; padding: .15rem .5rem; border-radius: 10px; }
+.status.active { background: rgba(76,175,80,.15); color: var(--green); }
+.status.pending { background: rgba(255,152,0,.15); color: var(--orange); }
+.status.inactive { background: rgba(240,236,228,.08); color: var(--dim); }
+.status.alert { background: rgba(239,83,80,.15); color: var(--red); }
+
+/* ── TABLE ── */
+.data-table { width: 100%; border-collapse: collapse; font-size: .88rem; }
+.data-table th {
+  text-align: left; font-family: 'Oswald', sans-serif; font-size: .7rem;
+  letter-spacing: .12em; text-transform: uppercase; color: rgba(240,236,228,.4);
+  padding: .5rem .7rem; border-bottom: 1px solid rgba(240,236,228,.1);
+}
+.data-table td { padding: .6rem .7rem; border-bottom: 1px solid rgba(240,236,228,.05); color: var(--dim); }
+.data-table tr:hover td { background: rgba(240,236,228,.03); }
+
+/* ── INLINE EDIT — ARTICLE 2, PATTERN 3 ── */
+.inline-editable {
+  cursor: pointer; padding: .15rem .3rem; border-radius: 3px;
+  border: 1px solid transparent; transition: all .15s;
+}
+.inline-editable:hover { border-color: rgba(61,142,185,.3); background: rgba(61,142,185,.05); }
+.inline-edit-input {
+  background: rgba(0,0,0,.3); border: 1px solid var(--teal); border-radius: 3px;
+  padding: .15rem .3rem; color: var(--white); font-family: 'Source Sans 3', sans-serif;
+  font-size: inherit; outline: none;
+}
+
+/* ── DETAILS ACCORDION — ARTICLE 1, FEATURE 1 ── */
+.section-details { margin-bottom: .6rem; }
+.section-details summary {
+  cursor: pointer; font-family: 'Oswald', sans-serif; font-size: .88rem;
+  color: var(--teal-light); padding: .6rem .8rem; background: var(--faint);
+  border-radius: 4px; list-style: none; display: flex; align-items: center; gap: .5rem;
+  letter-spacing: .03em; border: 1px solid rgba(240,236,228,.06);
+}
+.section-details summary::before { content: '\25B8'; transition: transform .2s; display: inline-block; font-size: .7rem; }
+.section-details[open] summary::before { transform: rotate(90deg); }
+.section-details[open] summary { border-radius: 4px 4px 0 0; border-bottom-color: transparent; }
+.section-details .details-body {
+  padding: .8rem; background: rgba(0,0,0,.15); border: 1px solid rgba(240,236,228,.06);
+  border-top: none; border-radius: 0 0 4px 4px; font-size: .88rem; color: var(--dim); line-height: 1.6;
+}
+
+/* ── DIALOG MODAL — ARTICLE 1, FEATURE 2 ── */
+dialog {
+  background: var(--navy); color: var(--white); border: 1px solid rgba(240,236,228,.15);
+  border-radius: 8px; padding: 0; max-width: 480px; width: 90%; font-family: 'Source Sans 3', sans-serif;
+  box-shadow: 0 20px 60px rgba(0,0,0,.5);
+}
+dialog::backdrop { background: rgba(0,0,0,.6); }
+.dialog-header {
+  padding: .8rem 1.2rem; border-bottom: 1px solid rgba(240,236,228,.08);
+  font-family: 'Oswald', sans-serif; font-size: 1rem; letter-spacing: .04em;
+  display: flex; justify-content: space-between; align-items: center;
+}
+.dialog-body { padding: 1.2rem; font-size: .92rem; color: var(--dim); line-height: 1.6; }
+.dialog-footer { padding: .8rem 1.2rem; border-top: 1px solid rgba(240,236,228,.08); display: flex; gap: .5rem; justify-content: flex-end; }
+
+/* ── BUTTONS ── */
+.btn {
+  font-family: 'Oswald', sans-serif; font-size: .78rem; letter-spacing: .08em;
+  text-transform: uppercase; padding: .4rem 1rem; border-radius: 4px;
+  cursor: pointer; transition: all .15s; border: 1px solid;
+}
+.btn-primary { background: var(--teal); border-color: var(--teal); color: var(--white); }
+.btn-primary:hover { background: var(--teal-light); }
+.btn-ghost { background: transparent; border-color: rgba(240,236,228,.2); color: var(--dim); }
+.btn-ghost:hover { border-color: rgba(240,236,228,.4); color: var(--white); }
+.btn-gold { background: transparent; border-color: var(--gold); color: var(--gold-bright); }
+.btn-gold:hover { background: rgba(200,153,42,.1); }
+.btn-danger { background: transparent; border-color: var(--red); color: var(--red); }
+.btn-danger:hover { background: rgba(239,83,80,.1); }
+.btn-sm { font-size: .68rem; padding: .25rem .6rem; }
+
+/* ── POPOVER — ARTICLE 1, FEATURE 6 ── */
+[popover] {
+  background: var(--navy); color: var(--white); border: 1px solid rgba(240,236,228,.15);
+  border-radius: 6px; padding: .8rem 1rem; font-family: 'Source Sans 3', sans-serif;
+  font-size: .85rem; box-shadow: 0 8px 24px rgba(0,0,0,.4); max-width: 260px;
+}
+
+/* ── FIELDSET — ARTICLE 1, FEATURE 4 ── */
+.form-fieldset {
+  border: 1px solid rgba(240,236,228,.1); border-radius: 6px; padding: 1rem;
+  margin-bottom: 1rem;
+}
+.form-fieldset legend {
+  font-family: 'Oswald', sans-serif; font-size: .72rem; letter-spacing: .12em;
+  text-transform: uppercase; color: var(--teal); padding: 0 .4rem;
+}
+.form-fieldset.disabled-demo { opacity: .4; }
+.form-row { margin-bottom: .6rem; }
+.form-label { display: block; font-size: .78rem; color: var(--dim); margin-bottom: .2rem; }
+.form-input {
+  width: 100%; background: rgba(0,0,0,.25); border: 1px solid rgba(240,236,228,.12);
+  border-radius: 4px; padding: .4rem .6rem; color: var(--white);
+  font-family: 'Source Sans 3', sans-serif; font-size: .88rem; outline: none;
+}
+.form-input:focus { border-color: var(--teal); }
+.form-input::placeholder { color: rgba(240,236,228,.25); }
+
+/* ── NOTES/COMMENTS — ARTICLE 2, LIVE ADD PATTERN ── */
+.notes-list { margin-bottom: .8rem; }
+.note-item {
+  padding: .5rem .7rem; border-left: 2px solid var(--teal);
+  background: rgba(0,0,0,.1); margin-bottom: .4rem; border-radius: 0 4px 4px 0;
+  font-size: .85rem; color: var(--dim);
+}
+.note-item .note-meta { font-size: .7rem; color: rgba(240,236,228,.3); margin-top: .2rem; }
+.note-form { display: flex; gap: .5rem; }
+.note-form input { flex: 1; }
+
+/* ── LIVE STATUS — ARTICLE 2, POLLING PATTERN ── */
+.live-dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; margin-right: .3rem; animation: pulse 2s infinite; }
+.live-dot.green { background: var(--green); }
+.live-dot.red { background: var(--red); }
+@keyframes pulse { 0%,100% { opacity:1; } 50% { opacity:.4; } }
+
+/* ── HTMX INDICATOR ── */
+.htmx-indicator { display: none; font-size: .75rem; color: var(--teal); }
+.htmx-request .htmx-indicator { display: inline; }
+
+/* ── INERT — ARTICLE 1, FEATURE 7 ── */
+[inert] { opacity: .25; filter: grayscale(40%); pointer-events: none; user-select: none; transition: all .3s; }
+
+/* ── RESPONSIVE ── */
+@media(max-width:768px) {
+  .shell { grid-template-columns: 1fr; }
+  .sidebar { display: none; }
+  .main { padding: 1rem; }
+  .card-grid { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+<div class="shell">
+
+<!-- ═══════════════════════════════════════════ -->
+<!-- TOPBAR                                      -->
+<!-- ═══════════════════════════════════════════ -->
+<header class="topbar">
+  <div class="logo">COMMAND <span>CENTER</span></div>
+  <div class="topbar-right">
+    <!-- FEATURE 3: <datalist> for global search -->
+    <div class="search-wrap">
+      <span class="search-icon">&#128269;</span>
+      <input class="search-input" list="global-search" placeholder="Search modules, clients, actions...">
+      <datalist id="global-search">
+        <option value="Dashboard">
+        <option value="Cohort Roster">
+        <option value="Buddy Backup Status">
+        <option value="Grant Tracker">
+        <option value="Add New Client">
+        <option value="Financial Report">
+        <option value="Module Settings">
+        <option value="Data Governance Audit">
+        <option value="Volunteer Schedule">
+        <option value="Proposal Writer">
+      </datalist>
+    </div>
+
+    <!-- FEATURE 6: popover for user menu -->
+    <button class="btn btn-ghost btn-sm" popovertarget="user-menu">JJ</button>
+    <div id="user-menu" popover>
+      <div style="font-family:'Oswald',sans-serif;font-size:.82rem;letter-spacing:.04em;margin-bottom:.5rem;color:var(--white)">Jacob Johnston</div>
+      <div style="font-size:.78rem;color:var(--dim);margin-bottom:.6rem">jacob@truenorthstrategyops.com</div>
+      <div style="display:flex;flex-direction:column;gap:.3rem">
+        <button class="btn btn-ghost btn-sm" style="width:100%;text-align:left">Profile Settings</button>
+        <button class="btn btn-ghost btn-sm" style="width:100%;text-align:left">Notifications</button>
+        <button class="btn btn-danger btn-sm" style="width:100%;text-align:left">Sign Out</button>
+      </div>
+    </div>
+
+    <!-- FEATURE 6: popover for notifications -->
+    <button class="btn btn-ghost btn-sm" popovertarget="notif-pop">3</button>
+    <div id="notif-pop" popover>
+      <div style="font-family:'Oswald',sans-serif;font-size:.75rem;letter-spacing:.1em;text-transform:uppercase;color:var(--teal);margin-bottom:.5rem">Notifications</div>
+      <div class="note-item" style="margin-bottom:.3rem">
+        <div>Cohort 1 — 2 new applications</div>
+        <div class="note-meta">12 min ago</div>
+      </div>
+      <div class="note-item" style="margin-bottom:.3rem;border-color:var(--gold)">
+        <div>Grant deadline: El Pomar — 3 days</div>
+        <div class="note-meta">1 hour ago</div>
+      </div>
+      <div class="note-item" style="border-color:var(--red)">
+        <div>Buddy Backup — escalation triggered</div>
+        <div class="note-meta">2 hours ago</div>
+      </div>
+    </div>
+  </div>
+</header>
+
+<!-- ═══════════════════════════════════════════ -->
+<!-- SIDEBAR                                     -->
+<!-- ═══════════════════════════════════════════ -->
+<nav class="sidebar">
+  <div class="nav-section">Command Center</div>
+  <div class="nav-item active" onclick="showPanel('dashboard')"><span class="nav-icon">&#9632;</span> Dashboard</div>
+  <div class="nav-item" onclick="showPanel('roster')"><span class="nav-icon">&#9679;</span> Cohort Roster</div>
+  <div class="nav-item" onclick="showPanel('buddy')"><span class="nav-icon">&#9733;</span> Buddy Backup <span class="nav-badge">1</span></div>
+
+  <div class="nav-section">Operations</div>
+  <div class="nav-item" onclick="showPanel('grants')"><span class="nav-icon">&#9830;</span> Grant Tracker</div>
+  <div class="nav-item" onclick="showPanel('intake')"><span class="nav-icon">&#9827;</span> Intake Form</div>
+  <div class="nav-item" onclick="showPanel('settings')"><span class="nav-icon">&#9881;</span> Module Settings</div>
+
+  <div class="nav-section">Reference</div>
+  <div class="nav-item" onclick="showPanel('patterns')"><span class="nav-icon">&#128214;</span> Pattern Guide</div>
+</nav>
+
+<!-- ═══════════════════════════════════════════ -->
+<!-- MAIN CONTENT AREA                           -->
+<!-- ═══════════════════════════════════════════ -->
+<main class="main">
+
+<!-- ─── DASHBOARD PANEL ─── -->
+<div class="panel active" id="panel-dashboard">
+  <div class="page-header">
+    <div class="page-title">Dashboard</div>
+    <div class="page-sub">Command Center overview &mdash; all modules reporting</div>
+  </div>
+
+  <!-- STAT CARDS -->
+  <div class="card-grid">
+    <div class="card">
+      <div class="card-label">Active Cohort Members</div>
+      <div class="card-value">18</div>
+      <div class="card-note">12 veterans &middot; 6 youth</div>
+    </div>
+    <div class="card">
+      <div class="card-label">Buddy Backup Status</div>
+      <div class="card-value green">
+        <!-- ARTICLE 2: Polling pattern — hx-trigger="every 10s" in production -->
+        <span class="live-dot green"></span>Operational
+      </div>
+      <div class="card-note" id="bb-status">Last check: just now &middot; 4 responders on-call</div>
+    </div>
+    <div class="card">
+      <div class="card-label">Grants In Progress</div>
+      <div class="card-value orange">3</div>
+      <div class="card-note">El Pomar deadline: 3 days</div>
+    </div>
+    <div class="card">
+      <div class="card-label">SMB Partners</div>
+      <div class="card-value">7</div>
+      <div class="card-note">2 pending onboarding</div>
+    </div>
+  </div>
+
+  <!-- FEATURE 1: <details> for module sections -->
+  <details class="section-details" open>
+    <summary>Recent Activity</summary>
+    <div class="details-body">
+      <table class="data-table">
+        <thead>
+          <tr><th>Time</th><th>Event</th><th>Module</th><th>Status</th></tr>
+        </thead>
+        <tbody id="activity-feed">
+          <tr><td>10:42 AM</td><td>New cohort application received</td><td>Intake</td><td><span class="status pending">New</span></td></tr>
+          <tr><td>09:15 AM</td><td>Buddy Backup consent granted</td><td>Crisis Response</td><td><span class="status active">Complete</span></td></tr>
+          <tr><td>Yesterday</td><td>El Pomar grant draft submitted</td><td>Grants</td><td><span class="status active">Submitted</span></td></tr>
+          <tr><td>Yesterday</td><td>SMB partner onboarded: Peak Plumbing</td><td>Operations</td><td><span class="status active">Active</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </details>
+
+  <details class="section-details">
+    <summary>Module Health</summary>
+    <div class="details-body">
+      <table class="data-table">
+        <thead><tr><th>Module</th><th>Status</th><th>Last Sync</th></tr></thead>
+        <tbody>
+          <tr><td>data-command</td><td><span class="status active">Online</span></td><td>2 min ago</td></tr>
+          <tr><td>financial-command</td><td><span class="status active">Online</span></td><td>5 min ago</td></tr>
+          <tr><td>analytics-command</td><td><span class="status active">Online</span></td><td>1 min ago</td></tr>
+          <tr><td>sms-command</td><td><span class="status pending">Degraded</span></td><td>22 min ago</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </details>
+
+  <!-- ARTICLE 2: Live notes/comments pattern -->
+  <details class="section-details">
+    <summary>Operations Notes</summary>
+    <div class="details-body">
+      <div class="notes-list" id="dashboard-notes">
+        <div class="note-item">
+          <div>Cohort 1 intensive track on schedule. 3 SMB placements confirmed for week 2.</div>
+          <div class="note-meta">Jacob &middot; Today 08:30</div>
+        </div>
+        <div class="note-item">
+          <div>Railway compliance review scheduled with attorney — March 25.</div>
+          <div class="note-meta">Jacob &middot; Yesterday</div>
+        </div>
+      </div>
+      <!--
+        HTMX PATTERN: In production this form would be:
+        <form hx-post="/add-note" hx-target="#dashboard-notes" hx-swap="beforeend">
+      -->
+      <form class="note-form" onsubmit="addNote(event, 'dashboard-notes')">
+        <input class="form-input" name="note" placeholder="Add an operations note..." required>
+        <button class="btn btn-primary" type="submit">Add</button>
+      </form>
+    </div>
+  </details>
+</div>
+
+<!-- ─── COHORT ROSTER PANEL ─── -->
+<div class="panel" id="panel-roster">
+  <div class="page-header">
+    <div class="page-title">Cohort Roster</div>
+    <div class="page-sub">Intensive Track &mdash; Cohort 1 &middot;
+      <!-- FEATURE 3: datalist for roster filter -->
+      <input list="roster-filter" placeholder="Filter by status..." style="background:rgba(0,0,0,.2);border:1px solid rgba(240,236,228,.12);border-radius:3px;padding:.2rem .5rem;color:var(--white);font-size:.82rem;outline:none">
+      <datalist id="roster-filter">
+        <option value="Active">
+        <option value="Pending">
+        <option value="Graduated">
+        <option value="On Hold">
+        <option value="Veteran">
+        <option value="Youth">
+      </datalist>
+    </div>
+  </div>
+
+  <table class="data-table">
+    <thead>
+      <tr><th>Name</th><th>Type</th><th>Track</th><th>Status</th><th>SMB Placement</th><th>Notes</th></tr>
+    </thead>
+    <tbody>
+      <!-- ARTICLE 2 PATTERN: Inline editing — click to edit -->
+      <tr>
+        <td><span class="inline-editable" onclick="startEdit(this)">Marcus Williams</span></td>
+        <td><span class="status active">Veteran</span></td>
+        <td>Intensive</td>
+        <td><span class="status active">Active</span></td>
+        <td><span class="inline-editable" onclick="startEdit(this)">Peak Plumbing</span></td>
+        <td>
+          <!-- FEATURE 6: popover for quick notes -->
+          <button class="btn btn-ghost btn-sm" popovertarget="note-marcus">View</button>
+          <div id="note-marcus" popover>
+            <div style="font-size:.82rem;color:var(--dim);line-height:1.5">20-year Army vet. Airborne Infantry. Strong leadership skills. Paired with youth mentee Sophia.</div>
+          </div>
+        </td>
+      </tr>
+      <tr>
+        <td><span class="inline-editable" onclick="startEdit(this)">Sophia Chen</span></td>
+        <td><span class="status pending">Youth</span></td>
+        <td>In-School</td>
+        <td><span class="status active">Active</span></td>
+        <td><span class="inline-editable" onclick="startEdit(this)">Unassigned</span></td>
+        <td>
+          <button class="btn btn-ghost btn-sm" popovertarget="note-sophia">View</button>
+          <div id="note-sophia" popover>
+            <div style="font-size:.82rem;color:var(--dim);line-height:1.5">Age 16, junior. Referred by school counselor. Interested in technology careers. Mentored by Marcus.</div>
+          </div>
+        </td>
+      </tr>
+      <tr>
+        <td><span class="inline-editable" onclick="startEdit(this)">David Reyes</span></td>
+        <td><span class="status active">Veteran</span></td>
+        <td>Intensive</td>
+        <td><span class="status pending">Week 1</span></td>
+        <td><span class="inline-editable" onclick="startEdit(this)">TBD</span></td>
+        <td><button class="btn btn-ghost btn-sm" onclick="document.getElementById('rosterModal').showModal()">View</button></td>
+      </tr>
+    </tbody>
+  </table>
+
+  <!-- FEATURE 2: <dialog> for detailed view -->
+  <dialog id="rosterModal">
+    <div class="dialog-header">
+      <span>Member Details</span>
+      <button class="btn btn-ghost btn-sm" onclick="document.getElementById('rosterModal').close()">&times;</button>
+    </div>
+    <div class="dialog-body">
+      <p><strong style="color:var(--white)">David Reyes</strong> &mdash; Veteran, Intensive Track</p>
+      <p style="margin-top:.5rem">8 years Army, E-6. Transitioning to civilian workforce. Interested in HVAC and facility management. Enrolled in Cohort 1, Week 1.</p>
+      <p style="margin-top:.5rem;font-size:.82rem">Buddy Backup: <span class="status active">Enrolled</span> &middot; Consent: <span class="status active">Granted</span></p>
+    </div>
+    <div class="dialog-footer">
+      <button class="btn btn-ghost" onclick="document.getElementById('rosterModal').close()">Close</button>
+      <button class="btn btn-primary" onclick="document.getElementById('rosterModal').close()">Edit Record</button>
+    </div>
+  </dialog>
+
+  <!--
+    ARTICLE 2 PATTERN: Pagination
+    In production: <div hx-get="/roster?page=2" hx-target="#roster-table" hx-swap="innerHTML">
+  -->
+  <div style="display:flex;justify-content:center;gap:.5rem;margin-top:1rem">
+    <button class="btn btn-primary btn-sm">1</button>
+    <button class="btn btn-ghost btn-sm">2</button>
+    <button class="btn btn-ghost btn-sm">3</button>
+  </div>
+</div>
+
+<!-- ─── BUDDY BACKUP PANEL ─── -->
+<div class="panel" id="panel-buddy">
+  <div class="page-header">
+    <div class="page-title">Buddy Backup Command</div>
+    <div class="page-sub"><span class="live-dot green"></span> Veteran track deployed &middot; Youth track: Phase 2</div>
+  </div>
+
+  <div class="card-grid">
+    <div class="card">
+      <div class="card-label">Responders On-Call</div>
+      <div class="card-value green">4</div>
+      <div class="card-note">Next rotation: 18:00</div>
+    </div>
+    <div class="card">
+      <div class="card-label">Active Escalations</div>
+      <div class="card-value">0</div>
+      <div class="card-note">Last escalation: 48h ago</div>
+    </div>
+    <div class="card">
+      <div class="card-label">Consent Records</div>
+      <div class="card-value">14</div>
+      <div class="card-note">14 granted &middot; 0 revoked</div>
+    </div>
+    <div class="card">
+      <div class="card-label">Encryption</div>
+      <div class="card-value" style="font-size:1.4rem">AES-256-GCM</div>
+      <div class="card-note">34 RLS policies active</div>
+    </div>
+  </div>
+
+  <!-- FEATURE 1: <details> for system info -->
+  <details class="section-details">
+    <summary>Escalation Protocol</summary>
+    <div class="details-body">
+      <p><strong style="color:var(--white)">Veteran Track:</strong> Peer responder pool &#8594; Buddy Backup bot &#8594; 988/VCL fallback</p>
+      <p style="margin-top:.4rem"><strong style="color:var(--white)">Youth Track (Phase 2):</strong> FOB mentors only &#8594; Program Director in escalation path &#8594; COPPA/minor compliance required</p>
+      <p style="margin-top:.4rem;font-size:.82rem;color:rgba(240,236,228,.4)">No AI in crisis chain. Consent controls everything.</p>
+    </div>
+  </details>
+
+  <details class="section-details">
+    <summary>Compliance Notes</summary>
+    <div class="details-body">
+      <p style="color:var(--orange);font-size:.85rem">Railway hosting may not satisfy HIPAA/FedRAMP for certain grant types. Review with attorney before accepting SAMHSA or VA clinical funding.</p>
+      <p style="margin-top:.4rem;font-size:.85rem">Hosting platform compliance decision targeted for Phase 3 (Month 9-18).</p>
+    </div>
+  </details>
+
+  <!-- ARTICLE 2: Notes pattern for escalation log -->
+  <details class="section-details" open>
+    <summary>Escalation Log</summary>
+    <div class="details-body">
+      <div class="notes-list" id="buddy-notes">
+        <div class="note-item" style="border-color:var(--green)">
+          <div>All-clear. No active escalations. 4 responders confirmed on-call status.</div>
+          <div class="note-meta">System &middot; Today 06:00</div>
+        </div>
+      </div>
+      <form class="note-form" onsubmit="addNote(event, 'buddy-notes')">
+        <input class="form-input" name="note" placeholder="Add escalation note..." required>
+        <button class="btn btn-primary" type="submit">Log</button>
+      </form>
+    </div>
+  </details>
+</div>
+
+<!-- ─── GRANT TRACKER PANEL ─── -->
+<div class="panel" id="panel-grants">
+  <div class="page-header">
+    <div class="page-title">Grant Tracker</div>
+    <div class="page-sub">Start local, grow national &mdash; apply to SAMHSA and VA in Year 2 with pilot data</div>
+  </div>
+
+  <table class="data-table">
+    <thead><tr><th>Funder</th><th>Amount</th><th>Status</th><th>Deadline</th><th>Actions</th></tr></thead>
+    <tbody>
+      <tr>
+        <td><span class="inline-editable" onclick="startEdit(this)">El Pomar Foundation</span></td>
+        <td>$10K-$50K</td>
+        <td><span class="status pending">Drafting</span></td>
+        <td><strong style="color:var(--orange)">Mar 20</strong></td>
+        <td>
+          <button class="btn btn-primary btn-sm" onclick="document.getElementById('grantModal').showModal()">Open</button>
+        </td>
+      </tr>
+      <tr>
+        <td>Pikes Peak Community Foundation</td>
+        <td>$10K-$50K</td>
+        <td><span class="status active">Submitted</span></td>
+        <td>Apr 15</td>
+        <td><button class="btn btn-ghost btn-sm">View</button></td>
+      </tr>
+      <tr>
+        <td>American Legion Foundation</td>
+        <td>$25K-$100K</td>
+        <td><span class="status inactive">Research</span></td>
+        <td>TBD</td>
+        <td><button class="btn btn-ghost btn-sm">View</button></td>
+      </tr>
+    </tbody>
+  </table>
+
+  <!-- FEATURE 2: <dialog> for grant detail -->
+  <dialog id="grantModal">
+    <div class="dialog-header">
+      <span>El Pomar Foundation</span>
+      <button class="btn btn-ghost btn-sm" onclick="document.getElementById('grantModal').close()">&times;</button>
+    </div>
+    <div class="dialog-body">
+      <p><strong style="color:var(--white)">Amount Range:</strong> $10,000 - $50,000</p>
+      <p style="margin-top:.4rem"><strong style="color:var(--white)">Deadline:</strong> <span style="color:var(--orange)">March 20, 2026</span></p>
+      <p style="margin-top:.4rem"><strong style="color:var(--white)">Status:</strong> Draft in progress (Section 3 of 5 complete)</p>
+      <p style="margin-top:.6rem;font-size:.85rem">Local Colorado Springs funder. Strong alignment with veteran + youth dual-population model. Prioritize pilot data from Cohort 1 in narrative.</p>
+      <!-- FEATURE 1: details inside the modal -->
+      <details class="section-details" style="margin-top:.6rem">
+        <summary>Checklist</summary>
+        <div class="details-body" style="font-size:.82rem">
+          <div>&#9745; Program narrative draft</div>
+          <div>&#9745; Budget template</div>
+          <div>&#9744; Board letter of support</div>
+          <div>&#9744; Metrics framework</div>
+          <div>&#9744; Final review</div>
+        </div>
+      </details>
+    </div>
+    <div class="dialog-footer">
+      <button class="btn btn-ghost" onclick="document.getElementById('grantModal').close()">Close</button>
+      <button class="btn btn-gold" onclick="document.getElementById('grantModal').close()">Edit Draft</button>
+    </div>
+  </dialog>
+</div>
+
+<!-- ─── INTAKE FORM PANEL ─── -->
+<div class="panel" id="panel-intake">
+  <div class="page-header">
+    <div class="page-title">Cohort Intake Form</div>
+    <div class="page-sub">Demonstrates &lt;fieldset disabled&gt;, &lt;datalist&gt;, and &lt;input capture&gt;</div>
+  </div>
+
+  <!-- FEATURE 4: fieldset disabled toggle -->
+  <div style="display:flex;gap:.5rem;margin-bottom:1rem;align-items:center">
+    <button class="btn btn-primary btn-sm" id="intakeToggle" onclick="toggleIntakeForm()">Unlock Form</button>
+    <span style="font-size:.82rem;color:var(--dim)" id="intakeLockMsg">Form is locked. Click to enable editing.</span>
+  </div>
+
+  <form onsubmit="event.preventDefault(); document.getElementById('intakeConfirm').showModal();">
+    <fieldset class="form-fieldset" disabled id="intakeFieldset">
+      <legend>Participant Information</legend>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:.8rem">
+        <div class="form-row">
+          <label class="form-label">Full Name</label>
+          <input class="form-input" placeholder="First and last name" required>
+        </div>
+        <div class="form-row">
+          <label class="form-label">Email</label>
+          <input class="form-input" type="email" placeholder="email@example.com">
+        </div>
+        <div class="form-row">
+          <label class="form-label">Population</label>
+          <!-- FEATURE 3: datalist for population -->
+          <input class="form-input" list="pop-list" placeholder="Select or type...">
+          <datalist id="pop-list">
+            <option value="Veteran — Transitioning">
+            <option value="Veteran — Separated">
+            <option value="Youth — In-School (15-18)">
+            <option value="Youth — Between School Years">
+            <option value="Youth — Young Adult 18+">
+            <option value="SMB Partner">
+          </datalist>
+        </div>
+        <div class="form-row">
+          <label class="form-label">Preferred Track</label>
+          <input class="form-input" list="track-list" placeholder="Select track...">
+          <datalist id="track-list">
+            <option value="Intensive Track (30-45 Days)">
+            <option value="In-School Semester Track (~16 Weeks)">
+          </datalist>
+        </div>
+        <div class="form-row">
+          <label class="form-label">Referral Source</label>
+          <input class="form-input" list="ref-list" placeholder="How did they find FOB?">
+          <datalist id="ref-list">
+            <option value="School Counselor">
+            <option value="VA Referral">
+            <option value="Peer / Word of Mouth">
+            <option value="SMB Partner">
+            <option value="Community Event">
+            <option value="Online">
+          </datalist>
+        </div>
+        <div class="form-row">
+          <!-- FEATURE 5: input capture for document upload -->
+          <label class="form-label">ID Document (photo)</label>
+          <input class="form-input" type="file" accept="image/*" capture="environment" style="padding:.25rem">
+        </div>
+      </div>
+    </fieldset>
+
+    <fieldset class="form-fieldset" disabled id="intakeFieldset2">
+      <legend>Consent &amp; Emergency</legend>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:.8rem">
+        <div class="form-row">
+          <label class="form-label">Emergency Contact Name</label>
+          <input class="form-input" placeholder="Full name">
+        </div>
+        <div class="form-row">
+          <label class="form-label">Emergency Contact Phone</label>
+          <input class="form-input" type="tel" placeholder="(719) 555-0000">
+        </div>
+      </div>
+      <div class="form-row" style="margin-top:.5rem">
+        <label style="font-size:.85rem;color:var(--dim);display:flex;align-items:center;gap:.4rem;cursor:pointer">
+          <input type="checkbox" required> I consent to participate in the FOB program and acknowledge the Buddy Backup consent framework.
+        </label>
+      </div>
+      <div style="margin-top:.8rem">
+        <button class="btn btn-primary" type="submit">Submit Intake</button>
+        <button class="btn btn-ghost" type="reset" style="margin-left:.3rem">Clear</button>
+      </div>
+    </fieldset>
+  </form>
+
+  <!-- Confirmation dialog -->
+  <dialog id="intakeConfirm">
+    <div class="dialog-header">
+      <span>Intake Submitted</span>
+      <button class="btn btn-ghost btn-sm" onclick="document.getElementById('intakeConfirm').close()">&times;</button>
+    </div>
+    <div class="dialog-body">
+      <p style="color:var(--green)">Intake form submitted successfully.</p>
+      <p style="margin-top:.4rem;font-size:.85rem">The participant will receive a confirmation email. Cohort assignment happens during the next intake review cycle.</p>
+    </div>
+    <div class="dialog-footer">
+      <button class="btn btn-primary" onclick="document.getElementById('intakeConfirm').close()">Done</button>
+    </div>
+  </dialog>
+</div>
+
+<!-- ─── SETTINGS PANEL ─── -->
+<div class="panel" id="panel-settings">
+  <div class="page-header">
+    <div class="page-title">Module Settings</div>
+    <div class="page-sub">Demonstrates the &lt;inert&gt; attribute for section-level disable</div>
+  </div>
+
+  <!-- FEATURE 7: inert toggle -->
+  <div style="display:flex;gap:.5rem;margin-bottom:1rem;align-items:center">
+    <button class="btn btn-primary btn-sm" onclick="toggleSettingsInert()">Toggle Maintenance Mode</button>
+    <span style="font-size:.82rem;color:var(--dim)" id="inertMsg">All sections editable</span>
+  </div>
+
+  <div id="settingsArea">
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem">
+      <div class="card">
+        <div class="card-label">data-command</div>
+        <div class="form-row"><label class="form-label">Sync Interval</label><input class="form-input" value="5 minutes"></div>
+        <div class="form-row"><label class="form-label">Retention</label><input class="form-input" value="90 days"></div>
+        <button class="btn btn-primary btn-sm" style="margin-top:.3rem">Save</button>
+      </div>
+      <div class="card">
+        <div class="card-label">sms-command</div>
+        <div class="form-row"><label class="form-label">Provider</label><input class="form-input" value="Twilio"></div>
+        <div class="form-row"><label class="form-label">Daily Limit</label><input class="form-input" value="500"></div>
+        <button class="btn btn-primary btn-sm" style="margin-top:.3rem">Save</button>
+      </div>
+      <div class="card">
+        <div class="card-label">analytics-command</div>
+        <div class="form-row"><label class="form-label">Dashboard Refresh</label><input class="form-input" value="15 seconds"></div>
+        <div class="form-row"><label class="form-label">Cache TTL</label><input class="form-input" value="60 seconds"></div>
+        <button class="btn btn-primary btn-sm" style="margin-top:.3rem">Save</button>
+      </div>
+      <div class="card">
+        <div class="card-label">compliance-gov-module</div>
+        <div class="form-row"><label class="form-label">Audit Log Level</label><input class="form-input" value="Verbose"></div>
+        <div class="form-row"><label class="form-label">PII Masking</label><input class="form-input" value="Enabled"></div>
+        <button class="btn btn-primary btn-sm" style="margin-top:.3rem">Save</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ─── PATTERN GUIDE PANEL ─── -->
+<div class="panel" id="panel-patterns">
+  <div class="page-header">
+    <div class="page-title">Pattern Reference Guide</div>
+    <div class="page-sub">How each HTML feature and HTMX pattern is used in this portal</div>
+  </div>
+
+  <details class="section-details" open>
+    <summary>Native HTML Features (Article 1)</summary>
+    <div class="details-body">
+      <table class="data-table">
+        <thead><tr><th>Feature</th><th>Where Used</th><th>Replaces</th></tr></thead>
+        <tbody>
+          <tr><td style="color:var(--teal-light)">&lt;details&gt;</td><td>All accordion sections, module health, activity feed, compliance notes</td><td>useState + conditional render accordion components</td></tr>
+          <tr><td style="color:var(--teal-light)">&lt;dialog&gt;</td><td>Member detail modals, grant detail, intake confirmation</td><td>React modal library (focus trap, overlay, ESC handler)</td></tr>
+          <tr><td style="color:var(--teal-light)">&lt;datalist&gt;</td><td>Global search, roster filter, intake form dropdowns</td><td>Autocomplete component + debounce + filter logic</td></tr>
+          <tr><td style="color:var(--teal-light)">&lt;fieldset disabled&gt;</td><td>Intake form lock/unlock</td><td>Loop over inputs setting disabled, or form state management</td></tr>
+          <tr><td style="color:var(--teal-light)">input[capture]</td><td>Intake form ID photo upload</td><td>WebRTC getUserMedia camera pipeline</td></tr>
+          <tr><td style="color:var(--teal-light)">[popover]</td><td>User menu, notifications, roster quick-notes</td><td>Dropdown/tooltip component + click-outside logic</td></tr>
+          <tr><td style="color:var(--teal-light)">[inert]</td><td>Module settings maintenance mode</td><td>Click blockers + tabindex management + aria-hidden</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </details>
+
+  <details class="section-details">
+    <summary>HTMX Patterns (Article 2)</summary>
+    <div class="details-body">
+      <table class="data-table">
+        <thead><tr><th>Pattern</th><th>Where Used</th><th>HTMX Attribute</th></tr></thead>
+        <tbody>
+          <tr><td style="color:var(--gold-bright)">Live Add</td><td>Operations notes, escalation log</td><td>hx-post="/add-note" hx-target="#notes" hx-swap="beforeend"</td></tr>
+          <tr><td style="color:var(--gold-bright)">Inline Edit</td><td>Roster names, grant names, placements</td><td>hx-get="/edit/field" hx-trigger="click" hx-swap="outerHTML"</td></tr>
+          <tr><td style="color:var(--gold-bright)">Polling</td><td>Buddy Backup status, module health</td><td>hx-get="/status" hx-trigger="every 10s" hx-swap="outerHTML"</td></tr>
+          <tr><td style="color:var(--gold-bright)">Modal Load</td><td>Grant detail, member detail</td><td>hx-get="/member/3" hx-target="#modal" hx-swap="innerHTML"</td></tr>
+          <tr><td style="color:var(--gold-bright)">Pagination</td><td>Cohort roster</td><td>hx-get="/roster?page=2" hx-target="#table" hx-swap="innerHTML"</td></tr>
+          <tr><td style="color:var(--gold-bright)">Partial Templates</td><td>All swappable sections</td><td>templates/partials/*.html rendered by Jinja2</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </details>
+
+  <details class="section-details">
+    <summary>FastAPI Conversion Guide</summary>
+    <div class="details-body" style="font-family:'Fira Code',monospace;font-size:.78rem;line-height:1.7">
+      <p style="font-family:'Source Sans 3',sans-serif;font-size:.88rem;margin-bottom:.6rem;color:var(--white)">To convert this prototype to a real FastAPI + HTMX app:</p>
+      <pre style="background:rgba(0,0,0,.3);padding:.8rem;border-radius:4px;overflow-x:auto;white-space:pre">command-center/
+├── main.py                    # FastAPI app + routes
+├── models.py                  # Pydantic models
+├── database.py                # DB connection
+├── templates/
+│   ├── base.html              # Shell layout (this file's HTML)
+│   ├── dashboard.html         # Dashboard panel
+│   ├── roster.html            # Roster panel
+│   └── partials/
+│       ├── activity-feed.html # Recent activity table rows
+│       ├── notes.html         # Single note item
+│       ├── member-row.html    # Roster table row
+│       ├── member-edit.html   # Inline edit form
+│       ├── grant-detail.html  # Grant modal content
+│       ├── status-card.html   # Buddy Backup polling target
+│       └── pagination.html    # Page nav
+└── static/
+    └── styles.css             # This file's CSS</pre>
+      <p style="font-family:'Source Sans 3',sans-serif;font-size:.85rem;margin-top:.6rem">Each partial returns a <strong>fragment of HTML</strong> — not a full page. HTMX swaps it into the target element. The server always controls the data and rendering. The browser just displays it.</p>
+    </div>
+  </details>
+</div>
+
+</main>
+</div><!-- end shell -->
+
+<script>
+// ── NAVIGATION ──
+function showPanel(name) {
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  document.getElementById('panel-' + name).classList.add('active');
+  event.currentTarget.classList.add('active');
+}
+
+// ── INLINE EDITING (Article 2 pattern) ──
+function startEdit(el) {
+  var current = el.textContent;
+  var input = document.createElement('input');
+  input.className = 'inline-edit-input';
+  input.value = current;
+  input.style.width = Math.max(current.length * 8, 80) + 'px';
+  el.replaceWith(input);
+  input.focus();
+  input.select();
+
+  function finishEdit() {
+    var span = document.createElement('span');
+    span.className = 'inline-editable';
+    span.textContent = input.value || current;
+    span.onclick = function() { startEdit(span); };
+    input.replaceWith(span);
+    /*
+      HTMX VERSION:
+      Instead of this JS, the span would have:
+        hx-get="/edit/field/123" hx-trigger="click" hx-swap="outerHTML"
+      And the server returns an <input> with:
+        hx-post="/save/field/123" hx-trigger="blur,keydown[key=='Enter']" hx-swap="outerHTML"
+      Which returns the updated <span> on save.
+    */
+  }
+  input.addEventListener('blur', finishEdit);
+  input.addEventListener('keydown', function(e) {
+    if (e.key === 'Enter') finishEdit();
+    if (e.key === 'Escape') { input.value = current; finishEdit(); }
+  });
+}
+
+// ── LIVE NOTE ADDING (Article 2 pattern) ──
+function addNote(e, targetId) {
+  e.preventDefault();
+  var form = e.target;
+  var input = form.querySelector('input[name="note"]');
+  var text = input.value.trim();
+  if (!text) return;
+
+  var noteDiv = document.createElement('div');
+  noteDiv.className = 'note-item';
+  noteDiv.innerHTML = '<div>' + text.replace(/</g,'&lt;') + '</div><div class="note-meta">You &middot; Just now</div>';
+
+  document.getElementById(targetId).appendChild(noteDiv);
+  input.value = '';
+  /*
+    HTMX VERSION:
+    <form hx-post="/add-note" hx-target="#dashboard-notes" hx-swap="beforeend">
+    Server returns the new note-item div. No JS needed.
+  */
+}
+
+// ── FIELDSET TOGGLE (Article 1 feature 4) ──
+function toggleIntakeForm() {
+  var fs1 = document.getElementById('intakeFieldset');
+  var fs2 = document.getElementById('intakeFieldset2');
+  var btn = document.getElementById('intakeToggle');
+  var msg = document.getElementById('intakeLockMsg');
+  if (fs1.disabled) {
+    fs1.disabled = false; fs2.disabled = false;
+    btn.textContent = 'Lock Form'; msg.textContent = 'Form is editable.';
+  } else {
+    fs1.disabled = true; fs2.disabled = true;
+    btn.textContent = 'Unlock Form'; msg.textContent = 'Form is locked. Click to enable editing.';
+  }
+}
+
+// ── INERT TOGGLE (Article 1 feature 7) ──
+function toggleSettingsInert() {
+  var area = document.getElementById('settingsArea');
+  var msg = document.getElementById('inertMsg');
+  if (area.inert) {
+    area.inert = false;
+    msg.textContent = 'All sections editable';
+  } else {
+    area.inert = true;
+    msg.textContent = 'Maintenance mode — all sections locked';
+  }
+}
+
+// ── SIMULATED POLLING (Article 2 pattern) ──
+// In production: <div hx-get="/bb-status" hx-trigger="every 10s" hx-swap="innerHTML">
+var pollCount = 0;
+setInterval(function() {
+  pollCount++;
+  var el = document.getElementById('bb-status');
+  if (el) el.textContent = 'Last check: ' + pollCount + '0s ago \u00B7 4 responders on-call';
+}, 10000);
+</script>
+</body>
+</html>

@@ -1,0 +1,108 @@
+[
+  {
+    "maintenanceEventId": "M-001",
+    "assetId": "A-001",
+    "assetName": "Red F-150",
+    "serviceType": "Oil Change",
+    "scheduledDate": "2024-10-31",
+    "completedDate": "2024-10-31",
+    "status": "Completed",
+    "partsCost": 85.0,
+    "orgId": "example-fleet-co"
+  },
+  {
+    "maintenanceEventId": "M-006",
+    "assetId": "A-001",
+    "assetName": "Red F-150",
+    "serviceType": "Oil Change",
+    "scheduledDate": "2026-03-13",
+    "status": "Scheduled",
+    "partsCost": 0.0,
+    "orgId": "example-fleet-co"
+  },
+  {
+    "maintenanceEventId": "M-002",
+    "assetId": "A-002",
+    "assetName": "Blue Silverado",
+    "serviceType": "Tire Rotation",
+    "scheduledDate": "2024-10-14",
+    "completedDate": "2024-10-14",
+    "status": "Completed",
+    "partsCost": 45.0,
+    "orgId": "example-fleet-co"
+  },
+  {
+    "maintenanceEventId": "M-007",
+    "assetId": "A-002",
+    "assetName": "Blue Silverado",
+    "serviceType": "Oil Change",
+    "scheduledDate": "2026-03-11",
+    "status": "Scheduled",
+    "partsCost": 0.0,
+    "orgId": "example-fleet-co"
+  },
+  {
+    "maintenanceEventId": "M-004",
+    "assetId": "A-003",
+    "assetName": "CAT Excavator",
+    "serviceType": "Annual Inspection",
+    "scheduledDate": "2024-11-30",
+    "completedDate": "2024-11-30",
+    "status": "Completed",
+    "partsCost": 350.0,
+    "orgId": "example-fleet-co"
+  },
+  {
+    "maintenanceEventId": "M-003",
+    "assetId": "A-004",
+    "assetName": "John Deere Mower",
+    "serviceType": "Repair",
+    "scheduledDate": "2024-12-09",
+    "status": "Overdue",
+    "partsCost": 0.0,
+    "orgId": "example-fleet-co"
+  },
+  {
+    "maintenanceEventId": "M-005",
+    "assetId": "A-005",
+    "assetName": "Utility Trailer",
+    "serviceType": "Inspection",
+    "scheduledDate": "2024-07-14",
+    "completedDate": "2024-07-14",
+    "status": "Completed",
+    "partsCost": 75.0,
+    "orgId": "example-fleet-co"
+  },
+  {
+    "maintenanceEventId": "M-009",
+    "assetId": "A-006",
+    "assetName": "Pressure Washer",
+    "serviceType": "Inspection",
+    "scheduledDate": "2024-12-09",
+    "completedDate": "2024-12-09",
+    "status": "Completed",
+    "partsCost": 50.0,
+    "orgId": "example-fleet-co"
+  },
+  {
+    "maintenanceEventId": "M-010",
+    "assetId": "A-007",
+    "assetName": "White Transit Van",
+    "serviceType": "Oil Change",
+    "scheduledDate": "2024-11-19",
+    "completedDate": "2024-11-19",
+    "status": "Completed",
+    "partsCost": 95.0,
+    "orgId": "example-fleet-co"
+  },
+  {
+    "maintenanceEventId": "M-008",
+    "assetId": "A-009",
+    "assetName": "Bobcat Skid Steer",
+    "serviceType": "Filter Replacement",
+    "scheduledDate": "2026-03-03",
+    "status": "Overdue",
+    "partsCost": 0.0,
+    "orgId": "example-fleet-co"
+  }
+]

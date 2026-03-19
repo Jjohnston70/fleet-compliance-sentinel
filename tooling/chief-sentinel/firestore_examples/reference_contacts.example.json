@@ -1,0 +1,15 @@
+[
+  {
+    "referenceContactId": "ref_cdphe_hmw",
+    "orgId": "example-fleet-co",
+    "organization": "Colorado Department of Public Health & Environment",
+    "department": "Hazardous Materials & Waste Management",
+    "phoneNumber": "(303) 692-3320",
+    "address": "4300 Cherry Creek Dr S, Denver, CO 80246",
+    "website": "https://cdphe.colorado.gov",
+    "contactPurpose": "Underground Storage Tanks, Environmental Permits",
+    "hours": "M-F 8AM-5PM",
+    "notes": "Primary agency for UST permits and environmental compliance",
+    "category": "state-regulatory"
+  }
+]

@@ -1,0 +1,12 @@
+[
+  {
+    "orgId": "example-fleet-co",
+    "name": "test",
+    "alertEmail": "jacob@truenorthstrategyops.com",
+    "settings": {
+      "defaultAlertDays": 7,
+      "fuelAnomalyThresholdPct": 20.0
+    },
+    "timezone": "America/Denver"
+  }
+]

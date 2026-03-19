@@ -15,7 +15,7 @@ Full Platform Architecture Blueprint
 | GitHub CI/CD | Not connected — deploys are manual via CLI |
 | Vercel Config | `.vercel/project.json` links this folder to the Vercel project |
 
-The companion data tooling folder (`chief-sentinel-main`) lives as a sibling on the Desktop and is never deployed. It writes generated TypeScript modules into `src/lib/` via `build_chief_imports.py`.
+The data tooling folder (`tooling/chief-sentinel/`) is part of this repo but is never deployed. It writes generated TypeScript modules into `src/lib/` via `build_chief_imports.py`.
 
 ---
 

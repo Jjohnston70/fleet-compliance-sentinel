@@ -235,7 +235,7 @@ export default async function ChiefPage() {
             <p className="chief-eyebrow">Import Health</p>
             <h2>Last import snapshot</h2>
           </div>
-          <p className="chief-section-copy">Generated {importStats.generatedAt}. Run <code>py build_chief_imports.py</code> from chief-sentinel-main to refresh.</p>
+          <p className="chief-section-copy">Generated {importStats.generatedAt}. Run <code>py build_chief_imports.py</code> from tooling/chief-sentinel to refresh.</p>
         </div>
         <div className="chief-import-table">
           <table>

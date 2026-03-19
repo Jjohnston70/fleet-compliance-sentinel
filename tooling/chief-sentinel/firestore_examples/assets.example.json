@@ -1,0 +1,27 @@
+[
+  {
+    "assetId": "A-001",
+    "orgId": "example-fleet-co",
+    "category": "vehicle",
+    "name": "Red F-150",
+    "status": "available",
+    "location": "Main Yard",
+    "assignedToPersonId": "emp_drv_001",
+    "purchaseDate": "2023-06-15",
+    "purchasePrice": 35000,
+    "notes": "Fleet truck #1"
+  },
+  {
+    "assetId": "tank_t001",
+    "orgId": "example-fleet-co",
+    "category": "tank",
+    "name": "Tank T-001",
+    "status": "active",
+    "location": "North Yard",
+    "assignedToPersonId": null,
+    "purchaseDate": null,
+    "purchasePrice": null,
+    "notes": "Primary diesel storage tank"
+  }
+]
+

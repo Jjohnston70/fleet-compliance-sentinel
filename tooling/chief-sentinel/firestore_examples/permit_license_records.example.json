@@ -1,0 +1,33 @@
+[
+  {
+    "recordId": "permit_state_hazmat_2026",
+    "orgId": "example-fleet-co",
+    "templateId": "state_hazmat",
+    "entityType": "organization",
+    "entityId": "example-fleet-co",
+    "permitNumber": "CO-HM-2026-001",
+    "issuingAgency": "Colorado Department of Public Health & Environment",
+    "issueDate": "2026-01-01",
+    "expirationDate": "2026-12-31",
+    "renewalDueDate": "2026-12-01",
+    "status": "active",
+    "responsiblePersonId": "emp_drv_001",
+    "notes": "Annual state hazmat registration"
+  },
+  {
+    "recordId": "permit_ifta_2026_q2",
+    "orgId": "example-fleet-co",
+    "templateId": "ifta",
+    "entityType": "organization",
+    "entityId": "example-fleet-co",
+    "permitNumber": "IFTA-2026-Q2",
+    "issuingAgency": "Colorado Department of Revenue",
+    "issueDate": "2026-04-01",
+    "expirationDate": "2026-06-30",
+    "renewalDueDate": "2026-06-30",
+    "status": "active",
+    "responsiblePersonId": "emp_drv_002",
+    "notes": "Quarterly fuel tax filing window"
+  }
+]
+
