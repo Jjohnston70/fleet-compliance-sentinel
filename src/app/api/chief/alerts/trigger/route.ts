@@ -1,6 +1,7 @@
 import { auth } from '@clerk/nextjs/server';
 import { isClerkEnabled } from '@/lib/clerk';
 import { runChiefAlertSweep } from '@/lib/chief-alert-engine';
+import { loadChiefData } from '@/lib/chief-data';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -24,7 +25,8 @@ export async function POST(request: Request) {
   }
 
   try {
-    const summary = await runChiefAlertSweep({ dryRun });
+    const data = await loadChiefData();
+    const summary = await runChiefAlertSweep(data.suspense, { dryRun });
     return Response.json(summary, { status: 200 });
   } catch (err: unknown) {
     return Response.json({ error: String(err) }, { status: 500 });

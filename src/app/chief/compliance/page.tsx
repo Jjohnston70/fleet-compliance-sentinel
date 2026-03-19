@@ -3,15 +3,13 @@ import { auth } from '@clerk/nextjs/server';
 import { redirect } from 'next/navigation';
 import { isClerkEnabled } from '@/lib/clerk';
 import {
-  chiefDriverStates,
   chiefPermitCadence,
-  chiefPermitStatuses,
-  chiefPermitTemplates,
-  filterChiefDriverCompliance,
-  filterChiefPermitRecords,
+  filterDriverCompliance,
+  filterPermitRecords,
   formatDueLabel,
-  getChiefComplianceStats,
-} from '@/lib/chief-demo-data';
+  getComplianceStats,
+  loadChiefData,
+} from '@/lib/chief-data';
 
 export const dynamic = 'force-dynamic';
 
@@ -31,6 +29,8 @@ export default async function ChiefCompliancePage({ searchParams }: { searchPara
     redirect('/sign-in');
   }
 
+  const data = await loadChiefData();
+
   const resolved = await searchParams;
   const q = firstParam(resolved.q);
   const scope = firstParam(resolved.scope) || 'all';
@@ -39,9 +39,9 @@ export default async function ChiefCompliancePage({ searchParams }: { searchPara
   const status = firstParam(resolved.status);
   const driverSort = firstParam(resolved.driverSort);
   const permitSort = firstParam(resolved.permitSort);
-  const drivers = filterChiefDriverCompliance({ q, state, sort: driverSort });
-  const permits = filterChiefPermitRecords({ q, templateId, status, sort: permitSort });
-  const stats = getChiefComplianceStats();
+  const drivers = filterDriverCompliance(data.drivers, { q, state, sort: driverSort });
+  const permits = filterPermitRecords(data.permits, { q, templateId, status, sort: permitSort });
+  const stats = getComplianceStats(data.drivers, data.permits);
 
   const showDrivers = scope === 'all' || scope === 'drivers';
   const showPermits = scope === 'all' || scope === 'permits';
@@ -86,7 +86,7 @@ export default async function ChiefCompliancePage({ searchParams }: { searchPara
               <span>Driver State</span>
               <select name="state" defaultValue={state || 'all'}>
                 <option value="all">All states</option>
-                {chiefDriverStates.map((option) => (
+                {data.driverStates.map((option) => (
                   <option key={option} value={option}>
                     {option}
                   </option>
@@ -97,7 +97,7 @@ export default async function ChiefCompliancePage({ searchParams }: { searchPara
               <span>Permit Track</span>
               <select name="templateId" defaultValue={templateId || 'all'}>
                 <option value="all">All permit tracks</option>
-                {chiefPermitTemplates.map((option) => (
+                {data.permitTemplates.map((option) => (
                   <option key={option} value={option}>
                     {option}
                   </option>
@@ -108,7 +108,7 @@ export default async function ChiefCompliancePage({ searchParams }: { searchPara
               <span>Permit Status</span>
               <select name="status" defaultValue={status || 'all'}>
                 <option value="all">All statuses</option>
-                {chiefPermitStatuses.map((option) => (
+                {data.permitStatuses.map((option) => (
                   <option key={option} value={option}>
                     {option}
                   </option>

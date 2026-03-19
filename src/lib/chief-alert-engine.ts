@@ -1,4 +1,4 @@
-import { chiefSuspenseItems, chiefOrganizationAlertEmail, ChiefSuspenseRecord } from '@/lib/chief-demo-data';
+import type { ChiefSuspenseRecord } from '@/lib/chief-data';
 
 export type AlertWindow = 'overdue' | 'due-today' | '7d' | '14d' | '30d';
 
@@ -148,14 +148,17 @@ async function sendEmail(payload: ChiefEmailPayload, apiKey: string): Promise<{ 
   }
 }
 
-export async function runChiefAlertSweep(options: { dryRun?: boolean; referenceDate?: Date } = {}): Promise<ChiefAlertRunSummary> {
+export async function runChiefAlertSweep(
+  suspenseItems: ChiefSuspenseRecord[],
+  options: { dryRun?: boolean; referenceDate?: Date; managerEmail?: string } = {}
+): Promise<ChiefAlertRunSummary> {
   const referenceDate = options.referenceDate ?? new Date();
   const apiKey = process.env.RESEND_API_KEY;
   const dryRun = options.dryRun ?? !apiKey;
   const orgName = process.env.CHIEF_ORG_NAME || 'Example Fleet Co';
-  const managerEmail = chiefOrganizationAlertEmail;
+  const managerEmail = options.managerEmail || process.env.CHIEF_ALERT_EMAIL || 'compliance@company.com';
 
-  const openItems = chiefSuspenseItems.filter((item: ChiefSuspenseRecord) => item.status === 'open');
+  const openItems = suspenseItems.filter((item: ChiefSuspenseRecord) => item.status === 'open');
 
   // Classify each open item by alert window
   const alertItems: ChiefAlertItem[] = [];
@@ -256,13 +259,13 @@ export async function runChiefAlertSweep(options: { dryRun?: boolean; referenceD
   return summary;
 }
 
-export function previewChiefAlerts(referenceDate?: Date): {
+export function previewChiefAlerts(suspenseItems: ChiefSuspenseRecord[], referenceDate?: Date): {
   alertItems: ChiefAlertItem[];
   byOwner: Record<string, ChiefAlertItem[]>;
   byWindow: Record<AlertWindow, number>;
 } {
   const ref = referenceDate ?? new Date();
-  const openItems = chiefSuspenseItems.filter((item: ChiefSuspenseRecord) => item.status === 'open');
+  const openItems = suspenseItems.filter((item: ChiefSuspenseRecord) => item.status === 'open');
 
   const alertItems: ChiefAlertItem[] = [];
   for (const item of openItems) {

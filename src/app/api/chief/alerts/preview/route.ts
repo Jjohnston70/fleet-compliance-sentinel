@@ -1,6 +1,7 @@
 import { auth } from '@clerk/nextjs/server';
 import { isClerkEnabled } from '@/lib/clerk';
 import { previewChiefAlerts } from '@/lib/chief-alert-engine';
+import { loadChiefData } from '@/lib/chief-data';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -15,7 +16,8 @@ export async function GET() {
     }
   }
 
-  const preview = previewChiefAlerts();
+  const data = await loadChiefData();
+  const preview = previewChiefAlerts(data.suspense);
   return Response.json({
     ...preview,
     dryRun: true,

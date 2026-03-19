@@ -2,7 +2,7 @@ import Link from 'next/link';
 import { auth } from '@clerk/nextjs/server';
 import { notFound, redirect } from 'next/navigation';
 import { isClerkEnabled } from '@/lib/clerk';
-import { findChiefPermitRecord, formatDueLabel, getChiefPermitDocuments, getChiefPermitSourceQuality, getChiefPermitSuspense } from '@/lib/chief-demo-data';
+import { findPermit, formatDueLabel, getPermitDocuments, getPermitSourceQuality, getPermitSuspense, loadChiefData } from '@/lib/chief-data';
 import InlineNoteEditor from '@/components/chief/InlineNoteEditor';
 
 export const dynamic = 'force-dynamic';
@@ -19,15 +19,17 @@ export default async function ChiefPermitDetailPage({ params }: { params: Params
     redirect('/sign-in');
   }
 
+  const data = await loadChiefData();
+
   const { recordId } = await params;
-  const permit = findChiefPermitRecord(recordId);
+  const permit = findPermit(data.permits, recordId);
   if (!permit) {
     notFound();
   }
 
-  const suspense = getChiefPermitSuspense(permit.recordId);
-  const documents = getChiefPermitDocuments(permit.templateId);
-  const quality = getChiefPermitSourceQuality(permit);
+  const suspense = getPermitSuspense(data.suspense, permit.recordId);
+  const documents = getPermitDocuments(permit.templateId);
+  const quality = getPermitSourceQuality(permit);
 
   return (
     <main className="chief-shell">

@@ -2,7 +2,7 @@ import Link from 'next/link';
 import { auth } from '@clerk/nextjs/server';
 import { notFound, redirect } from 'next/navigation';
 import { isClerkEnabled } from '@/lib/clerk';
-import { findChiefDriverCompliance, formatDueLabel, getChiefDriverDocuments, getChiefDriverSourceQuality, getChiefDriverSuspense } from '@/lib/chief-demo-data';
+import { findDriver, formatDueLabel, getDriverDocuments, getDriverSourceQuality, getDriverSuspense, loadChiefData } from '@/lib/chief-data';
 import InlineNoteEditor from '@/components/chief/InlineNoteEditor';
 
 export const dynamic = 'force-dynamic';
@@ -19,15 +19,17 @@ export default async function ChiefDriverComplianceDetailPage({ params }: { para
     redirect('/sign-in');
   }
 
+  const data = await loadChiefData();
+
   const { personId } = await params;
-  const driver = findChiefDriverCompliance(personId);
+  const driver = findDriver(data.drivers, personId);
   if (!driver) {
     notFound();
   }
 
-  const suspense = getChiefDriverSuspense(driver.personId);
-  const documents = getChiefDriverDocuments();
-  const quality = getChiefDriverSourceQuality(driver);
+  const suspense = getDriverSuspense(data.suspense, driver.personId);
+  const documents = getDriverDocuments();
+  const quality = getDriverSourceQuality(driver);
 
   return (
     <main className="chief-shell">

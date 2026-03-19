@@ -2,7 +2,7 @@ import Link from 'next/link';
 import { auth } from '@clerk/nextjs/server';
 import { notFound, redirect } from 'next/navigation';
 import { isClerkEnabled } from '@/lib/clerk';
-import { findChiefMaintenanceEvent, findChiefAsset, formatDueLabel } from '@/lib/chief-demo-data';
+import { loadChiefData, findMaintenanceEvent, findAsset, formatDueLabel } from '@/lib/chief-data';
 
 export const dynamic = 'force-dynamic';
 
@@ -18,13 +18,15 @@ export default async function ChiefMaintenanceEventPage({ params }: { params: Pa
     redirect('/sign-in');
   }
 
+  const data = await loadChiefData();
+
   const { eventId } = await params;
-  const event = findChiefMaintenanceEvent(decodeURIComponent(eventId));
+  const event = findMaintenanceEvent(data.maintenanceEvents, decodeURIComponent(eventId));
   if (!event) {
     notFound();
   }
 
-  const asset = findChiefAsset(event.assetId);
+  const asset = findAsset(data.assets, event.assetId);
 
   return (
     <main className="chief-shell">

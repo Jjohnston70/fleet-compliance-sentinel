@@ -2,7 +2,7 @@ import Link from 'next/link';
 import { auth } from '@clerk/nextjs/server';
 import { notFound, redirect } from 'next/navigation';
 import { isClerkEnabled } from '@/lib/clerk';
-import { findChiefSuspenseItem, formatDueLabel, getChiefSuspenseRelatedRecord } from '@/lib/chief-demo-data';
+import { loadChiefData, findSuspenseItem, formatDueLabel, getSuspenseRelatedRecord } from '@/lib/chief-data';
 import SuspenseResolveButton from '@/components/chief/SuspenseResolveButton';
 import InlineNoteEditor from '@/components/chief/InlineNoteEditor';
 
@@ -20,13 +20,15 @@ export default async function ChiefSuspenseDetailPage({ params }: { params: Para
     redirect('/sign-in');
   }
 
+  const data = await loadChiefData();
+
   const { suspenseItemId } = await params;
-  const item = findChiefSuspenseItem(suspenseItemId);
+  const item = findSuspenseItem(data.suspense, suspenseItemId);
   if (!item) {
     notFound();
   }
 
-  const related = getChiefSuspenseRelatedRecord(item);
+  const related = getSuspenseRelatedRecord(item, data);
   const relatedHref =
     item.sourceType === 'employee_compliance'
       ? `/chief/compliance/drivers/${encodeURIComponent(item.sourceId)}`

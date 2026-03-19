@@ -5,15 +5,15 @@ import { isClerkEnabled } from '@/lib/clerk';
 import InlineNoteEditor from '@/components/chief/InlineNoteEditor';
 import AssetStatusOverride from '@/components/chief/AssetStatusOverride';
 import {
-  chiefAssetStatuses,
-  findChiefAsset,
+  loadChiefData,
+  findAsset,
   formatDueLabel,
-  getChiefAssetActivity,
-  getChiefAssetDocuments,
-  getChiefAssetMaintenance,
-  getChiefAssetSourceQuality,
-  getChiefAssetSuspense,
-} from '@/lib/chief-demo-data';
+  getAssetActivity,
+  getAssetDocuments,
+  getAssetMaintenance,
+  getAssetSourceQuality,
+  getAssetSuspense,
+} from '@/lib/chief-data';
 
 export const dynamic = 'force-dynamic';
 
@@ -36,16 +36,17 @@ export default async function ChiefAssetDetailPage({ params }: { params: Params 
   }
 
   const { assetId } = await params;
-  const asset = findChiefAsset(assetId);
+  const data = await loadChiefData();
+  const asset = findAsset(data.assets, assetId);
   if (!asset) {
     notFound();
   }
 
-  const activity = getChiefAssetActivity(asset.assetId);
-  const maintenance = getChiefAssetMaintenance(asset.assetId);
-  const suspense = getChiefAssetSuspense(asset.assetId);
-  const documents = getChiefAssetDocuments(asset.category);
-  const quality = getChiefAssetSourceQuality(asset);
+  const activity = getAssetActivity(data.activityLogs, asset.assetId);
+  const maintenance = getAssetMaintenance(data.maintenanceEvents, asset.assetId);
+  const suspense = getAssetSuspense(data.suspense, asset.assetId);
+  const documents = getAssetDocuments(asset.category);
+  const quality = getAssetSourceQuality(asset);
 
   return (
     <main className="chief-shell">
@@ -84,7 +85,7 @@ export default async function ChiefAssetDetailPage({ params }: { params: Params 
                 <AssetStatusOverride
                   assetId={asset.assetId}
                   initialStatus={asset.status}
-                  statuses={chiefAssetStatuses}
+                  statuses={data.assetStatuses}
                 />
               </div>
               <div>

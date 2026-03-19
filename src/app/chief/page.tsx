@@ -4,14 +4,14 @@ import { redirect } from 'next/navigation';
 import { isClerkEnabled } from '@/lib/clerk';
 import FmcsaSnapshotCard from '@/components/chief/FmcsaSnapshotCard';
 import {
-  chiefOrganizationName,
-  chiefModuleSummary,
+  loadChiefData,
+  getChiefModuleSummary,
   chiefResourceLinks,
-  getChiefAssetStats,
-  getChiefComplianceStats,
-  getChiefImportStats,
-  getChiefSuspenseStats,
-} from '@/lib/chief-demo-data';
+  getAssetStats,
+  getComplianceStats,
+  getImportStats,
+  getSuspenseStats,
+} from '@/lib/chief-data';
 
 export const dynamic = 'force-dynamic';
 
@@ -79,10 +79,12 @@ const modules = [
 ];
 
 export default async function ChiefPage() {
-  const assetStats = getChiefAssetStats();
-  const complianceStats = getChiefComplianceStats();
-  const suspenseStats = getChiefSuspenseStats();
-  const importStats = getChiefImportStats();
+  const data = await loadChiefData();
+  const chiefModuleSummary = getChiefModuleSummary(data);
+  const assetStats = getAssetStats(data.assets);
+  const complianceStats = getComplianceStats(data.drivers, data.permits);
+  const suspenseStats = getSuspenseStats(data.suspense);
+  const importStats = await getImportStats();
   const hasClerk = isClerkEnabled();
 
   if (!hasClerk) {
@@ -112,7 +114,7 @@ export default async function ChiefPage() {
   return (
     <main className="chief-shell">
       <section className="chief-hero">
-        <p className="chief-eyebrow">{chiefOrganizationName}</p>
+        <p className="chief-eyebrow">Chief Operations</p>
         <h1>Protected command shell for assets, compliance, suspense, and CFR-backed Penny.</h1>
         <p className="chief-subcopy">
           This route lives inside the current Pipeline Punks site, reuses Clerk, and keeps the visual system

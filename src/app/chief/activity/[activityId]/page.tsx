@@ -2,7 +2,7 @@ import Link from 'next/link';
 import { auth } from '@clerk/nextjs/server';
 import { notFound, redirect } from 'next/navigation';
 import { isClerkEnabled } from '@/lib/clerk';
-import { findChiefActivityLog, findChiefAsset } from '@/lib/chief-demo-data';
+import { loadChiefData, findActivityLog, findAsset } from '@/lib/chief-data';
 
 export const dynamic = 'force-dynamic';
 
@@ -18,13 +18,15 @@ export default async function ChiefActivityLogPage({ params }: { params: Params 
     redirect('/sign-in');
   }
 
+  const data = await loadChiefData();
+
   const { activityId } = await params;
-  const log = findChiefActivityLog(decodeURIComponent(activityId));
+  const log = findActivityLog(data.activityLogs, decodeURIComponent(activityId));
   if (!log) {
     notFound();
   }
 
-  const asset = findChiefAsset(log.assetId);
+  const asset = findAsset(data.assets, log.assetId);
 
   return (
     <main className="chief-shell">

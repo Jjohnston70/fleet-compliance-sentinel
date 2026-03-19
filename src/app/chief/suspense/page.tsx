@@ -3,12 +3,11 @@ import { auth } from '@clerk/nextjs/server';
 import { redirect } from 'next/navigation';
 import { isClerkEnabled } from '@/lib/clerk';
 import {
-  chiefSuspenseAlertStates,
-  chiefSuspenseSeverities,
-  filterChiefSuspenseItems,
+  loadChiefData,
+  filterSuspenseItems,
   formatDueLabel,
-  getChiefSuspenseStats,
-} from '@/lib/chief-demo-data';
+  getSuspenseStats,
+} from '@/lib/chief-data';
 import SuspenseCardStatus from '@/components/chief/SuspenseCardStatus';
 import LocalRecordsPanel from '@/components/chief/LocalRecordsPanel';
 
@@ -30,14 +29,16 @@ export default async function ChiefSuspensePage({ searchParams }: { searchParams
     redirect('/sign-in');
   }
 
+  const data = await loadChiefData();
+
   const resolved = await searchParams;
   const q = firstParam(resolved.q);
   const severity = firstParam(resolved.severity);
   const alertState = firstParam(resolved.alertState);
   const status = firstParam(resolved.status);
   const sort = firstParam(resolved.sort);
-  const items = filterChiefSuspenseItems({ q, severity, alertState, status, sort });
-  const stats = getChiefSuspenseStats();
+  const items = filterSuspenseItems(data.suspense, { q, severity, alertState, status, sort });
+  const stats = getSuspenseStats(data.suspense);
 
   return (
     <main className="chief-shell">
@@ -87,7 +88,7 @@ export default async function ChiefSuspensePage({ searchParams }: { searchParams
               <span>Severity</span>
               <select name="severity" defaultValue={severity || 'all'}>
                 <option value="all">All severity levels</option>
-                {chiefSuspenseSeverities.map((option) => (
+                {data.suspenseSeverities.map((option) => (
                   <option key={option} value={option}>
                     {option}
                   </option>
@@ -98,7 +99,7 @@ export default async function ChiefSuspensePage({ searchParams }: { searchParams
               <span>Alert State</span>
               <select name="alertState" defaultValue={alertState || 'all'}>
                 <option value="all">All alert states</option>
-                {chiefSuspenseAlertStates.map((option) => (
+                {data.suspenseAlertStates.map((option) => (
                   <option key={option} value={option}>
                     {option}
                   </option>

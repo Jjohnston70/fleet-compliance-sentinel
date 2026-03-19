@@ -3,7 +3,7 @@ import { auth } from '@clerk/nextjs/server';
 import { redirect } from 'next/navigation';
 import { isClerkEnabled } from '@/lib/clerk';
 import LocalRecordsPanel from '@/components/chief/LocalRecordsPanel';
-import { chiefDriverCompliance } from '@/lib/chief-demo-data';
+import { loadChiefData } from '@/lib/chief-data';
 
 export const dynamic = 'force-dynamic';
 
@@ -11,6 +11,8 @@ export default async function ChiefEmployeesPage() {
   if (!isClerkEnabled()) return null;
   const { userId } = await auth();
   if (!userId) redirect('/sign-in');
+
+  const data = await loadChiefData();
 
   return (
     <main className="chief-shell">
@@ -66,7 +68,7 @@ export default async function ChiefEmployeesPage() {
                 </tr>
               </thead>
               <tbody>
-                {chiefDriverCompliance.map((driver) => (
+                {data.drivers.map((driver) => (
                   <tr key={driver.personId}>
                     <td><strong>{driver.driverName}</strong></td>
                     <td>{driver.cdlClass}</td>

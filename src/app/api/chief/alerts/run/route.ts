@@ -1,4 +1,5 @@
 import { runChiefAlertSweep } from '@/lib/chief-alert-engine';
+import { loadChiefData } from '@/lib/chief-data';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -17,7 +18,8 @@ export async function POST(request: Request) {
   }
 
   try {
-    const summary = await runChiefAlertSweep();
+    const data = await loadChiefData();
+    const summary = await runChiefAlertSweep(data.suspense);
     return Response.json(summary, { status: 200 });
   } catch (err: unknown) {
     return Response.json({ error: String(err) }, { status: 500 });

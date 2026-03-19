@@ -3,6 +3,7 @@ import { auth } from '@clerk/nextjs/server';
 import { redirect } from 'next/navigation';
 import { isClerkEnabled } from '@/lib/clerk';
 import { previewChiefAlerts } from '@/lib/chief-alert-engine';
+import { loadChiefData } from '@/lib/chief-data';
 import AlertsRunPanel from '@/components/chief/AlertsRunPanel';
 
 export const dynamic = 'force-dynamic';
@@ -21,7 +22,8 @@ export default async function ChiefAlertsPage() {
   const { userId } = await auth();
   if (!userId) redirect('/sign-in');
 
-  const { alertItems, byOwner, byWindow } = previewChiefAlerts();
+  const data = await loadChiefData();
+  const { alertItems, byOwner, byWindow } = previewChiefAlerts(data.suspense);
   const resendConfigured = Boolean(process.env.RESEND_API_KEY);
   const cronConfigured = Boolean(process.env.CHIEF_CRON_SECRET);
 

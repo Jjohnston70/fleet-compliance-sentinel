@@ -3,12 +3,11 @@ import { auth } from '@clerk/nextjs/server';
 import { redirect } from 'next/navigation';
 import { isClerkEnabled } from '@/lib/clerk';
 import {
-  chiefAssetCategories,
-  chiefAssetStatuses,
-  filterChiefAssets,
+  loadChiefData,
+  filterAssets,
   formatDueLabel,
-  getChiefAssetStats,
-} from '@/lib/chief-demo-data';
+  getAssetStats,
+} from '@/lib/chief-data';
 import LocalRecordsPanel from '@/components/chief/LocalRecordsPanel';
 
 export const dynamic = 'force-dynamic';
@@ -29,13 +28,15 @@ export default async function ChiefAssetsPage({ searchParams }: { searchParams: 
     redirect('/sign-in');
   }
 
+  const data = await loadChiefData();
+
   const resolved = await searchParams;
   const q = firstParam(resolved.q);
   const category = firstParam(resolved.category);
   const status = firstParam(resolved.status);
   const sort = firstParam(resolved.sort);
-  const assets = filterChiefAssets({ q, category, status, sort });
-  const stats = getChiefAssetStats();
+  const assets = filterAssets(data.assets, { q, category, status, sort });
+  const stats = getAssetStats(data.assets);
 
   return (
     <main className="chief-shell">
@@ -87,7 +88,7 @@ export default async function ChiefAssetsPage({ searchParams }: { searchParams: 
               <span>Category</span>
               <select name="category" defaultValue={category || 'all'}>
                 <option value="all">All categories</option>
-                {chiefAssetCategories.map((option) => (
+                {data.assetCategories.map((option) => (
                   <option key={option} value={option}>
                     {option}
                   </option>
@@ -98,7 +99,7 @@ export default async function ChiefAssetsPage({ searchParams }: { searchParams: 
               <span>Status</span>
               <select name="status" defaultValue={status || 'all'}>
                 <option value="all">All statuses</option>
-                {chiefAssetStatuses.map((option) => (
+                {data.assetStatuses.map((option) => (
                   <option key={option} value={option}>
                     {option}
                   </option>
