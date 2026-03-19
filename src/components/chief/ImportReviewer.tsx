@@ -35,7 +35,7 @@ const COLLECTIONS = Object.entries(IMPORT_SCHEMAS).map(([key, schema]) => ({
 }));
 
 export default function ImportReviewer() {
-  const [collection, setCollection] = useState<CollectionKey>('assets');
+  const [collection, setCollection] = useState<CollectionKey>('drivers');
   const [view, setView] = useState<ViewState>({ state: 'idle' });
   const fileRef = useRef<HTMLInputElement>(null);
 
