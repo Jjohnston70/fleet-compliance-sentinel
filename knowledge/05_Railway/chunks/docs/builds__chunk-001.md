@@ -1,0 +1,29 @@
+# Builds (Chunk 1/1)
+
+Source: https://github.com/railwayapp/docs/blob/f4594b3f032cd0266b636cdc9b6ff5e75113f851/content/docs/builds.md
+Original Path: docs/builds.md
+Section: docs
+Chunk: 1/1
+
+---
+
+# Builds
+
+Understand Railway's build concepts.
+
+Let's customize the build process.
+
+Railway will build and deploy your code with zero configuration, but we make it easy to override this behavior as needed. Now that you're warmed up, let's take a look at how you can adjust how your services are built.
+
+The goal of this section is to guide you through the various ways to customize the build process.
+
+#### Build concepts
+
+|                         |                                                                                                                                                                                                                           |
+| ----------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Railpack**            | [Railpack](https://railpack.com) analyzes your code and generates optimized container images. |
+| **Nixpacks**            | [Nixpacks](https://nixpacks.com/docs) is a legacy builder. (Deprecated) |
+| **Build Configuration** | Railway provides several ways to configure the build process to produce the desired result. If necessary, you have control over the build command, which root directory to build from, when to trigger a build, etc.      |
+| **Dockerfiles**         | Dockerfiles welcome! If you already have a build defined in a Dockerfile within your code repository, Railway will automatically use it to build your service.                                                            |
+
+The following pages will guide you through how to interact with these controls.

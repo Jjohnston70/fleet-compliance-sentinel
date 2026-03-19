@@ -1,0 +1,58 @@
+import { auth } from '@clerk/nextjs/server';
+import * as XLSX from 'xlsx';
+import { chiefUploadTemplateManifest } from '@/lib/chief-upload-template.generated';
+import { isClerkEnabled } from '@/lib/clerk';
+
+export const runtime = 'nodejs';
+
+function createManifestSheet() {
+  const rows = chiefUploadTemplateManifest.map((sheet) => ({
+    Sheet: sheet.sheetName,
+    Source: sheet.sourcePath,
+    Type: sheet.kind,
+    Worksheet: sheet.worksheet || '',
+    Headers: sheet.headers.join(', '),
+    Notes: sheet.notes,
+  }));
+  return XLSX.utils.json_to_sheet(rows);
+}
+
+function createTemplateSheet(sheet: (typeof chiefUploadTemplateManifest)[number]) {
+  const rows = sheet.sampleRows.length
+    ? sheet.sampleRows.map((row) => ({ ...row }))
+    : [Object.fromEntries(sheet.headers.map((header) => [header, '']))];
+  const worksheet = XLSX.utils.json_to_sheet(rows, {
+    header: sheet.headers.length ? [...sheet.headers] : undefined,
+    skipHeader: false,
+  });
+  return worksheet;
+}
+
+export async function GET() {
+  if (!isClerkEnabled()) {
+    return Response.json({ error: 'Clerk is not configured.' }, { status: 503 });
+  }
+
+  const { userId } = await auth();
+  if (!userId) {
+    return Response.json({ error: 'Unauthorized' }, { status: 401 });
+  }
+
+  const workbook = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(workbook, createManifestSheet(), 'README');
+
+  for (const sheet of chiefUploadTemplateManifest) {
+    XLSX.utils.book_append_sheet(workbook, createTemplateSheet(sheet), sheet.sheetName);
+  }
+
+  const buffer = XLSX.write(workbook, { bookType: 'xlsx', type: 'buffer' });
+
+  return new Response(buffer, {
+    status: 200,
+    headers: {
+      'Content-Type': 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+      'Content-Disposition': 'attachment; filename="chief-bulk-upload-template.xlsx"',
+      'Cache-Control': 'no-store',
+    },
+  });
+}

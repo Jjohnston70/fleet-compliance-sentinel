@@ -1,0 +1,137 @@
+'use client';
+
+import { useState } from 'react';
+import { useRouter } from 'next/navigation';
+import {
+  addRecord,
+  updateRecord,
+  generateId,
+  type LocalInvoice,
+} from '@/lib/chief-local-store';
+
+interface Props {
+  initial?: LocalInvoice;
+  returnHref?: string;
+}
+
+const BLANK: Omit<LocalInvoice, 'id' | 'createdAt'> = {
+  vendor: '',
+  invoiceNumber: '',
+  invoiceDate: '',
+  dueDate: '',
+  amount: '',
+  partsCost: '',
+  laborCost: '',
+  category: 'maintenance',
+  assetId: '',
+  serviceType: '',
+  status: 'pending',
+  note: '',
+};
+
+export default function InvoiceForm({ initial, returnHref = '/chief/invoices' }: Props) {
+  const router = useRouter();
+  const [form, setForm] = useState<Omit<LocalInvoice, 'id' | 'createdAt'>>(initial ?? BLANK);
+  const [saved, setSaved] = useState(false);
+  const [error, setError] = useState('');
+
+  function set(field: keyof typeof BLANK, value: string) {
+    setForm((prev) => ({ ...prev, [field]: value }));
+  }
+
+  function handleSubmit(e: React.FormEvent) {
+    e.preventDefault();
+    setError('');
+    if (!form.vendor.trim()) { setError('Vendor is required.'); return; }
+    if (!form.invoiceNumber.trim()) { setError('Invoice number is required.'); return; }
+    if (!form.invoiceDate) { setError('Invoice date is required.'); return; }
+
+    if (initial) {
+      updateRecord<LocalInvoice>('chief:store:invoices', initial.id, form);
+    } else {
+      addRecord<LocalInvoice>('chief:store:invoices', {
+        id: generateId('inv'),
+        createdAt: new Date().toISOString(),
+        ...form,
+      });
+    }
+    setSaved(true);
+    setTimeout(() => router.push(returnHref), 1200);
+  }
+
+  const f = (
+    field: keyof typeof BLANK,
+    label: string,
+    opts: { type?: string; required?: boolean; placeholder?: string; options?: string[] } = {}
+  ) => (
+    <label className="chief-field-stack">
+      <span>{label}{opts.required && ' *'}</span>
+      {opts.options ? (
+        <select value={String(form[field])} onChange={(e) => set(field, e.target.value)}>
+          {opts.options.map((o) => <option key={o} value={o}>{o || '— select —'}</option>)}
+        </select>
+      ) : (
+        <input
+          type={opts.type ?? 'text'}
+          value={String(form[field])}
+          onChange={(e) => set(field, e.target.value)}
+          placeholder={opts.placeholder}
+          required={opts.required}
+        />
+      )}
+    </label>
+  );
+
+  return (
+    <form onSubmit={handleSubmit} className="chief-form-page">
+      {saved && <div className="chief-success-banner">Saved. Redirecting…</div>}
+      {error && <div className="chief-info-banner"><strong>Error:</strong> {error}</div>}
+
+      <fieldset className="chief-fieldset">
+        <legend>Invoice Details</legend>
+        <div className="chief-form-grid">
+          {f('vendor', 'Vendor', { required: true, placeholder: 'Company name' })}
+          {f('invoiceNumber', 'Invoice Number', { required: true, placeholder: 'INV-2026-001' })}
+          {f('invoiceDate', 'Invoice Date', { type: 'date', required: true })}
+          {f('dueDate', 'Due Date', { type: 'date' })}
+          {f('status', 'Status', { options: ['pending', 'paid', 'overdue'] })}
+          {f('category', 'Category', { options: ['maintenance', 'permit', 'fuel', 'insurance', 'other'] })}
+        </div>
+      </fieldset>
+
+      <fieldset className="chief-fieldset">
+        <legend>Costs</legend>
+        <div className="chief-form-grid">
+          {f('amount', 'Total Amount', { placeholder: '$0.00' })}
+          {f('partsCost', 'Parts Cost', { placeholder: '$0.00' })}
+          {f('laborCost', 'Labor Cost', { placeholder: '$0.00' })}
+        </div>
+      </fieldset>
+
+      <fieldset className="chief-fieldset">
+        <legend>Asset Link</legend>
+        <div className="chief-form-grid">
+          {f('assetId', 'Asset ID', { placeholder: 'Link to an asset' })}
+          {f('serviceType', 'Service Type', { placeholder: 'Oil change, DOT inspection, etc.' })}
+        </div>
+      </fieldset>
+
+      <fieldset className="chief-fieldset">
+        <legend>Notes</legend>
+        <label className="chief-field-stack">
+          <span>Notes</span>
+          <textarea value={form.note} onChange={(e) => set('note', e.target.value)} rows={3} />
+        </label>
+      </fieldset>
+
+      <div className="chief-action-row">
+        <button type="submit" className="btn-primary" disabled={saved}>
+          {initial ? 'Save Changes' : 'Add Invoice'}
+        </button>
+        <button type="button" className="btn-secondary" onClick={() => router.push(returnHref)}>
+          Cancel
+        </button>
+      </div>
+    </form>
+  );
+}

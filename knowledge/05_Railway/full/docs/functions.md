@@ -1,0 +1,46 @@
+Title: Functions
+Source: https://github.com/railwayapp/docs/blob/f4594b3f032cd0266b636cdc9b6ff5e75113f851/content/docs/functions.md
+Original Path: docs/functions.md
+Section: docs
+
+---
+
+# Functions
+
+Write and deploy code from the Railway canvas without managing infrastructure or creating a git repository.
+
+Write and deploy code from the Railway canvas without managing infrastructure or creating a git repository.
+Functions are [Services](/services) that run a single file of TypeScript code using the [Bun](https://bun.sh/) runtime.
+Use them like any other Service, but without the overhead of a repository.
+
+They are ideal for small tasks like handling webhooks, cron jobs, or simple APIs.
+
+## Key features
+
+- **Instant deploys**: Deploy code changes _in seconds_. No need to wait for a build step.
+- **Import any NPM package**: Use any NPM package in your function. We will automatically install it for you when your code runs. Pin specific versions by using a `package@version` syntax in your imports, e.g. `import { Hono } from "hono@4"`
+- **Use native Bun APIs**: Access [Bun APIs](https://bun.sh/docs/runtime/bun-apis) like `Bun.file()` and `Bun.serve()`.
+- **Service variables**: Service [Variables](/variables) are automatically available in the function editor via `import.meta.env`, `process.env`, or `Bun.env`
+- **Attach volumes**: Persist data in your function using [Volumes](/volumes).
+- **Use Vim**: Enable Vim keybindings in the function editor by using the shortcut `Ctrl+Option+V` on a Mac or `Ctrl+Alt+V` on Windows.
+
+## Limitations
+
+- 1 file per function
+- Max file size of 96KB
+
+## Edit and deploy
+
+If you're familiar with VSCode or other IDEs, you'll feel right at home with the built-in editor.
+
+- **To edit** your function, open the "Source Code" tab in your service.
+- **To stage** your changes, press ⌘+S (or Control+S if using Windows).
+- **To deploy** staged changes, press Shift+Enter.
+
+## Versioning
+
+Railway automatically versions your function code. Each time you deploy, a new version is created and is available for rollback.
+To rollback or redeploy a previous version, find the [Deployment](/deployments) you want to rollback to in the "Deployments" tab
+of your service. Then click the "Redeploy" button.
+
+You can find the source code of a previous deployment by opening the deployment details.

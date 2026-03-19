@@ -1,0 +1,84 @@
+[
+  {
+    "id": "hos_short_haul_exception",
+    "category": "hours_of_service",
+    "query": "what is the 150 air-mile short-haul exception",
+    "expected_source_any": ["§ 395.1 Scope of rules in this part."],
+    "expected_answer_all": ["150 air-mile radius", "14 consecutive hours", "395.8", "395.11"],
+    "forbidden_answer_any": ["don't have that information in the current knowledge base"],
+    "notes": "Should retrieve the short-haul exception from Part 395."
+  },
+  {
+    "id": "hos_local_driver_daily_hours",
+    "category": "hours_of_service",
+    "query": "under hours of service as a local driver how many hours can i drive a day",
+    "expected_source_any": ["§ 395.1 Scope of rules in this part.", "§ 395.3 Maximum driving time for property-carrying vehicles."],
+    "expected_answer_all": ["11 hours", "14-hour", "short-haul"],
+    "forbidden_answer_any": ["don't have that information in the current knowledge base"],
+    "notes": "Should combine the local-driver short-haul exception with the property-carrying limit."
+  },
+  {
+    "id": "alcohol_pre_duty",
+    "category": "drug_alcohol",
+    "query": "how many hours before a driver shift can he drink alcohol",
+    "expected_source_any": ["§ 382.207 Pre-duty use."],
+    "expected_answer_any": ["4 hours", "four hours"],
+    "expected_answer_all": ["alcohol"],
+    "forbidden_answer_any": ["don't have that information in the current knowledge base"],
+    "notes": "Maps to pre-duty alcohol prohibition."
+  },
+  {
+    "id": "mvr_frequency",
+    "category": "driver_qualification",
+    "query": "how often do employers need to do a mvr",
+    "expected_source_any": ["§ 391.25 Annual inquiry and review of driving record."],
+    "expected_answer_all": ["12 months"],
+    "forbidden_answer_any": ["don't have that information in the current knowledge base"],
+    "notes": "Should resolve to the annual MVR review requirement."
+  },
+  {
+    "id": "tsa_hazmat_validity",
+    "category": "cdl_hazmat",
+    "query": "how long is the tsa federal background check good for",
+    "expected_source_any": ["§ 383.141 General."],
+    "expected_answer_all": ["5 years"],
+    "forbidden_answer_any": ["don't have that information in the current knowledge base"],
+    "notes": "HazMat endorsement security threat assessment validity."
+  },
+  {
+    "id": "maintenance_record_retention",
+    "category": "maintenance",
+    "query": "how long do i need to keep vehicle records for maintenance",
+    "expected_source_any": ["§ 396.3 Inspection, repair, and maintenance."],
+    "expected_answer_all": ["1 year", "6 months", "motor carrier's control"],
+    "forbidden_answer_any": ["don't have that information in the current knowledge base"],
+    "notes": "General vehicle maintenance record retention should hit 396.3(c)."
+  },
+  {
+    "id": "dvir_retention",
+    "category": "maintenance",
+    "query": "how long do i keep a driver vehicle inspection report",
+    "expected_source_any": ["§ 396.11 Driver vehicle inspection report(s)."],
+    "expected_answer_any": ["3 months", "three months"],
+    "forbidden_answer_any": ["don't have that information in the current knowledge base"],
+    "notes": "DVIR retention should come from 396.11(a)(4)."
+  },
+  {
+    "id": "roadside_inspection_retention",
+    "category": "maintenance",
+    "query": "how long do i keep roadside inspection reports",
+    "expected_source_any": ["§ 396.9 Inspection of motor vehicles and intermodal equipment in operation."],
+    "expected_answer_all": ["12 months"],
+    "forbidden_answer_any": ["don't have that information in the current knowledge base"],
+    "notes": "Roadside inspection report retention should hit 396.9(d)(3)."
+  },
+  {
+    "id": "missing_part_397_known_gap",
+    "category": "known_gap",
+    "query": "can a driver who has a delivery address drive off a hazmat route delivering fuel",
+    "expected_source_any": [],
+    "expected_answer_any": ["don't have", "do not have"],
+    "expected_answer_all": ["49 CFR Part 397"],
+    "notes": "Known corpus gap until Part 397 is added."
+  }
+]

@@ -1,0 +1,202 @@
+{
+  "generatedAt": "2026-03-18T07:11:56.073Z",
+  "apiUrl": "https://pipeline-punks-v2-production.up.railway.app",
+  "summary": {
+    "total": 9,
+    "retrievalChecked": 8,
+    "retrievalPassed": 8,
+    "answerPassed": 9,
+    "fullPassed": 9
+  },
+  "tests": [
+    {
+      "id": "hos_short_haul_exception",
+      "category": "hours_of_service",
+      "query": "what is the 150 air-mile short-haul exception",
+      "notes": "Should retrieve the short-haul exception from Part 395.",
+      "enrichedQuery": "what is the 150 air-mile short-haul exception",
+      "topSources": [
+        "49 CFR Part 395 — Hours of Service of Drivers :: § 395.1 Scope of rules in this part.",
+        "49 CFR Part 395 — Hours of Service of Drivers :: § 395.1 Scope of rules in this part. (Part 4)",
+        "49 CFR Part 395 — Hours of Service of Drivers :: § 395.3 Maximum driving time for property-carrying vehicles.",
+        "49 CFR Part 395 — Hours of Service of Drivers :: § 395.2 Definitions. (Part 2)",
+        "49 CFR Part 395 — Hours of Service of Drivers :: § 395.1 Scope of rules in this part. (Part 2)",
+        "49 CFR Part 395 — Hours of Service of Drivers :: § 395.26 ELD data automatically recorded.",
+        "49 CFR Part 395 — Hours of Service of Drivers :: § 395.34 ELD malfunctions and data diagnostic events.",
+        "49 CFR Part 395 — Hours of Service of Drivers :: § 395.8 Driver's record of duty status. (Part 2)"
+      ],
+      "answerPreview": "## The 150 Air-Mile Short-Haul Exception\n\nUnder **49 CFR § 395.1(e)(1)**, a driver operating within a 150 air-mile radius is exempt from the requirements of **§ 395.8** (records of duty status / logbook requirements) and **§ 395.11** (supporting documents) if **all** of the following conditions are met:\n\n---\n\n### Conditions for the Exemption\n\n**1. Operating Radius**\nThe driver operates within a **150 air-mile radius (172.6 statute miles)** of the normal work reporting location.\n\n**2. Return and ",
+      "retrievalStatus": "pass",
+      "answerStatus": "pass",
+      "failedChecks": []
+    },
+    {
+      "id": "hos_local_driver_daily_hours",
+      "category": "hours_of_service",
+      "query": "under hours of service as a local driver how many hours can i drive a day",
+      "notes": "Should combine the local-driver short-haul exception with the property-carrying limit.",
+      "enrichedQuery": "under hours of service as a local driver how many hours can i drive a day 395.1(e) 395.3 short haul exception 150 air-mile radius driver 11 hours 14th hour normal work reporting location",
+      "topSources": [
+        "49 CFR Part 395 — Hours of Service of Drivers :: § 395.1 Scope of rules in this part.",
+        "49 CFR Part 395 — Hours of Service of Drivers :: § 395.1 Scope of rules in this part. (Part 2)",
+        "49 CFR Part 395 — Hours of Service of Drivers :: § 395.1 Scope of rules in this part. (Part 4)",
+        "49 CFR Part 395 — Hours of Service of Drivers :: § 395.11 Supporting documents.",
+        "49 CFR Part 395 — Hours of Service of Drivers :: § 395.1 Scope of rules in this part. (Part 3)",
+        "49 CFR Part 395 — Hours of Service of Drivers :: § 395.38 Incorporation by reference.",
+        "49 CFR Part 395 — Hours of Service of Drivers :: § 395.13 Drivers ordered out of service.",
+        "49 CFR Part 395 — Hours of Service of Drivers :: § 395.3 Maximum driving time for property-carrying vehicles."
+      ],
+      "answerPreview": "# Hours of Service – Daily Driving Limit for Local (Short-Haul) Drivers\n\nGreat question! The answer depends on whether you qualify as a **short-haul/local driver** under the Hours of Service regulations, and what type of vehicle you operate. Here's a thorough breakdown based on 49 CFR Part 395:\n\n---\n\n## 🚛 Property-Carrying (Freight) Local Driver — 150 Air-Mile Radius Exemption\n\nUnder **§ 395.1(e)(1)**, if you qualify as a short-haul driver operating within a **150 air-mile radius** of your norm",
+      "retrievalStatus": "pass",
+      "answerStatus": "pass",
+      "failedChecks": []
+    },
+    {
+      "id": "alcohol_pre_duty",
+      "category": "drug_alcohol",
+      "query": "how many hours before a driver shift can he drink alcohol",
+      "notes": "Maps to pre-duty alcohol prohibition.",
+      "enrichedQuery": "how many hours before a driver shift can he drink alcohol 382 207 pre duty use four hours safety sensitive functions alcohol",
+      "topSources": [
+        "49 CFR Part 382 — Controlled Substances and Alcohol Use and Testing :: § 382.207 Pre-duty use.",
+        "49 CFR Part 382 — Controlled Substances and Alcohol Use and Testing :: § 382.701 Drug and Alcohol Clearinghouse.",
+        "49 CFR Part 382 — Controlled Substances and Alcohol Use and Testing :: § 382.601 Employer obligation to promulgate a policy on the misuse of alcohol and use of controlled substances.",
+        "49 CFR Part 382 — Controlled Substances and Alcohol Use and Testing :: § 382.703 Driver consent to permit access to information in the Clearinghouse.",
+        "49 CFR Part 382 — Controlled Substances and Alcohol Use and Testing :: § 382.705 Reporting to the Clearinghouse. (Part 2)",
+        "49 CFR Part 382 — Controlled Substances and Alcohol Use and Testing :: § 382.307 Reasonable suspicion testing.",
+        "49 CFR Part 382 — Controlled Substances and Alcohol Use and Testing :: § 382.301 Pre-employment testing.",
+        "49 CFR Part 382 — Controlled Substances and Alcohol Use and Testing :: § 382.705 Reporting to the Clearinghouse."
+      ],
+      "answerPreview": "# Pre-Duty Alcohol Use for Commercial Drivers\n\nBased on **49 CFR § 382.207 – Pre-duty use**, the regulation is clear and direct:\n\n> *\"No driver shall perform safety-sensitive functions **within four hours** after using alcohol. No employer having actual knowledge that a driver has used alcohol within four hours shall permit a driver to perform or continue to perform safety-sensitive functions.\"*\n\n## Key Takeaways:\n\n- A driver must wait a **minimum of 4 hours** after consuming alcohol before perf",
+      "retrievalStatus": "pass",
+      "answerStatus": "pass",
+      "failedChecks": []
+    },
+    {
+      "id": "mvr_frequency",
+      "category": "driver_qualification",
+      "query": "how often do employers need to do a mvr",
+      "notes": "Should resolve to the annual MVR review requirement.",
+      "enrichedQuery": "how often do employers need to do a mvr 391 25 annual inquiry review of driving record motor vehicle record 12 months",
+      "topSources": [
+        "49 CFR Part 391 — Qualifications of Drivers and Longer Combination Vehicle Operators :: § 391.25 Annual inquiry and review of driving record.",
+        "49 CFR Part 391 — Qualifications of Drivers and Longer Combination Vehicle Operators :: § 391.51 General requirements for driver qualification files.",
+        "49 CFR Part 391 — Qualifications of Drivers and Longer Combination Vehicle Operators :: § 391.44 Physical qualification standards for an individual who does not satisfy, with the worse eye, either the distant visual acuity standard with corrective le",
+        "49 CFR Part 391 — Qualifications of Drivers and Longer Combination Vehicle Operators :: § 391.45 Persons who must be medically examined and certified.",
+        "49 CFR Part 391 — Qualifications of Drivers and Longer Combination Vehicle Operators :: § 391.67 Farm vehicle drivers of articulated commercial motor vehicles.",
+        "49 CFR Part 391 — Qualifications of Drivers and Longer Combination Vehicle Operators :: § 391.43 Medical examination; certificate of physical examination.",
+        "49 CFR Part 391 — Qualifications of Drivers and Longer Combination Vehicle Operators :: § 391.63 Multiple-employer drivers.",
+        "49 CFR Part 391 — Qualifications of Drivers and Longer Combination Vehicle Operators :: § 391.46 Physical qualification standards for an individual with diabetes mellitus treated with insulin for control."
+      ],
+      "answerPreview": "## MVR Frequency Requirements\n\nUnder **49 CFR § 391.25**, motor carriers are required to pull and review Motor Vehicle Records (MVRs) for their drivers on the following schedule:\n\n### Annual Inquiry (§ 391.25(a))\nEach motor carrier must, **at least once every 12 months**, make an inquiry to obtain the motor vehicle record of each driver it employs, covering **at least the preceding 12 months**, from each licensing authority where the driver held a commercial motor vehicle operator's license or p",
+      "retrievalStatus": "pass",
+      "answerStatus": "pass",
+      "failedChecks": []
+    },
+    {
+      "id": "tsa_hazmat_validity",
+      "category": "cdl_hazmat",
+      "query": "how long is the tsa federal background check good for",
+      "notes": "HazMat endorsement security threat assessment validity.",
+      "enrichedQuery": "how long is the tsa federal background check good for 383.141(d) hazardous materials endorsement for cdl hazmat endorsement security threat assessment renewed every 5 years or less hazmat endorsement renewal cycle",
+      "topSources": [
+        "49 CFR Part 383 — Commercial Driver's License Standards Requirements and Penalties :: § 383.141 General.",
+        "49 CFR Part 383 — Commercial Driver's License Standards Requirements and Penalties :: § 383.73 State procedures. (Part 2)",
+        "49 CFR Part 383 — Commercial Driver's License Standards Requirements and Penalties :: § 383.73 State procedures. (Part 3)",
+        "49 CFR Part 383 — Commercial Driver's License Standards Requirements and Penalties :: § 383.51 Disqualification of drivers. (Part 3)",
+        "49 CFR Part 383 — Commercial Driver's License Standards Requirements and Penalties :: § 383.71 Driver application and certification procedures. (Part 3)",
+        "49 CFR Part 383 — Commercial Driver's License Standards Requirements and Penalties :: § 383.51 Disqualification of drivers.",
+        "49 CFR Part 383 — Commercial Driver's License Standards Requirements and Penalties :: § 383.71 Driver application and certification procedures. (Part 2)",
+        "49 CFR Part 383 — Commercial Driver's License Standards Requirements and Penalties :: § 383.77 Substitute for knowledge and driving skills tests for drivers with military CMV experience."
+      ],
+      "answerPreview": "Based on the knowledge snippets provided, I can give you a specific answer related to the **TSA security threat assessment (background check) for the Hazardous Materials (HazMat) endorsement on a Commercial Driver's License (CDL)**, which is the TSA federal background check addressed in these documents.\n\n## TSA HazMat Endorsement Background Check — Validity Period\n\nAccording to **49 CFR § 383.141(d)**:\n\n> *\"Each State must require that hazardous materials endorsements be renewed every 5 years or",
+      "retrievalStatus": "pass",
+      "answerStatus": "pass",
+      "failedChecks": []
+    },
+    {
+      "id": "maintenance_record_retention",
+      "category": "maintenance",
+      "query": "how long do i need to keep vehicle records for maintenance",
+      "notes": "General vehicle maintenance record retention should hit 396.3(c).",
+      "enrichedQuery": "how long do i need to keep vehicle records for maintenance 396.3(c) record retention inspection repair and maintenance 1 year 6 months after the vehicle leaves the motor carrier control",
+      "topSources": [
+        "49 CFR Part 396 — Inspection Repair and Maintenance :: § 396.3 Inspection, repair, and maintenance.",
+        "49 CFR Part 396 — Inspection Repair and Maintenance :: § 396.17 Periodic inspection.",
+        "49 CFR Part 396 — Inspection Repair and Maintenance :: § 396.15 Driveaway-towaway operations and inspections.",
+        "49 CFR Part 396 — Inspection Repair and Maintenance :: § 396.9 Inspection of motor vehicles and intermodal equipment in operation.",
+        "49 CFR Part 396 — Inspection Repair and Maintenance :: § 396.12 Procedures for intermodal equipment providers to accept reports required by [§ 390.42(b) of this chapter](/current/title-49/section-390.42#p-390.42\\(b\\)).",
+        "49 CFR Part 396 — Inspection Repair and Maintenance :: Appendix A to Part 396—Minimum Periodic Inspection Standards",
+        "49 CFR Part 396 — Inspection Repair and Maintenance :: § 396.11 Driver vehicle inspection report(s). (Part 2)",
+        "49 CFR Part 396 — Inspection Repair and Maintenance :: Appendix A to Part 396—Minimum Periodic Inspection Standards (Part 4)"
+      ],
+      "answerPreview": "# Vehicle Maintenance Record Retention Requirements\n\nGreat question! Under **49 CFR Part 396 § 396.3(c)**, the federal regulations are clear on how long you must keep vehicle maintenance and inspection records. Here's a complete breakdown:\n\n---\n\n## Core Retention Rule (§ 396.3(c))\n\nMaintenance records required under § 396.3 must be retained:\n\n- **For 1 year** — while the vehicle is still under the motor carrier's control, kept at the location where the vehicle is either **housed or maintained**\n",
+      "retrievalStatus": "pass",
+      "answerStatus": "pass",
+      "failedChecks": []
+    },
+    {
+      "id": "dvir_retention",
+      "category": "maintenance",
+      "query": "how long do i keep a driver vehicle inspection report",
+      "notes": "DVIR retention should come from 396.11(a)(4).",
+      "enrichedQuery": "how long do i keep a driver vehicle inspection report 396.11(a)(4) driver vehicle inspection report three months certification of repairs",
+      "topSources": [
+        "49 CFR Part 396 — Inspection Repair and Maintenance :: § 396.11 Driver vehicle inspection report(s).",
+        "49 CFR Part 396 — Inspection Repair and Maintenance :: § 396.11 Driver vehicle inspection report(s). (Part 2)",
+        "49 CFR Part 396 — Inspection Repair and Maintenance :: § 396.9 Inspection of motor vehicles and intermodal equipment in operation.",
+        "49 CFR Part 396 — Inspection Repair and Maintenance :: § 396.15 Driveaway-towaway operations and inspections.",
+        "49 CFR Part 396 — Inspection Repair and Maintenance :: § 396.13 Driver inspection.",
+        "49 CFR Part 396 — Inspection Repair and Maintenance :: § 396.12 Procedures for intermodal equipment providers to accept reports required by [§ 390.42(b) of this chapter](/current/title-49/section-390.42#p-390.42\\(b\\)).",
+        "49 CFR Part 396 — Inspection Repair and Maintenance :: § 396.17 Periodic inspection.",
+        "49 CFR Part 396 — Inspection Repair and Maintenance :: § 396.21 Periodic inspection recordkeeping requirements."
+      ],
+      "answerPreview": "## Driver Vehicle Inspection Report (DVIR) Retention Period\n\nUnder **49 CFR § 396.11(a)(4)**, the retention requirement is clearly spelled out:\n\n> **\"Every motor carrier shall maintain the driver vehicle inspection report, the certification of repairs, and the certification of the driver's review for three months from the date the written report was prepared.\"**\n\n### What Must Be Retained for 3 Months:\n1. **The driver vehicle inspection report** itself\n2. **The certification of repairs** (confir",
+      "retrievalStatus": "pass",
+      "answerStatus": "pass",
+      "failedChecks": []
+    },
+    {
+      "id": "roadside_inspection_retention",
+      "category": "maintenance",
+      "query": "how long do i keep roadside inspection reports",
+      "notes": "Roadside inspection report retention should hit 396.9(d)(3).",
+      "enrichedQuery": "how long do i keep roadside inspection reports 396.9(d)(3) roadside inspection form 12 months inspection report retention",
+      "topSources": [
+        "49 CFR Part 396 — Inspection Repair and Maintenance :: § 396.9 Inspection of motor vehicles and intermodal equipment in operation.",
+        "49 CFR Part 396 — Inspection Repair and Maintenance :: § 396.12 Procedures for intermodal equipment providers to accept reports required by [§ 390.42(b) of this chapter](/current/title-49/section-390.42#p-390.42\\(b\\)).",
+        "49 CFR Part 396 — Inspection Repair and Maintenance :: § 396.17 Periodic inspection.",
+        "49 CFR Part 396 — Inspection Repair and Maintenance :: § 396.11 Driver vehicle inspection report(s). (Part 2)",
+        "49 CFR Part 387 — Minimum Levels of Financial Responsibility for Motor Carriers :: § 387.313 Forms and procedures.",
+        "49 CFR Part 396 — Inspection Repair and Maintenance :: § 396.15 Driveaway-towaway operations and inspections.",
+        "49 CFR Part 396 — Inspection Repair and Maintenance :: § 396.23 Equivalent to periodic inspection.",
+        "49 CFR Part 396 — Inspection Repair and Maintenance :: § 396.3 Inspection, repair, and maintenance."
+      ],
+      "answerPreview": "## Roadside Inspection Report Retention Requirements\n\nBased on **49 CFR § 396.9(d)(3)(ii)**, here is the specific requirement for keeping roadside inspection reports:\n\n---\n\n### The Rule\n\nWithin **15 days** following the date of the inspection, the motor carrier or intermodal equipment provider must:\n\n1. **Certify** that all violations noted have been corrected by completing the \"Signature of Carrier/Intermodal Equipment Provider Official, Title, and Date Signed\" portions of the form, **and**\n\n2.",
+      "retrievalStatus": "pass",
+      "answerStatus": "pass",
+      "failedChecks": []
+    },
+    {
+      "id": "missing_part_397_known_gap",
+      "category": "known_gap",
+      "query": "can a driver who has a delivery address drive off a hazmat route delivering fuel",
+      "notes": "Known corpus gap until Part 397 is added.",
+      "enrichedQuery": "can a driver who has a delivery address drive off a hazmat route delivering fuel 397.67 49 cfr part 397 hazardous materials routing route deviation delivery destination",
+      "topSources": [
+        "49 CFR Part 383 — Commercial Driver's License Standards Requirements and Penalties :: § 383.71 Driver application and certification procedures.",
+        "49 CFR Part 383 — Commercial Driver's License Standards Requirements and Penalties :: § 383.71 Driver application and certification procedures. (Part 3)",
+        "49 CFR Part 395 — Hours of Service of Drivers :: § 395.13 Drivers ordered out of service.",
+        "49 CFR Part 395 — Hours of Service of Drivers :: § 395.1 Scope of rules in this part.",
+        "49 CFR Part 391 — Qualifications of Drivers and Longer Combination Vehicle Operators :: § 391.49 Alternative physical qualification standards for the loss or impairment of limbs. (Part 3)",
+        "49 CFR Part 40 — DOT Drug and Alcohol Testing Procedures :: § 40.67 When and how is a directly observed urine collection conducted?",
+        "49 CFR Part 391 — Qualifications of Drivers and Longer Combination Vehicle Operators :: § 391.51 General requirements for driver qualification files.",
+        "49 CFR Part 391 — Qualifications of Drivers and Longer Combination Vehicle Operators :: § 391.15 Disqualification of drivers. (Part 2)"
+      ],
+      "answerPreview": "## Hazmat Route Deviation for Delivery Address\n\nThis is an important question regarding hazmat routing compliance. Based on the knowledge snippets provided, **I don't have that information in the current knowledge base.**\n\nThe specific regulation that would govern this situation — **49 CFR Part 397**, which covers the transportation of hazardous materials by motor vehicle, including routing requirements and permitted deviations for deliveries — is **not included in the available knowledge snippe",
+      "retrievalStatus": "skipped",
+      "answerStatus": "pass",
+      "failedChecks": []
+    }
+  ]
+}

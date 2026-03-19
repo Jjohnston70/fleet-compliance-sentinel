@@ -1,0 +1,20 @@
+Title: Data & Storage
+Source: https://github.com/railwayapp/docs/blob/f4594b3f032cd0266b636cdc9b6ff5e75113f851/content/docs/data-storage.md
+Original Path: docs/data-storage.md
+Section: docs
+
+---
+
+# Data & Storage
+
+Store and persist your application data on Railway with databases, volumes, and storage buckets.
+
+Railway offers storage solutions for your application data, from databases and persistent volumes to S3-compatible object storage.
+
+## Topics
+
+| Topic | Description |
+| ----- | ----------- |
+| [**Databases**](/databases) | Deploy PostgreSQL, MySQL, Redis, MongoDB, or any database via Docker images and templates. |
+| [**Volumes**](/volumes) | Persistent storage attached to your services. |
+| [**Storage Buckets**](/storage-buckets) | S3-compatible object storage for files and assets. |
