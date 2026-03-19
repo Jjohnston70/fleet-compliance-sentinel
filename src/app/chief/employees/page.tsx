@@ -2,8 +2,7 @@ import Link from 'next/link';
 import { auth } from '@clerk/nextjs/server';
 import { redirect } from 'next/navigation';
 import { isClerkEnabled } from '@/lib/clerk';
-import LocalRecordsPanel from '@/components/chief/LocalRecordsPanel';
-import { loadChiefData } from '@/lib/chief-data';
+import { loadChiefData, formatDueLabel } from '@/lib/chief-data';
 
 export const dynamic = 'force-dynamic';
 
@@ -23,73 +22,110 @@ export default async function ChiefEmployeesPage() {
             <h1>Employee roster</h1>
           </div>
           <div className="chief-action-row">
-            <Link href="/chief/employees/new" className="btn-primary">+ Add Employee</Link>
             <Link href="/chief" className="btn-secondary">Back to Chief</Link>
           </div>
         </div>
         <p className="chief-subcopy">
-          Local records are saved in your browser and can be exported as JSON for Firestore import.
-          Driver records are read-only and come from the imported source snapshot.
+          Employee records imported from the bulk upload spreadsheet. Driver compliance details are linked below.
         </p>
 
-        {/* Local records from browser */}
-        <LocalRecordsPanel
-          storeKey="chief:store:employees"
-          title="Local employees"
-          addHref="/chief/employees/new"
-          editHref={(id) => `/chief/employees/${id}/edit`}
-          archiveField="status"
-          archiveValue="archived"
-          statusField="status"
-          columns={[
-            { key: 'employeeId', label: 'ID' },
-            { key: 'firstName', label: 'First Name' },
-            { key: 'lastName', label: 'Last Name' },
-            { key: 'jobTitle', label: 'Title' },
-            { key: 'department', label: 'Dept' },
-            { key: 'workEmail', label: 'Email' },
-            { key: 'status', label: 'Status' },
-          ]}
-        />
+        <div className="chief-stats chief-stats-compact">
+          <article className="chief-stat-card">
+            <p className="chief-stat-label">Employees</p>
+            <p className="chief-stat-value">{data.employees.length}</p>
+          </article>
+          <article className="chief-stat-card">
+            <p className="chief-stat-label">Drivers</p>
+            <p className="chief-stat-value">{data.drivers.length}</p>
+          </article>
+        </div>
+
+        {/* Employee records from DB */}
+        {data.employees.length > 0 && (
+          <div className="chief-list-card">
+            <h3>Employees</h3>
+            <div className="chief-table-wrap">
+              <table className="chief-table">
+                <thead>
+                  <tr>
+                    <th>ID</th>
+                    <th>Name</th>
+                    <th>Title</th>
+                    <th>Dept</th>
+                    <th>Supervisor</th>
+                    <th>Email</th>
+                    <th>CDL</th>
+                    <th>Hire Date</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {data.employees.map((emp) => (
+                    <tr key={emp.employeeId}>
+                      <td className="chief-table-note">{emp.employeeId}</td>
+                      <td><strong>{emp.lastName}, {emp.firstName}</strong></td>
+                      <td>{emp.jobTitle}</td>
+                      <td>{emp.department}</td>
+                      <td className="chief-table-note">{emp.supervisor}</td>
+                      <td className="chief-table-note">{emp.workEmail}</td>
+                      <td>
+                        {emp.cdlClass ? (
+                          <span className="chief-chip">Class {emp.cdlClass}</span>
+                        ) : (
+                          <span className="chief-table-note">—</span>
+                        )}
+                      </td>
+                      <td className="chief-table-note">{emp.hireDate}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        )}
 
         {/* Driver compliance records */}
-        <div className="chief-list-card">
-          <h3>Driver records</h3>
-          <div className="chief-table-wrap">
-            <table className="chief-table">
-              <thead>
-                <tr>
-                  <th>Name</th>
-                  <th>CDL Class</th>
-                  <th>License State</th>
-                  <th>Medical Expiration</th>
-                  <th>Clearinghouse</th>
-                  <th></th>
-                </tr>
-              </thead>
-              <tbody>
-                {data.drivers.map((driver) => (
-                  <tr key={driver.personId}>
-                    <td><strong>{driver.driverName}</strong></td>
-                    <td>{driver.cdlClass}</td>
-                    <td>{driver.licenseState}</td>
-                    <td className="chief-table-note">{driver.medicalExpiration}</td>
-                    <td className="chief-table-note">{driver.clearinghouseStatus}</td>
-                    <td>
-                      <Link
-                        href={`/chief/compliance/drivers/${encodeURIComponent(driver.personId)}`}
-                        className="chief-inline-link"
-                        style={{ fontSize: '0.8rem' }}
-                      >
-                        View
-                      </Link>
-                    </td>
+        {data.drivers.length > 0 && (
+          <div className="chief-list-card">
+            <h3>Driver compliance</h3>
+            <div className="chief-table-wrap">
+              <table className="chief-table">
+                <thead>
+                  <tr>
+                    <th>Name</th>
+                    <th>CDL Class</th>
+                    <th>License State</th>
+                    <th>Medical Expiration</th>
+                    <th>Clearinghouse</th>
+                    <th></th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
+                </thead>
+                <tbody>
+                  {data.drivers.map((driver) => (
+                    <tr key={driver.personId}>
+                      <td><strong>{driver.driverName}</strong></td>
+                      <td>{driver.cdlClass}</td>
+                      <td>{driver.licenseState}</td>
+                      <td>
+                        {driver.medicalExpiration}
+                        <div className="chief-table-note">{formatDueLabel(driver.medicalExpiration)}</div>
+                      </td>
+                      <td className="chief-table-note">{driver.clearinghouseStatus}</td>
+                      <td>
+                        <Link
+                          href={`/chief/compliance/drivers/${encodeURIComponent(driver.personId)}`}
+                          className="chief-inline-link"
+                          style={{ fontSize: '0.8rem' }}
+                        >
+                          View
+                        </Link>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
           </div>
-        </div>
+        )}
       </section>
     </main>
   );

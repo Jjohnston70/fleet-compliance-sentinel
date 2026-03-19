@@ -85,7 +85,7 @@ export default async function ChiefAssetDetailPage({ params }: { params: Params 
                 <AssetStatusOverride
                   assetId={asset.assetId}
                   initialStatus={asset.status}
-                  statuses={data.assetStatuses}
+                  statuses={['Active', 'In Shop Reactive', 'In Shop Scheduled', 'Out of Service', 'Other']}
                 />
               </div>
               <div>

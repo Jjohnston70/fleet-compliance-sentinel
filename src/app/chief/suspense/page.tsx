@@ -9,7 +9,6 @@ import {
   getSuspenseStats,
 } from '@/lib/chief-data';
 import SuspenseCardStatus from '@/components/chief/SuspenseCardStatus';
-import LocalRecordsPanel from '@/components/chief/LocalRecordsPanel';
 
 export const dynamic = 'force-dynamic';
 
@@ -62,21 +61,6 @@ export default async function ChiefSuspensePage({ searchParams }: { searchParams
           This route reflects suspense items generated from the imported source snapshot. Each item is tied to a source
           record, owner email, due date, and alert state so scheduled email delivery can be added cleanly.
         </p>
-
-        <LocalRecordsPanel
-          storeKey="chief:store:suspense"
-          title="Local suspense items"
-          addHref="/chief/suspense/new"
-          editHref={(id) => `/chief/suspense/${encodeURIComponent(id)}/edit`}
-          statusField="status"
-          columns={[
-            { key: 'title', label: 'Title' },
-            { key: 'ownerEmail', label: 'Owner' },
-            { key: 'dueDate', label: 'Due' },
-            { key: 'severity', label: 'Severity' },
-            { key: 'status', label: 'Status' },
-          ]}
-        />
 
         <form className="chief-filter-bar" action="/chief/suspense">
           <div className="chief-filter-grid">

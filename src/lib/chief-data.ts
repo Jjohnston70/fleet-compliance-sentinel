@@ -108,6 +108,24 @@ export interface ChiefImportCollectionStat {
   count: number;
 }
 
+export interface ChiefEmployeeRecord {
+  employeeId: string;
+  firstName: string;
+  lastName: string;
+  jobTitle: string;
+  department: string;
+  supervisor: string;
+  workEmail: string;
+  workPhone: string;
+  hireDate: string;
+  assignedVehicle: string;
+  cdlClass: string;
+  cdlExpiration: string;
+  medicalExpiration: string;
+  hazmatEndorsement: string;
+  note: string;
+}
+
 export type SourceQuality = 'complete' | 'partial' | 'minimal';
 
 // ── Helpers ───────────────────────────────────────────────────────────────
@@ -371,6 +389,26 @@ function transformMaintenanceSchedule(raw: RawRow[]): ChiefMaintenanceEventRecor
   }));
 }
 
+function transformEmployees(raw: RawRow[]): ChiefEmployeeRecord[] {
+  return raw.map((r) => ({
+    employeeId: s(r['Employee ID']),
+    firstName: s(r['First Name']),
+    lastName: s(r['Last Name']),
+    jobTitle: s(r['Job Title']),
+    department: s(r['Department']),
+    supervisor: s(r['Supervisor']),
+    workEmail: s(r['Work Email']),
+    workPhone: s(r['Work Phone'], s(r['COMPANY PHONE'])),
+    hireDate: s(r['Hire Date']),
+    assignedVehicle: s(r['Assigned Vehicle']),
+    cdlClass: s(r['CDL Class']),
+    cdlExpiration: s(r['CDL Expiration']),
+    medicalExpiration: s(r['Medical Expiration']),
+    hazmatEndorsement: s(r['Hazmat Endorsement']),
+    note: s(r['Notes']),
+  }));
+}
+
 // ── Suspense generation from compliance deadlines ─────────────────────────
 
 function generateSuspenseFromDrivers(drivers: ChiefDriverComplianceRecord[]): ChiefSuspenseRecord[] {
@@ -448,8 +486,9 @@ function generateSuspenseFromAssets(assets: ChiefAssetRecord[]): ChiefSuspenseRe
 
 // ── Main data loader ──────────────────────────────────────────────────────
 
-interface ChiefData {
+export interface ChiefData {
   assets: ChiefAssetRecord[];
+  employees: ChiefEmployeeRecord[];
   drivers: ChiefDriverComplianceRecord[];
   permits: ChiefPermitRecord[];
   suspense: ChiefSuspenseRecord[];
@@ -520,6 +559,8 @@ export async function loadChiefData(): Promise<ChiefData> {
     (r) => r.dueDate
   );
 
+  const allEmployees = transformEmployees(rawEmployees);
+
   const allActivity = transformActivityLogs(rawActivity).reverse();
   const allMaintenance = [
     ...transformMaintenanceEvents(rawMaintenance),
@@ -528,6 +569,7 @@ export async function loadChiefData(): Promise<ChiefData> {
 
   return {
     assets: allAssets,
+    employees: allEmployees,
     drivers: allDrivers,
     permits: allPermits,
     suspense: allSuspense,

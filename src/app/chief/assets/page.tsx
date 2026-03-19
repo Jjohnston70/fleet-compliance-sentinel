@@ -8,7 +8,6 @@ import {
   formatDueLabel,
   getAssetStats,
 } from '@/lib/chief-data';
-import LocalRecordsPanel from '@/components/chief/LocalRecordsPanel';
 
 export const dynamic = 'force-dynamic';
 
@@ -60,23 +59,6 @@ export default async function ChiefAssetsPage({ searchParams }: { searchParams: 
           This module now shows the imported asset snapshot from the workbook and mapped source layer, with search,
           filters, and per-asset detail views on the live records.
         </p>
-
-        <LocalRecordsPanel
-          storeKey="chief:store:assets"
-          title="Local assets"
-          addHref="/chief/assets/new"
-          archiveField="status"
-          archiveValue="retired"
-          statusField="status"
-          columns={[
-            { key: 'assetId', label: 'ID' },
-            { key: 'name', label: 'Name' },
-            { key: 'category', label: 'Category' },
-            { key: 'location', label: 'Location' },
-            { key: 'nextServiceDue', label: 'Next Due' },
-            { key: 'status', label: 'Status' },
-          ]}
-        />
 
         <form className="chief-filter-bar" action="/chief/assets">
           <div className="chief-filter-grid">
