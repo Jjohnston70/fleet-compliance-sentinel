@@ -8,6 +8,7 @@ export type CollectionKey =
   | 'maintenance_schedule'
   | 'activity_log'
   | 'maintenance_tracker'
+  | 'maintenance_line_items'
   | 'colorado_contacts'
   | 'emergency_contacts';
 
@@ -272,22 +273,49 @@ export const IMPORT_SCHEMAS: Record<CollectionKey, CollectionSchema> = {
     },
   },
   maintenance_tracker: {
-    label: 'Maintenance Tracker',
-    sheetName: 'Maintenance Tracker',
+    label: 'Maintenance Tracker (Invoices)',
+    sheetName: 'Invoices',
     fields: {
-      'Maintenance ID':   { required: true },
-      'Asset ID':         { required: true },
-      'Asset Name':       {},
-      'Service Type':     { required: true },
-      'Scheduled Date':   { isDate: true },
+      'Invoice ID':       { required: true },
       'Completed Date':   { isDate: true },
-      'Status':           { required: true, oneOf: ['Completed', 'In Progress', 'Scheduled', 'Cancelled'] },
+      'Vendor':           { required: true },
+      'PO Number':        {},
+      'Unit Number':      {},
+      'Asset Name':       {},
+      'Year':             {},
+      'Make':             {},
+      'Model':            {},
+      'Plate Number':     {},
+      'VIN':              {},
+      'Engine':           {},
+      'Mileage Hours':    {},
+      'Written By':       {},
       'Parts Cost':       {},
       'Labor Cost':       {},
-      'Total Cost':       {},
+      'Shop Supplies':    {},
+      'Sales Tax':        {},
+      'Invoice Total':    {},
+      'Line Item Count':  {},
+      'Work Requested':   {},
+      'Work Completed':   {},
+      'Source File':      {},
+    },
+  },
+  maintenance_line_items: {
+    label: 'Maintenance Line Items',
+    sheetName: 'Line Items',
+    fields: {
+      'Line Item ID':     { required: true },
+      'Invoice ID':       { required: true },
+      'Completed Date':   { isDate: true },
       'Vendor':           {},
-      'Invoice Number':   {},
-      'Notes':            {},
+      'Unit Number':      {},
+      'Asset Name':       {},
+      'VIN':              {},
+      'Qty':              {},
+      'Item Description': { required: true },
+      'Unit Price':       {},
+      'Line Amount':      {},
     },
   },
   colorado_contacts: {
