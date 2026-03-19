@@ -4,9 +4,9 @@ import re
 import time
 import uuid
 from collections import defaultdict
-from difflib import SequenceMatcher
 from pathlib import Path
 from typing import List, Optional
+from urllib.parse import quote
 
 import httpx
 from fastapi import FastAPI, Header, HTTPException
@@ -17,9 +17,74 @@ APP_STARTED_AT = time.time()
 APP_VERSION = os.getenv("PENNY_API_VERSION", "0.1.0")
 PENNY_API_KEY = os.getenv("PENNY_API_KEY", "")
 ANTHROPIC_API_KEY = os.getenv("ANTHROPIC_API_KEY", "")
-ANTHROPIC_MODEL = os.getenv("ANTHROPIC_MODEL", "claude-3-5-haiku-latest")
+ANTHROPIC_MODEL = os.getenv("ANTHROPIC_MODEL", "claude-sonnet-4-6")
+ANTHROPIC_MAX_TOKENS = int(os.getenv("ANTHROPIC_MAX_TOKENS", "4000"))
+ANTHROPIC_GENERAL_FALLBACK_MODEL = os.getenv("ANTHROPIC_GENERAL_FALLBACK_MODEL", ANTHROPIC_MODEL)
+ANTHROPIC_GENERAL_FALLBACK_MAX_TOKENS = int(os.getenv("ANTHROPIC_GENERAL_FALLBACK_MAX_TOKENS", "1800"))
+ENABLE_GENERAL_FALLBACK = os.getenv("ENABLE_GENERAL_FALLBACK", "false").strip().lower() in {"1", "true", "yes", "on"}
+OPENAI_API_KEY = os.getenv("OPENAI_API_KEY", "")
+OPENAI_MODEL = os.getenv("OPENAI_MODEL", "gpt-4o-mini")
+OPENAI_MAX_TOKENS = int(os.getenv("OPENAI_MAX_TOKENS", str(ANTHROPIC_MAX_TOKENS)))
+GEMINI_API_KEY = os.getenv("GEMINI_API_KEY", "")
+GEMINI_MODEL = os.getenv("GEMINI_MODEL", "gemini-2.5-flash")
+GEMINI_MAX_TOKENS = int(os.getenv("GEMINI_MAX_TOKENS", str(ANTHROPIC_MAX_TOKENS)))
+OLLAMA_BASE_URL = os.getenv("OLLAMA_BASE_URL", "http://127.0.0.1:11434").rstrip("/")
+OLLAMA_MODEL = os.getenv("OLLAMA_MODEL", "llama3.1")
+OLLAMA_MAX_TOKENS = int(os.getenv("OLLAMA_MAX_TOKENS", str(ANTHROPIC_MAX_TOKENS)))
+LLM_PROVIDER = os.getenv("LLM_PROVIDER", "anthropic").strip().lower()
 MAX_QUERY_CHARS = int(os.getenv("MAX_QUERY_CHARS", "2500"))
+FALLBACK_MAX_CHARS = int(os.getenv("FALLBACK_MAX_CHARS", "6000"))
 DATA_PATH = Path(os.getenv("KNOWLEDGE_STORE_PATH", "./data/knowledge.json"))
+SUPPORTED_LLM_PROVIDERS = {"anthropic", "openai", "gemini", "ollama", "none"}
+SEARCH_STOPWORDS = {
+    "a",
+    "an",
+    "and",
+    "are",
+    "be",
+    "can",
+    "define",
+    "do",
+    "does",
+    "for",
+    "how",
+    "i",
+    "in",
+    "is",
+    "it",
+    "of",
+    "on",
+    "or",
+    "please",
+    "show",
+    "summarize",
+    "tell",
+    "the",
+    "this",
+    "to",
+    "what",
+    "whats",
+    "which",
+}
+
+SYSTEM_PROMPT = (
+    "You are Pipeline Penny, a business knowledge assistant for True North Data Strategies. "
+    "Answer ONLY from the provided knowledge snippets. "
+    "When answering, prioritize documents whose TITLE closely matches the user's question — "
+    "do not pull answers from loosely related documents. "
+    "If the user asks in plain-language, answer from the closest directly relevant regulation when the snippets substantively establish the answer. "
+    "Do not refuse when a provided section clearly answers the question in different wording. "
+    "Give complete, thorough answers — do not truncate or summarize prematurely. "
+    "If the answer is not in the provided snippets, say clearly: "
+    "'I don't have that information in the current knowledge base.'"
+)
+GENERAL_FALLBACK_SYSTEM_PROMPT = (
+    "You are Pipeline Penny. The requested answer was not found in the user's private knowledge base. "
+    "Provide a clearly-labeled general-knowledge answer that is practical and concise. "
+    "Start with: 'General knowledge fallback (not from your uploaded docs):'. "
+    "Do not claim the response came from private documents."
+)
+GENERAL_FALLBACK_LABEL = "general knowledge fallback (not from your uploaded docs):"
 
 origins = [origin.strip() for origin in os.getenv("CORS_ORIGINS", "*").split(",") if origin.strip()]
 
@@ -42,6 +107,10 @@ class KnowledgeDoc(BaseModel):
 
 class QueryRequest(BaseModel):
     query: str = Field(..., min_length=2, max_length=MAX_QUERY_CHARS)
+    llm_provider: Optional[str] = None
+    llm_model: Optional[str] = None
+    skill_mode: Optional[str] = None
+    allow_general_fallback: Optional[bool] = False
 
 
 class IngestDocRequest(BaseModel):
@@ -54,10 +123,13 @@ class IngestRequest(BaseModel):
     documents: List[IngestDocRequest]
 
 
-class PruneRequest(BaseModel):
-    include_source_prefixes: List[str] = Field(default_factory=list)
-    exclude_source_prefixes: List[str] = Field(default_factory=list)
-    dry_run: bool = False
+class ReplaceRequest(BaseModel):
+    documents: List[IngestDocRequest]
+
+
+class SearchDebugRequest(BaseModel):
+    query: str = Field(..., min_length=2, max_length=MAX_QUERY_CHARS)
+    limit: int = Field(default=8, ge=1, le=25)
 
 
 def read_knowledge_store() -> List[KnowledgeDoc]:
@@ -77,103 +149,9 @@ def write_knowledge_store(rows: List[KnowledgeDoc]) -> None:
 
 KNOWLEDGE = read_knowledge_store()
 
-STOP_WORDS = {
-    "the",
-    "and",
-    "for",
-    "with",
-    "that",
-    "this",
-    "from",
-    "into",
-    "what",
-    "where",
-    "when",
-    "which",
-    "about",
-    "your",
-    "their",
-    "there",
-    "please",
-    "document",
-    "summary",
-    "summarize",
-}
-
 
 def doc_key(title: str, source: Optional[str]) -> str:
     return f"{title.strip().lower()}::{(source or '').strip().lower()}"
-
-
-def normalize_prefixes(prefixes: List[str]) -> List[str]:
-    return [prefix.strip() for prefix in prefixes if prefix and prefix.strip()]
-
-
-def source_has_prefix(source: Optional[str], prefixes: List[str]) -> bool:
-    if not prefixes:
-        return False
-    source_value = (source or "").strip()
-    return any(source_value.startswith(prefix) for prefix in prefixes)
-
-
-def normalize_text(text: str) -> str:
-    cleaned = re.sub(r"[^a-z0-9]+", " ", text.lower())
-    return re.sub(r"\s+", " ", cleaned).strip()
-
-
-def tokenize_search_terms(text: str) -> List[str]:
-    tokens = normalize_text(text).split()
-    return [token for token in tokens if len(token) > 2 and token not in STOP_WORDS]
-
-
-def extract_document_title_intent(query: str) -> Optional[str]:
-    q = query.strip()
-    patterns = [
-        r"^\s*(?:please\s+)?summarize(?:\s+the)?\s+document\s*[:\-]\s*(.+)$",
-        r"^\s*(?:please\s+)?summarize(?:\s+the)?\s+document\s+titled\s+(.+)$",
-    ]
-    for pattern in patterns:
-        match = re.match(pattern, q, flags=re.IGNORECASE)
-        if not match:
-            continue
-        title = match.group(1).strip().strip("\"'“”")
-        if title:
-            return title
-    return None
-
-
-def find_best_title_match(title_query: str) -> Optional[KnowledgeDoc]:
-    target_norm = normalize_text(title_query)
-    if not target_norm:
-        return None
-
-    target_tokens = set(tokenize_search_terms(title_query))
-    best_doc: Optional[KnowledgeDoc] = None
-    best_score = 0.0
-
-    for doc in KNOWLEDGE:
-        title_norm = normalize_text(doc.title)
-        score = 0.0
-
-        if title_norm == target_norm:
-            return doc
-
-        if target_norm in title_norm or title_norm in target_norm:
-            score += 6.0
-
-        similarity = SequenceMatcher(None, target_norm, title_norm).ratio()
-        score += similarity * 4.0
-
-        if target_tokens:
-            doc_tokens = set(tokenize_search_terms(doc.title))
-            overlap = len(target_tokens & doc_tokens) / len(target_tokens)
-            score += overlap * 5.0
-
-        if score > best_score:
-            best_score = score
-            best_doc = doc
-
-    return best_doc if best_doc and best_score >= 5.0 else None
 
 
 def infer_category(source: Optional[str]) -> str:
@@ -185,6 +163,42 @@ def infer_category(source: Optional[str]) -> str:
     return first.replace("_", " ").replace("-", " ").strip() or "General"
 
 
+def clamp(value: int, minimum: int, maximum: int) -> int:
+    return max(minimum, min(value, maximum))
+
+
+def normalize_provider(raw: Optional[str]) -> Optional[str]:
+    if not raw or not isinstance(raw, str):
+        return None
+    value = raw.strip().lower()
+    if not value:
+        return None
+    return value if value in SUPPORTED_LLM_PROVIDERS else None
+
+
+def clean_model_name(raw: Optional[str], fallback: str) -> str:
+    if not raw or not isinstance(raw, str):
+        return fallback
+    value = raw.strip()
+    if not value:
+        return fallback
+    return value[:120]
+
+
+def resolve_provider_and_model(payload_provider: Optional[str], payload_model: Optional[str]) -> tuple[str, str]:
+    provider = normalize_provider(payload_provider) or normalize_provider(LLM_PROVIDER) or "anthropic"
+
+    if provider == "anthropic":
+        return provider, clean_model_name(payload_model, ANTHROPIC_MODEL)
+    if provider == "openai":
+        return provider, clean_model_name(payload_model, OPENAI_MODEL)
+    if provider == "gemini":
+        return provider, clean_model_name(payload_model, GEMINI_MODEL)
+    if provider == "ollama":
+        return provider, clean_model_name(payload_model, OLLAMA_MODEL)
+    return "none", "fallback"
+
+
 def verify_api_key(x_penny_api_key: Optional[str]) -> None:
     if not PENNY_API_KEY:
         return
@@ -192,34 +206,280 @@ def verify_api_key(x_penny_api_key: Optional[str]) -> None:
         raise HTTPException(status_code=401, detail="Unauthorized")
 
 
-def search_docs(query: str, limit: int = 5) -> List[KnowledgeDoc]:
-    title_intent = extract_document_title_intent(query)
-    if title_intent:
-        direct = find_best_title_match(title_intent)
-        if direct:
-            return [direct]
+def normalize_text_for_match(text: str) -> str:
+    lowered = text.lower()
+    cleaned = re.sub(r"[^a-z0-9]+", " ", lowered)
+    return re.sub(r"\s+", " ", cleaned).strip()
 
-    normalized_query = normalize_text(title_intent or query)
-    terms = tokenize_search_terms(title_intent or query)
+
+def extract_search_terms(query: str) -> List[str]:
+    query_norm = normalize_text_for_match(query)
+    raw_terms = [part for part in query_norm.split() if part]
+    preferred_terms = [
+        part
+        for part in raw_terms
+        if (part.isdigit() or len(part) > 2) and part not in SEARCH_STOPWORDS
+    ]
+    fallback_terms = [part for part in raw_terms if part.isdigit() or len(part) > 2]
+    seen = set()
+    ordered_terms = preferred_terms or fallback_terms
+    unique_terms = []
+    for term in ordered_terms:
+        if term in seen:
+            continue
+        seen.add(term)
+        unique_terms.append(term)
+    return unique_terms
+
+
+def extract_citation_terms(query: str) -> List[str]:
+    citations = re.findall(r"\b\d{3}\.\d+(?:\([a-z0-9]+\))*\b", query.lower())
+    seen = set()
+    ordered = []
+    for citation in citations:
+        if citation in seen:
+            continue
+        seen.add(citation)
+        ordered.append(citation)
+    return ordered
+
+
+def extract_part_terms(query: str) -> List[str]:
+    parts: List[str] = []
+    for match in re.findall(r"\bpart\s+(\d{3})\b", query.lower()):
+        if match not in parts:
+            parts.append(match)
+
+    for citation in extract_citation_terms(query):
+        part = citation.split(".", 1)[0]
+        if part not in parts:
+            parts.append(part)
+
+    query_norm = normalize_text_for_match(query)
+    keyword_part_map = {
+        "hours of service": "395",
+        "short haul": "395",
+        "150 air mile": "395",
+        "maintenance": "396",
+        "driver vehicle inspection report": "396",
+        "roadside inspection": "396",
+        "mvr": "391",
+        "driver qualification": "391",
+        "pre duty alcohol": "382",
+        "security threat assessment": "383",
+    }
+    for phrase, part in keyword_part_map.items():
+        if phrase in query_norm and part not in parts:
+            parts.append(part)
+    return parts
+
+
+def enrich_query_for_search(query: str) -> str:
+    query_norm = normalize_text_for_match(query)
+    extras: List[str] = []
+
+    if ("drink" in query_norm or "alcohol" in query_norm or "alchohol" in query_norm) and (
+        "shift" in query_norm or "duty" in query_norm or "drive" in query_norm or "driving" in query_norm
+    ):
+        extras.extend(["382 207", "pre duty use", "four hours", "safety sensitive functions", "alcohol"])
+
+    if "mvr" in query_norm or "motor vehicle record" in query_norm or "driving record" in query_norm:
+        extras.extend(["391 25", "annual inquiry", "review of driving record", "motor vehicle record", "12 months"])
+
+    if "tsa" in query_norm or "background check" in query_norm or "security threat assessment" in query_norm:
+        extras.extend(
+            [
+                "383.141(d)",
+                "hazardous materials endorsement",
+                "for cdl hazmat endorsement",
+                "security threat assessment",
+                "renewed every 5 years or less",
+                "hazmat endorsement renewal cycle",
+            ]
+        )
+
+    if "dvir" in query_norm or "driver vehicle inspection report" in query_norm:
+        extras.extend(["396.11(a)(4)", "driver vehicle inspection report", "three months", "certification of repairs"])
+
+    if "roadside inspection" in query_norm:
+        extras.extend(["396.9(d)(3)", "roadside inspection form", "12 months", "inspection report retention"])
+
+    if (
+        ("hours of service" in query_norm or "hos" in query_norm or "hours" in query_norm or "drive a day" in query_norm)
+        and ("local" in query_norm or "short haul" in query_norm or "150 mile" in query_norm or "150 air mile" in query_norm)
+    ):
+        extras.extend(
+            [
+                "395.1(e)",
+                "395.3",
+                "short haul exception",
+                "150 air-mile radius driver",
+                "11 hours",
+                "14th hour",
+                "normal work reporting location",
+            ]
+        )
+
+    if (
+        ("hazmat" in query_norm or "fuel delivery" in query_norm or "delivering fuel" in query_norm)
+        and ("route" in query_norm or "delivery address" in query_norm or "address" in query_norm or "deviat" in query_norm)
+    ):
+        extras.extend(["397.67", "49 cfr part 397", "hazardous materials routing", "route deviation", "delivery destination"])
+
+    if (
+        ("maintenance" in query_norm or "inspection report" in query_norm or "vehicle records" in query_norm)
+        and "driver vehicle inspection report" not in query_norm
+        and "dvir" not in query_norm
+        and "roadside inspection" not in query_norm
+        and ("keep" in query_norm or "retention" in query_norm or "retain" in query_norm or "how long" in query_norm)
+    ):
+        extras.extend(
+            [
+                "396.3(c)",
+                "record retention",
+                "inspection repair and maintenance",
+                "1 year",
+                "6 months after the vehicle leaves the motor carrier control",
+            ]
+        )
+
+    if not extras:
+        return query
+
+    return f"{query} {' '.join(extras)}"
+
+
+def extract_title_request(query: str) -> Optional[str]:
+    q = query.strip()
+    if not q:
+        return None
+
+    patterns = [
+        r"^summarize\s+(?:the\s+)?document\s*:\s*(.+)$",
+        r"^summarize\s+(?:the\s+)?doc(?:ument)?\s*:\s*(.+)$",
+        r"^what\s+is\s+(.+)$",
+        r"^define\s+(.+)$",
+    ]
+
+    candidate = None
+    for pattern in patterns:
+        match = re.match(pattern, q, re.IGNORECASE)
+        if match:
+            candidate = match.group(1).strip()
+            break
+
+    if not candidate:
+        return None
+
+    candidate = candidate.strip(" \t\n\r\"'`.,!?;:")
+    candidate = re.sub(r"^(the|a|an)\s+", "", candidate, flags=re.IGNORECASE).strip()
+    if len(candidate) < 3:
+        return None
+    return candidate[:250]
+
+
+def find_best_title_doc(title_query: str, docs: List[KnowledgeDoc]) -> Optional[KnowledgeDoc]:
+    target = normalize_text_for_match(title_query)
+    if len(target) < 3:
+        return None
+
+    target_tokens = set(target.split())
+    if not target_tokens:
+        return None
+
+    best_doc = None
+    best_score = 0.0
+    for doc in docs:
+        title = normalize_text_for_match(doc.title)
+        if not title:
+            continue
+
+        title_tokens = set(title.split())
+        if not title_tokens:
+            continue
+
+        if title == target:
+            score = 1.0
+        elif target in title or title in target:
+            overlap = len(target_tokens & title_tokens) / max(1, len(target_tokens | title_tokens))
+            score = 0.85 + (0.15 * overlap)
+        else:
+            overlap = len(target_tokens & title_tokens) / max(1, len(target_tokens | title_tokens))
+            score = overlap
+
+        if score > best_score:
+            best_score = score
+            best_doc = doc
+
+    return best_doc if best_doc and best_score >= 0.45 else None
+
+
+def search_docs_with_scores(query: str, limit: int = 5) -> List[tuple[int, KnowledgeDoc]]:
+    enriched_query = enrich_query_for_search(query)
+    query_norm = normalize_text_for_match(enriched_query)
+    terms = extract_search_terms(enriched_query)
+    citations = extract_citation_terms(enriched_query)
+    part_terms = extract_part_terms(enriched_query)
     if not terms:
         return []
 
+    bigrams = [f"{terms[i]} {terms[i + 1]}" for i in range(len(terms) - 1)]
     scored = []
     for doc in KNOWLEDGE:
-        title_lower = normalize_text(doc.title)
-        content_lower = normalize_text(doc.content)
+        title_norm = normalize_text_for_match(doc.title)
+        content_norm = normalize_text_for_match(doc.content)
+        title_raw = doc.title.lower()
+        content_raw = doc.content.lower()
+        part_match = re.search(r"\b(?:part|§)\s*(\d{3})", title_raw)
+        doc_part = part_match.group(1) if part_match else None
 
-        # Title matches are weighted 10x to prevent content-frequency false positives
-        title_score = sum(title_lower.count(term) * 12 for term in terms)
-        content_score = sum(content_lower.count(term) for term in terms)
-        phrase_bonus = 18 if normalized_query and normalized_query in title_lower else 0
-        score = title_score + content_score + phrase_bonus
+        # Strongly prefer title alignment over content frequency.
+        title_score = 0
+        content_score = 0
+        for term in terms:
+            title_hits = title_norm.count(term)
+            content_hits = content_norm.count(term)
+            weight = 40 if term.isdigit() else 25
+            content_weight = 4 if term.isdigit() else 2
+            title_score += title_hits * weight
+            content_score += content_hits * content_weight
+
+        citation_score = 0
+        for citation in citations:
+            if citation in title_raw:
+                citation_score += 900
+            elif citation in content_raw:
+                citation_score += 180
+
+        phrase_score = 0
+        if query_norm and query_norm in title_norm:
+            phrase_score += 600
+        if title_norm and len(title_norm) >= 8 and title_norm in query_norm:
+            phrase_score += 450
+        phrase_score += sum(50 for bg in bigrams if bg in title_norm)
+        phrase_score += sum(30 for bg in bigrams if bg in content_norm)
+
+        section_score = 120 if re.search(r"§\s*\d+\.\d+", doc.title) else 0
+        part_score = 0
+        if part_terms and doc_part in part_terms:
+            part_score += 280
+        elif part_terms and doc_part and doc_part not in part_terms:
+            part_score -= 180
+        appendix_penalty = 0
+        if "appendix" in title_raw and not any(term in query_norm for term in ["appendix", "eld", "electronic logging"]):
+            appendix_penalty = -240
+
+        score = phrase_score + title_score + content_score + citation_score + section_score + part_score + appendix_penalty
 
         if score > 0:
             scored.append((score, doc))
 
     scored.sort(key=lambda item: item[0], reverse=True)
-    return [item[1] for item in scored[:limit]]
+    return scored[:limit]
+
+
+def search_docs(query: str, limit: int = 5) -> List[KnowledgeDoc]:
+    return [item[1] for item in search_docs_with_scores(query, limit=limit)]
 
 
 def build_fallback_answer(query: str, hits: List[KnowledgeDoc]) -> str:
@@ -230,32 +490,61 @@ def build_fallback_answer(query: str, hits: List[KnowledgeDoc]) -> str:
         )
 
     top = hits[0]
-    preview = top.content[:380].strip()
+    preview = top.content[: max(500, FALLBACK_MAX_CHARS)].strip()
     return f"Based on '{top.title}', here is the closest match for '{query}':\n\n{preview}"
 
 
-async def build_anthropic_answer(query: str, hits: List[KnowledgeDoc]) -> str:
-    if not ANTHROPIC_API_KEY:
-        return build_fallback_answer(query, hits)
-
+def build_context(query: str, hits: List[KnowledgeDoc]) -> str:
     context_blocks = []
     for doc in hits:
         context_blocks.append(f"TITLE: {doc.title}\nSOURCE: {doc.source or 'n/a'}\nCONTENT:\n{doc.content[:4000]}")
-
     context = "\n\n---\n\n".join(context_blocks) if context_blocks else "No matching docs were found."
+    return f"User question: {query}\n\nKnowledge:\n{context}"
+
+
+def is_knowledge_base_miss_answer(answer: str) -> bool:
+    text = (answer or "").strip().lower()
+    if not text:
+        return False
+
+    if text.startswith(GENERAL_FALLBACK_LABEL):
+        return False
+
+    if "knowledge base" not in text and "knowledge snippet" not in text and "knowledge snippets" not in text:
+        return False
+
+    explicit_phrases = [
+        "i don't have that information in the current knowledge base.",
+        "i don't have specific",
+        "i could not find a confident answer in the current knowledge base.",
+        "does not appear in any of the provided knowledge snippets",
+        "does not appear in any of the knowledge snippets",
+        "not contained in my current knowledge base snippets",
+        "not in the current knowledge base",
+        "not in my current knowledge base",
+        "not in the provided knowledge snippets",
+    ]
+    if any(phrase in text for phrase in explicit_phrases):
+        return True
+
+    patterns = [
+        r"\bi (?:do not|don't|could not|can't|cannot) have\b.{0,140}\bknowledge (?:base|snippet|snippets)\b",
+        r"\b(?:does not|doesn't|is not|isn't) (?:appear|exist|exist in|contained|included|available|present)\b.{0,140}\bknowledge (?:base|snippet|snippets)\b",
+        r"\bnot (?:in|contained in|included in|available in)\b.{0,140}\bknowledge (?:base|snippet|snippets)\b",
+    ]
+    return any(re.search(pattern, text) for pattern in patterns)
+
+
+async def build_anthropic_answer(query: str, hits: List[KnowledgeDoc], model_name: str) -> str:
+    if not ANTHROPIC_API_KEY:
+        return build_fallback_answer(query, hits)
+
+    prompt = build_context(query, hits)
     payload = {
-        "model": ANTHROPIC_MODEL,
-        "max_tokens": 2000,
-        "system": (
-            "You are Pipeline Penny, a business knowledge assistant for True North Data Strategies. "
-            "Answer ONLY from the provided knowledge snippets. "
-            "When answering, prioritize documents whose TITLE closely matches the user's question — "
-            "do not pull answers from loosely related documents. "
-            "Give complete, thorough answers — do not truncate or summarize prematurely. "
-            "If the answer is not in the provided snippets, say clearly: "
-            "'I don't have that information in the current knowledge base.'"
-        ),
-        "messages": [{"role": "user", "content": f"User question: {query}\n\nKnowledge:\n{context}"}],
+        "model": model_name,
+        "max_tokens": clamp(ANTHROPIC_MAX_TOKENS, 512, 8192),
+        "system": SYSTEM_PROMPT,
+        "messages": [{"role": "user", "content": prompt}],
     }
 
     headers = {
@@ -265,7 +554,7 @@ async def build_anthropic_answer(query: str, hits: List[KnowledgeDoc]) -> str:
     }
 
     try:
-        async with httpx.AsyncClient(timeout=35.0) as client:
+        async with httpx.AsyncClient(timeout=60.0) as client:
             response = await client.post("https://api.anthropic.com/v1/messages", headers=headers, json=payload)
             response.raise_for_status()
             data = response.json()
@@ -278,6 +567,136 @@ async def build_anthropic_answer(query: str, hits: List[KnowledgeDoc]) -> str:
         return build_fallback_answer(query, hits)
 
 
+async def build_anthropic_general_fallback_answer(query: str) -> str:
+    if not ANTHROPIC_API_KEY:
+        return ""
+
+    payload = {
+        "model": clean_model_name(ANTHROPIC_GENERAL_FALLBACK_MODEL, ANTHROPIC_MODEL),
+        "max_tokens": clamp(ANTHROPIC_GENERAL_FALLBACK_MAX_TOKENS, 256, 8192),
+        "system": GENERAL_FALLBACK_SYSTEM_PROMPT,
+        "messages": [{"role": "user", "content": query}],
+    }
+    headers = {
+        "x-api-key": ANTHROPIC_API_KEY,
+        "anthropic-version": "2023-06-01",
+        "content-type": "application/json",
+    }
+
+    try:
+        async with httpx.AsyncClient(timeout=60.0) as client:
+            response = await client.post("https://api.anthropic.com/v1/messages", headers=headers, json=payload)
+            response.raise_for_status()
+            data = response.json()
+
+        parts = data.get("content", [])
+        text_parts = [part.get("text", "") for part in parts if part.get("type") == "text"]
+        answer = "\n".join(part.strip() for part in text_parts if part.strip())
+        return answer.strip()
+    except Exception:
+        return ""
+
+
+async def build_openai_answer(query: str, hits: List[KnowledgeDoc], model_name: str) -> str:
+    if not OPENAI_API_KEY:
+        return build_fallback_answer(query, hits)
+
+    prompt = build_context(query, hits)
+    payload = {
+        "model": model_name,
+        "messages": [
+            {"role": "system", "content": SYSTEM_PROMPT},
+            {"role": "user", "content": prompt},
+        ],
+        "max_tokens": clamp(OPENAI_MAX_TOKENS, 256, 8192),
+        "temperature": 0.2,
+    }
+    headers = {
+        "Authorization": f"Bearer {OPENAI_API_KEY}",
+        "content-type": "application/json",
+    }
+
+    try:
+        async with httpx.AsyncClient(timeout=60.0) as client:
+            response = await client.post("https://api.openai.com/v1/chat/completions", headers=headers, json=payload)
+            response.raise_for_status()
+            data = response.json()
+
+        choices = data.get("choices", [])
+        message = choices[0].get("message", {}) if choices else {}
+        answer = message.get("content", "")
+        return answer.strip() or build_fallback_answer(query, hits)
+    except Exception:
+        return build_fallback_answer(query, hits)
+
+
+async def build_gemini_answer(query: str, hits: List[KnowledgeDoc], model_name: str) -> str:
+    if not GEMINI_API_KEY:
+        return build_fallback_answer(query, hits)
+
+    prompt = build_context(query, hits)
+    payload = {
+        "system_instruction": {"parts": [{"text": SYSTEM_PROMPT}]},
+        "contents": [{"parts": [{"text": prompt}]}],
+        "generationConfig": {
+            "temperature": 0.2,
+            "maxOutputTokens": clamp(GEMINI_MAX_TOKENS, 256, 8192),
+        },
+    }
+
+    encoded_model = quote(model_name, safe="")
+    url = f"https://generativelanguage.googleapis.com/v1beta/models/{encoded_model}:generateContent?key={GEMINI_API_KEY}"
+
+    try:
+        async with httpx.AsyncClient(timeout=60.0) as client:
+            response = await client.post(url, json=payload)
+            response.raise_for_status()
+            data = response.json()
+
+        candidates = data.get("candidates", [])
+        parts = candidates[0].get("content", {}).get("parts", []) if candidates else []
+        text_parts = [part.get("text", "") for part in parts if isinstance(part, dict)]
+        answer = "\n".join(part.strip() for part in text_parts if part and part.strip())
+        return answer or build_fallback_answer(query, hits)
+    except Exception:
+        return build_fallback_answer(query, hits)
+
+
+async def build_ollama_answer(query: str, hits: List[KnowledgeDoc], model_name: str) -> str:
+    prompt = f"{SYSTEM_PROMPT}\n\n{build_context(query, hits)}"
+    payload = {
+        "model": model_name,
+        "prompt": prompt,
+        "stream": False,
+        "options": {
+            "num_predict": clamp(OLLAMA_MAX_TOKENS, 128, 8192),
+        },
+    }
+
+    try:
+        async with httpx.AsyncClient(timeout=60.0) as client:
+            response = await client.post(f"{OLLAMA_BASE_URL}/api/generate", json=payload)
+            response.raise_for_status()
+            data = response.json()
+
+        answer = (data.get("response") or "").strip()
+        return answer or build_fallback_answer(query, hits)
+    except Exception:
+        return build_fallback_answer(query, hits)
+
+
+async def build_llm_answer(query: str, hits: List[KnowledgeDoc], provider: str, model_name: str) -> str:
+    if provider == "anthropic":
+        return await build_anthropic_answer(query, hits, model_name)
+    if provider == "openai":
+        return await build_openai_answer(query, hits, model_name)
+    if provider == "gemini":
+        return await build_gemini_answer(query, hits, model_name)
+    if provider == "ollama":
+        return await build_ollama_answer(query, hits, model_name)
+    return build_fallback_answer(query, hits)
+
+
 @app.get("/health")
 def health():
     return {
@@ -286,6 +705,18 @@ def health():
         "uptime_seconds": round(time.time() - APP_STARTED_AT, 2),
         "knowledge_docs": len(KNOWLEDGE),
         "anthropic_configured": bool(ANTHROPIC_API_KEY),
+        "anthropic_model": ANTHROPIC_MODEL,
+        "anthropic_max_tokens": clamp(ANTHROPIC_MAX_TOKENS, 512, 8192),
+        "general_fallback_enabled": ENABLE_GENERAL_FALLBACK,
+        "general_fallback_model": clean_model_name(ANTHROPIC_GENERAL_FALLBACK_MODEL, ANTHROPIC_MODEL),
+        "openai_configured": bool(OPENAI_API_KEY),
+        "openai_model": OPENAI_MODEL,
+        "gemini_configured": bool(GEMINI_API_KEY),
+        "gemini_model": GEMINI_MODEL,
+        "ollama_base_url": OLLAMA_BASE_URL,
+        "ollama_model": OLLAMA_MODEL,
+        "llm_provider_default": normalize_provider(LLM_PROVIDER) or "anthropic",
+        "fallback_max_chars": max(500, FALLBACK_MAX_CHARS),
         "api_key_required": bool(PENNY_API_KEY),
     }
 
@@ -384,9 +815,9 @@ def ingest(
     }
 
 
-@app.post("/admin/prune")
-def prune_knowledge(
-    payload: PruneRequest,
+@app.post("/replace")
+def replace_knowledge(
+    payload: ReplaceRequest,
     x_penny_api_key: Optional[str] = Header(default=None),
     x_user_role: Optional[str] = Header(default=None),
 ):
@@ -395,42 +826,51 @@ def prune_knowledge(
     if x_user_role != "admin":
         raise HTTPException(status_code=403, detail="Admin role required")
 
-    include_prefixes = normalize_prefixes(payload.include_source_prefixes)
-    exclude_prefixes = normalize_prefixes(payload.exclude_source_prefixes)
+    deduped: dict[str, KnowledgeDoc] = {}
+    for doc in payload.documents:
+        title = doc.title.strip()
+        content = doc.content.strip()
+        source = doc.source.strip() if doc.source else None
+        key = doc_key(title, source)
+        deduped[key] = KnowledgeDoc(
+            id=str(uuid.uuid4()),
+            title=title,
+            content=content,
+            source=source,
+        )
 
-    kept: List[KnowledgeDoc] = []
-    removed: List[KnowledgeDoc] = []
-    removed_by_category = defaultdict(int)
-
-    for doc in KNOWLEDGE:
-        source = (doc.source or "").strip()
-
-        keep = True
-        if include_prefixes and not source_has_prefix(source, include_prefixes):
-            keep = False
-        if keep and exclude_prefixes and source_has_prefix(source, exclude_prefixes):
-            keep = False
-
-        if keep:
-            kept.append(doc)
-        else:
-            removed.append(doc)
-            removed_by_category[infer_category(doc.source)] += 1
-
-    if not payload.dry_run:
-        KNOWLEDGE[:] = kept
-        write_knowledge_store(KNOWLEDGE)
+    KNOWLEDGE.clear()
+    KNOWLEDGE.extend(deduped.values())
+    write_knowledge_store(KNOWLEDGE)
 
     return {
         "status": "ok",
-        "dry_run": payload.dry_run,
-        "before_count": len(KNOWLEDGE) if payload.dry_run else len(kept) + len(removed),
-        "after_count": len(kept),
-        "removed_count": len(removed),
-        "include_source_prefixes": include_prefixes,
-        "exclude_source_prefixes": exclude_prefixes,
-        "removed_by_category": [
-            {"name": key, "count": removed_by_category[key]} for key in sorted(removed_by_category.keys())
+        "replaced_with": len(KNOWLEDGE),
+        "received": len(payload.documents),
+        "deduped": len(deduped),
+        "knowledge_docs": len(KNOWLEDGE),
+    }
+
+
+@app.post("/debug/search")
+def debug_search(
+    payload: SearchDebugRequest,
+    x_penny_api_key: Optional[str] = Header(default=None),
+):
+    verify_api_key(x_penny_api_key)
+
+    enriched_query = enrich_query_for_search(payload.query)
+    hits = search_docs_with_scores(payload.query, limit=payload.limit)
+    return {
+        "query": payload.query,
+        "enriched_query": enriched_query,
+        "hits": [
+            {
+                "score": score,
+                "title": doc.title,
+                "source": doc.source,
+            }
+            for score, doc in hits
         ],
     }
 
@@ -447,13 +887,43 @@ async def query(
     if not query_text:
         raise HTTPException(status_code=400, detail="Query is required")
 
-    hits = search_docs(query_text, limit=3)
-    answer = await build_anthropic_answer(query_text, hits)
+    provider, model_name = resolve_provider_and_model(payload.llm_provider, payload.llm_model)
+    title_request = extract_title_request(query_text)
+    hits: List[KnowledgeDoc] = []
+    if title_request:
+        matched_doc = find_best_title_doc(title_request, KNOWLEDGE)
+        if matched_doc:
+            hits = [matched_doc]
+            for related in search_docs(title_request, limit=3):
+                if related.id == matched_doc.id:
+                    continue
+                hits.append(related)
+                if len(hits) >= 3:
+                    break
+
+    if not hits:
+        hits = search_docs(query_text, limit=5)
+
+    answer = await build_llm_answer(query_text, hits, provider, model_name)
+    general_fallback_used = False
+    general_fallback_available = bool(ENABLE_GENERAL_FALLBACK and ANTHROPIC_API_KEY and payload.allow_general_fallback)
+
+    looks_like_no_kb_answer = is_knowledge_base_miss_answer(answer)
+
+    if general_fallback_available and looks_like_no_kb_answer:
+        general_answer = await build_anthropic_general_fallback_answer(query_text)
+        if general_answer:
+            answer = general_answer
+            general_fallback_used = True
 
     return {
         "answer": answer,
         "sources": [doc.title for doc in hits],
         "query": query_text,
+        "provider_used": provider,
+        "model_used": model_name,
+        "general_fallback_used": general_fallback_used,
+        "general_fallback_available": general_fallback_available,
         "user_id": x_user_id,
         "user_role": x_user_role,
     }

@@ -53,6 +53,146 @@ function inferTitle(text, filePath) {
   return path.basename(filePath, '.md').replace(/[_-]+/g, ' ').trim().slice(0, 200);
 }
 
+function clampTitle(value) {
+  return value.trim().slice(0, 250);
+}
+
+function slugify(value) {
+  return value
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '')
+    .slice(0, 80);
+}
+
+function trimLeadingBoilerplate(text) {
+  const lines = text.split(/\r?\n/);
+  const startIndex = lines.findIndex((line) =>
+    /^(##\s+Subpart|####\s+(§|Appendix|Supplement|Part)|###\s+Subpart)/.test(line.trim())
+  );
+
+  if (startIndex <= 0) return text.trim();
+  return lines.slice(startIndex).join('\n').trim();
+}
+
+function splitLargeSection(baseTitle, heading, body, maxChars) {
+  const chunks = [];
+  const paragraphs = body.split(/\n\s*\n/).map((part) => part.trim()).filter(Boolean);
+  let current = '';
+  let partNumber = 1;
+
+  for (const paragraph of paragraphs) {
+    const candidate = current ? `${current}\n\n${paragraph}` : paragraph;
+    if (candidate.length <= maxChars) {
+      current = candidate;
+      continue;
+    }
+
+    if (current) {
+      chunks.push({
+        title: clampTitle(`${baseTitle} :: ${heading}${partNumber > 1 ? ` (Part ${partNumber})` : ''}`),
+        content: `# ${baseTitle}\n\n## ${heading}\n\n${current}`.trim(),
+        heading,
+        partNumber,
+      });
+      partNumber += 1;
+    }
+
+    if (paragraph.length <= maxChars) {
+      current = paragraph;
+      continue;
+    }
+
+    let offset = 0;
+    while (offset < paragraph.length) {
+      const slice = paragraph.slice(offset, offset + maxChars).trim();
+      if (!slice) break;
+      chunks.push({
+        title: clampTitle(`${baseTitle} :: ${heading}${partNumber > 1 ? ` (Part ${partNumber})` : ''}`),
+        content: `# ${baseTitle}\n\n## ${heading}\n\n${slice}`.trim(),
+        heading,
+        partNumber,
+      });
+      partNumber += 1;
+      offset += maxChars;
+    }
+    current = '';
+  }
+
+  if (current) {
+    chunks.push({
+      title: clampTitle(`${baseTitle} :: ${heading}${partNumber > 1 ? ` (Part ${partNumber})` : ''}`),
+      content: `# ${baseTitle}\n\n## ${heading}\n\n${current}`.trim(),
+      heading,
+      partNumber,
+    });
+  }
+
+  return chunks;
+}
+
+function chunkMarkdownDocument(rawText, filePath, maxChars) {
+  const stripped = stripFrontmatter(rawText).trim();
+  const cleaned = trimLeadingBoilerplate(stripped);
+  const baseTitle = inferTitle(stripped, filePath);
+  const lines = cleaned.split(/\r?\n/);
+  const sections = [];
+  let currentHeading = '';
+  let currentLines = [];
+
+  for (const line of lines) {
+    const trimmed = line.trim();
+    const isSectionHeading = /^(##\s+Subpart|####\s+(§|Appendix|Supplement|Part)|###\s+Subpart)/.test(trimmed);
+    if (isSectionHeading) {
+      if (currentHeading && currentLines.length > 0) {
+        sections.push({
+          heading: currentHeading,
+          body: currentLines.join('\n').trim(),
+        });
+      }
+      currentHeading = trimmed.replace(/^#+\s+/, '').trim();
+      currentLines = [];
+      continue;
+    }
+    if (currentHeading) {
+      currentLines.push(line);
+    }
+  }
+
+  if (currentHeading && currentLines.length > 0) {
+    sections.push({
+      heading: currentHeading,
+      body: currentLines.join('\n').trim(),
+    });
+  }
+
+  if (sections.length === 0) {
+    const fallbackContent =
+      cleaned.length > maxChars
+        ? `${cleaned.slice(0, maxChars)}\n\n[Content truncated for demo sync at ${maxChars} chars.]`
+        : cleaned;
+    return [
+      {
+        title: baseTitle,
+        content: fallbackContent,
+        sourceSuffix: '',
+      },
+    ];
+  }
+
+  const chunked = [];
+  for (const section of sections) {
+    for (const chunk of splitLargeSection(baseTitle, section.heading, section.body, maxChars)) {
+      chunked.push({
+        title: chunk.title,
+        content: chunk.content,
+        sourceSuffix: `#${slugify(section.heading)}${chunk.partNumber > 1 ? `-part-${chunk.partNumber}` : ''}`,
+      });
+    }
+  }
+  return chunked;
+}
+
 function chunkArray(items, size) {
   const chunks = [];
   for (let i = 0; i < items.length; i += size) chunks.push(items.slice(i, i + size));
@@ -64,12 +204,12 @@ async function main() {
 
   const apiUrl = process.env.PENNY_API_URL || 'https://pipeline-punks-v2-production.up.railway.app';
   const apiKey = process.env.PENNY_API_KEY;
-  const defaultKnowledgeRoot = path.resolve(process.cwd(), 'knowledge', 'data', 'original_content');
-  const root = process.env.KNOWLEDGE_ROOT || defaultKnowledgeRoot;
-  const categoriesRaw = process.env.KNOWLEDGE_CATEGORIES;
+  const root = process.env.KNOWLEDGE_ROOT || 'C:\\Users\\truenorth\\Desktop\\pipeline_penny\\knowledge\\data\\original_content';
+  const categoriesRaw = process.env.KNOWLEDGE_CATEGORIES || '02_TNDS-Protocols,04_Realty';
   const batchSize = Number(process.env.KNOWLEDGE_BATCH_SIZE || 20);
   const maxChars = Number(process.env.KNOWLEDGE_MAX_CHARS || 18000);
   const limit = Number(process.env.KNOWLEDGE_FILE_LIMIT || 200);
+  const replaceMode = ['1', 'true', 'yes', 'on'].includes((process.env.KNOWLEDGE_REPLACE || '').trim().toLowerCase());
 
   if (!apiKey) {
     console.error('Missing PENNY_API_KEY. Set it in env or .env before running.');
@@ -81,18 +221,12 @@ async function main() {
   }
 
   const categories = categoriesRaw
-    ? categoriesRaw
-        .split(',')
-        .map((value) => value.trim())
-        .filter(Boolean)
-    : fs
-        .readdirSync(root, { withFileTypes: true })
-        .filter((entry) => entry.isDirectory())
-        .map((entry) => entry.name)
-        .sort();
+    .split(',')
+    .map((value) => value.trim())
+    .filter(Boolean);
 
   if (categories.length === 0) {
-    console.error(`No categories found in ${root}. Add directories or set KNOWLEDGE_CATEGORIES.`);
+    console.error('No categories selected. Set KNOWLEDGE_CATEGORIES.');
     process.exit(1);
   }
 
@@ -117,19 +251,15 @@ async function main() {
     process.exit(1);
   }
 
-  const docs = finalFiles.map((filePath) => {
+  const docs = finalFiles.flatMap((filePath) => {
     const raw = fs.readFileSync(filePath, 'utf8');
-    const stripped = stripFrontmatter(raw).trim();
-    const content =
-      stripped.length > maxChars
-        ? `${stripped.slice(0, maxChars)}\n\n[Content truncated for demo sync at ${maxChars} chars.]`
-        : stripped;
-    const source = path.relative(root, filePath).replace(/\\/g, '/');
-    return {
-      title: inferTitle(stripped, filePath),
-      content,
-      source,
-    };
+    const sourceBase = path.relative(root, filePath).replace(/\\/g, '/');
+
+    return chunkMarkdownDocument(raw, filePath, maxChars).map((doc) => ({
+      title: doc.title,
+      content: doc.content,
+      source: `${sourceBase}${doc.sourceSuffix || ''}`,
+    }));
   });
 
   console.log(`Preparing sync: files=${docs.length}, categories=${categories.join(', ')}, api=${apiUrl}`);
@@ -138,6 +268,30 @@ async function main() {
   let updated = 0;
   let ingested = 0;
 
+  if (replaceMode) {
+    const response = await fetch(`${apiUrl}/replace`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-Penny-Api-Key': apiKey,
+        'X-User-Role': 'admin',
+      },
+      body: JSON.stringify({ documents: docs }),
+    });
+
+    if (!response.ok) {
+      const body = await response.text();
+      throw new Error(`Replace failed (${response.status}): ${body}`);
+    }
+
+    const data = await response.json();
+    ingested = Number(data.replaced_with || 0);
+    inserted = Number(data.replaced_with || 0);
+    updated = 0;
+    console.log(
+      `Knowledge base replaced: received=${data.received ?? 0}, deduped=${data.deduped ?? 0}, knowledge_docs=${data.knowledge_docs ?? 'n/a'}`
+    );
+  } else {
   for (const batch of chunkArray(docs, batchSize)) {
     const response = await fetch(`${apiUrl}/ingest`, {
       method: 'POST',
@@ -162,6 +316,7 @@ async function main() {
       `Batch synced: ingested=${data.ingested ?? 0}, inserted=${data.inserted ?? 0}, updated=${data.updated ?? 0}, total_docs=${data.knowledge_docs ?? 'n/a'}`
     );
   }
+  }
 
   const statusResponse = await fetch(`${apiUrl}/status`, {
     headers: { 'X-Penny-Api-Key': apiKey },
@@ -177,4 +332,3 @@ main().catch((error) => {
   console.error(error.message || error);
   process.exit(1);
 });
-

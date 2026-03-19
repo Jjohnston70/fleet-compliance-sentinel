@@ -51,7 +51,7 @@ It is designed to help users:
 
 ## Current Knowledge Coverage
 
-Current indexed demo knowledge includes TNDS operational content and realty-focused documentation, including the `01_realty-command` set at `knowledge/data/original_content/`.
+Current indexed demo knowledge includes TNDS operational content and realty-focused documentation, including the `04_Realty` knowledge set.
 
 This gives demos realistic Q&A coverage for:
 
@@ -120,3 +120,28 @@ Project deployment/runbook details remain in:
 
 - `RAILWAY_DEPLOY_CHECKLIST.md`
 - `railway-backend/README.md`
+
+---
+
+## Deployment Origin
+
+| Field | Value |
+|---|---|
+| GitHub Org | Pipeline-Punks |
+| Repository | pipeline-punks-pipelinex-v2 |
+| Vercel Project | pipeline-punks-pipelinex-v2 |
+| Vercel Team | jjohnston70s-projects |
+| Production URL | https://www.pipelinepunks.com |
+| Deploy Method | Vercel CLI — `vercel --prod` from this folder |
+| GitHub CI/CD | Not connected — deploys are manual via CLI |
+
+The `.vercel/project.json` in this folder links directly to the Vercel project. No additional configuration is needed to deploy.
+
+### Chief Module Data Pipeline
+
+The `/chief` routes are driven by a generated snapshot. To refresh data:
+
+1. Open sibling folder `../chief-sentinel-main/`
+2. Run `py build_chief_imports.py` (or `.\refresh_chief_demo.ps1`)
+3. This writes updated TypeScript modules into `src/lib/chief-imported-data.generated.ts`
+4. Run `vercel --prod` from this folder to deploy

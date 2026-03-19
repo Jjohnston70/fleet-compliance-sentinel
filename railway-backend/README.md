@@ -25,6 +25,13 @@ uvicorn app.main:app --reload --port 8000
 1. Create a new Railway project from this repo.
 2. Set Railway root directory to `railway-backend`.
 3. Configure environment variables from `.env.example`.
+   - `LLM_PROVIDER` supports `anthropic`, `openai`, `gemini`, `ollama`, and `none`.
+   - Set the matching API key for the provider(s) you want enabled:
+     - `ANTHROPIC_API_KEY`
+     - `OPENAI_API_KEY`
+     - `GEMINI_API_KEY`
+     - `OLLAMA_BASE_URL` + `OLLAMA_MODEL` (for local Ollama/testing)
+   - For longer responses, raise `ANTHROPIC_MAX_TOKENS` (for model output) and `FALLBACK_MAX_CHARS` (non-LLM fallback output).
 4. Deploy and copy service URL (example: `https://penny-api-production.up.railway.app`).
 
 ## Vercel wiring
