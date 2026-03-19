@@ -57,11 +57,37 @@ Updated: 2026-03-19
 - [ ] Identify required Chief manuals, permits, certificates for protected resources
 - [ ] Inline rendering vs Drive open decision
 
-## Infrastructure
+## Infrastructure — Vercel Postgres Import Pipeline
 
-- [ ] Firestore write path — replace localStorage with real persistence
+### Phase 1: Database Setup
+- [ ] Add `@vercel/postgres` dependency
+- [ ] Create Vercel Postgres database in Vercel dashboard (Pro account)
+- [ ] Add `POSTGRES_URL` env var to Vercel project settings
+- [ ] Create `src/lib/chief-db.ts` — connection helper + table init
+- [ ] Create schema for all 11 Chief collections (9 existing + Colorado Contacts + Emergency Contacts)
+
+### Phase 2: Multi-Sheet Parsing
+- [ ] Update `/api/chief/import/parse` to parse ALL sheets from uploaded XLSX (skip README, Config)
+- [ ] Auto-match sheet names to collection schemas via `sheetName` field
+- [ ] Return combined results: per-sheet validation with pass/warn counts
+- [ ] Add import schemas for Colorado Contacts and Emergency Contacts
+
+### Phase 3: Save-to-Database Flow
+- [ ] Build `/api/chief/import/save` API route — accepts approved rows, writes to Vercel Postgres
+- [ ] Update ImportReviewer UI:
+  - [ ] Show all sheets in a tabbed or accordion view after parsing
+  - [ ] Replace "Download Approved" with "Save to Database" (keep download as secondary)
+  - [ ] Per-sheet approve/reject with batch controls
+- [ ] Add success/error feedback after save
+
+### Phase 4: Read from Database
+- [ ] Update `chief-demo-data.ts` to query Vercel Postgres instead of generated file
+- [ ] Remove dependency on `chief-imported-data.generated.ts`
+- [ ] Verify all Chief pages render from live database
+
+## Other Infrastructure
 - [ ] Mobile capture forms — `input[capture]` for camera/barcode on assets
-- [ ] Native file uploads to Firestore Storage
+- [ ] Native file uploads to storage
 
 ## Sentinel Template Cleanup
 

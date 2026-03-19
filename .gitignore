@@ -58,3 +58,4 @@ true-north-github-setup/
 *.njsproj
 *.sln
 *.sw?
+.env*.local

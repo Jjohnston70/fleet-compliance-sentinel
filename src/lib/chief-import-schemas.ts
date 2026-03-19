@@ -7,7 +7,9 @@ export type CollectionKey =
   | 'storage_tanks'
   | 'maintenance_schedule'
   | 'activity_log'
-  | 'maintenance_tracker';
+  | 'maintenance_tracker'
+  | 'colorado_contacts'
+  | 'emergency_contacts';
 
 export interface FieldSchema {
   required?: boolean;
@@ -288,7 +290,46 @@ export const IMPORT_SCHEMAS: Record<CollectionKey, CollectionSchema> = {
       'Notes':            {},
     },
   },
+  colorado_contacts: {
+    label: 'Colorado Contacts',
+    sheetName: 'COLORADO CONTACTS',
+    fields: {
+      'Organization':       { required: true },
+      'Department':         {},
+      'Phone Number':       {},
+      'Address':            {},
+      'Website':            {},
+      'Contact Purpose':    { required: true },
+      'Hours':              {},
+      'Notes':              {},
+    },
+  },
+  emergency_contacts: {
+    label: 'Emergency Contacts',
+    sheetName: 'EMERGENCY CONTACTS',
+    fields: {
+      'Contact Type':           { required: true },
+      'Organization/Person':    { required: true },
+      'Primary Phone':          { required: true },
+      'Secondary Phone':        {},
+      '24/7 Available':         {},
+      'Email':                  { isEmail: true },
+      'Address':                {},
+      'Contact Person':         {},
+      'Services Provided':      {},
+      'Response Time':          {},
+      'Notes':                  {},
+    },
+  },
 };
+
+/** Map from XLSX sheet name → CollectionKey for multi-sheet auto-matching */
+export const SHEET_NAME_TO_COLLECTION: Record<string, CollectionKey> = Object.fromEntries(
+  Object.entries(IMPORT_SCHEMAS).map(([key, schema]) => [schema.sheetName, key as CollectionKey])
+);
+
+/** Sheet names to skip when parsing multi-sheet uploads */
+export const SKIP_SHEETS = new Set(['README', 'Config']);
 
 export interface ParsedRow {
   rowIndex: number;

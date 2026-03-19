@@ -337,7 +337,7 @@ export default function PennyChat({ userName, userRole, isDemo }: PennyChatProps
 
           <div className="penny-input-area">
             {isDemo && (
-              <div className=”penny-trial-banner”>
+              <div className="penny-trial-banner">
                 Trial mode — {10 - messages.filter((m) => m.role === 'user').length} queries remaining.{' '}
                 <a href="https://www.truenorthstrategyops.com/contact">Want this for your business?</a>
               </div>
