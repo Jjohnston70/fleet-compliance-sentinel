@@ -153,7 +153,7 @@ export default function PennyChat({ userName, userRole, isDemo }: PennyChatProps
     const query = (overrideQuery ?? input).trim();
     if (!query || loading) return;
 
-    // Demo users get limited queries
+    // Trial users get limited queries
     if (isDemo && messages.filter((m) => m.role === 'user').length >= 10) {
       setMessages((prev) => [
         ...prev,
@@ -161,7 +161,7 @@ export default function PennyChat({ userName, userRole, isDemo }: PennyChatProps
           id: Date.now().toString(),
           role: 'penny',
           content:
-            "You've reached the demo query limit. Want Pipeline Penny for your own business? Talk to Jacob at truenorthstrategyops.com/contact.",
+            "You've reached the trial query limit. Want Pipeline Penny for your own business? Talk to Jacob at truenorthstrategyops.com/contact.",
           timestamp: new Date(),
         },
       ]);
@@ -337,8 +337,8 @@ export default function PennyChat({ userName, userRole, isDemo }: PennyChatProps
 
           <div className="penny-input-area">
             {isDemo && (
-              <div className="penny-demo-banner">
-                Demo mode â€” {10 - messages.filter((m) => m.role === 'user').length} queries remaining.{' '}
+              <div className=”penny-trial-banner”>
+                Trial mode — {10 - messages.filter((m) => m.role === 'user').length} queries remaining.{' '}
                 <a href="https://www.truenorthstrategyops.com/contact">Want this for your business?</a>
               </div>
             )}

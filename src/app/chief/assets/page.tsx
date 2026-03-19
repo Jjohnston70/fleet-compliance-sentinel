@@ -57,7 +57,7 @@ export default async function ChiefAssetsPage({ searchParams }: { searchParams: 
         </div>
         <p className="chief-subcopy">
           This module now shows the imported asset snapshot from the workbook and mapped source layer, with search,
-          filters, and per-asset detail views on the live demo records.
+          filters, and per-asset detail views on the live records.
         </p>
 
         <LocalRecordsPanel

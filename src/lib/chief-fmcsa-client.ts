@@ -350,5 +350,5 @@ export async function lookupFmcsaCarrier(
   return { ok: true, profile: { carrier: normalizeCarrier(rawCarrier), basics, authority, cargo } };
 }
 
-/** Example Fleet Co's USDOT number — used as the default on the demo lookup page. */
+/** Example Fleet Co's USDOT number — used as the default on the FMCSA lookup page. */
 export const CHIEF_PETROLEUM_DOT = '135370';

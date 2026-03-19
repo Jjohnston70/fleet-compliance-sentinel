@@ -286,7 +286,7 @@ export default async function ChiefFmcsaPage({ searchParams }: { searchParams: S
 
         {lookup.state === 'idle' && (
           <div className="chief-list-card" style={{ marginTop: '1.5rem' }}>
-            <h3>Demo carrier</h3>
+            <h3>Sample carrier</h3>
             <p>
               Example Fleet Co DOT: <strong>{CHIEF_PETROLEUM_DOT}</strong>. Click{' '}
               <em>Look Up Carrier</em> to pull live FMCSA data including BASIC scores, authority records, and OOS rates.

@@ -27,7 +27,7 @@ export default async function ChiefEmployeesPage() {
         </div>
         <p className="chief-subcopy">
           Local records are saved in your browser and can be exported as JSON for Firestore import.
-          Demo driver records are read-only and come from the imported source snapshot.
+          Driver records are read-only and come from the imported source snapshot.
         </p>
 
         {/* Local records from browser */}
@@ -50,9 +50,9 @@ export default async function ChiefEmployeesPage() {
           ]}
         />
 
-        {/* Demo driver compliance records */}
+        {/* Driver compliance records */}
         <div className="chief-list-card">
-          <h3>Demo driver records</h3>
+          <h3>Driver records</h3>
           <div className="chief-table-wrap">
             <table className="chief-table">
               <thead>

@@ -20,19 +20,19 @@ const modules = [
     href: '/chief/assets',
     title: 'Assets',
     description: 'Fleet units, equipment, fuel cubes, skid tanks, and storage assets.',
-    status: 'Demo data live',
+    status: 'Live',
   },
   {
     href: '/chief/compliance',
     title: 'Compliance',
     description: 'Permits, licenses, FMCSA, driver status, and renewal tracking.',
-    status: 'Demo data live',
+    status: 'Live',
   },
   {
     href: '/chief/suspense',
     title: 'Suspense',
     description: 'Due-soon and overdue items with owner-level email alerts.',
-    status: 'Demo data live',
+    status: 'Live',
   },
   {
     href: '/chief/fmcsa',
@@ -43,7 +43,7 @@ const modules = [
   {
     href: '/chief/employees',
     title: 'Employees',
-    description: 'Add employees, manage CDL/medical compliance, archive or view demo drivers.',
+    description: 'Add employees, manage CDL/medical compliance, archive or view drivers.',
     status: 'Live',
   },
   {
@@ -90,7 +90,7 @@ export default async function ChiefPage() {
       <main className="chief-shell">
         <section className="chief-hero">
           <p className="chief-eyebrow">Chief Module</p>
-          <h1>Chief demo requires Clerk to be configured.</h1>
+          <h1>Chief module requires Clerk to be configured.</h1>
           <p className="chief-subcopy">Enable the existing auth environment to access protected Chief routes.</p>
         </section>
       </main>
@@ -106,7 +106,7 @@ export default async function ChiefPage() {
     { label: 'Source Systems', value: String(chiefModuleSummary.sourceSystems), note: 'CSV, workbook, CFR, FMCSA' },
     { label: 'Planned Collections', value: String(chiefModuleSummary.plannedCollections), note: 'Firestore-ready layout' },
     { label: 'Alert Tracks', value: String(chiefModuleSummary.alertTracks), note: 'Hazmat, IRP, IFTA, UCR, MC150, licenses' },
-    { label: 'Penny Corpus', value: chiefModuleSummary.pennyCorpus, note: 'Chunked CFR demo set' },
+    { label: 'Penny Corpus', value: chiefModuleSummary.pennyCorpus, note: 'Chunked CFR reference set' },
   ];
 
   return (
@@ -167,7 +167,7 @@ export default async function ChiefPage() {
         <div className="chief-section-head">
           <div>
             <p className="chief-eyebrow">Operational Snapshot</p>
-            <h2>Demo metrics</h2>
+            <h2>Metrics</h2>
           </div>
           <p className="chief-section-copy">These numbers are now driven by the imported Chief snapshot generated from your current source files.</p>
         </div>
@@ -183,7 +183,7 @@ export default async function ChiefPage() {
           <div className="chief-list-card">
             <h3>Compliance</h3>
             <ul>
-              <li>{complianceStats.drivers} driver compliance records are wired into the demo layer.</li>
+              <li>{complianceStats.drivers} driver compliance records are wired into the data layer.</li>
               <li>{complianceStats.expiringWithin60Days} medical cards expire inside 60 days.</li>
               <li>{complianceStats.permitDeadlines} permit deadlines fall inside the next 120 days.</li>
             </ul>
@@ -216,7 +216,7 @@ export default async function ChiefPage() {
             <p className="chief-eyebrow">Modules</p>
             <h2>First route shells</h2>
           </div>
-          <p className="chief-section-copy">These are the first protected surfaces for the Chief demo inside the site.</p>
+          <p className="chief-section-copy">These are the first protected surfaces for Chief inside the site.</p>
         </div>
         <div className="chief-module-grid">
           {modules.map((module) => (
@@ -272,7 +272,7 @@ export default async function ChiefPage() {
               <li>Clerk auth reused for all protected routes</li>
               <li>Railway Penny backend retained</li>
               <li>Google Drive resources retained</li>
-              <li>Chief demo data layer wired into the site</li>
+              <li>Chief data layer wired into the site</li>
               <li>Bulk upload workbook export added</li>
             </ul>
           </div>
