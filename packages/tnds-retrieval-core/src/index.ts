@@ -5,7 +5,7 @@ import {
   type IngestedDocument,
   type RetrievedChunk,
   getAiLabPaths,
-} from "@tnds/types";
+} from "../../tnds-types/src/index.ts";
 
 export interface ChunkingOptions {
   maxChunkChars?: number;

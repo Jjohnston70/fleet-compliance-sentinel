@@ -10,7 +10,7 @@ import {
   type SavedUploadResult,
   getAiLabPaths,
   isValidDomainManifest,
-} from "@tnds/types";
+} from "../../tnds-types/src/index.ts";
 
 export interface IngestFileOptions {
   domainSlug?: string;

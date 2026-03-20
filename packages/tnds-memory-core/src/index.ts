@@ -6,7 +6,7 @@ import {
   type TimelineQuery,
   type TimelineSummary,
   getAiLabPaths,
-} from "@tnds/types";
+} from "../../tnds-types/src/index.ts";
 
 export interface KnowledgeStore {
   saveRecord(input: Omit<KnowledgeRecord, "id" | "createdAt">): Promise<KnowledgeRecord>;
