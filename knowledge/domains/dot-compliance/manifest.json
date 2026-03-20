@@ -1,0 +1,10 @@
+{
+  "name": "DOT Compliance",
+  "slug": "dot-compliance",
+  "version": "1.0.0",
+  "description": "Federal Motor Carrier Safety Administration regulations and DOT compliance reference for fleet operators. Covers 49 CFR Parts 40, 382, 383, 387, 391, 395, 396.",
+  "enabled": true,
+  "defaultSkills": ["dot-compliance"],
+  "defaultPrompts": ["compliance-qa/v1"],
+  "tags": ["fmcsa", "dot", "cfr-49", "fleet", "driver", "permit", "compliance", "hazmat", "cdl", "hos"]
+}

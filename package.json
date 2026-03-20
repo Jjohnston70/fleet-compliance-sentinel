@@ -3,12 +3,16 @@
   "version": "1.0.0",
   "private": true,
   "description": "True North Data Strategies — PipelineX product site",
+  "workspaces": [
+    "packages/*"
+  ],
   "scripts": {
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "sync:knowledge": "node scripts/sync-local-knowledge.mjs"
+    "sync:knowledge": "node scripts/sync-local-knowledge.mjs",
+    "build:cfr-index": "node scripts/build-cfr-index.mjs"
   },
   "dependencies": {
     "@clerk/nextjs": "^6.38.2",
@@ -21,7 +25,15 @@
     "react-markdown": "^10.1.0",
     "remark-gfm": "^4.0.1",
     "typescript": "^5.3.3",
-    "xlsx": "^0.18.5"
+    "xlsx": "^0.18.5",
+    "@tnds/types": "*",
+    "@tnds/ingest-core": "*",
+    "@tnds/retrieval-core": "*",
+    "@tnds/memory-core": "*",
+    "mammoth": "^1.11.0",
+    "pdf-parse": "^2.4.5",
+    "csv-parse": "^6.1.0",
+    "cheerio": "^1.2.0"
   },
   "devDependencies": {
     "@types/node": "^20.19.0",

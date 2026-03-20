@@ -24,7 +24,11 @@
     "paths": {
       "@/*": [
         "./src/*"
-      ]
+      ],
+      "@tnds/types": ["./packages/tnds-types/src/index.ts"],
+      "@tnds/ingest-core": ["./packages/tnds-ingest-core/src/index.ts"],
+      "@tnds/retrieval-core": ["./packages/tnds-retrieval-core/src/index.ts"],
+      "@tnds/memory-core": ["./packages/tnds-memory-core/src/index.ts"]
     },
     "target": "ES2017"
   },
@@ -36,6 +40,7 @@
   ],
   "exclude": [
     "node_modules",
-    "tmp/**/*"
+    "tmp/**/*",
+    "pipeline_x_non_gov-main/**/*"
   ]
 }

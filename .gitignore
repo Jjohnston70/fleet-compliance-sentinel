@@ -59,3 +59,11 @@ true-north-github-setup/
 *.sln
 *.sw?
 .env*.local
+
+# TNDS Knowledge Runtime (generated at build/runtime, not committed)
+knowledge/cfr-index/
+knowledge/org-data/
+knowledge/timeline/
+
+# Non-gov source backup (in repo for integration only, not deployed)
+pipeline_x_non_gov-main/
