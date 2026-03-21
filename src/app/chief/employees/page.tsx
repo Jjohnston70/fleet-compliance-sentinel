@@ -9,10 +9,11 @@ export const dynamic = 'force-dynamic';
 
 export default async function ChiefEmployeesPage() {
   if (!isClerkEnabled()) return null;
-  const { userId } = await auth();
+  const { userId, orgId } = await auth();
   if (!userId) redirect('/sign-in');
+  if (!orgId) redirect('/');
 
-  const data = await loadChiefData();
+  const data = await loadChiefData(orgId);
 
   return (
     <ChiefErrorBoundary page="/chief/employees" userId={userId}>
@@ -133,3 +134,4 @@ export default async function ChiefEmployeesPage() {
     </ChiefErrorBoundary>
   );
 }
+

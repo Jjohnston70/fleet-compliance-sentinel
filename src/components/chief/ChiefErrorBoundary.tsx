@@ -35,15 +35,27 @@ export default class ChiefErrorBoundary extends React.Component<ChiefErrorBounda
   }
 
   componentDidCatch(error: unknown) {
+    const errorMessage = error instanceof Error ? error.message : String(error);
+    const errorStack = error instanceof Error ? error.stack : undefined;
     const payload = {
       timestamp: new Date().toISOString(),
       page: this.props.page,
-      error: error instanceof Error ? error.message : String(error),
+      message: errorMessage,
+      stack: errorStack,
+      url: typeof window !== 'undefined' ? window.location.href : undefined,
       userId: this.props.userId ?? null,
       orgId: this.props.orgId ?? null,
     };
 
     console.error('[ChiefErrorBoundary]', payload);
+    void fetch('/api/chief/errors/client', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload),
+      keepalive: true,
+    }).catch(() => {
+      // ignore network errors
+    });
   }
 
   private retry = () => {

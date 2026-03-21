@@ -1,0 +1,13 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(vercel project:*)",
+      "Bash(vercel ls:*)",
+      "Bash(vercel stores:*)",
+      "Bash(node scripts/init-db.mjs)",
+      "Bash(node -e \":*)",
+      "Read(//c/Users/truenorth/Desktop/chief-sentinel-main/**)",
+      "Bash(git add:*)"
+    ]
+  }
+}

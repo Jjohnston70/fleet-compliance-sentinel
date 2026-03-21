@@ -19,7 +19,6 @@ interface Message {
 interface PennyChatProps {
   userName: string;
   userRole: string;
-  isDemo: boolean;
 }
 
 interface CatalogCategory {
@@ -70,7 +69,7 @@ function getSourceUrl(source: string): string | null {
   return match ? match[0] : null;
 }
 
-export default function PennyChat({ userName, userRole, isDemo }: PennyChatProps) {
+export default function PennyChat({ userName, userRole }: PennyChatProps) {
   const [messages, setMessages] = useState<Message[]>([
     {
       id: 'welcome',
@@ -94,7 +93,7 @@ export default function PennyChat({ userName, userRole, isDemo }: PennyChatProps
   // Check backend health on mount
   useEffect(() => {
     try {
-      const raw = window.localStorage.getItem(SETTINGS_STORAGE_KEY);
+      const raw = window.sessionStorage.getItem(SETTINGS_STORAGE_KEY);
       if (raw) {
         const parsed = JSON.parse(raw) as { llmProvider?: LlmProvider; llmModel?: string };
         if (parsed.llmProvider && PROVIDER_MODEL_OPTIONS[parsed.llmProvider]) {
@@ -111,7 +110,7 @@ export default function PennyChat({ userName, userRole, isDemo }: PennyChatProps
   }, []);
 
   useEffect(() => {
-    window.localStorage.setItem(
+    window.sessionStorage.setItem(
       SETTINGS_STORAGE_KEY,
       JSON.stringify({ llmProvider, llmModel })
     );
@@ -152,21 +151,6 @@ export default function PennyChat({ userName, userRole, isDemo }: PennyChatProps
   async function sendMessage(overrideQuery?: string) {
     const query = (overrideQuery ?? input).trim();
     if (!query || loading) return;
-
-    // Trial users get limited queries
-    if (isDemo && messages.filter((m) => m.role === 'user').length >= 10) {
-      setMessages((prev) => [
-        ...prev,
-        {
-          id: Date.now().toString(),
-          role: 'penny',
-          content:
-            "You've reached the trial query limit. Want Pipeline Penny for your own business? Talk to Jacob at truenorthstrategyops.com/contact.",
-          timestamp: new Date(),
-        },
-      ]);
-      return;
-    }
 
     const userMsg: Message = {
       id: `user-${Date.now()}`,
@@ -336,13 +320,7 @@ export default function PennyChat({ userName, userRole, isDemo }: PennyChatProps
           </div>
 
           <div className="penny-input-area">
-            {isDemo && (
-              <div className="penny-trial-banner">
-                Trial mode — {10 - messages.filter((m) => m.role === 'user').length} queries remaining.{' '}
-                <a href="https://www.truenorthstrategyops.com/contact">Want this for your business?</a>
-              </div>
-            )}
-            <div className="penny-input-wrap" style={{ marginTop: isDemo ? '0.75rem' : 0 }}>
+            <div className="penny-input-wrap">
               <textarea
                 ref={inputRef}
                 className="penny-input"

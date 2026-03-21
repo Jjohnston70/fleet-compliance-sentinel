@@ -12,7 +12,8 @@
     "start": "next start",
     "lint": "next lint",
     "sync:knowledge": "node scripts/sync-local-knowledge.mjs",
-    "build:cfr-index": "tsx scripts/build-cfr-index.mjs"
+    "build:cfr-index": "tsx scripts/build-cfr-index.mjs",
+    "eval:penny": "node scripts/run-penny-evals.mjs"
   },
   "dependencies": {
     "@clerk/nextjs": "^6.38.2",
@@ -23,7 +24,6 @@
     "@tnds/types": "*",
     "cheerio": "^1.2.0",
     "csv-parse": "^6.1.0",
-    "lucide-react": "^0.544.0",
     "mammoth": "^1.11.0",
     "next": "15.5.9",
     "pdf-parse": "^2.4.5",
@@ -31,7 +31,6 @@
     "react-dom": "^18.3.1",
     "react-markdown": "^10.1.0",
     "remark-gfm": "^4.0.1",
-    "typescript": "^5.3.3",
     "xlsx": "^0.18.5"
   },
   "devDependencies": {
@@ -44,6 +43,7 @@
     "eslint-plugin-jsx-a11y": "^6.10.2",
     "postcss": "^8.5.6",
     "tailwindcss": "^3.4.19",
-    "tsx": "^4.19.0"
+    "tsx": "^4.19.0",
+    "typescript": "^5.3.3"
   }
 }

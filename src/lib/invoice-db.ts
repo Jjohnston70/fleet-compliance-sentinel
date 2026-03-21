@@ -10,6 +10,7 @@ export async function ensureInvoiceTables() {
   await sql`
     CREATE TABLE IF NOT EXISTS invoices (
       id              SERIAL PRIMARY KEY,
+      org_id          TEXT NOT NULL,
       vendor          TEXT NOT NULL,
       invoice_date    DATE,
       po_number       TEXT,
@@ -32,8 +33,26 @@ export async function ensureInvoiceTables() {
       sales_tax       NUMERIC(10,2),
       grand_total     NUMERIC(10,2),
       source_file     TEXT,
+      deleted_at      TIMESTAMPTZ,
       imported_at     TIMESTAMPTZ NOT NULL DEFAULT now()
     )
+  `;
+  await sql`
+    ALTER TABLE invoices
+    ADD COLUMN IF NOT EXISTS org_id TEXT
+  `;
+  await sql`
+    UPDATE invoices
+    SET org_id = 'legacy'
+    WHERE org_id IS NULL
+  `;
+  await sql`
+    ALTER TABLE invoices
+    ALTER COLUMN org_id SET NOT NULL
+  `;
+  await sql`
+    ALTER TABLE invoices
+    ADD COLUMN IF NOT EXISTS deleted_at TIMESTAMPTZ
   `;
 
   await sql`
@@ -58,6 +77,7 @@ export async function ensureInvoiceTables() {
   `;
 
   await sql`CREATE INDEX IF NOT EXISTS idx_invoices_vendor ON invoices (vendor)`;
+  await sql`CREATE INDEX IF NOT EXISTS idx_invoices_org_id ON invoices (org_id)`;
   await sql`CREATE INDEX IF NOT EXISTS idx_invoices_unit ON invoices (unit_number)`;
   await sql`CREATE INDEX IF NOT EXISTS idx_invoices_date ON invoices (invoice_date)`;
   await sql`CREATE INDEX IF NOT EXISTS idx_line_items_invoice ON invoice_line_items (invoice_id)`;
@@ -69,6 +89,7 @@ export async function ensureInvoiceTables() {
  * Returns the new invoice ID.
  */
 export async function importInvoice(data: {
+  org_id: string;
   vendor: string;
   invoice_date: string | null;
   po_number: string;
@@ -104,23 +125,36 @@ export async function importInvoice(data: {
   }>;
 }): Promise<number> {
   const sql = getSQL();
+  const safeSourceFile = sanitizeSourceFile(data.source_file);
+
+  if (!data.org_id || typeof data.org_id !== 'string') {
+    throw new Error('org_id is required');
+  }
+  if (data.line_items.length > 500) {
+    throw new Error('line_items exceeds maximum of 500');
+  }
+  if (data.work_descriptions.length > 500) {
+    throw new Error('work_descriptions exceeds maximum of 500');
+  }
 
   // Insert invoice header
   const result = await sql`
     INSERT INTO invoices (
+      org_id,
       vendor, invoice_date, po_number, terms, written_by,
       customer_name, customer_address,
       unit_number, plate_number, year, make, model, mileage_hours, vin, engine,
       parts_total, labor_total, shop_supplies, subtotal, sales_tax, grand_total,
       source_file
     ) VALUES (
+      ${data.org_id},
       ${data.vendor}, ${data.invoice_date}, ${data.po_number}, ${data.terms}, ${data.written_by},
       ${data.customer_name}, ${data.customer_address},
       ${data.unit_number}, ${data.plate_number}, ${data.year}, ${data.make}, ${data.model},
       ${data.mileage_hours}, ${data.vin}, ${data.engine},
       ${data.parts_total}, ${data.labor_total}, ${data.shop_supplies},
       ${data.subtotal}, ${data.sales_tax}, ${data.grand_total},
-      ${data.source_file}
+      ${safeSourceFile}
     )
     RETURNING id
   `;
@@ -149,13 +183,15 @@ export async function importInvoice(data: {
 /**
  * List all invoices (summary view).
  */
-export async function listInvoices() {
+export async function listInvoices(orgId: string) {
   const sql = getSQL();
   return await sql`
     SELECT i.*,
       (SELECT COUNT(*)::int FROM invoice_line_items WHERE invoice_id = i.id) as line_item_count,
       (SELECT COUNT(*)::int FROM invoice_work_descriptions WHERE invoice_id = i.id) as work_desc_count
     FROM invoices i
+    WHERE i.org_id = ${orgId}
+      AND i.deleted_at IS NULL
     ORDER BY i.invoice_date DESC, i.imported_at DESC
   `;
 }
@@ -163,9 +199,14 @@ export async function listInvoices() {
 /**
  * Get a full invoice with line items and work descriptions.
  */
-export async function getInvoice(id: number) {
+export async function getInvoice(id: number, orgId: string) {
   const sql = getSQL();
-  const invoices = await sql`SELECT * FROM invoices WHERE id = ${id}`;
+  const invoices = await sql`
+    SELECT * FROM invoices
+    WHERE id = ${id}
+      AND org_id = ${orgId}
+      AND deleted_at IS NULL
+  `;
   if (invoices.length === 0) return null;
 
   const lineItems = await sql`
@@ -185,7 +226,20 @@ export async function getInvoice(id: number) {
 /**
  * Delete an invoice and all related records.
  */
-export async function deleteInvoice(id: number) {
+export async function deleteInvoice(id: number, orgId: string) {
   const sql = getSQL();
-  await sql`DELETE FROM invoices WHERE id = ${id}`;
+  await sql`
+    UPDATE invoices
+    SET deleted_at = NOW()
+    WHERE id = ${id}
+      AND org_id = ${orgId}
+      AND deleted_at IS NULL
+  `;
+}
+
+function sanitizeSourceFile(rawValue: string): string {
+  const normalized = String(rawValue ?? '').replace(/\\/g, '/');
+  const filename = normalized.split('/').filter(Boolean).pop() || 'invoice-upload';
+  const safe = filename.replace(/[^a-zA-Z0-9._ -]/g, '').trim();
+  return safe.slice(0, 255) || 'invoice-upload';
 }

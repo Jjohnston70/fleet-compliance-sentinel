@@ -14,12 +14,15 @@ export default async function ChiefDriverComplianceDetailPage({ params }: { para
     return null;
   }
 
-  const { userId } = await auth();
+  const { userId, orgId } = await auth();
   if (!userId) {
     redirect('/sign-in');
   }
+  if (!orgId) {
+    redirect('/');
+  }
 
-  const data = await loadChiefData();
+  const data = await loadChiefData(orgId);
 
   const { personId } = await params;
   const driver = findDriver(data.drivers, personId);
@@ -148,3 +151,4 @@ export default async function ChiefDriverComplianceDetailPage({ params }: { para
     </main>
   );
 }
+

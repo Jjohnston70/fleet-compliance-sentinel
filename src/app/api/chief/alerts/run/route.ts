@@ -1,29 +1,117 @@
+import { timingSafeEqual } from 'crypto';
 import { runChiefAlertSweep } from '@/lib/chief-alert-engine';
 import { loadChiefData } from '@/lib/chief-data';
-import { ensureCronLogTable, insertCronLogEntry } from '@/lib/chief-db';
+import { ensureCronLogTable, insertCronLogEntry, listChiefOrgIds } from '@/lib/chief-db';
+import { chiefAuthErrorResponse, requireChiefOrgWithRole } from '@/lib/chief-auth';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
+
+function isTimingSafeTokenMatch(provided: string, expected: string): boolean {
+  const providedBuffer = Buffer.from(provided);
+  const expectedBuffer = Buffer.from(expected);
+  if (providedBuffer.length !== expectedBuffer.length) return false;
+  return timingSafeEqual(providedBuffer, expectedBuffer);
+}
 
 // Called by Vercel Cron or a manual POST.
 // Secured by CHIEF_CRON_SECRET header (Authorization: Bearer <secret>).
 // If RESEND_API_KEY is not set the sweep runs in dry-run mode and no emails are sent.
 export async function POST(request: Request) {
   const jobName = 'chief-alert-sweep';
-  const orgId = request.headers.get('x-org-id');
+  let orgId: string | null = null;
 
   const cronSecret = process.env.CHIEF_CRON_SECRET;
-  if (cronSecret) {
-    const authHeader = request.headers.get('authorization') ?? '';
-    const provided = authHeader.replace(/^Bearer\s+/i, '').trim();
-    if (provided !== cronSecret) {
-      return Response.json({ error: 'Unauthorized' }, { status: 401 });
+  const authHeader = request.headers.get('authorization') ?? '';
+  const provided = authHeader.replace(/^Bearer\s+/i, '').trim();
+  const isCronInvocation = Boolean(cronSecret)
+    && provided.length > 0
+    && isTimingSafeTokenMatch(provided, cronSecret!);
+
+  try {
+    await ensureCronLogTable();
+  } catch (error: unknown) {
+    console.error('[chief-alert-sweep] failed to ensure cron log table:', error);
+    return Response.json({ error: 'Internal server error' }, { status: 500 });
+  }
+
+  if (isCronInvocation) {
+    try {
+      const orgIds = await listChiefOrgIds();
+      const aggregated = {
+        runAt: new Date().toISOString(),
+        itemsEvaluated: 0,
+        itemsQueued: 0,
+        emailsSent: 0,
+        emailsFailed: 0,
+        dryRun: !process.env.RESEND_API_KEY,
+        byWindow: {
+          overdue: 0,
+          'due-today': 0,
+          '7d': 0,
+          '14d': 0,
+          '30d': 0,
+        },
+        errors: [] as string[],
+      };
+
+      for (const scopedOrgId of orgIds) {
+        const data = await loadChiefData(scopedOrgId);
+        const summary = await runChiefAlertSweep(data.suspense);
+        aggregated.runAt = summary.runAt;
+        aggregated.itemsEvaluated += summary.itemsEvaluated;
+        aggregated.itemsQueued += summary.itemsQueued;
+        aggregated.emailsSent += summary.emailsSent;
+        aggregated.emailsFailed += summary.emailsFailed;
+        aggregated.dryRun = summary.dryRun;
+        aggregated.byWindow.overdue += summary.byWindow.overdue;
+        aggregated.byWindow['due-today'] += summary.byWindow['due-today'];
+        aggregated.byWindow['7d'] += summary.byWindow['7d'];
+        aggregated.byWindow['14d'] += summary.byWindow['14d'];
+        aggregated.byWindow['30d'] += summary.byWindow['30d'];
+        aggregated.errors.push(...summary.errors.map((error) => `[org:${scopedOrgId}] ${error}`));
+
+        await insertCronLogEntry({
+          jobName,
+          orgId: scopedOrgId,
+          status: summary.emailsFailed > 0 ? 'partial' : 'success',
+          message: `Evaluated ${summary.itemsEvaluated}, queued ${summary.itemsQueued}, sent ${summary.emailsSent}, failed ${summary.emailsFailed}.`,
+          recordsProcessed: summary.itemsQueued,
+        });
+      }
+
+      return Response.json({
+        ...aggregated,
+        orgsProcessed: orgIds.length,
+      }, { status: 200 });
+    } catch (error: unknown) {
+      console.error('[chief-alert-sweep] cron invocation failed:', error);
+      try {
+        await insertCronLogEntry({
+          jobName,
+          orgId: null,
+          status: 'error',
+          message: 'Cron invocation failed',
+          recordsProcessed: 0,
+        });
+      } catch (logError: unknown) {
+        console.error('[chief-alert-sweep] failed to write cron error entry:', logError);
+      }
+      return Response.json({ error: 'Internal server error' }, { status: 500 });
     }
   }
 
   try {
-    await ensureCronLogTable();
-    const data = await loadChiefData();
+    const authContext = await requireChiefOrgWithRole(request, 'admin');
+    orgId = authContext.orgId;
+  } catch (error: unknown) {
+    const authResponse = chiefAuthErrorResponse(error);
+    if (authResponse) return authResponse;
+    return Response.json({ error: 'Unauthorized' }, { status: 401 });
+  }
+
+  try {
+    const data = await loadChiefData(orgId ?? undefined);
     const summary = await runChiefAlertSweep(data.suspense);
     await insertCronLogEntry({
       jobName,
@@ -35,17 +123,17 @@ export async function POST(request: Request) {
     return Response.json(summary, { status: 200 });
   } catch (err: unknown) {
     try {
-      await ensureCronLogTable();
       await insertCronLogEntry({
         jobName,
         orgId,
         status: 'error',
-        message: String(err).slice(0, 1000),
+        message: 'Manual alert sweep failed',
         recordsProcessed: 0,
       });
     } catch (logErr: unknown) {
       console.error('[chief-alert-sweep] failed to write cron_log entry:', logErr);
     }
-    return Response.json({ error: String(err) }, { status: 500 });
+    console.error('[chief-alert-sweep] manual invocation failed:', err);
+    return Response.json({ error: 'Internal server error' }, { status: 500 });
   }
 }

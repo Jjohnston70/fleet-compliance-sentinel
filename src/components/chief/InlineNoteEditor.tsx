@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { clearInlineNote, readInlineNote, writeInlineNote } from '@/lib/chief-ui-state';
 
 interface Props {
   storageKey: string;
@@ -17,14 +18,10 @@ export default function InlineNoteEditor({ storageKey, initialNote, label = 'Not
 
   useEffect(() => {
     setMounted(true);
-    try {
-      const stored = localStorage.getItem(storageKey);
-      if (stored) {
-        setNote(stored);
-        setSavedThisSession(true);
-      }
-    } catch {
-      // ignore
+    const stored = readInlineNote(storageKey);
+    if (stored !== null) {
+      setNote(stored);
+      setSavedThisSession(true);
     }
   }, [storageKey]);
 
@@ -37,11 +34,7 @@ export default function InlineNoteEditor({ storageKey, initialNote, label = 'Not
     setNote(draft);
     setSavedThisSession(true);
     setEditing(false);
-    try {
-      localStorage.setItem(storageKey, draft);
-    } catch {
-      // ignore
-    }
+    writeInlineNote(storageKey, draft);
   }
 
   function handleCancel() {
@@ -53,11 +46,7 @@ export default function InlineNoteEditor({ storageKey, initialNote, label = 'Not
     setNote(initialNote);
     setSavedThisSession(false);
     setEditing(false);
-    try {
-      localStorage.removeItem(storageKey);
-    } catch {
-      // ignore
-    }
+    clearInlineNote(storageKey);
   }
 
   if (!mounted) {

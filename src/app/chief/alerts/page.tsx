@@ -20,10 +20,11 @@ const WINDOW_LABELS: Record<string, string> = {
 export default async function ChiefAlertsPage() {
   if (!isClerkEnabled()) return null;
 
-  const { userId } = await auth();
+  const { userId, orgId } = await auth();
   if (!userId) redirect('/sign-in');
+  if (!orgId) redirect('/');
 
-  const data = await loadChiefData();
+  const data = await loadChiefData(orgId);
   const { alertItems, byOwner, byWindow } = previewChiefAlerts(data.suspense);
   const resendConfigured = Boolean(process.env.RESEND_API_KEY);
   const cronConfigured = Boolean(process.env.CHIEF_CRON_SECRET);
@@ -148,3 +149,4 @@ export default async function ChiefAlertsPage() {
     </ChiefErrorBoundary>
   );
 }
+

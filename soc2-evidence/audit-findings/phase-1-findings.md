@@ -92,13 +92,40 @@ The Content-Security-Policy is **adequate for current operational needs** but ha
 
 ---
 
+## Re-Audit Update (2026-03-21)
+**Updated Score**: 9/10
+**Updated Result**: Pass
+**Updated Blocker Count**: 0
+
+### Resolved Since Original Audit
+- **High 2 (`/chief/*` not in middleware)**: Resolved — `middleware.ts` now protects `/chief(.*)`, `/api/chief(.*)`, and `/api/invoices(.*)` via `createRouteMatcher`.
+- **High 3 (cron-health uses Penny roles)**: Resolved — `cron-health/route.ts` now uses `requireChiefOrgWithRole(request, 'admin')` from `chief-auth.ts`. No Penny role coupling remains.
+- **Medium 2 (raw error strings in 500 responses)**: Resolved — all Chief API routes now return generic error messages; detailed errors logged server-side only.
+- **High (error boundary client-only logging)**: Resolved — `ChiefErrorBoundary` now posts errors to `/api/chief/errors/client`, and events are persisted to `chief_error_events` in Neon.
+- **Medium (missing HSTS header)**: Resolved — `Strict-Transport-Security: max-age=63072000; includeSubDomains; preload` added to `vercel.json`.
+- **Medium (deprecated X-XSS-Protection header)**: Resolved — deprecated header removed.
+- **Medium (missing CSP report endpoint)**: Resolved — CSP now includes `report-uri` + `report-to`, with `/api/csp-report` endpoint added.
+- **High (`unsafe-eval` in script-src)**: Resolved — `unsafe-eval` removed from `script-src` and `script-src-elem`.
+
+### Still Open (carried forward)
+- **Accepted Risk**: CSP `script-src 'unsafe-inline'` for Clerk/Next.js runtime scripts.
+- **Accepted Risk**: CSP `style-src 'unsafe-inline'` for Clerk/Next.js runtime styles.
+- **Open Actionable Findings**: 0
+
+### Updated SOC 2 Assessment
+- **CC6.7 (Transmission Security)**: **Satisfied** — unchanged, headers comprehensive
+- **CC7.2 (System Monitoring)**: **Partial** — cron dead-man switch works; Chief UI errors are now captured server-side in Neon via `/api/chief/errors/client`. Remaining gap is alerting workflow integration (Phase 3).
+- **A1.1 (Availability)**: **Partial** — unchanged, needs uptime monitoring and Railway Pro
+
+---
+
 ### Audit Metadata
 - **Build Cycles**: 3
 - **Google Drive Reference Count**: 0 (verified via grep — complete removal confirmed)
-- **Security Headers Deployed**: 7 (X-Content-Type-Options, X-Frame-Options, X-XSS-Protection, Referrer-Policy, Permissions-Policy, CSP, upgrade-insecure-requests)
+- **Security Headers Deployed**: 8 (X-Content-Type-Options, X-Frame-Options, Strict-Transport-Security, Referrer-Policy, Permissions-Policy, Report-To, Reporting-Endpoints, CSP)
 - **Error Boundary Coverage**: 9 Chief pages wrapped
 - **Cron Monitoring**: Active (25-hour dead-man threshold)
 - **Environment Validation**: 40+ vars checked at startup
 - **Regression Baseline**: Maintained (homepage 200, /chief 200, /api/penny/health 200)
-- **Next Phase**: Phase 2 — Data Integrity + Access Control
-- **Blockers for Phase 2**: 0
+- **Re-Audit Date**: 2026-03-21
+- **Original High Findings**: 4 → 0 actionable open (2 accepted risk documented)

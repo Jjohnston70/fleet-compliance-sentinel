@@ -1,5 +1,3 @@
-import { auth } from '@clerk/nextjs/server';
-import { isClerkEnabled } from '@/lib/clerk';
 import * as XLSX from 'xlsx';
 import {
   IMPORT_SCHEMAS,
@@ -8,6 +6,7 @@ import {
   validateRows,
   type CollectionKey,
 } from '@/lib/chief-import-schemas';
+import { chiefAuthErrorResponse, requireChiefOrg } from '@/lib/chief-auth';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -84,9 +83,12 @@ function parseSheet(
 }
 
 export async function POST(request: Request) {
-  if (isClerkEnabled()) {
-    const { userId } = await auth();
-    if (!userId) return Response.json({ error: 'Unauthorized' }, { status: 401 });
+  try {
+    await requireChiefOrg(request);
+  } catch (error: unknown) {
+    const authResponse = chiefAuthErrorResponse(error);
+    if (authResponse) return authResponse;
+    return Response.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
   const contentType = request.headers.get('content-type') ?? '';
@@ -119,7 +121,8 @@ export async function POST(request: Request) {
     workbook = XLSX.read(buffer, { type: 'buffer', raw: false });
     if (workbook.SheetNames.length === 0) throw new Error('File contains no sheets');
   } catch (err: unknown) {
-    return Response.json({ error: `Could not parse file: ${String(err)}` }, { status: 422 });
+    console.error('[chief-import-parse] file parse failed:', err);
+    return Response.json({ error: 'Could not parse file' }, { status: 422 });
   }
 
   // Check if a specific collection was requested (single-sheet mode, backwards compatible)
@@ -143,7 +146,8 @@ export async function POST(request: Request) {
       const result = parseSheet(workbook, targetSheet, collection as CollectionKey);
       return Response.json(result);
     } catch (err: unknown) {
-      return Response.json({ error: `Could not parse sheet: ${String(err)}` }, { status: 422 });
+      console.error('[chief-import-parse] sheet parse failed:', err);
+      return Response.json({ error: 'Could not parse sheet' }, { status: 422 });
     }
   }
 

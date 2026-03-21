@@ -1,18 +1,16 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { auth } from '@clerk/nextjs/server';
-import { isClerkEnabled } from '@/lib/clerk';
 import { lookupFmcsaCarrier } from '@/lib/chief-fmcsa-client';
+import { chiefAuthErrorResponse, requireChiefOrg } from '@/lib/chief-auth';
 
 export const runtime = 'nodejs';
 
 export async function GET(req: NextRequest) {
-  if (!isClerkEnabled()) {
-    return NextResponse.json({ error: 'Auth not configured.' }, { status: 503 });
-  }
-
-  const { userId } = await auth();
-  if (!userId) {
-    return NextResponse.json({ error: 'Unauthorized.' }, { status: 401 });
+  try {
+    await requireChiefOrg(req);
+  } catch (error: unknown) {
+    const authResponse = chiefAuthErrorResponse(error);
+    if (authResponse) return authResponse;
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
   const dot = req.nextUrl.searchParams.get('dot') ?? '';

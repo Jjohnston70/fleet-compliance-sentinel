@@ -3,7 +3,7 @@
 **Source:** https://www.ecfr.gov/current/title-49/subtitle-B/chapter-III/subchapter-B/part-383  
 **Title:** 49 — Transportation  
 **Agency:** Federal Motor Carrier Safety Administration (FMCSA)  
-**Last scraped:** 2026-03-17  
+**Last scraped:** 2026-03-21  
 **Purpose:** DOT compliance reference for AssetCommand / Pipeline Penny knowledge base
 
 ---
@@ -82,7 +82,7 @@ Enhanced content is provided to the user to provide additional context.
 
 This content is from the eCFR and is authoritative but unofficial.
 
-Displaying title 49, up to date as of 3/13/2026. Title 49 was last amended 3/12/2026.
+Displaying title 49, up to date as of 3/19/2026. Title 49 was last amended 3/16/2026.
 
 view historical versions
 
@@ -92,7 +92,7 @@ A [drafting site is available](https://drafting.ecfr.gov/current/title-49/subtit
 
 There have been changes in the last two weeks to Part 383. 
 
-[view change](/recent-changes?search%5Bhierarchy%5D%5Bpart%5D=383&search%5Bhierarchy%5D%5Btitle%5D=49&search%5Blast_modified_after%5D=2026-03-02)
+[view changes](/recent-changes?search%5Bhierarchy%5D%5Bpart%5D=383&search%5Bhierarchy%5D%5Btitle%5D=49&search%5Blast_modified_after%5D=2026-03-06)
 
 **Navigate by entering citations or phrases** (eg: 1 CFR 1.1 49 CFR 172.101 Organization and Purpose 1/1.1 Regulation Y FAR). 
 
@@ -234,42 +234,43 @@ Via Email:
 
 Show only dates with regulatory amendments ()
 
-    1. 3/10/2026  [view on this date](/on/2026-03-10/title-49/subtitle-B/chapter-III/subchapter-B/part-383) view change introduced
-    2. 2/19/2026  [view on this date](/on/2026-02-19/title-49/subtitle-B/chapter-III/subchapter-B/part-383) view change introduced compare to most recent
-    3. 2/13/2026  [view on this date](/on/2026-02-13/title-49/subtitle-B/chapter-III/subchapter-B/part-383) view change introduced compare to most recent
-    4. 1/09/2026  [view on this date](/on/2026-01-09/title-49/subtitle-B/chapter-III/subchapter-B/part-383) view change introduced compare to most recent
-    5. 9/29/2025  [view on this date](/on/2025-09-29/title-49/subtitle-B/chapter-III/subchapter-B/part-383) view change introduced compare to most recent
-    6. 11/18/2024  [view on this date](/on/2024-11-18/title-49/subtitle-B/chapter-III/subchapter-B/part-383) view change introduced compare to most recent
-    7. 11/27/2023  [view on this date](/on/2023-11-27/title-49/subtitle-B/chapter-III/subchapter-B/part-383) view change introduced compare to most recent
-    8. 11/17/2023  [view on this date](/on/2023-11-17/title-49/subtitle-B/chapter-III/subchapter-B/part-383) view change introduced compare to most recent
-    9. 9/29/2022  [view on this date](/on/2022-09-29/title-49/subtitle-B/chapter-III/subchapter-B/part-383) view change introduced compare to most recent
-    10. 11/08/2021  [view on this date](/on/2021-11-08/title-49/subtitle-B/chapter-III/subchapter-B/part-383) view change introduced compare to most recent
-    11. 10/29/2021  [view on this date](/on/2021-10-29/title-49/subtitle-B/chapter-III/subchapter-B/part-383) view change introduced compare to most recent
-    12. 10/14/2021  [view on this date](/on/2021-10-14/title-49/subtitle-B/chapter-III/subchapter-B/part-383) view change introduced compare to most recent
-    13. 10/07/2021  [view on this date](/on/2021-10-07/title-49/subtitle-B/chapter-III/subchapter-B/part-383) view change introduced compare to most recent
-    14. 7/07/2021  [view on this date](/on/2021-07-07/title-49/subtitle-B/chapter-III/subchapter-B/part-383) view change introduced compare to most recent
-    15. 6/22/2021  [view on this date](/on/2021-06-22/title-49/subtitle-B/chapter-III/subchapter-B/part-383) view change introduced compare to most recent
-    16. 2/04/2020  [view on this date](/on/2020-02-04/title-49/subtitle-B/chapter-III/subchapter-B/part-383) view change introduced compare to most recent
-    17. 12/13/2019  [view on this date](/on/2019-12-13/title-49/subtitle-B/chapter-III/subchapter-B/part-383) view change introduced compare to most recent
-    18. 10/31/2019  [view on this date](/on/2019-10-31/title-49/subtitle-B/chapter-III/subchapter-B/part-383) view change introduced compare to most recent
-    19. 10/01/2019  [view on this date](/on/2019-10-01/title-49/subtitle-B/chapter-III/subchapter-B/part-383) view change introduced compare to most recent
-    20. 9/30/2019  [view on this date](/on/2019-09-30/title-49/subtitle-B/chapter-III/subchapter-B/part-383) view change introduced compare to most recent
-    21. 9/23/2019  [view on this date](/on/2019-09-23/title-49/subtitle-B/chapter-III/subchapter-B/part-383) view change introduced compare to most recent
-    22. 7/23/2019  [view on this date](/on/2019-07-23/title-49/subtitle-B/chapter-III/subchapter-B/part-383) view change introduced compare to most recent
-    23. 2/19/2019  [view on this date](/on/2019-02-19/title-49/subtitle-B/chapter-III/subchapter-B/part-383) view change introduced compare to most recent
-    24. 12/21/2018  [view on this date](/on/2018-12-21/title-49/subtitle-B/chapter-III/subchapter-B/part-383) view change introduced compare to most recent
-    25. 11/27/2018  [view on this date](/on/2018-11-27/title-49/subtitle-B/chapter-III/subchapter-B/part-383) view change introduced compare to most recent
-    26. 9/28/2018  [view on this date](/on/2018-09-28/title-49/subtitle-B/chapter-III/subchapter-B/part-383) view change introduced compare to most recent
-    27. 6/21/2018  [view on this date](/on/2018-06-21/title-49/subtitle-B/chapter-III/subchapter-B/part-383) view change introduced compare to most recent
-    28. 6/18/2018  [view on this date](/on/2018-06-18/title-49/subtitle-B/chapter-III/subchapter-B/part-383) view change introduced compare to most recent
-    29. 5/17/2018  [view on this date](/on/2018-05-17/title-49/subtitle-B/chapter-III/subchapter-B/part-383) view change introduced compare to most recent
-    30. 6/23/2017  [view on this date](/on/2017-06-23/title-49/subtitle-B/chapter-III/subchapter-B/part-383) view change introduced compare to most recent
-    31. 6/05/2017  [view on this date](/on/2017-06-05/title-49/subtitle-B/chapter-III/subchapter-B/part-383) view change introduced compare to most recent
-    32. 5/23/2017  [view on this date](/on/2017-05-23/title-49/subtitle-B/chapter-III/subchapter-B/part-383) view change introduced compare to most recent
-    33. 3/21/2017  [view on this date](/on/2017-03-21/title-49/subtitle-B/chapter-III/subchapter-B/part-383) view change introduced compare to most recent
-    34. 3/15/2017  [view on this date](/on/2017-03-15/title-49/subtitle-B/chapter-III/subchapter-B/part-383) view change introduced compare to most recent
-    35. 2/01/2017  [view on this date](/on/2017-02-01/title-49/subtitle-B/chapter-III/subchapter-B/part-383) view change introduced compare to most recent
-    36. 1/17/2017  [view on this date](/on/2017-01-17/title-49/subtitle-B/chapter-III/subchapter-B/part-383) view change introduced compare to most recent
+    1. 3/16/2026  [view on this date](/on/2026-03-16/title-49/subtitle-B/chapter-III/subchapter-B/part-383) view change introduced
+    2. 3/10/2026  [view on this date](/on/2026-03-10/title-49/subtitle-B/chapter-III/subchapter-B/part-383) view change introduced compare to most recent
+    3. 2/19/2026  [view on this date](/on/2026-02-19/title-49/subtitle-B/chapter-III/subchapter-B/part-383) view change introduced compare to most recent
+    4. 2/13/2026  [view on this date](/on/2026-02-13/title-49/subtitle-B/chapter-III/subchapter-B/part-383) view change introduced compare to most recent
+    5. 1/09/2026  [view on this date](/on/2026-01-09/title-49/subtitle-B/chapter-III/subchapter-B/part-383) view change introduced compare to most recent
+    6. 9/29/2025  [view on this date](/on/2025-09-29/title-49/subtitle-B/chapter-III/subchapter-B/part-383) view change introduced compare to most recent
+    7. 11/18/2024  [view on this date](/on/2024-11-18/title-49/subtitle-B/chapter-III/subchapter-B/part-383) view change introduced compare to most recent
+    8. 11/27/2023  [view on this date](/on/2023-11-27/title-49/subtitle-B/chapter-III/subchapter-B/part-383) view change introduced compare to most recent
+    9. 11/17/2023  [view on this date](/on/2023-11-17/title-49/subtitle-B/chapter-III/subchapter-B/part-383) view change introduced compare to most recent
+    10. 9/29/2022  [view on this date](/on/2022-09-29/title-49/subtitle-B/chapter-III/subchapter-B/part-383) view change introduced compare to most recent
+    11. 11/08/2021  [view on this date](/on/2021-11-08/title-49/subtitle-B/chapter-III/subchapter-B/part-383) view change introduced compare to most recent
+    12. 10/29/2021  [view on this date](/on/2021-10-29/title-49/subtitle-B/chapter-III/subchapter-B/part-383) view change introduced compare to most recent
+    13. 10/14/2021  [view on this date](/on/2021-10-14/title-49/subtitle-B/chapter-III/subchapter-B/part-383) view change introduced compare to most recent
+    14. 10/07/2021  [view on this date](/on/2021-10-07/title-49/subtitle-B/chapter-III/subchapter-B/part-383) view change introduced compare to most recent
+    15. 7/07/2021  [view on this date](/on/2021-07-07/title-49/subtitle-B/chapter-III/subchapter-B/part-383) view change introduced compare to most recent
+    16. 6/22/2021  [view on this date](/on/2021-06-22/title-49/subtitle-B/chapter-III/subchapter-B/part-383) view change introduced compare to most recent
+    17. 2/04/2020  [view on this date](/on/2020-02-04/title-49/subtitle-B/chapter-III/subchapter-B/part-383) view change introduced compare to most recent
+    18. 12/13/2019  [view on this date](/on/2019-12-13/title-49/subtitle-B/chapter-III/subchapter-B/part-383) view change introduced compare to most recent
+    19. 10/31/2019  [view on this date](/on/2019-10-31/title-49/subtitle-B/chapter-III/subchapter-B/part-383) view change introduced compare to most recent
+    20. 10/01/2019  [view on this date](/on/2019-10-01/title-49/subtitle-B/chapter-III/subchapter-B/part-383) view change introduced compare to most recent
+    21. 9/30/2019  [view on this date](/on/2019-09-30/title-49/subtitle-B/chapter-III/subchapter-B/part-383) view change introduced compare to most recent
+    22. 9/23/2019  [view on this date](/on/2019-09-23/title-49/subtitle-B/chapter-III/subchapter-B/part-383) view change introduced compare to most recent
+    23. 7/23/2019  [view on this date](/on/2019-07-23/title-49/subtitle-B/chapter-III/subchapter-B/part-383) view change introduced compare to most recent
+    24. 2/19/2019  [view on this date](/on/2019-02-19/title-49/subtitle-B/chapter-III/subchapter-B/part-383) view change introduced compare to most recent
+    25. 12/21/2018  [view on this date](/on/2018-12-21/title-49/subtitle-B/chapter-III/subchapter-B/part-383) view change introduced compare to most recent
+    26. 11/27/2018  [view on this date](/on/2018-11-27/title-49/subtitle-B/chapter-III/subchapter-B/part-383) view change introduced compare to most recent
+    27. 9/28/2018  [view on this date](/on/2018-09-28/title-49/subtitle-B/chapter-III/subchapter-B/part-383) view change introduced compare to most recent
+    28. 6/21/2018  [view on this date](/on/2018-06-21/title-49/subtitle-B/chapter-III/subchapter-B/part-383) view change introduced compare to most recent
+    29. 6/18/2018  [view on this date](/on/2018-06-18/title-49/subtitle-B/chapter-III/subchapter-B/part-383) view change introduced compare to most recent
+    30. 5/17/2018  [view on this date](/on/2018-05-17/title-49/subtitle-B/chapter-III/subchapter-B/part-383) view change introduced compare to most recent
+    31. 6/23/2017  [view on this date](/on/2017-06-23/title-49/subtitle-B/chapter-III/subchapter-B/part-383) view change introduced compare to most recent
+    32. 6/05/2017  [view on this date](/on/2017-06-05/title-49/subtitle-B/chapter-III/subchapter-B/part-383) view change introduced compare to most recent
+    33. 5/23/2017  [view on this date](/on/2017-05-23/title-49/subtitle-B/chapter-III/subchapter-B/part-383) view change introduced compare to most recent
+    34. 3/21/2017  [view on this date](/on/2017-03-21/title-49/subtitle-B/chapter-III/subchapter-B/part-383) view change introduced compare to most recent
+    35. 3/15/2017  [view on this date](/on/2017-03-15/title-49/subtitle-B/chapter-III/subchapter-B/part-383) view change introduced compare to most recent
+    36. 2/01/2017  [view on this date](/on/2017-02-01/title-49/subtitle-B/chapter-III/subchapter-B/part-383) view change introduced compare to most recent
+    37. 1/17/2017  [view on this date](/on/2017-01-17/title-49/subtitle-B/chapter-III/subchapter-B/part-383) view change introduced compare to most recent
 
 ###### Enhanced Content - Timeline
 
@@ -506,10 +507,6 @@ Link to an amendment published at [91 FR 7864](https://www.federalregister.gov/c
 
 #### § 383.5 Definitions.
 
-###### Cross Reference
-
-Link to an amendment published at [91 FR 7102](https://www.federalregister.gov/citation/91-FR-7102), Feb. 13, 2026.
-
 As used in this part:
 
 _Administrator_ means the Federal Motor Carrier Safety Administrator, the chief executive of the Federal Motor Carrier Safety Administration, an agency within the Department of Transportation.
@@ -604,7 +601,7 @@ _Evidence of lawful immigration status_ for purposes of [subpart B of this part]
 
 (i) An unexpired foreign passport; and
 
-(ii) An unexpired Form I-94/94A issued by the U.S. Department of Homeland Security indicating one of the following classifications: H-2A—Temporary Agricultural Workers, H-2B—Temporary Non-Agricultural Workers, or E-2—Treaty Investors.
+(ii) A Form I-94/94A issued by the U.S. Department of Homeland Security with an unexpired Admit Until Date indicating one of the following classifications: H-2A-Temporary Agricultural Workers, H-2B-Temporary Non-Agricultural Workers, or E-2-Treaty Investors.
 
 (2) For applicants domiciled in Puerto Rico, the U.S. Virgin Islands, Guam, American Samoa, or the Commonwealth of the Northern Mariana Islands: any of the documents specified in Table 1 of [section 383.71](/current/title-49/section-383.71).
 
@@ -1113,10 +1110,6 @@ Any person who holds a CLP or CDL or is required to hold a CLP or CDL is conside
 
 #### § 383.73 State procedures.
 
-###### Cross Reference
-
-Link to an amendment published at [91 FR 7102](https://www.federalregister.gov/citation/91-FR-7102), Feb. 13, 2026.
-
 (a) _Commercial Learner's Permit._ Prior to issuing a CLP to a person, a State must:
 
 (1) Require the applicant to make the certifications, pass the tests, and provide the information as described in [§ 383.71(a)](/current/title-49/section-383.71#p-383.71\(a\)).
@@ -1261,7 +1254,7 @@ Link to an amendment published at [91 FR 7102](https://www.federalregister.gov/c
 
 (iii) The State must have established, prior to issuing any Non-domiciled CLP or CDL, the practical capability of disqualifying the holder of any Non-domiciled CLP or CDL, by withdrawing or disqualifying his/her Non-domiciled CLP or CDL as if the Non-domiciled CLP or CDL were a CLP or CDL issued to a person domiciled in the State.
 
-(iv) For applicants domiciled in a foreign jurisdiction, the State must ensure that the period of validity of the non-domiciled CLP or CDL does not exceed the Admit Until Date or expiration date on the applicant's I-94/A or 1 year, whichever is sooner.
+(iv) For applicants domiciled in a foreign jurisdiction, the State must ensure that the period of validity of the non-domiciled CLP or CDL does not exceed the Admit Until Date or expiration date on the applicant's I-94/A or 1 year, whichever is sooner. In any case (including where the applicant's I-94/A contains no end date or is marked “D/S” to show it is valid for the duration of status) a State must not issue a non-domiciled CLP or CDL with a period of validity longer than 1 year.
 
 (3) _Documentation of lawful immigration status_ —
 
@@ -1269,17 +1262,17 @@ Link to an amendment published at [91 FR 7102](https://www.federalregister.gov/c
 
 (ii) _Applicants domiciled in a foreign jurisdiction._
 
-(A) Beginning September 29, 2025, the State must not issue (which includes amending, correcting, reprinting, or otherwise duplicating a previously issued CLP or CDL), transfer, renew, or upgrade a non-domiciled CLP or CDL unless, at the time of the transaction, the applicant provides _evidence of lawful immigration status_ as defined under [§ 383.5](/current/title-49/section-383.5). Applicants for a non-domiciled CLP or CDL who do not provide evidence of lawful immigration status as required under [§ 383.71(f)(3)(i)(B)](/current/title-49/section-383.71#p-383.71\(f\)\(3\)\(i\)\(B\)) are not eligible for a non-domiciled CLP or CDL.
+(A) Beginning March 16, 2026, the State must not issue (which includes amending, correcting, reprinting, reinstating, or otherwise duplicating a previously issued CLP or CDL), transfer, renew, or upgrade a non-domiciled CLP or CDL unless, at the time of the transaction, the applicant provides _evidence of lawful immigration status_ as defined under [§ 383.5](/current/title-49/section-383.5). Applicants for a non-domiciled CLP or CDL who do not provide evidence of lawful immigration status as required under [§ 383.71(f)(3)(i)(B)](/current/title-49/section-383.71#p-383.71\(f\)\(3\)\(i\)\(B\)) are not eligible for a non-domiciled CLP or CDL.
 
-(B) States must comply with the document verification requirements for applicants domiciled in a foreign jurisdiction set forth in [§ 383.73(m)(2)](/current/title-49/section-383.73#p-383.73\(m\)\(2\)) before issuing (which includes amending, correcting, reprinting, or otherwise duplicating a previously issued CLP or CDL), transferring, renewing, or upgrading a non-domiciled CLP or CDL.
+(B) States must comply with the document verification requirements for applicants domiciled in a foreign jurisdiction set forth in [§ 383.73(m)(2)](/current/title-49/section-383.73#p-383.73\(m\)\(2\)) before issuing (which includes amending, correcting, reprinting, reinstating, or otherwise duplicating a previously issued CLP or CDL), transferring, renewing, or upgrading a non-domiciled CLP or CDL.
 
 (C) States are prohibited from granting non-domiciled CLP or CDL privileges on a temporary or interim basis pending review and validation of an applicant's evidence of lawful immigration status.
 
 (4) Beginning November 18, 2024, the State must request information from the Drug and Alcohol Clearinghouse. If, in response to that request, the State receives notification that pursuant to [§ 382.501(a) of this chapter](/current/title-49/section-382.501#p-382.501\(a\)) the applicant is prohibited from operating a commercial motor vehicle, the State must not issue, renew, transfer or upgrade a non-domiciled CLP or CDL and must comply with the procedures set forth in [paragraph (q)](/current/title-49/section-383.73#p-383.73\(q\)) of this section, as applicable.
 
-(5) _Downgrade._ If after issuing (which includes amending, correcting, reprinting, or otherwise duplicating a previously issued CLP or CDL), transferring, renewing, or upgrading a non-domiciled CLP or CDL, the State receives information from FMCSA, the Department of Homeland Security, the Department of State, or other Federal agency with jurisdiction that the applicant no longer has lawful immigration status in the United States in a category specified in paragraph (1)(iii) of the definition of _evidence of lawful immigration status_ in [§ 383.5 of this part](/current/title-49/part-383/section-383.5), the State must initiate established State procedures for downgrading the non-domiciled CLP or CDL. The downgrade must be completed and recorded on the CDLIS driver record within 30 days of the State's receipt of such information. As used in this paragraph, the term “downgrade” means the State's removal of the CLP or CDL privilege from the driver's license, as set forth in paragraph (4) the definition of _CDL downgrade_ in [§ 383.5](/current/title-49/section-383.5).
+(5) _Downgrade._ If after issuing (which includes amending, correcting, reprinting, reinstating, or otherwise duplicating a previously issued CLP or CDL), transferring, renewing, or upgrading a non-domiciled CLP or CDL, the State receives information from FMCSA, the Department of Homeland Security, the U.S. Department of State, or other Federal agency with jurisdiction that the applicant no longer has lawful immigration status in the United States in a category specified in paragraph (1)(ii) of the definition of _Evidence of lawful immigration status_ in [§ 383.5 of this part](/current/title-49/part-383/section-383.5), the State must initiate established State procedures for downgrading the non-domiciled CLP or CDL. The downgrade must be completed and recorded on the CDLIS driver record within 30 days of the State's receipt of such information. As used in this paragraph, the term “downgrade” means the State's removal of the CLP or CDL privilege from the driver's license, as set forth in paragraph (4) the definition of _CDL downgrade_ in [§ 383.5](/current/title-49/section-383.5).
 
-(6) _Non-domiciled CDL renewal._ States must require non-domiciled CLP or CDL renewal be conducted in-person only and must not permit renewal by mail or electronic means.
+(6) _Non-domiciled CDL renewal._ States must require every non-domiciled CLP or CDL issuance (which includes amending, correcting, reprinting, reinstating, or otherwise duplicating a previously issued CLP or CDL), transfer, renewal, or upgrade be conducted in-person only and must not permit issuance, transfer, renewal, or upgrade by mail or electronic means.
 
 (g) _Social Security Number verification._
 
@@ -1305,13 +1298,13 @@ Link to an amendment published at [91 FR 7102](https://www.federalregister.gov/c
 
 (1) _Exception for applicants domiciled in a State._ For offices with only one staff member, at least some of the documents must be processed or verified by a supervisor before issuance or, when a supervisor is not available, copies must be made of some of the documents involved in the licensing process and a supervisor must verify them within one business day of issuance of the CLP, non-domiciled CLP, CDL, or non-domiciled CDL.
 
-(2) _Document Verification for applicants domiciled in a foreign jurisdiction._ States must verify evidence of lawful immigration status for applicants domiciled in a foreign jurisdiction before initial issuance and before any subsequent issuance (which includes amending, correcting, reprinting, or otherwise duplicating a previously issued CLP or CDL), transfer, renewal, or upgrade of a non-domiciled CLP or CDL.
+(2) _Document verification and retention for applicants domiciled in a foreign jurisdiction._ States must verify evidence of lawful immigration status for applicants domiciled in a foreign jurisdiction before initial issuance and before any subsequent issuance (which includes amending, correcting, reprinting, reinstating, or otherwise duplicating a previously issued CLP or CDL), transfer, renewal, or upgrade of a non-domiciled CLP or CDL.
 
-(i) For offices with only one staff member, all documents must be processed or verified by a supervisor before issuing (which includes amending, correcting, reprinting, or otherwise duplicating a previously issued CLP or CDL), transferring, renewing, or upgrading a non-domiciled CLP or CDL.
+(i) For offices with only one staff member, all documents must be processed or verified by a supervisor before issuing (which includes amending, correcting, reprinting, reinstating, or otherwise duplicating a previously issued CLP or CDL), transferring, renewing, or upgrading a non-domiciled CLP or CDL.
 
-(ii) In reviewing the evidence of lawful immigration status an applicant domiciled in a foreign jurisdiction (except an applicant domiciled in Puerto Rico, the U.S. Virgin Islands, Guam, American Samoa or the Commonwealth of the Northern Mariana Islands), the State must query the Systematic Alien Verification for Entitlements (SAVE) system (administered by U.S. Citizenship and Immigration Services). If the SAVE final response, including additional verification if needed, does not confirm the applicant's claim to be in lawful immigration status in a category specified in paragraph (1)(ii) of the definition of _evidence of lawful immigration status_ in [§ 383.5 of this part](/current/title-49/part-383/section-383.5), the State must not issue (which includes amend, correct, reprint, or otherwise duplicate a previously issued CLP or CDL), transfer, renew, or upgrade a non-domiciled CLP or CDL, and must initiate downgrade procedures in accordance with [paragraph (f)(5)](/current/title-49/section-383.73#p-383.73\(f\)\(5\)) of this section if the applicant holds an unexpired non-domiciled CLP or CDL.
+(ii) In reviewing the evidence of lawful immigration status an applicant domiciled in a foreign jurisdiction (except an applicant domiciled in Puerto Rico, the U.S. Virgin Islands, Guam, American Samoa or the Commonwealth of the Northern Mariana Islands), the State must query the Systematic Alien Verification for Entitlements (SAVE) system (administered by U.S. Citizenship and Immigration Services). If the SAVE final response, including additional verification if needed, does not confirm the applicant's claim to be in lawful immigration status in a category specified in paragraph (1)(ii) of the definition of _evidence of lawful immigration status_ in [§ 383.5 of this part](/current/title-49/part-383/section-383.5), the State must not issue (which includes amend, correct, reprint, reinstating, or otherwise duplicate a previously issued CLP or CDL), transfer, renew, or upgrade a non-domiciled CLP or CDL, and must initiate downgrade procedures in accordance with [paragraph (f)(5)](/current/title-49/section-383.73#p-383.73\(f\)\(5\)) of this section if the applicant holds an unexpired non-domiciled CLP or CDL.
 
-(iii) The State must retain copies of all documents involved in the licensing process, including documents provided by the applicant to prove lawful immigration status and documents showing the results of any SAVE query to verify an applicant's lawful immigration status, and a supervisor must verify them within one business day of issuing (which includes amending, correcting, reprinting, or otherwise duplicating a previously issued CLP or CDL), transferring, renewing, or upgrading a non-domiciled CLP or CDL. The State must retain the documents for no less than 2 years from the date of issuing (which includes amending, correcting, reprinting, or otherwise duplicating a previously issued CLP or CDL), transferring, renewing, or upgrading a non-domiciled CLP or CDL.
+(iii) The State must retain copies of all documents involved in the licensing process, including documents provided by the applicant to prove lawful immigration status and documents showing the results of any SAVE query to verify an applicant's lawful immigration status, and a supervisor must verify them within one business day of issuing (which includes amending, correcting, reprinting, or otherwise duplicating a previously issued CLP or CDL), transferring, renewing, reinstating, or upgrading a non-domiciled CLP or CDL. The State must retain the documents for no less than 2 years from the date of issuing (which includes amending, correcting, reprinting, reinstating, or otherwise duplicating a previously issued CLP or CDL), transferring, renewing, or upgrading a non-domiciled CLP or CDL.
 
 (n) _Computer system controls._ The State must establish computer system controls that will:
 

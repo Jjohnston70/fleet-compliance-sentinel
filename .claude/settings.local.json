@@ -1,0 +1,25 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(find /c/Users/truenorth/Desktop/website-pipeline-punks-pipelinex-v2 -maxdepth 1 -type f -exec ls -lh {})",
+      "Read(//c/Users/truenorth/Desktop/website-pipeline-punks-pipelinex-v2/**)",
+      "Bash(ls -ld /c/Users/truenorth/Desktop/website-pipeline-punks-pipelinex-v2/*/)",
+      "Bash(grep -r \"chief-local-store\\\\|penny-ingest\\\\|chief-knowledge-timeline\\\\|LocalRecordsPanel\" /c/Users/truenorth/Desktop/website-pipeline-punks-pipelinex-v2/src --include=*.ts --include=*.tsx)",
+      "Bash(xargs grep:*)",
+      "Bash(ls -lh /c/Users/truenorth/Desktop/website-pipeline-punks-pipelinex-v2/*.md)",
+      "Bash(head -5 /c/Users/truenorth/Desktop/website-pipeline-punks-pipelinex-v2/ARCHITECTURE.md /c/Users/truenorth/Desktop/website-pipeline-punks-pipelinex-v2/soc2-evidence/system-description/*.md)",
+      "Bash(du -sh /c/Users/truenorth/Desktop/website-pipeline-punks-pipelinex-v2/archive/2026-02-26-pre-penny-cleanup/*)",
+      "Bash(grep -l import.*from /c/Users/truenorth/Desktop/website-pipeline-punks-pipelinex-v2/src/app/api/penny/query/route.ts /c/Users/truenorth/Desktop/website-pipeline-punks-pipelinex-v2/src/components/chief/forms/*.tsx)",
+      "Bash(xargs head:*)",
+      "Bash(xargs ls:*)",
+      "Bash(find /c/Users/truenorth/Desktop/website-pipeline-punks-pipelinex-v2/packages -type f -name package.json -exec cat {})",
+      "Bash(2)",
+      "Bash(grep -r \"knowledge\\\\|tooling\" /c/Users/truenorth/Desktop/website-pipeline-punks-pipelinex-v2/src --include=*.ts --include=*.tsx)",
+      "Bash(xargs wc:*)",
+      "Bash(mv ARCHITECTURE.md archive/2026-03-21-pre-phase3-cleanup/legacy-docs/)",
+      "Bash(mv AUDIT_REPORT.md archive/2026-03-21-pre-phase3-cleanup/legacy-docs/)",
+      "Bash(mv ENV_EXAMPLE.md archive/2026-03-21-pre-phase3-cleanup/legacy-docs/)",
+      "Bash(grep -E \"\\\\.ts$\")"
+    ]
+  }
+}

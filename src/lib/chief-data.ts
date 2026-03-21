@@ -203,14 +203,23 @@ function addOneYear(dateText: string | null | undefined): string {
 
 type RawRow = Record<string, unknown>;
 
-async function loadCollection(collection: string): Promise<RawRow[]> {
+async function loadCollection(collection: string, orgId?: string): Promise<RawRow[]> {
   try {
     const sql = getSQL();
-    const rows = await sql`
-      SELECT data FROM chief_records
-      WHERE collection = ${collection}
-      ORDER BY imported_at ASC
-    `;
+    const rows = orgId
+      ? await sql`
+          SELECT data FROM chief_records
+          WHERE collection = ${collection}
+            AND org_id = ${orgId}
+            AND deleted_at IS NULL
+          ORDER BY imported_at ASC
+        `
+      : await sql`
+          SELECT data FROM chief_records
+          WHERE collection = ${collection}
+            AND deleted_at IS NULL
+          ORDER BY imported_at ASC
+        `;
     return rows.map((r) => r.data as RawRow);
   } catch {
     return [];
@@ -503,20 +512,20 @@ export interface ChiefData {
   suspenseSeverities: string[];
 }
 
-export async function loadChiefData(): Promise<ChiefData> {
+export async function loadChiefData(orgId?: string): Promise<ChiefData> {
   const [
     rawAssets, rawTanks, rawVehicles, rawDrivers, rawEmployees,
     rawPermits, rawActivity, rawMaintenance, rawSchedule,
   ] = await Promise.all([
-    loadCollection('assets_master'),
-    loadCollection('storage_tanks'),
-    loadCollection('vehicles_equipment'),
-    loadCollection('drivers'),
-    loadCollection('employees'),
-    loadCollection('permits_licenses'),
-    loadCollection('activity_log'),
-    loadCollection('maintenance_tracker'),
-    loadCollection('maintenance_schedule'),
+    loadCollection('assets_master', orgId),
+    loadCollection('storage_tanks', orgId),
+    loadCollection('vehicles_equipment', orgId),
+    loadCollection('drivers', orgId),
+    loadCollection('employees', orgId),
+    loadCollection('permits_licenses', orgId),
+    loadCollection('activity_log', orgId),
+    loadCollection('maintenance_tracker', orgId),
+    loadCollection('maintenance_schedule', orgId),
   ]);
 
   // Assets = assets_master + tanks + vehicles (deduped)
@@ -744,13 +753,25 @@ export function getSuspenseStats(items: ChiefSuspenseRecord[]) {
   };
 }
 
-export async function getImportStats(): Promise<{ generatedAt: string; collections: ChiefImportCollectionStat[] }> {
+export async function getImportStats(orgId?: string): Promise<{ generatedAt: string; collections: ChiefImportCollectionStat[] }> {
   try {
     const sql = getSQL();
-    const rows = await sql`
-      SELECT collection, count(*)::int as count
-      FROM chief_records GROUP BY collection ORDER BY collection
-    `;
+    const rows = orgId
+      ? await sql`
+          SELECT collection, count(*)::int as count
+          FROM chief_records
+          WHERE org_id = ${orgId}
+            AND deleted_at IS NULL
+          GROUP BY collection
+          ORDER BY collection
+        `
+      : await sql`
+          SELECT collection, count(*)::int as count
+          FROM chief_records
+          WHERE deleted_at IS NULL
+          GROUP BY collection
+          ORDER BY collection
+        `;
     return {
       generatedAt: new Date().toISOString().slice(0, 10),
       collections: rows.map((r) => ({ name: r.collection as string, count: r.count as number })),

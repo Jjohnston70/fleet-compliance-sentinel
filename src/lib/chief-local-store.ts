@@ -1,4 +1,4 @@
-// Client-side only — all functions return safe defaults on the server.
+// Client-side only in-memory session store (clears on refresh).
 
 export type StoreKey =
   | 'chief:store:employees'
@@ -14,17 +14,14 @@ export function generateId(prefix: string): string {
 
 function safeRead<T>(key: string): T[] {
   if (typeof window === 'undefined') return [];
-  try {
-    const stored = localStorage.getItem(key);
-    return stored ? (JSON.parse(stored) as T[]) : [];
-  } catch {
-    return [];
-  }
+  const store = getRecordStore();
+  return (store[key] as T[] | undefined) ?? [];
 }
 
 function safeWrite<T>(key: string, records: T[]): void {
   if (typeof window === 'undefined') return;
-  localStorage.setItem(key, JSON.stringify(records));
+  const store = getRecordStore();
+  store[key] = records;
 }
 
 export function listRecords<T extends { id: string }>(key: StoreKey): T[] {
@@ -52,17 +49,40 @@ export function deleteRecord<T extends { id: string }>(key: StoreKey, id: string
 
 export function readSettings<T>(key: SettingsKey): T | null {
   if (typeof window === 'undefined') return null;
-  try {
-    const stored = localStorage.getItem(key);
-    return stored ? (JSON.parse(stored) as T) : null;
-  } catch {
-    return null;
-  }
+  const store = getSettingsStore();
+  return (store[key] as T | undefined) ?? null;
 }
 
 export function writeSettings<T>(key: SettingsKey, settings: T): void {
   if (typeof window === 'undefined') return;
-  localStorage.setItem(key, JSON.stringify(settings));
+  const store = getSettingsStore();
+  store[key] = settings;
+}
+
+const RECORD_STORE_KEY = '__chief_local_record_store_v2__';
+const SETTINGS_STORE_KEY = '__chief_local_settings_store_v2__';
+
+declare global {
+  interface Window {
+    [RECORD_STORE_KEY]?: Record<string, unknown>;
+    [SETTINGS_STORE_KEY]?: Record<string, unknown>;
+  }
+}
+
+function getRecordStore(): Record<string, unknown> {
+  if (typeof window === 'undefined') return {};
+  if (!window[RECORD_STORE_KEY]) {
+    window[RECORD_STORE_KEY] = {};
+  }
+  return window[RECORD_STORE_KEY]!;
+}
+
+function getSettingsStore(): Record<string, unknown> {
+  if (typeof window === 'undefined') return {};
+  if (!window[SETTINGS_STORE_KEY]) {
+    window[SETTINGS_STORE_KEY] = {};
+  }
+  return window[SETTINGS_STORE_KEY]!;
 }
 
 // ── Typed record shapes ─────────────────────────────────────────────────────

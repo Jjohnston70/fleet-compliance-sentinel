@@ -2,19 +2,14 @@
 
 import { useEffect } from 'react';
 import type { FmcsaCarrierSummary } from '@/lib/chief-fmcsa-client';
-
-const STORAGE_KEY = 'chief:fmcsa:last';
+import { writeFmcsaSnapshot } from '@/lib/chief-ui-state';
 
 export default function FmcsaResultSaver({ carrier }: { carrier: FmcsaCarrierSummary }) {
   useEffect(() => {
-    try {
-      localStorage.setItem(
-        STORAGE_KEY,
-        JSON.stringify({ carrier, savedAt: new Date().toISOString() })
-      );
-    } catch {
-      // ignore
-    }
+    writeFmcsaSnapshot({
+      carrier,
+      savedAt: new Date().toISOString(),
+    });
   }, [carrier]);
 
   return null;

@@ -8,8 +8,9 @@ export const dynamic = 'force-dynamic';
 
 export default async function NewEmployeePage() {
   if (!isClerkEnabled()) return null;
-  const { userId } = await auth();
+  const { userId, orgId } = await auth();
   if (!userId) redirect('/sign-in');
+  if (!orgId) redirect('/');
 
   return (
     <main className="chief-shell">
@@ -33,3 +34,4 @@ export default async function NewEmployeePage() {
     </main>
   );
 }
+

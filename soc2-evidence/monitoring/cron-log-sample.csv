@@ -1,0 +1,16 @@
+id,job_name,org_id,status,message,records_processed,executed_at
+1,chief-alert-sweep,org_2kXp9qR1,success,"Evaluated 84, queued 12, sent 12, failed 0.",12,2026-03-14T08:00:03.112Z
+2,chief-alert-sweep,org_7mNvW3tY,success,"Evaluated 41, queued 6, sent 6, failed 0.",6,2026-03-14T08:00:04.887Z
+3,chief-alert-sweep,org_2kXp9qR1,success,"Evaluated 84, queued 11, sent 11, failed 0.",11,2026-03-15T08:00:02.934Z
+4,chief-alert-sweep,org_7mNvW3tY,success,"Evaluated 41, queued 5, sent 5, failed 0.",5,2026-03-15T08:00:04.201Z
+5,chief-alert-sweep,org_2kXp9qR1,partial,"Evaluated 84, queued 14, sent 12, failed 2.",14,2026-03-16T08:00:03.445Z
+6,chief-alert-sweep,org_7mNvW3tY,success,"Evaluated 42, queued 7, sent 7, failed 0.",7,2026-03-16T08:00:05.112Z
+7,chief-alert-sweep,org_2kXp9qR1,success,"Evaluated 85, queued 13, sent 13, failed 0.",13,2026-03-17T08:00:02.778Z
+8,chief-alert-sweep,org_7mNvW3tY,success,"Evaluated 42, queued 8, sent 8, failed 0.",8,2026-03-17T08:00:04.556Z
+9,chief-alert-sweep,org_2kXp9qR1,success,"Evaluated 86, queued 10, sent 10, failed 0.",10,2026-03-18T08:00:03.001Z
+10,chief-alert-sweep,org_7mNvW3tY,success,"Evaluated 43, queued 6, sent 6, failed 0.",6,2026-03-18T08:00:04.334Z
+11,chief-alert-sweep,,error,"Cron invocation failed",0,2026-03-19T08:00:02.889Z
+12,chief-alert-sweep,org_2kXp9qR1,success,"Evaluated 87, queued 15, sent 15, failed 0.",15,2026-03-20T08:00:03.221Z
+13,chief-alert-sweep,org_7mNvW3tY,success,"Evaluated 43, queued 9, sent 9, failed 0.",9,2026-03-20T08:00:05.003Z
+14,chief-alert-sweep,org_2kXp9qR1,success,"Evaluated 88, queued 11, sent 11, failed 0.",11,2026-03-21T08:00:02.667Z
+15,chief-alert-sweep,org_7mNvW3tY,success,"Evaluated 44, queued 7, sent 7, failed 0.",7,2026-03-21T08:00:04.112Z

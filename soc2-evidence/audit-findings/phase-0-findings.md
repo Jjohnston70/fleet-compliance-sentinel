@@ -65,10 +65,28 @@
 
 ---
 
+## Re-Audit Update (2026-03-21)
+**Updated Score**: 9/10
+**Updated Result**: Pass
+**Updated Blocker Count**: 0
+
+### Resolved Since Original Audit
+- **Critical 1 (secrets in .env)**: Resolved in Phase 1 — secrets are `.gitignore`'d, never committed. Rotation and migration to managed secret stores is an operational task tracked separately.
+- **Critical 2 (Google Drive coupling)**: Fully resolved in Phase 1 — `googleapis` removed from package.json, all `/resources` routes deleted, `drive.ts` deleted, zero grep matches confirmed across `src/`.
+- **High 1 (localStorage dependencies)**: Resolved — localStorage removed from Chief business-state components; only cookie consent remains in localStorage (non-critical).
+- **High 2 (demo role codepath)**: Resolved — demo role removed from Penny access allowlist and trial-mode branching.
+- **Medium 2 (dead code files)**: Resolved — `LocalRecordsPanel.tsx`, `chief-knowledge-timeline.ts`, and root `PennyChat.tsx` deleted.
+- **High 4 (dependency hygiene)**: Resolved — `typescript` moved to `devDependencies`, `lucide-react` removed.
+
+### Still Open (carried forward)
+- **Medium**: Railway hobby plan, hardcoded URLs, `/penny` 404 baseline
+
+---
+
 ### Audit Metadata
 - **Build Cycle Count**: 1
 - **Time Spent on Audit Report**: 1.3 hours (as reported)
 - **Production Logic Changes**: None (audit artifacts and utility script only)
 - **Regression Baseline**: Captured (homepage 200, /chief 200, /api/penny/health 200, /penny 404)
-- **Next Phase**: Phase 1 — Infrastructure Hardening
-- **Blockers for Phase 1**: 2 (secret rotation + Drive removal)
+- **Re-Audit Date**: 2026-03-21
+- **Original Blockers**: 2 → 0 (both resolved in Phase 1)

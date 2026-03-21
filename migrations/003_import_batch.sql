@@ -1,0 +1,2 @@
+ALTER TABLE chief_records ADD COLUMN IF NOT EXISTS import_batch_id UUID;
+ALTER TABLE chief_records ADD COLUMN IF NOT EXISTS deleted_at TIMESTAMPTZ;

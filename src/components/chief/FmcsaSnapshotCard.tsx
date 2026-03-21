@@ -2,25 +2,13 @@
 
 import Link from 'next/link';
 import { useState, useEffect } from 'react';
-import type { FmcsaCarrierSummary } from '@/lib/chief-fmcsa-client';
-
-const STORAGE_KEY = 'chief:fmcsa:last';
-
-interface Snapshot {
-  carrier: FmcsaCarrierSummary;
-  savedAt: string;
-}
+import { readFmcsaSnapshot } from '@/lib/chief-ui-state';
 
 export default function FmcsaSnapshotCard() {
-  const [snapshot, setSnapshot] = useState<Snapshot | null>(null);
+  const [snapshot, setSnapshot] = useState<ReturnType<typeof readFmcsaSnapshot>>(null);
 
   useEffect(() => {
-    try {
-      const stored = localStorage.getItem(STORAGE_KEY);
-      if (stored) setSnapshot(JSON.parse(stored));
-    } catch {
-      // ignore
-    }
+    setSnapshot(readFmcsaSnapshot());
   }, []);
 
   if (!snapshot) {

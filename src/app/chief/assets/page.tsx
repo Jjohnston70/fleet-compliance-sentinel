@@ -23,12 +23,15 @@ export default async function ChiefAssetsPage({ searchParams }: { searchParams: 
     return null;
   }
 
-  const { userId } = await auth();
+  const { userId, orgId } = await auth();
   if (!userId) {
     redirect('/sign-in');
   }
+  if (!orgId) {
+    redirect('/');
+  }
 
-  const data = await loadChiefData();
+  const data = await loadChiefData(orgId);
 
   const resolved = await searchParams;
   const q = firstParam(resolved.q);
@@ -202,3 +205,4 @@ export default async function ChiefAssetsPage({ searchParams }: { searchParams: 
     </ChiefErrorBoundary>
   );
 }
+

@@ -74,12 +74,6 @@ const modules = [
 ];
 
 export default async function ChiefPage() {
-  const data = await loadChiefData();
-  const chiefModuleSummary = getChiefModuleSummary(data);
-  const assetStats = getAssetStats(data.assets);
-  const complianceStats = getComplianceStats(data.drivers, data.permits);
-  const suspenseStats = getSuspenseStats(data.suspense);
-  const importStats = await getImportStats();
   const hasClerk = isClerkEnabled();
 
   if (!hasClerk) {
@@ -96,10 +90,20 @@ export default async function ChiefPage() {
     );
   }
 
-  const { userId } = await auth();
+  const { userId, orgId } = await auth();
   if (!userId) {
     redirect('/sign-in');
   }
+  if (!orgId) {
+    redirect('/');
+  }
+
+  const data = await loadChiefData(orgId);
+  const chiefModuleSummary = getChiefModuleSummary(data);
+  const assetStats = getAssetStats(data.assets);
+  const complianceStats = getComplianceStats(data.drivers, data.permits);
+  const suspenseStats = getSuspenseStats(data.suspense);
+  const importStats = await getImportStats(orgId);
 
   const quickStats = [
     { label: 'Source Systems', value: String(chiefModuleSummary.sourceSystems), note: 'CSV, workbook, CFR, FMCSA' },
@@ -287,3 +291,4 @@ export default async function ChiefPage() {
     </ChiefErrorBoundary>
   );
 }
+

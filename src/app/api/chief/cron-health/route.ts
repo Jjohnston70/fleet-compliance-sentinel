@@ -1,8 +1,6 @@
-import { auth, currentUser } from '@clerk/nextjs/server';
 import { NextResponse } from 'next/server';
-import { isClerkEnabled } from '@/lib/clerk';
-import { resolvePennyRole, canBypassPennyRoleByEmail } from '@/lib/penny-access';
 import { ensureCronLogTable, getLastCronLog } from '@/lib/chief-db';
+import { chiefAuthErrorResponse, requireChiefOrgWithRole } from '@/lib/chief-auth';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -10,25 +8,13 @@ export const dynamic = 'force-dynamic';
 const MAX_HEALTHY_AGE_HOURS = 25;
 const CRON_JOB_NAME = 'chief-alert-sweep';
 
-function isAdminRole(role: string): boolean {
-  return role === 'admin' || role === 'org:admin';
-}
-
-export async function GET() {
-  if (!isClerkEnabled()) {
-    return NextResponse.json({ error: 'Authentication is not configured' }, { status: 503 });
-  }
-
-  const { userId, sessionClaims } = await auth();
-  if (!userId) {
+export async function GET(request: Request) {
+  try {
+    await requireChiefOrgWithRole(request, 'admin');
+  } catch (error: unknown) {
+    const authResponse = chiefAuthErrorResponse(error);
+    if (authResponse) return authResponse;
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-  }
-
-  const user = await currentUser();
-  const role = resolvePennyRole(sessionClaims, user);
-  const canBypass = canBypassPennyRoleByEmail(user);
-  if (!isAdminRole(role) && !canBypass) {
-    return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
   }
 
   try {
@@ -61,6 +47,7 @@ export async function GET() {
       },
     });
   } catch (err: unknown) {
-    return NextResponse.json({ error: String(err) }, { status: 500 });
+    console.error('[chief-cron-health] failed:', err);
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }

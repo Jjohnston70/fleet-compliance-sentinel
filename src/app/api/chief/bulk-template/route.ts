@@ -1,7 +1,6 @@
-import { auth } from '@clerk/nextjs/server';
 import * as XLSX from 'xlsx';
 import { chiefUploadTemplateManifest } from '@/lib/chief-upload-template.generated';
-import { isClerkEnabled } from '@/lib/clerk';
+import { chiefAuthErrorResponse, requireChiefOrg } from '@/lib/chief-auth';
 
 export const runtime = 'nodejs';
 
@@ -28,13 +27,12 @@ function createTemplateSheet(sheet: (typeof chiefUploadTemplateManifest)[number]
   return worksheet;
 }
 
-export async function GET() {
-  if (!isClerkEnabled()) {
-    return Response.json({ error: 'Clerk is not configured.' }, { status: 503 });
-  }
-
-  const { userId } = await auth();
-  if (!userId) {
+export async function GET(request: Request) {
+  try {
+    await requireChiefOrg(request);
+  } catch (error: unknown) {
+    const authResponse = chiefAuthErrorResponse(error);
+    if (authResponse) return authResponse;
     return Response.json({ error: 'Unauthorized' }, { status: 401 });
   }
 

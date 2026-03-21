@@ -1,8 +1,10 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-
-const STORAGE_PREFIX = 'chief:suspense:resolved:';
+import {
+  readSuspenseResolution,
+  writeSuspenseResolution,
+} from '@/lib/chief-ui-state';
 
 interface Props {
   suspenseItemId: string;
@@ -10,7 +12,6 @@ interface Props {
 }
 
 export default function SuspenseResolveButton({ suspenseItemId, initialStatus }: Props) {
-  const storageKey = `${STORAGE_PREFIX}${suspenseItemId}`;
   const [resolved, setResolved] = useState(false);
   const [note, setNote] = useState('');
   const [showNoteInput, setShowNoteInput] = useState(false);
@@ -19,24 +20,19 @@ export default function SuspenseResolveButton({ suspenseItemId, initialStatus }:
 
   useEffect(() => {
     setMounted(true);
-    try {
-      const stored = localStorage.getItem(storageKey);
-      if (stored) {
-        const parsed = JSON.parse(stored);
-        setResolved(parsed.resolved ?? false);
-        setNote(parsed.note ?? '');
-      }
-    } catch {
-      // ignore
+    const stored = readSuspenseResolution(suspenseItemId);
+    if (stored) {
+      setResolved(stored.resolved);
+      setNote(stored.note);
     }
-  }, [storageKey]);
+  }, [suspenseItemId]);
 
   function persist(nextResolved: boolean, nextNote: string) {
-    try {
-      localStorage.setItem(storageKey, JSON.stringify({ resolved: nextResolved, note: nextNote, resolvedAt: new Date().toISOString() }));
-    } catch {
-      // ignore
-    }
+    writeSuspenseResolution(suspenseItemId, {
+      resolved: nextResolved,
+      note: nextNote,
+      resolvedAt: new Date().toISOString(),
+    });
   }
 
   function handleResolve() {
@@ -96,7 +92,7 @@ export default function SuspenseResolveButton({ suspenseItemId, initialStatus }:
           </button>
         </div>
         <p className="chief-table-note" style={{ marginTop: '0.5rem' }}>
-          Status: <strong>{initialStatus}</strong> — this override is stored in this browser session only.
+          Status: <strong>{initialStatus}</strong> — this override is temporary and clears on page refresh.
         </p>
       </div>
     );

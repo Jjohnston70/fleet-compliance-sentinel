@@ -42,6 +42,6 @@
   "exclude": [
     "node_modules",
     "tmp/**/*",
-    "pipeline_x_non_gov-main/**/*"
+    "archive/**/*"
   ]
 }

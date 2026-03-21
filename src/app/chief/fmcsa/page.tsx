@@ -191,8 +191,9 @@ function FullProfile({ profile }: { profile: FmcsaFullProfile }) {
 export default async function ChiefFmcsaPage({ searchParams }: { searchParams: SearchParams }) {
   if (!isClerkEnabled()) return null;
 
-  const { userId } = await auth();
+  const { userId, orgId } = await auth();
   if (!userId) redirect('/sign-in');
+  if (!orgId) redirect('/');
 
   const resolved = await searchParams;
   const dot = firstParam(resolved.dot);
@@ -300,3 +301,4 @@ export default async function ChiefFmcsaPage({ searchParams }: { searchParams: S
     </ChiefErrorBoundary>
   );
 }
+

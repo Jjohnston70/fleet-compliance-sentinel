@@ -3,7 +3,7 @@
 **Source:** https://www.ecfr.gov/current/title-49/subtitle-A/part-40  
 **Title:** 49 — Transportation  
 **Agency:** Federal Motor Carrier Safety Administration (FMCSA)  
-**Last scraped:** 2026-03-17  
+**Last scraped:** 2026-03-21  
 **Purpose:** DOT compliance reference for AssetCommand / Pipeline Penny knowledge base
 
 ---
@@ -82,7 +82,7 @@ Enhanced content is provided to the user to provide additional context.
 
 This content is from the eCFR and is authoritative but unofficial.
 
-Displaying title 49, up to date as of 3/13/2026. Title 49 was last amended 3/12/2026.
+Displaying title 49, up to date as of 3/19/2026. Title 49 was last amended 3/16/2026.
 
 view historical versions
 

@@ -1,7 +1,6 @@
-import { auth } from '@clerk/nextjs/server';
-import { isClerkEnabled } from '@/lib/clerk';
 import { runChiefAlertSweep } from '@/lib/chief-alert-engine';
 import { loadChiefData } from '@/lib/chief-data';
+import { chiefAuthErrorResponse, requireChiefOrgWithRole } from '@/lib/chief-auth';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -9,11 +8,13 @@ export const dynamic = 'force-dynamic';
 // Manual trigger from the Chief UI. Protected by Clerk auth (no cron secret required).
 // Accepts JSON body: { dryRun?: boolean }
 export async function POST(request: Request) {
-  if (isClerkEnabled()) {
-    const { userId } = await auth();
-    if (!userId) {
-      return Response.json({ error: 'Unauthorized' }, { status: 401 });
-    }
+  let orgId: string;
+  try {
+    ({ orgId } = await requireChiefOrgWithRole(request, 'admin'));
+  } catch (error: unknown) {
+    const authResponse = chiefAuthErrorResponse(error);
+    if (authResponse) return authResponse;
+    return Response.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
   let dryRun = true;
@@ -25,10 +26,11 @@ export async function POST(request: Request) {
   }
 
   try {
-    const data = await loadChiefData();
+    const data = await loadChiefData(orgId);
     const summary = await runChiefAlertSweep(data.suspense, { dryRun });
     return Response.json(summary, { status: 200 });
   } catch (err: unknown) {
-    return Response.json({ error: String(err) }, { status: 500 });
+    console.error('[chief-alert-trigger] failed:', err);
+    return Response.json({ error: 'Internal server error' }, { status: 500 });
   }
 }

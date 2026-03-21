@@ -1,6 +1,11 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import {
+  clearAssetStatusOverride,
+  readAssetStatusOverride,
+  writeAssetStatusOverride,
+} from '@/lib/chief-ui-state';
 
 interface Props {
   assetId: string;
@@ -9,7 +14,6 @@ interface Props {
 }
 
 export default function AssetStatusOverride({ assetId, initialStatus, statuses }: Props) {
-  const storageKey = `chief:asset:status:${assetId}`;
   const [status, setStatus] = useState(initialStatus);
   const [overridden, setOverridden] = useState(false);
   const [editing, setEditing] = useState(false);
@@ -18,30 +22,22 @@ export default function AssetStatusOverride({ assetId, initialStatus, statuses }
 
   useEffect(() => {
     setMounted(true);
-    try {
-      const stored = localStorage.getItem(storageKey);
-      if (stored) {
-        setStatus(stored);
-        setDraft(stored);
-        setOverridden(true);
-      }
-    } catch {
-      // ignore
+    const stored = readAssetStatusOverride(assetId);
+    if (stored) {
+      setStatus(stored);
+      setDraft(stored);
+      setOverridden(true);
     }
-  }, [storageKey]);
+  }, [assetId]);
 
   function handleSave() {
     setStatus(draft);
     setOverridden(draft !== initialStatus);
     setEditing(false);
-    try {
-      if (draft !== initialStatus) {
-        localStorage.setItem(storageKey, draft);
-      } else {
-        localStorage.removeItem(storageKey);
-      }
-    } catch {
-      // ignore
+    if (draft !== initialStatus) {
+      writeAssetStatusOverride(assetId, draft);
+    } else {
+      clearAssetStatusOverride(assetId);
     }
   }
 
@@ -50,11 +46,7 @@ export default function AssetStatusOverride({ assetId, initialStatus, statuses }
     setDraft(initialStatus);
     setOverridden(false);
     setEditing(false);
-    try {
-      localStorage.removeItem(storageKey);
-    } catch {
-      // ignore
-    }
+    clearAssetStatusOverride(assetId);
   }
 
   if (!mounted) {

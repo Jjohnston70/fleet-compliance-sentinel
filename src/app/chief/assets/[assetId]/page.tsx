@@ -30,13 +30,16 @@ export default async function ChiefAssetDetailPage({ params }: { params: Params 
     return null;
   }
 
-  const { userId } = await auth();
+  const { userId, orgId } = await auth();
   if (!userId) {
     redirect('/sign-in');
   }
+  if (!orgId) {
+    redirect('/');
+  }
 
   const { assetId } = await params;
-  const data = await loadChiefData();
+  const data = await loadChiefData(orgId);
   const asset = findAsset(data.assets, assetId);
   if (!asset) {
     notFound();
@@ -203,3 +206,4 @@ export default async function ChiefAssetDetailPage({ params }: { params: Params 
     </main>
   );
 }
+

@@ -8,8 +8,9 @@ export const dynamic = 'force-dynamic';
 
 export default async function ChiefInvoicesPage() {
   if (!isClerkEnabled()) return null;
-  const { userId } = await auth();
+  const { userId, orgId } = await auth();
   if (!userId) redirect('/sign-in');
+  if (!orgId) redirect('/');
 
   return (
     <ChiefErrorBoundary page="/chief/invoices" userId={userId}>
@@ -40,3 +41,4 @@ export default async function ChiefInvoicesPage() {
     </ChiefErrorBoundary>
   );
 }
+

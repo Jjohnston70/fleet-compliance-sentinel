@@ -150,7 +150,7 @@ export async function POST(request: NextRequest) {
     );
     const fallbackRemainingBefore = Math.max(0, GENERAL_FALLBACK_SESSION_LIMIT - fallbackUsedCount);
     const allowGeneralFallback =
-      GENERAL_FALLBACK_ENABLED && effectiveRole === 'demo' && fallbackRemainingBefore > 0;
+      GENERAL_FALLBACK_ENABLED && effectiveRole === 'client' && fallbackRemainingBefore > 0;
 
     // --- CHUNKED CFR RETRIEVAL (server-side via @tnds/retrieval-core) ---
     // Build grounded context from the local CFR index before hitting Railway.

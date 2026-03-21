@@ -1,7 +1,7 @@
 // app/penny/page.tsx
 // Pipeline Penny chat interface - Clerk protected
 // Connects to FastAPI backend on Railway (or localhost for dev)
-// Role-based: admin = full access, trial = limited, client = scoped
+// Role-based: admin = full access, client = scoped
 
 import { auth, currentUser } from '@clerk/nextjs/server';
 import { redirect } from 'next/navigation';
@@ -33,7 +33,7 @@ export default async function PennyPage() {
   const role = resolvePennyRole(sessionClaims, user);
   const hasEmailBypass = canBypassPennyRoleByEmail(user);
 
-  // Only admin, trial, and client roles can access Penny
+  // Only admin and client roles can access Penny
   if (!canAccessPenny(role) && !hasEmailBypass) {
     return (
       <div className="penny-container">
@@ -53,14 +53,12 @@ export default async function PennyPage() {
   }
 
   const effectiveRole = canAccessPenny(role) ? role : 'admin';
-  const isDemo = effectiveRole === 'demo';
   const firstName = user?.firstName || 'there';
 
   return (
     <PennyChat
       userName={firstName}
       userRole={effectiveRole}
-      isDemo={isDemo}
     />
   );
 }

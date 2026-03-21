@@ -1,14 +1,13 @@
 <div align="center">
 
-# Pipeline Punks
+# Chief Sentinel | Pipeline Punks
 
-### Build Real Systems. Get Real Skills.
+### Fleet & DOT Compliance Management Platform
 
-Pipeline Penny is the TNDS assistant experience for documented operations, compliance, and real-world execution support.
+Chief is a SOC 2 Type I compliant SaaS for fleet compliance, built by True North Data Strategies.
 
 [![Website](https://img.shields.io/badge/Website-pipelinepunks.com-blue?style=for-the-badge)](https://pipelinepunks.com)
 [![TNDS](https://img.shields.io/badge/TNDS-truenorthstrategyops.com-0A8EA0?style=for-the-badge)](https://truenorthstrategyops.com)
-[![Discord](https://img.shields.io/badge/Discord-Join-5865F2?style=for-the-badge)](https://discord.gg/eSn4cMg5SD)
 
 <img src="public/PipelineX-penny.png" alt="PipelineX Penny" width="260" />
 
@@ -16,131 +15,114 @@ Pipeline Penny is the TNDS assistant experience for documented operations, compl
 
 ---
 
-## What Pipeline Penny Is
+## What This Repo Contains
 
-Pipeline Penny is a role-gated, document-grounded assistant inside the Pipeline Punks site.
-
-It is designed to help users:
-
-- Ask questions against approved knowledge documentation
-- Surface practical answers with source references
-- Browse available knowledge categories and documents
-- Work from a single interface with chat + document resources
-
----
-
-## What Penny Can Do Right Now
-
-- Run secured chat from `/penny` for approved users
-- Check backend health and connection status
-- Return source-backed answers from indexed knowledge docs
-- Show knowledge catalog (categories + document list) in the Penny sidebar
-- Support demo users with controlled access behavior
-- Work from Chief import workflows and Penny catalog responses
+| Module | Path | Description |
+|--------|------|-------------|
+| **Chief** | `/chief/*` | Fleet management dashboard — assets, drivers, permits, compliance, suspense, invoices, alerts |
+| **Penny** | `/penny` | Document-grounded AI assistant for DOT/CFR compliance questions |
+| **Import Pipeline** | `/api/chief/import/*` | Multi-sheet XLSX upload with field-level validation and batch rollback |
+| **Alert Engine** | `/api/chief/alerts/*` | Daily compliance sweep via Vercel cron with Resend email delivery |
+| **FMCSA Lookup** | `/api/chief/fmcsa/*` | Carrier safety profile lookup via FMCSA SAFER API |
 
 ---
 
-## What Is On The Horizon
+## Stack
 
-- Deeper retrieval quality and indexing improvements
-- Expanded vertical knowledge packs and richer category coverage
-- More guided workflows, templates, and operator playbooks inside Penny
-- Additional client-specific scoping and operational controls
-
----
-
-## Current Knowledge Coverage
-
-Current indexed demo knowledge includes TNDS operational content and realty-focused documentation, including the `04_Realty` knowledge set.
-
-This gives demos realistic Q&A coverage for:
-
-- TNDS protocols and execution patterns
-- Realty and compliance-oriented reference material
-- Process and documentation-driven support responses
+| Layer | Technology | Host |
+|-------|-----------|------|
+| Frontend | Next.js 15 (App Router) | Vercel |
+| Auth | Clerk (org-scoped, role-based) | Clerk |
+| Database | Neon Postgres (serverless) | Neon |
+| AI Backend | FastAPI + Anthropic | Railway |
+| Email | Resend | Resend |
+| Packages | @tnds/types, ingest-core, retrieval-core, memory-core | Workspace monorepo |
 
 ---
 
-## Website Documentation Available For Demos
+## Project Structure
 
-For live demos on the site, users can review:
-
-- `/chief/import` for import review and document-linked operations
-- `/privacy` privacy policy
-- `/terms` terms of service
-- `/accessibility` accessibility statement
-
-Penny access itself is protected. If a user is not approved yet, they see an access-pending screen and can request access. Access requests take just a moment once approved by admin.
-
----
-
-## Requesting Access To Penny
-
-1. Sign up or sign in on the site.
-2. Go to `/penny`.
-3. If access is pending, request approval from the admin contact shown on screen.
-4. Once approved, return to `/penny` and start chatting.
-
-Allowed Penny roles are currently `admin`, `demo`, and `client`.
-
----
-
-## How To Use Chief Documents
-
-1. Sign in with an approved account.
-2. Open `/chief/import`.
-3. Use the import review workflow to validate incoming records.
-4. Use Penny prompts to summarize and reason over indexed documents.
-
----
-
-## How To Use Penny (Sample)
-
-1. Open `/penny`.
-2. Confirm status is connected.
-3. Ask a direct question, for example:
-
-```text
-List the top realty knowledge resources you can answer from, then summarize the most important one for a first-time operations handoff.
+```
+src/
+  app/           Next.js pages and API routes
+  components/    React components (Chief forms, error boundaries, nav)
+  lib/           Server utilities (DB, auth, validators, alert engine, Penny ingest)
+packages/        @tnds workspace packages (types, ingest, retrieval, memory)
+scripts/         Build/sync/eval scripts (check-env, sync-knowledge, evals)
+knowledge/       Chunked CFR docs for Penny RAG (generated by sync scripts)
+tooling/         Chief Sentinel Python tools (import generator, CFR scraper)
+railway-backend/ FastAPI Penny backend (deployed on Railway)
+migrations/      SQL migration files
+soc2-evidence/   SOC 2 Type I compliance documentation and audit findings
+evals/           Penny evaluation results and test questions
+archive/         Historical snapshots (pre-cleanup artifacts)
 ```
 
-4. Review the answer and the source list below it.
-5. Ask a follow-up that narrows scope (state, process, role, or document).
+---
+
+## Key Documentation
+
+| File | Purpose |
+|------|---------|
+| `CHIEF_TODO_v2.md` | Phase-based implementation tracker (Phases 0-8, SOC 2 controls) |
+| `STATUS.md` | Current phase status and audit scores |
+| `RAILWAY_CONFIG.md` | Railway environment variable reference |
+| `UPTIME_SETUP.md` | UptimeRobot monitoring setup |
+| `PENNY_EVALS.md` | Penny evaluation strategy and baselines |
+| `soc2-evidence/system-description/ARCHITECTURE.md` | System architecture (canonical) |
+| `soc2-evidence/system-description/ENV_EXAMPLE.md` | Environment variable reference (canonical) |
 
 ---
 
-## Tech + Deployment
+## Getting Started
 
-- Frontend: Next.js 15 + Clerk (Vercel)
-- Backend: FastAPI (Railway)
-- Knowledge sync utility: `npm run sync:knowledge`
+```bash
+# Install dependencies
+npm install
 
-Project deployment/runbook details remain in:
+# Check environment variables
+npx tsx scripts/check-env.ts
 
-- `RAILWAY_DEPLOY_CHECKLIST.md`
-- `railway-backend/README.md`
+# Run development server
+npm run dev
+
+# Build for production
+npm run build
+```
+
+---
+
+## Deployment
+
+| Target | Method |
+|--------|--------|
+| Vercel (frontend) | `vercel --prod` from repo root |
+| Railway (Penny backend) | Auto-deploy from `railway-backend/` on push |
+
+See `RAILWAY_CONFIG.md` for required Railway environment variables.
+
+---
+
+## SOC 2 Compliance Status
+
+| Phase | Status | Score |
+|-------|--------|-------|
+| 0 — Repo Audit | Complete | 9/10 |
+| 1 — Infrastructure Hardening | Complete | 9/10 |
+| 2 — Data Integrity + Access Control | Complete | 8/10 |
+| 3 — Audit Logging + Observability | Ready | -- |
+| 4-8 | Planned | -- |
+
+Audit findings: `soc2-evidence/audit-findings/`
 
 ---
 
 ## Deployment Origin
 
 | Field | Value |
-|---|---|
+|-------|-------|
 | GitHub Org | Pipeline-Punks |
 | Repository | pipeline-punks-pipelinex-v2 |
 | Vercel Project | pipeline-punks-pipelinex-v2 |
-| Vercel Team | jjohnston70s-projects |
 | Production URL | https://www.pipelinepunks.com |
-| Deploy Method | Vercel CLI — `vercel --prod` from this folder |
-| GitHub CI/CD | Not connected — deploys are manual via CLI |
-
-The `.vercel/project.json` in this folder links directly to the Vercel project. No additional configuration is needed to deploy.
-
-### Chief Module Data Pipeline
-
-The `/chief` routes are driven by a generated snapshot. To refresh data:
-
-1. Open sibling folder `../chief-sentinel-main/`
-2. Run `py build_chief_imports.py` (or `.\refresh_chief_demo.ps1`)
-3. This writes updated TypeScript modules into `src/lib/chief-imported-data.generated.ts`
-4. Run `vercel --prod` from this folder to deploy
+| Deploy Method | Vercel CLI — `vercel --prod` |

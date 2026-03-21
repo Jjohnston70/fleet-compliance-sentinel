@@ -1,6 +1,6 @@
 import type { User } from '@clerk/nextjs/server';
 
-const ALLOWED_PENNY_ROLES = ['admin', 'demo', 'client'] as const;
+const ALLOWED_PENNY_ROLES = ['admin', 'client'] as const;
 type AllowedPennyRole = (typeof ALLOWED_PENNY_ROLES)[number];
 
 function asRole(value: unknown): string | null {

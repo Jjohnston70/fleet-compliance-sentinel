@@ -8,8 +8,9 @@ export const dynamic = 'force-dynamic';
 
 export default async function AlertSettingsPage() {
   if (!isClerkEnabled()) return null;
-  const { userId } = await auth();
+  const { userId, orgId } = await auth();
   if (!userId) redirect('/sign-in');
+  if (!orgId) redirect('/');
 
   const orgName = process.env.CHIEF_ORG_NAME ?? '';
   const fromEmail = process.env.CHIEF_ALERT_FROM_EMAIL ?? '';
@@ -47,3 +48,4 @@ export default async function AlertSettingsPage() {
     </main>
   );
 }
+

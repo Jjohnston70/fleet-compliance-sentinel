@@ -37,12 +37,19 @@ interface MultiSheetResult {
 type ReviewMap = Record<number, 'approved' | 'rejected'>;
 type SheetReviewMap = Record<string, ReviewMap>;
 
+interface SavedSummary {
+  totalInserted: number;
+  batchId: string;
+  orgId: string;
+  collections: { collection: string; inserted: number; replaced: boolean }[];
+}
+
 type ViewState =
   | { state: 'idle' }
   | { state: 'parsing' }
   | { state: 'saving' }
   | { state: 'result'; result: MultiSheetResult; reviews: SheetReviewMap; activeTab: string }
-  | { state: 'saved'; summary: { totalInserted: number; collections: { collection: string; inserted: number }[] } }
+  | { state: 'saved'; summary: SavedSummary }
   | { state: 'error'; message: string };
 
 const COLLECTIONS = Object.entries(IMPORT_SCHEMAS).map(([key, schema]) => ({
@@ -50,10 +57,17 @@ const COLLECTIONS = Object.entries(IMPORT_SCHEMAS).map(([key, schema]) => ({
   label: schema.label,
 }));
 
-export default function ImportReviewer() {
+export default function ImportReviewer({ orgId }: { orgId?: string }) {
   const [mode, setMode] = useState<'multi' | 'single'>('multi');
   const [collection, setCollection] = useState<CollectionKey>('drivers');
+  const [replaceExisting, setReplaceExisting] = useState(false);
   const [view, setView] = useState<ViewState>({ state: 'idle' });
+  const [rollbackState, setRollbackState] = useState<
+    { state: 'idle' }
+    | { state: 'running' }
+    | { state: 'done'; rolledBack: number; batchId: string }
+    | { state: 'error'; message: string }
+  >({ state: 'idle' });
   const fileRef = useRef<HTMLInputElement>(null);
 
   async function handleUpload() {
@@ -106,6 +120,7 @@ export default function ImportReviewer() {
       }
 
       const activeTab = multiResult.sheets[0]?.collection ?? '';
+      setRollbackState({ state: 'idle' });
       setView({ state: 'result', result: multiResult, reviews, activeTab });
     } catch (err: unknown) {
       setView({ state: 'error', message: String(err) });
@@ -166,7 +181,7 @@ export default function ImportReviewer() {
         const approvedRows = sheet.rows
           .filter((r) => review[r.rowIndex] === 'approved')
           .map((r) => r.data);
-        return { collection: sheet.collection, rows: approvedRows, replace: true };
+        return { collection: sheet.collection, rows: approvedRows, replace: replaceExisting };
       })
       .filter((c) => c.rows.length > 0);
 
@@ -181,16 +196,52 @@ export default function ImportReviewer() {
         body: JSON.stringify({ collections }),
       });
       const data = await res.json();
-      if (!res.ok) throw new Error(data.error ?? `HTTP ${res.status}`);
+      if (!res.ok) {
+        if (res.status === 422 && Array.isArray(data.fieldErrors)) {
+          const details = data.fieldErrors
+            .slice(0, 12)
+            .map((entry: { collection: string; rowIndex: number; errors: string[] }) =>
+              `${entry.collection} row ${entry.rowIndex}: ${entry.errors.join('; ')}`
+            );
+          const suffix = data.fieldErrors.length > 12
+            ? `\n...and ${data.fieldErrors.length - 12} more validation issue(s).`
+            : '';
+          throw new Error(`Validation failed:\n${details.join('\n')}${suffix}`);
+        }
+        throw new Error(data.error ?? `HTTP ${res.status}`);
+      }
+      setRollbackState({ state: 'idle' });
       setView({
         state: 'saved',
         summary: {
           totalInserted: data.totalInserted,
+          orgId: data.orgId ?? orgId ?? 'unknown',
+          batchId: data.batch_id ?? data.batchId,
           collections: data.collections,
         },
       });
     } catch (err: unknown) {
       setView({ state: 'error', message: `Save failed: ${String(err)}` });
+    }
+  }
+
+  async function rollbackImport(batchId: string) {
+    setRollbackState({ state: 'running' });
+    try {
+      const res = await fetch('/api/chief/import/rollback', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ batchId }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error ?? `HTTP ${res.status}`);
+      setRollbackState({
+        state: 'done',
+        rolledBack: data.rolledBack,
+        batchId: data.batchId,
+      });
+    } catch (err: unknown) {
+      setRollbackState({ state: 'error', message: String(err) });
     }
   }
 
@@ -227,6 +278,9 @@ export default function ImportReviewer() {
         <p className="chief-table-note" style={{ marginBottom: '1rem' }}>
           Upload the bulk XLSX template with all sheets, or a single CSV/XLSX for one collection. Max 5 MB.
         </p>
+        <p className="chief-table-note" style={{ marginBottom: '0.75rem' }}>
+          Active Clerk org: <code>{orgId ?? 'unknown'}</code>
+        </p>
         <div className="chief-filter-grid" style={{ marginBottom: '1rem' }}>
           <label className="chief-field-stack">
             <span>Mode</span>
@@ -253,6 +307,15 @@ export default function ImportReviewer() {
             <input ref={fileRef} type="file" accept=".csv,.xlsx,.xls" />
           </label>
         </div>
+        <label className="chief-table-note" style={{ display: 'block', marginBottom: '0.75rem' }}>
+          <input
+            type="checkbox"
+            checked={replaceExisting}
+            onChange={(e) => setReplaceExisting(e.target.checked)}
+            style={{ marginRight: '0.4rem' }}
+          />
+          Replace existing rows in this org for imported collections (soft delete existing rows before insert)
+        </label>
         <div className="chief-action-row">
           <button
             className="btn-primary"
@@ -262,7 +325,13 @@ export default function ImportReviewer() {
             {view.state === 'parsing' ? 'Parsing…' : 'Parse & Review'}
           </button>
           {(view.state === 'result' || view.state === 'saved') && (
-            <button className="btn-secondary" onClick={() => setView({ state: 'idle' })}>
+            <button
+              className="btn-secondary"
+              onClick={() => {
+                setRollbackState({ state: 'idle' });
+                setView({ state: 'idle' });
+              }}
+            >
               Reset
             </button>
           )}
@@ -285,13 +354,39 @@ export default function ImportReviewer() {
           <p style={{ marginBottom: '0.75rem' }}>
             {view.summary.totalInserted} total rows saved across {view.summary.collections.length} collection(s).
           </p>
+          <p className="chief-table-note" style={{ marginBottom: '0.75rem' }}>
+            Import batch ID: <code>{view.summary.batchId}</code>
+          </p>
+          <p className="chief-table-note" style={{ marginBottom: '0.75rem' }}>
+            Saved for org: <code>{view.summary.orgId}</code>
+          </p>
           <ul style={{ margin: 0, paddingLeft: '1.25rem', fontSize: '0.875rem' }}>
             {view.summary.collections.map((c) => (
               <li key={c.collection}>
                 <strong>{IMPORT_SCHEMAS[c.collection as CollectionKey]?.label ?? c.collection}</strong>: {c.inserted} rows
+                {c.replaced ? ' (replaced prior rows)' : ' (appended)'}
               </li>
             ))}
           </ul>
+          <div className="chief-action-row" style={{ marginTop: '1rem' }}>
+            <button
+              className="btn-secondary"
+              disabled={rollbackState.state === 'running'}
+              onClick={() => rollbackImport(view.summary.batchId)}
+            >
+              {rollbackState.state === 'running' ? 'Rolling back…' : 'Rollback this import'}
+            </button>
+          </div>
+          {rollbackState.state === 'done' && rollbackState.batchId === view.summary.batchId && (
+            <p style={{ marginTop: '0.75rem', color: '#16a34a', fontSize: '0.875rem' }}>
+              Rolled back {rollbackState.rolledBack} record(s) for batch <code>{rollbackState.batchId}</code>.
+            </p>
+          )}
+          {rollbackState.state === 'error' && (
+            <p style={{ marginTop: '0.75rem', color: '#dc2626', fontSize: '0.875rem' }}>
+              {rollbackState.message}
+            </p>
+          )}
         </div>
       )}
 

@@ -11,8 +11,9 @@ export const dynamic = 'force-dynamic';
 export default async function ChiefImportPage() {
   if (!isClerkEnabled()) return null;
 
-  const { userId } = await auth();
+  const { userId, orgId } = await auth();
   if (!userId) redirect('/sign-in');
+  if (!orgId) redirect('/');
 
   return (
     <ChiefErrorBoundary page="/chief/import" userId={userId}>
@@ -71,7 +72,7 @@ export default async function ChiefImportPage() {
           </div>
         </div>
 
-        <ImportReviewer />
+        <ImportReviewer orgId={orgId} />
       </section>
       </main>
     </ChiefErrorBoundary>

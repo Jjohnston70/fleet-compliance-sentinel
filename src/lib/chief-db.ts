@@ -20,14 +20,37 @@ export async function ensureChiefTables() {
     CREATE TABLE IF NOT EXISTS chief_records (
       id          SERIAL PRIMARY KEY,
       collection  TEXT NOT NULL,
+      org_id      TEXT,
       data        JSONB NOT NULL,
+      import_batch_id UUID,
+      deleted_at  TIMESTAMPTZ,
       imported_at TIMESTAMPTZ NOT NULL DEFAULT now(),
       imported_by TEXT
     )
   `;
   await sql`
+    ALTER TABLE chief_records
+    ADD COLUMN IF NOT EXISTS org_id TEXT
+  `;
+  await sql`
+    ALTER TABLE chief_records
+    ADD COLUMN IF NOT EXISTS import_batch_id UUID
+  `;
+  await sql`
+    ALTER TABLE chief_records
+    ADD COLUMN IF NOT EXISTS deleted_at TIMESTAMPTZ
+  `;
+  await sql`
     CREATE INDEX IF NOT EXISTS idx_chief_records_collection
     ON chief_records (collection)
+  `;
+  await sql`
+    CREATE INDEX IF NOT EXISTS idx_chief_records_org_collection
+    ON chief_records (org_id, collection)
+  `;
+  await sql`
+    CREATE INDEX IF NOT EXISTS idx_chief_records_batch
+    ON chief_records (import_batch_id)
   `;
 }
 
@@ -50,6 +73,27 @@ export async function ensureCronLogTable() {
   `;
 }
 
+export async function ensureChiefErrorEventsTable() {
+  const sql = getSQL();
+  await sql`
+    CREATE TABLE IF NOT EXISTS chief_error_events (
+      id SERIAL PRIMARY KEY,
+      org_id TEXT NOT NULL,
+      user_id TEXT,
+      page TEXT,
+      message TEXT NOT NULL,
+      stack TEXT,
+      user_agent TEXT,
+      url TEXT,
+      occurred_at TIMESTAMPTZ NOT NULL DEFAULT now()
+    )
+  `;
+  await sql`
+    CREATE INDEX IF NOT EXISTS idx_chief_error_events_org_time
+    ON chief_error_events (org_id, occurred_at DESC)
+  `;
+}
+
 export async function insertCronLogEntry(input: {
   jobName: string;
   orgId?: string | null;
@@ -66,6 +110,37 @@ export async function insertCronLogEntry(input: {
       ${input.status},
       ${input.message ?? null},
       ${input.recordsProcessed ?? 0}
+    )
+  `;
+}
+
+export async function insertChiefErrorEvent(input: {
+  orgId: string;
+  userId?: string | null;
+  page?: string | null;
+  message: string;
+  stack?: string | null;
+  userAgent?: string | null;
+  url?: string | null;
+}) {
+  const sql = getSQL();
+  await sql`
+    INSERT INTO chief_error_events (
+      org_id,
+      user_id,
+      page,
+      message,
+      stack,
+      user_agent,
+      url
+    ) VALUES (
+      ${input.orgId},
+      ${input.userId ?? null},
+      ${input.page ?? null},
+      ${input.message},
+      ${input.stack ?? null},
+      ${input.userAgent ?? null},
+      ${input.url ?? null}
     )
   `;
 }
@@ -103,7 +178,11 @@ export async function getLastCronLog(jobName: string): Promise<{
 export async function insertChiefRecords(
   collection: string,
   rows: Record<string, string>[],
-  importedBy?: string
+  options: {
+    orgId: string;
+    importedBy?: string;
+    importBatchId?: string;
+  }
 ): Promise<number> {
   if (rows.length === 0) return 0;
   const sql = getSQL();
@@ -116,8 +195,14 @@ export async function insertChiefRecords(
     const batch = rows.slice(i, i + BATCH_SIZE);
     for (const row of batch) {
       await sql`
-        INSERT INTO chief_records (collection, data, imported_by)
-        VALUES (${collection}, ${JSON.stringify(row)}::jsonb, ${importedBy ?? null})
+        INSERT INTO chief_records (collection, org_id, data, imported_by, import_batch_id)
+        VALUES (
+          ${collection},
+          ${options.orgId},
+          ${JSON.stringify(row)}::jsonb,
+          ${options.importedBy ?? null},
+          ${options.importBatchId ?? null}
+        )
       `;
       inserted++;
     }
@@ -129,12 +214,14 @@ export async function insertChiefRecords(
 /**
  * Read all records for a given collection, ordered by import date desc.
  */
-export async function listChiefRecords(collection: string) {
+export async function listChiefRecords(collection: string, orgId: string) {
   const sql = getSQL();
   const rows = await sql`
     SELECT id, collection, data, imported_at, imported_by
     FROM chief_records
     WHERE collection = ${collection}
+      AND org_id = ${orgId}
+      AND deleted_at IS NULL
     ORDER BY imported_at DESC
   `;
   return rows;
@@ -143,11 +230,13 @@ export async function listChiefRecords(collection: string) {
 /**
  * Get record counts per collection.
  */
-export async function getChiefRecordCounts(): Promise<Record<string, number>> {
+export async function getChiefRecordCounts(orgId: string): Promise<Record<string, number>> {
   const sql = getSQL();
   const rows = await sql`
     SELECT collection, COUNT(*)::int as count
     FROM chief_records
+    WHERE org_id = ${orgId}
+      AND deleted_at IS NULL
     GROUP BY collection
     ORDER BY collection
   `;
@@ -161,11 +250,72 @@ export async function getChiefRecordCounts(): Promise<Record<string, number>> {
 /**
  * Delete all records for a collection (for re-import scenarios).
  */
-export async function clearChiefCollection(collection: string): Promise<number> {
+export async function clearChiefCollection(collection: string, orgId: string): Promise<number> {
   const sql = getSQL();
   const result = await sql`
-    DELETE FROM chief_records
+    UPDATE chief_records
+    SET deleted_at = NOW()
     WHERE collection = ${collection}
+      AND org_id = ${orgId}
+      AND deleted_at IS NULL
+    RETURNING id
   `;
   return result.length;
+}
+
+export async function getImportBatchScope(orgId: string, batchId: string): Promise<{
+  orgCount: number;
+}> {
+  const sql = getSQL();
+  const rows = await sql`
+    SELECT
+      COUNT(*)::int AS org_count
+    FROM chief_records
+    WHERE import_batch_id = ${batchId}::uuid
+      AND org_id = ${orgId}
+  `;
+
+  const row = rows[0];
+  return {
+    orgCount: Number(row?.org_count ?? 0),
+  };
+}
+
+export async function rollbackChiefImportBatch(orgId: string, batchId: string): Promise<number> {
+  const sql = getSQL();
+  const rows = await sql`
+    UPDATE chief_records
+    SET deleted_at = NOW()
+    WHERE org_id = ${orgId}
+      AND import_batch_id = ${batchId}::uuid
+      AND deleted_at IS NULL
+    RETURNING id
+  `;
+  return rows.length;
+}
+
+export async function listChiefOrgIds(): Promise<string[]> {
+  const sql = getSQL();
+  const rows = await sql`
+    SELECT DISTINCT org_id
+    FROM chief_records
+    WHERE org_id IS NOT NULL
+      AND deleted_at IS NULL
+  `;
+  return rows
+    .map((row) => (typeof row.org_id === 'string' ? row.org_id : ''))
+    .filter(Boolean);
+}
+
+export async function restoreChiefRecord(collection: string, id: number, orgId: string): Promise<boolean> {
+  const sql = getSQL();
+  const rows = await sql`
+    UPDATE chief_records
+    SET deleted_at = NULL
+    WHERE id = ${id}
+      AND collection = ${collection}
+      AND org_id = ${orgId}
+    RETURNING id
+  `;
+  return rows.length > 0;
 }

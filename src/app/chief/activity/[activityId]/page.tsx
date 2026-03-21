@@ -13,12 +13,15 @@ export default async function ChiefActivityLogPage({ params }: { params: Params 
     return null;
   }
 
-  const { userId } = await auth();
+  const { userId, orgId } = await auth();
   if (!userId) {
     redirect('/sign-in');
   }
+  if (!orgId) {
+    redirect('/');
+  }
 
-  const data = await loadChiefData();
+  const data = await loadChiefData(orgId);
 
   const { activityId } = await params;
   const log = findActivityLog(data.activityLogs, decodeURIComponent(activityId));
@@ -125,3 +128,4 @@ export default async function ChiefActivityLogPage({ params }: { params: Params 
     </main>
   );
 }
+
