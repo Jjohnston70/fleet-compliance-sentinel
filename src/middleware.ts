@@ -1,5 +1,5 @@
 // middleware.ts
-// Clerk middleware - protects /penny and /resources routes
+// Clerk middleware - protects /penny routes
 // Public routes: /, /sign-in, /sign-up, /privacy, /terms, /api/penny/health
 
 import { clerkMiddleware, createRouteMatcher } from '@clerk/nextjs/server';
@@ -8,7 +8,6 @@ import { isClerkEnabled } from '@/lib/clerk';
 
 const isProtectedRoute = createRouteMatcher([
   '/penny(.*)',
-  '/resources(.*)',
   '/api/penny/query(.*)',
 ]);
 

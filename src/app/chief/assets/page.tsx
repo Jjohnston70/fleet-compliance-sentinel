@@ -2,6 +2,7 @@ import Link from 'next/link';
 import { auth } from '@clerk/nextjs/server';
 import { redirect } from 'next/navigation';
 import { isClerkEnabled } from '@/lib/clerk';
+import ChiefErrorBoundary from '@/components/chief/ChiefErrorBoundary';
 import {
   loadChiefData,
   filterAssets,
@@ -38,7 +39,8 @@ export default async function ChiefAssetsPage({ searchParams }: { searchParams: 
   const stats = getAssetStats(data.assets);
 
   return (
-    <main className="chief-shell">
+    <ChiefErrorBoundary page="/chief/assets" userId={userId}>
+      <main className="chief-shell">
       <section className="chief-section">
         <div className="chief-section-head">
           <div>
@@ -196,6 +198,7 @@ export default async function ChiefAssetsPage({ searchParams }: { searchParams: 
           ))}
         </div>
       </section>
-    </main>
+      </main>
+    </ChiefErrorBoundary>
   );
 }

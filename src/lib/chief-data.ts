@@ -798,7 +798,7 @@ export const chiefPermitCadence = [
 ];
 
 export const chiefResourceLinks: ChiefResourceLink[] = [
-  { href: '/resources', label: 'Protected Resources', note: 'Use the live Drive-backed route for manuals, permits, certificates, and PDF support files.' },
+  { href: '/chief/import', label: 'Document Intake', note: 'Use Import Review for manuals, permits, certificates, and support file workflows.' },
   { href: '/penny', label: 'CFR-backed Penny', note: 'Use Penny for CFR questions, permit cadence checks, and operational compliance prompts.' },
 ];
 
@@ -815,61 +815,61 @@ export function getChiefModuleSummary(data: ChiefData): ChiefModuleSummary {
 
 const DOC_LINKS_BY_CATEGORY: Record<string, ChiefDocumentLink[]> = {
   vehicle: [
-    { label: 'DOT Inspection Certificate', note: 'Annual 49 CFR 396.17 inspection cert', href: '/resources' },
-    { label: 'Vapor Test Certificate', note: 'Annual vapor recovery test cert', href: '/resources' },
-    { label: 'Registration & Insurance', note: 'Current registration and insurance binder', href: '/resources' },
-    { label: 'Driver Vehicle Inspection Reports (DVIR)', note: 'Pre/post trip inspection records', href: '/resources' },
+    { label: 'DOT Inspection Certificate', note: 'Annual 49 CFR 396.17 inspection cert', href: '/chief/import' },
+    { label: 'Vapor Test Certificate', note: 'Annual vapor recovery test cert', href: '/chief/import' },
+    { label: 'Registration & Insurance', note: 'Current registration and insurance binder', href: '/chief/import' },
+    { label: 'Driver Vehicle Inspection Reports (DVIR)', note: 'Pre/post trip inspection records', href: '/chief/import' },
   ],
   tank: [
-    { label: 'UST Permit', note: 'Colorado CDPHE underground/aboveground storage tank permit', href: '/resources' },
-    { label: 'Leak Test Certificate', note: 'Annual leak detection test results', href: '/resources' },
-    { label: 'ATG Calibration Record', note: 'Annual automatic tank gauge calibration', href: '/resources' },
-    { label: 'Spill & Overfill Equipment Inspection', note: 'Annual inspection documentation', href: '/resources' },
+    { label: 'UST Permit', note: 'Colorado CDPHE underground/aboveground storage tank permit', href: '/chief/import' },
+    { label: 'Leak Test Certificate', note: 'Annual leak detection test results', href: '/chief/import' },
+    { label: 'ATG Calibration Record', note: 'Annual automatic tank gauge calibration', href: '/chief/import' },
+    { label: 'Spill & Overfill Equipment Inspection', note: 'Annual inspection documentation', href: '/chief/import' },
   ],
   trailer: [
-    { label: 'Annual Inspection Certificate', note: '49 CFR 393 trailer inspection cert', href: '/resources' },
-    { label: 'Registration', note: 'Current trailer registration', href: '/resources' },
+    { label: 'Annual Inspection Certificate', note: '49 CFR 393 trailer inspection cert', href: '/chief/import' },
+    { label: 'Registration', note: 'Current trailer registration', href: '/chief/import' },
   ],
 };
 
 const DEFAULT_ASSET_DOCS: ChiefDocumentLink[] = [
-  { label: 'Maintenance Records', note: 'Service history and work orders', href: '/resources' },
-  { label: 'Purchase Documentation', note: 'Purchase agreement or invoice', href: '/resources' },
+  { label: 'Maintenance Records', note: 'Service history and work orders', href: '/chief/import' },
+  { label: 'Purchase Documentation', note: 'Purchase agreement or invoice', href: '/chief/import' },
 ];
 
 const DRIVER_DOCS: ChiefDocumentLink[] = [
-  { label: 'CDL Copy', note: 'Current commercial driver license', href: '/resources' },
-  { label: 'Medical Certificate', note: 'DOT physical medical examiner certificate', href: '/resources' },
-  { label: 'Motor Vehicle Record (MVR)', note: 'Annual MVR pull from state DMV', href: '/resources' },
-  { label: 'Drug & Alcohol Test Records', note: 'Pre-employment and random test results', href: '/resources' },
-  { label: 'Clearinghouse Query Results', note: 'FMCSA Drug & Alcohol Clearinghouse record', href: '/resources' },
-  { label: 'Hazmat Training Certificate', note: '3-year hazmat training certification (if applicable)', href: '/resources' },
+  { label: 'CDL Copy', note: 'Current commercial driver license', href: '/chief/import' },
+  { label: 'Medical Certificate', note: 'DOT physical medical examiner certificate', href: '/chief/import' },
+  { label: 'Motor Vehicle Record (MVR)', note: 'Annual MVR pull from state DMV', href: '/chief/import' },
+  { label: 'Drug & Alcohol Test Records', note: 'Pre-employment and random test results', href: '/chief/import' },
+  { label: 'Clearinghouse Query Results', note: 'FMCSA Drug & Alcohol Clearinghouse record', href: '/chief/import' },
+  { label: 'Hazmat Training Certificate', note: '3-year hazmat training certification (if applicable)', href: '/chief/import' },
 ];
 
 const PERMIT_DOCS: Record<string, ChiefDocumentLink[]> = {
   state_hazmat: [
-    { label: 'CO Hazmat Registration Certificate', note: 'Issued by Colorado CDPHE', href: '/resources' },
-    { label: 'MCS-90 Endorsement', note: 'Motor carrier insurance endorsement', href: '/resources' },
+    { label: 'CO Hazmat Registration Certificate', note: 'Issued by Colorado CDPHE', href: '/chief/import' },
+    { label: 'MCS-90 Endorsement', note: 'Motor carrier insurance endorsement', href: '/chief/import' },
   ],
   federal_hazmat: [
-    { label: 'PHMSA Hazmat Registration Certificate', note: 'PHMSA-issued federal hazmat registration', href: '/resources' },
-    { label: 'Insurance Certificate', note: 'Proof of financial responsibility', href: '/resources' },
+    { label: 'PHMSA Hazmat Registration Certificate', note: 'PHMSA-issued federal hazmat registration', href: '/chief/import' },
+    { label: 'Insurance Certificate', note: 'Proof of financial responsibility', href: '/chief/import' },
   ],
-  ucr: [{ label: 'UCR Confirmation', note: 'Annual Unified Carrier Registration receipt', href: '/resources' }],
+  ucr: [{ label: 'UCR Confirmation', note: 'Annual Unified Carrier Registration receipt', href: '/chief/import' }],
   operating_authority_mc150: [
-    { label: 'MCS-150 Filing Confirmation', note: 'FMCSA biennial update acknowledgment', href: '/resources' },
-    { label: 'Operating Authority Certificate', note: 'MC number certificate of authority', href: '/resources' },
+    { label: 'MCS-150 Filing Confirmation', note: 'FMCSA biennial update acknowledgment', href: '/chief/import' },
+    { label: 'Operating Authority Certificate', note: 'MC number certificate of authority', href: '/chief/import' },
   ],
   ifta: [
-    { label: 'IFTA License', note: 'Current quarter IFTA license', href: '/resources' },
-    { label: 'Fuel Purchase Records', note: 'Supporting fuel receipts by state', href: '/resources' },
+    { label: 'IFTA License', note: 'Current quarter IFTA license', href: '/chief/import' },
+    { label: 'Fuel Purchase Records', note: 'Supporting fuel receipts by state', href: '/chief/import' },
   ],
-  irp: [{ label: 'IRP Cab Cards', note: 'Current apportioned registration cab cards for each vehicle', href: '/resources' }],
+  irp: [{ label: 'IRP Cab Cards', note: 'Current apportioned registration cab cards for each vehicle', href: '/chief/import' }],
 };
 
 const DEFAULT_PERMIT_DOCS: ChiefDocumentLink[] = [
-  { label: 'Permit Certificate', note: 'Issued permit or license document', href: '/resources' },
-  { label: 'Renewal Correspondence', note: 'Agency renewal notices and confirmations', href: '/resources' },
+  { label: 'Permit Certificate', note: 'Issued permit or license document', href: '/chief/import' },
+  { label: 'Renewal Correspondence', note: 'Agency renewal notices and confirmations', href: '/chief/import' },
 ];
 
 export function getAssetDocuments(category: string): ChiefDocumentLink[] {

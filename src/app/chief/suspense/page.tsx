@@ -2,6 +2,7 @@ import Link from 'next/link';
 import { auth } from '@clerk/nextjs/server';
 import { redirect } from 'next/navigation';
 import { isClerkEnabled } from '@/lib/clerk';
+import ChiefErrorBoundary from '@/components/chief/ChiefErrorBoundary';
 import {
   loadChiefData,
   filterSuspenseItems,
@@ -40,7 +41,8 @@ export default async function ChiefSuspensePage({ searchParams }: { searchParams
   const stats = getSuspenseStats(data.suspense);
 
   return (
-    <main className="chief-shell">
+    <ChiefErrorBoundary page="/chief/suspense" userId={userId}>
+      <main className="chief-shell">
       <section className="chief-section">
         <div className="chief-section-head">
           <div>
@@ -191,6 +193,7 @@ export default async function ChiefSuspensePage({ searchParams }: { searchParams
           </div>
         )}
       </section>
-    </main>
+      </main>
+    </ChiefErrorBoundary>
   );
 }

@@ -2,6 +2,7 @@ import Link from 'next/link';
 import { auth } from '@clerk/nextjs/server';
 import { redirect } from 'next/navigation';
 import { isClerkEnabled } from '@/lib/clerk';
+import ChiefErrorBoundary from '@/components/chief/ChiefErrorBoundary';
 import { loadChiefData, formatDueLabel } from '@/lib/chief-data';
 
 export const dynamic = 'force-dynamic';
@@ -14,7 +15,8 @@ export default async function ChiefEmployeesPage() {
   const data = await loadChiefData();
 
   return (
-    <main className="chief-shell">
+    <ChiefErrorBoundary page="/chief/employees" userId={userId}>
+      <main className="chief-shell">
       <section className="chief-section">
         <div className="chief-section-head">
           <div>
@@ -127,6 +129,7 @@ export default async function ChiefEmployeesPage() {
           </div>
         )}
       </section>
-    </main>
+      </main>
+    </ChiefErrorBoundary>
   );
 }

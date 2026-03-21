@@ -2,6 +2,7 @@ import Link from 'next/link';
 import { auth } from '@clerk/nextjs/server';
 import { redirect } from 'next/navigation';
 import { isClerkEnabled } from '@/lib/clerk';
+import ChiefErrorBoundary from '@/components/chief/ChiefErrorBoundary';
 import {
   lookupFmcsaCarrier,
   CHIEF_PETROLEUM_DOT,
@@ -217,7 +218,8 @@ export default async function ChiefFmcsaPage({ searchParams }: { searchParams: S
   }
 
   return (
-    <main className="chief-shell">
+    <ChiefErrorBoundary page="/chief/fmcsa" userId={userId}>
+      <main className="chief-shell">
       <section className="chief-section">
         <div className="chief-section-head">
           <div>
@@ -294,6 +296,7 @@ export default async function ChiefFmcsaPage({ searchParams }: { searchParams: S
           </div>
         )}
       </section>
-    </main>
+      </main>
+    </ChiefErrorBoundary>
   );
 }

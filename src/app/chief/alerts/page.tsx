@@ -2,6 +2,7 @@ import Link from 'next/link';
 import { auth } from '@clerk/nextjs/server';
 import { redirect } from 'next/navigation';
 import { isClerkEnabled } from '@/lib/clerk';
+import ChiefErrorBoundary from '@/components/chief/ChiefErrorBoundary';
 import { previewChiefAlerts } from '@/lib/chief-alert-engine';
 import { loadChiefData } from '@/lib/chief-data';
 import AlertsRunPanel from '@/components/chief/AlertsRunPanel';
@@ -28,7 +29,8 @@ export default async function ChiefAlertsPage() {
   const cronConfigured = Boolean(process.env.CHIEF_CRON_SECRET);
 
   return (
-    <main className="chief-shell">
+    <ChiefErrorBoundary page="/chief/alerts" userId={userId}>
+      <main className="chief-shell">
       <section className="chief-section">
         <div className="chief-section-head">
           <div>
@@ -142,6 +144,7 @@ export default async function ChiefAlertsPage() {
           </div>
         )}
       </section>
-    </main>
+      </main>
+    </ChiefErrorBoundary>
   );
 }

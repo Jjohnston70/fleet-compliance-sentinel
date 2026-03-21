@@ -30,7 +30,8 @@
       "@tnds/retrieval-core": ["./packages/tnds-retrieval-core/src/index.ts"],
       "@tnds/memory-core": ["./packages/tnds-memory-core/src/index.ts"]
     },
-    "target": "ES2017"
+    "target": "ES2017",
+    "allowImportingTsExtensions": true
   },
   "include": [
     "next-env.d.ts",

@@ -2,6 +2,7 @@ import Link from 'next/link';
 import { auth } from '@clerk/nextjs/server';
 import { redirect } from 'next/navigation';
 import { isClerkEnabled } from '@/lib/clerk';
+import ChiefErrorBoundary from '@/components/chief/ChiefErrorBoundary';
 import FmcsaSnapshotCard from '@/components/chief/FmcsaSnapshotCard';
 import {
   loadChiefData,
@@ -70,12 +71,6 @@ const modules = [
     description: 'Upload CSV/XLSX, validate rows, approve or reject per-row before committing.',
     status: 'Live',
   },
-  {
-    href: '/resources',
-    title: 'Resources',
-    description: 'Protected Google Drive manuals, certificates, and supporting files.',
-    status: 'Already live',
-  },
 ];
 
 export default async function ChiefPage() {
@@ -89,13 +84,15 @@ export default async function ChiefPage() {
 
   if (!hasClerk) {
     return (
-      <main className="chief-shell">
-        <section className="chief-hero">
-          <p className="chief-eyebrow">Chief Module</p>
-          <h1>Chief module requires Clerk to be configured.</h1>
-          <p className="chief-subcopy">Enable the existing auth environment to access protected Chief routes.</p>
-        </section>
-      </main>
+      <ChiefErrorBoundary page="/chief">
+        <main className="chief-shell">
+          <section className="chief-hero">
+            <p className="chief-eyebrow">Chief Module</p>
+            <h1>Chief module requires Clerk to be configured.</h1>
+            <p className="chief-subcopy">Enable the existing auth environment to access protected Chief routes.</p>
+          </section>
+        </main>
+      </ChiefErrorBoundary>
     );
   }
 
@@ -112,7 +109,8 @@ export default async function ChiefPage() {
   ];
 
   return (
-    <main className="chief-shell">
+    <ChiefErrorBoundary page="/chief" userId={userId}>
+      <main className="chief-shell">
       <section className="chief-hero">
         <p className="chief-eyebrow">Chief Operations</p>
         <h1>Protected command shell for assets, compliance, suspense, and CFR-backed Penny.</h1>
@@ -148,9 +146,6 @@ export default async function ChiefPage() {
           </Link>
           <Link href="/api/chief/bulk-template" className="btn-secondary">
             Download Bulk Template
-          </Link>
-          <Link href="/resources" className="btn-secondary">
-            Open Resources
           </Link>
         </div>
       </section>
@@ -273,7 +268,6 @@ export default async function ChiefPage() {
               <li>Next.js site on Vercel</li>
               <li>Clerk auth reused for all protected routes</li>
               <li>Railway Penny backend retained</li>
-              <li>Google Drive resources retained</li>
               <li>Chief data layer wired into the site</li>
               <li>Bulk upload workbook export added</li>
             </ul>
@@ -289,6 +283,7 @@ export default async function ChiefPage() {
           </div>
         </div>
       </section>
-    </main>
+      </main>
+    </ChiefErrorBoundary>
   );
 }

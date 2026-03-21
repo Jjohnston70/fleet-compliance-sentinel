@@ -6,7 +6,7 @@ import { auth, currentUser } from '@clerk/nextjs/server';
 import { NextRequest, NextResponse } from 'next/server';
 import { isClerkEnabled } from '@/lib/clerk';
 import { canAccessPenny, canBypassPennyRoleByEmail, resolvePennyRole } from '@/lib/penny-access';
-import { listFilesInFolder } from '@/lib/drive';
+import { buildPennyContext } from '@/lib/penny-ingest';
 
 const PENNY_API_URL = process.env.PENNY_API_URL || 'http://localhost:8000';
 const PENNY_API_KEY = process.env.PENNY_API_KEY || '';
@@ -33,37 +33,15 @@ function normalizeSource(source: BackendSource): string {
   if (typeof source === 'string') {
     return source.trim();
   }
-
   const title = source.title?.trim();
   const category = source.category?.trim();
   const section = source.section?.trim();
   const fileSource = source.source?.trim();
-
-  if (title && category) {
-    return `${title} (${category})`;
-  }
-  if (title) {
-    return title;
-  }
-  if (section && fileSource) {
-    return `${section} - ${fileSource}`;
-  }
-  if (fileSource) {
-    return fileSource;
-  }
-
+  if (title && category) return `${title} (${category})`;
+  if (title) return title;
+  if (section && fileSource) return `${section} - ${fileSource}`;
+  if (fileSource) return fileSource;
   return '';
-}
-
-function isResourceListQuery(query: string): boolean {
-  const q = query.toLowerCase();
-  return (
-    q.includes('resource') ||
-    q.includes('knowledge base') ||
-    q.includes('knowledge resources') ||
-    q.includes('list files') ||
-    q.includes('what documents')
-  );
 }
 
 function isKnowledgeCatalogQuery(query: string): boolean {
@@ -82,89 +60,54 @@ function isKnowledgeCatalogQuery(query: string): boolean {
 function enrichComplianceQuery(query: string): string {
   const q = query.toLowerCase();
   const extras: string[] = [];
-
   if ((q.includes('drink') || q.includes('alcohol') || q.includes('alchohol')) &&
       (q.includes('shift') || q.includes('duty') || q.includes('drive'))) {
     extras.push('382 207', 'pre duty use', 'four hours', 'safety sensitive functions');
   }
-
   if (q.includes('mvr') || q.includes('motor vehicle record') || q.includes('driving record')) {
     extras.push('391 25', 'annual inquiry', 'review of driving record', 'motor vehicle record', '12 months');
   }
-
   if (q.includes('tsa') || q.includes('background check') || q.includes('security threat assessment')) {
-    extras.push(
-      '383.141(d)',
-      'hazardous materials endorsement',
-      'for CDL hazmat endorsement',
-      'security threat assessment',
-      'renewed every 5 years or less',
-      'hazmat endorsement renewal cycle'
-    );
+    extras.push('383.141(d)', 'hazardous materials endorsement', 'for CDL hazmat endorsement',
+      'security threat assessment', 'renewed every 5 years or less', 'hazmat endorsement renewal cycle');
   }
-
   if (q.includes('dvir') || q.includes('driver vehicle inspection report')) {
     extras.push('396.11(a)(4)', 'driver vehicle inspection report', 'three months', 'certification of repairs');
   }
-
   if (q.includes('roadside inspection')) {
     extras.push('396.9(d)(3)', 'roadside inspection form', '12 months', 'inspection report retention');
   }
-
   if (
     (q.includes('hours of service') || q.includes('hos') || q.includes('hours') || q.includes('drive a day')) &&
     (q.includes('local') || q.includes('short haul') || q.includes('short-haul') || q.includes('150 mile') || q.includes('150 air-mile'))
   ) {
-    extras.push(
-      '395.1(e)',
-      '395.3',
-      'short-haul exception',
-      '150 air-mile radius driver',
-      '11 hours',
-      '14th hour',
-      'normal work reporting location'
-    );
+    extras.push('395.1(e)', '395.3', 'short-haul exception', '150 air-mile radius driver',
+      '11 hours', '14th hour', 'normal work reporting location');
   }
-
   if (
     (q.includes('hazmat') || q.includes('fuel delivery') || q.includes('delivering fuel')) &&
     (q.includes('route') || q.includes('delivery address') || q.includes('address') || q.includes('deviat'))
   ) {
     extras.push('397.67', '49 CFR Part 397', 'hazardous materials routing', 'route deviation', 'delivery destination');
   }
-
   if (
     (q.includes('maintenance') || q.includes('inspection report') || q.includes('vehicle records')) &&
-    !q.includes('driver vehicle inspection report') &&
-    !q.includes('dvir') &&
-    !q.includes('roadside inspection') &&
+    !q.includes('driver vehicle inspection report') && !q.includes('dvir') && !q.includes('roadside inspection') &&
     (q.includes('keep') || q.includes('retention') || q.includes('retain') || q.includes('how long'))
   ) {
-    extras.push(
-      '396.3(c)',
-      'record retention',
-      'inspection repair and maintenance',
-      '1 year',
-      '6 months after the vehicle leaves the motor carrier control'
-    );
+    extras.push('396.3(c)', 'record retention', 'inspection repair and maintenance',
+      '1 year', '6 months after the vehicle leaves the motor carrier control');
   }
-
-  if (extras.length === 0) {
-    return query;
-  }
-
+  if (extras.length === 0) return query;
   return `${query} ${extras.join(' ')}`.trim();
 }
 
 function parseGeneralFallbackUsed(cookieValue: string | undefined, userId: string): number {
   if (!cookieValue) return 0;
-
   const [cookieUserId, countRaw] = cookieValue.split('|', 2);
   if (!cookieUserId || cookieUserId !== userId) return 0;
-
   const parsed = Number.parseInt(countRaw || '0', 10);
   if (!Number.isFinite(parsed) || parsed < 0) return 0;
-
   return Math.min(parsed, GENERAL_FALLBACK_SESSION_LIMIT);
 }
 
@@ -178,7 +121,6 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: 'Authentication is not configured' }, { status: 503 });
   }
 
-  // Verify user is authenticated
   const { userId, sessionClaims } = await auth();
   if (!userId) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
@@ -189,7 +131,6 @@ export async function POST(request: NextRequest) {
   const hasEmailBypass = canBypassPennyRoleByEmail(user);
   const effectiveRole = canAccessPenny(role) ? role : hasEmailBypass ? 'admin' : role;
 
-  // Only allowed roles can query
   if (!canAccessPenny(role) && !hasEmailBypass) {
     return NextResponse.json({ error: 'Insufficient permissions' }, { status: 403 });
   }
@@ -205,39 +146,50 @@ export async function POST(request: NextRequest) {
     const effectiveQuery = enrichComplianceQuery(query);
 
     const fallbackUsedCount = parseGeneralFallbackUsed(
-      request.cookies.get(GENERAL_FALLBACK_COOKIE_NAME)?.value,
-      userId
+      request.cookies.get(GENERAL_FALLBACK_COOKIE_NAME)?.value, userId
     );
     const fallbackRemainingBefore = Math.max(0, GENERAL_FALLBACK_SESSION_LIMIT - fallbackUsedCount);
     const allowGeneralFallback =
       GENERAL_FALLBACK_ENABLED && effectiveRole === 'demo' && fallbackRemainingBefore > 0;
 
+    // --- CHUNKED CFR RETRIEVAL (server-side via @tnds/retrieval-core) ---
+    // Build grounded context from the local CFR index before hitting Railway.
+    // Falls back gracefully if index is empty or not yet built.
+    let groundedContext: string | null = null;
+    let cfrSources: string[] = [];
+    try {
+      const orgId = sessionClaims?.org_id as string | undefined;
+      const { groundedPrompt, sources } = await buildPennyContext({
+        query: effectiveQuery,
+        orgId,
+        topK: 5,
+      });
+      if (groundedPrompt && sources.length > 0) {
+        groundedContext = groundedPrompt;
+        cfrSources = sources;
+      }
+    } catch {
+      // Index not built yet or empty — continue with Railway's own knowledge store
+    }
+    // --- END CFR RETRIEVAL ---
+
     if (isKnowledgeCatalogQuery(query)) {
       const catalogRes = await fetch(`${PENNY_API_URL}/catalog?limit=40`, {
         headers: PENNY_API_KEY ? { 'X-Penny-Api-Key': PENNY_API_KEY } : {},
       });
-
       if (catalogRes.ok) {
         const catalog = await catalogRes.json();
         const categories = Array.isArray(catalog?.categories) ? catalog.categories : [];
         const documents = Array.isArray(catalog?.documents) ? catalog.documents : [];
         const total = typeof catalog?.knowledge_docs === 'number' ? catalog.knowledge_docs : documents.length;
-
         if (documents.length > 0) {
-          const categoryLine = categories
-            .slice(0, 10)
-            .map((cat: any) => `${cat.name} (${cat.count})`)
-            .join(', ');
-          const docList = documents
-            .slice(0, 20)
-            .map((doc: any, idx: number) => `${idx + 1}. ${doc.title}`)
-            .join('\n');
-
+          const categoryLine = categories.slice(0, 10).map((cat: any) => `${cat.name} (${cat.count})`).join(', ');
+          const docList = documents.slice(0, 20).map((doc: any, idx: number) => `${idx + 1}. ${doc.title}`).join('\n');
           return NextResponse.json({
             answer:
               `I currently have ${total} indexed knowledge documents.` +
               (categoryLine ? `\n\nTop categories: ${categoryLine}` : '') +
-              `\n\nSample documents:\n${docList}\n\nUse /resources for file browsing and ask me to summarize any listed document by name.`,
+              `\n\nSample documents:\n${docList}\n\nAsk me to summarize any listed document by name.`,
             sources: documents.slice(0, 8).map((doc: any) => doc.title),
             mode: 'catalog',
           });
@@ -245,28 +197,28 @@ export async function POST(request: NextRequest) {
       }
     }
 
-    // Forward to Pipeline Penny backend
+    // Forward to Railway — use grounded prompt if CFR retrieval succeeded,
+    // otherwise fall back to Railway's own knowledge store as before.
+    const queryPayload = groundedContext
+      ? { question: groundedContext, query: groundedContext }
+      : { question: effectiveQuery, query: effectiveQuery };
+
     const res = await fetch(`${PENNY_API_URL}/query`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        // Pass user context to backend
         'X-User-Id': userId,
         'X-User-Role': effectiveRole,
         ...(PENNY_API_KEY ? { 'X-Penny-Api-Key': PENNY_API_KEY } : {}),
       },
       body: JSON.stringify({
-        // Desktop Penny API expects "question"; current Railway scaffold expects "query".
-        question: effectiveQuery,
-        query: effectiveQuery,
+        ...queryPayload,
         chat_history: Array.isArray(chatHistory) ? chatHistory : [],
         ...(typeof skillMode === 'string' ? { skill_mode: skillMode } : {}),
         ...(typeof llmProvider === 'string' && llmProvider.trim().length > 0
-          ? { llm_provider: llmProvider.trim().toLowerCase().slice(0, 32) }
-          : {}),
+          ? { llm_provider: llmProvider.trim().toLowerCase().slice(0, 32) } : {}),
         ...(typeof llmModel === 'string' && llmModel.trim().length > 0
-          ? { llm_model: llmModel.trim().slice(0, 120) }
-          : {}),
+          ? { llm_model: llmModel.trim().slice(0, 120) } : {}),
         allow_general_fallback: allowGeneralFallback,
       }),
     });
@@ -282,42 +234,20 @@ export async function POST(request: NextRequest) {
 
     const data = await res.json();
     const rawSources = Array.isArray(data?.sources) ? (data.sources as BackendSource[]) : [];
-    const sources = rawSources
-      .map(normalizeSource)
-      .filter((item): item is string => Boolean(item));
+    const backendSources = rawSources.map(normalizeSource).filter((item): item is string => Boolean(item));
+    // Merge CFR sources (from local index) with any sources Railway returned
+    const sources = [...new Set([...cfrSources, ...backendSources])];
     const generalFallbackUsed = Boolean(data?.general_fallback_used) && allowGeneralFallback;
     const nextFallbackUsedCount = generalFallbackUsed
       ? Math.min(GENERAL_FALLBACK_SESSION_LIMIT, fallbackUsedCount + 1)
       : fallbackUsedCount;
     const fallbackRemainingAfter = Math.max(0, GENERAL_FALLBACK_SESSION_LIMIT - nextFallbackUsedCount);
-
     const fallbackLimitNotice =
-      GENERAL_FALLBACK_ENABLED &&
-      !allowGeneralFallback &&
+      GENERAL_FALLBACK_ENABLED && !allowGeneralFallback &&
       typeof data?.answer === 'string' &&
       data.answer.toLowerCase().includes("i don't have that information in the current knowledge base.")
         ? `\n\nGeneral fallback limit reached for this session (${GENERAL_FALLBACK_SESSION_LIMIT}/${GENERAL_FALLBACK_SESSION_LIMIT}).`
         : '';
-
-    // If the backend knowledge store is empty, still answer "list resources" prompts
-    // using the protected Google Drive resources folder.
-    if (sources.length === 0 && isResourceListQuery(query)) {
-      const folderId = process.env.GOOGLE_DRIVE_PUBLIC_RESOURCES_FOLDER_ID || '';
-      const resources = await listFilesInFolder(folderId);
-      const names = resources.files
-        .map((file) => file.name?.trim())
-        .filter((name): name is string => Boolean(name))
-        .slice(0, 20);
-
-      if (names.length > 0) {
-        const numberedList = names.map((name, idx) => `${idx + 1}. ${name}`).join('\n');
-        return NextResponse.json({
-          answer: `Here are the resources currently available:\n${numberedList}\n\nOpen /resources to view and open each file.`,
-          sources: names,
-          mode: 'drive-list',
-        });
-      }
-    }
 
     const response = NextResponse.json({
       answer:
@@ -325,7 +255,7 @@ export async function POST(request: NextRequest) {
           ? `${data.answer}${fallbackLimitNotice}`
           : "I couldn't find an answer to that in the knowledge base.",
       sources,
-      mode: typeof data?.mode === 'string' ? data.mode : 'rag',
+      mode: groundedContext ? 'cfr-grounded' : (typeof data?.mode === 'string' ? data.mode : 'rag'),
       processing_ms: typeof data?.processing_ms === 'number' ? data.processing_ms : undefined,
       general_fallback_used: generalFallbackUsed,
       general_fallback_remaining: fallbackRemainingAfter,

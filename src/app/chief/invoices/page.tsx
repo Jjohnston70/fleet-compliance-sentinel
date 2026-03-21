@@ -2,6 +2,7 @@ import Link from 'next/link';
 import { auth } from '@clerk/nextjs/server';
 import { redirect } from 'next/navigation';
 import { isClerkEnabled } from '@/lib/clerk';
+import ChiefErrorBoundary from '@/components/chief/ChiefErrorBoundary';
 
 export const dynamic = 'force-dynamic';
 
@@ -11,7 +12,8 @@ export default async function ChiefInvoicesPage() {
   if (!userId) redirect('/sign-in');
 
   return (
-    <main className="chief-shell">
+    <ChiefErrorBoundary page="/chief/invoices" userId={userId}>
+      <main className="chief-shell">
       <section className="chief-section">
         <div className="chief-section-head">
           <div>
@@ -34,6 +36,7 @@ export default async function ChiefInvoicesPage() {
           </p>
         </div>
       </section>
-    </main>
+      </main>
+    </ChiefErrorBoundary>
   );
 }

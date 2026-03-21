@@ -2,6 +2,7 @@ import Link from 'next/link';
 import { auth } from '@clerk/nextjs/server';
 import { redirect } from 'next/navigation';
 import { isClerkEnabled } from '@/lib/clerk';
+import ChiefErrorBoundary from '@/components/chief/ChiefErrorBoundary';
 import { IMPORT_SCHEMAS } from '@/lib/chief-import-schemas';
 import ImportReviewer from '@/components/chief/ImportReviewer';
 
@@ -14,7 +15,8 @@ export default async function ChiefImportPage() {
   if (!userId) redirect('/sign-in');
 
   return (
-    <main className="chief-shell">
+    <ChiefErrorBoundary page="/chief/import" userId={userId}>
+      <main className="chief-shell">
       <section className="chief-section">
         <div className="chief-section-head">
           <div>
@@ -71,6 +73,7 @@ export default async function ChiefImportPage() {
 
         <ImportReviewer />
       </section>
-    </main>
+      </main>
+    </ChiefErrorBoundary>
   );
 }

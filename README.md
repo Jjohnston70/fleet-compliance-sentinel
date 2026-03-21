@@ -36,7 +36,7 @@ It is designed to help users:
 - Return source-backed answers from indexed knowledge docs
 - Show knowledge catalog (categories + document list) in the Penny sidebar
 - Support demo users with controlled access behavior
-- Pull and display resources from the protected Google Drive resources flow (`/resources`)
+- Work from Chief import workflows and Penny catalog responses
 
 ---
 
@@ -65,7 +65,7 @@ This gives demos realistic Q&A coverage for:
 
 For live demos on the site, users can review:
 
-- `/resources` for protected documentation and file access
+- `/chief/import` for import review and document-linked operations
 - `/privacy` privacy policy
 - `/terms` terms of service
 - `/accessibility` accessibility statement
@@ -85,13 +85,12 @@ Allowed Penny roles are currently `admin`, `demo`, and `client`.
 
 ---
 
-## How To Use Google Drive Resources
+## How To Use Chief Documents
 
 1. Sign in with an approved account.
-2. Open `/resources`.
-3. Browse the listed resource files and folders.
-4. Open the public Drive link when needed for full file interaction.
-5. Use what you find there to drive Penny prompts (for example: "Summarize the compliance checklist in the realty folder").
+2. Open `/chief/import`.
+3. Use the import review workflow to validate incoming records.
+4. Use Penny prompts to summarize and reason over indexed documents.
 
 ---
 

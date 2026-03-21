@@ -2,6 +2,7 @@ import Link from 'next/link';
 import { auth } from '@clerk/nextjs/server';
 import { redirect } from 'next/navigation';
 import { isClerkEnabled } from '@/lib/clerk';
+import ChiefErrorBoundary from '@/components/chief/ChiefErrorBoundary';
 import {
   chiefPermitCadence,
   filterDriverCompliance,
@@ -47,7 +48,8 @@ export default async function ChiefCompliancePage({ searchParams }: { searchPara
   const showPermits = scope === 'all' || scope === 'permits';
 
   return (
-    <main className="chief-shell">
+    <ChiefErrorBoundary page="/chief/compliance" userId={userId}>
+      <main className="chief-shell">
       <section className="chief-section">
         <div className="chief-section-head">
           <div>
@@ -275,6 +277,7 @@ export default async function ChiefCompliancePage({ searchParams }: { searchPara
           ) : null}
         </div>
       </section>
-    </main>
+      </main>
+    </ChiefErrorBoundary>
   );
 }

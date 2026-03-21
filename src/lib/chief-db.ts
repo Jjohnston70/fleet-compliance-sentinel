@@ -31,6 +31,71 @@ export async function ensureChiefTables() {
   `;
 }
 
+export async function ensureCronLogTable() {
+  const sql = getSQL();
+  await sql`
+    CREATE TABLE IF NOT EXISTS cron_log (
+      id SERIAL PRIMARY KEY,
+      job_name TEXT NOT NULL,
+      org_id TEXT,
+      status TEXT NOT NULL,
+      message TEXT,
+      records_processed INTEGER DEFAULT 0,
+      executed_at TIMESTAMPTZ DEFAULT now()
+    )
+  `;
+  await sql`
+    CREATE INDEX IF NOT EXISTS idx_cron_log_job_executed_at
+    ON cron_log (job_name, executed_at DESC)
+  `;
+}
+
+export async function insertCronLogEntry(input: {
+  jobName: string;
+  orgId?: string | null;
+  status: string;
+  message?: string | null;
+  recordsProcessed?: number;
+}) {
+  const sql = getSQL();
+  await sql`
+    INSERT INTO cron_log (job_name, org_id, status, message, records_processed)
+    VALUES (
+      ${input.jobName},
+      ${input.orgId ?? null},
+      ${input.status},
+      ${input.message ?? null},
+      ${input.recordsProcessed ?? 0}
+    )
+  `;
+}
+
+export async function getLastCronLog(jobName: string): Promise<{
+  executedAt: string;
+  status: string;
+  message: string | null;
+  recordsProcessed: number;
+} | null> {
+  const sql = getSQL();
+  const rows = await sql`
+    SELECT executed_at, status, message, records_processed
+    FROM cron_log
+    WHERE job_name = ${jobName}
+    ORDER BY executed_at DESC
+    LIMIT 1
+  `;
+
+  const row = rows[0];
+  if (!row) return null;
+
+  return {
+    executedAt: String(row.executed_at),
+    status: String(row.status),
+    message: row.message ? String(row.message) : null,
+    recordsProcessed: Number(row.records_processed ?? 0),
+  };
+}
+
 /**
  * Insert approved rows for a given collection.
  * Returns the number of rows inserted.

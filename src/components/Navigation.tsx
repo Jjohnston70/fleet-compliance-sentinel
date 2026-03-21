@@ -1,7 +1,7 @@
 // components/Navigation.tsx
 // Stripped-down navigation for Pipeline Penny product site
 // Removes: Dropouts, Learning Modules, Community, Discussions, Blog
-// Keeps: Home, Resources (Clerk-protected), Penny (Clerk-protected), Sign In/Up
+// Keeps: Home, Chief (Clerk-protected), Penny (Clerk-protected), Sign In/Up
 
 'use client';
 
@@ -74,9 +74,6 @@ export default function Navigation({ clerkEnabled = true }: NavigationProps) {
           </li>
           <li>
             <Link href="/penny">Penny</Link>
-          </li>
-          <li>
-            <Link href="/resources">Resources</Link>
           </li>
           <li>
             <UserButton afterSignOutUrl="/" />
