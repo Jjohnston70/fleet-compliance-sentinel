@@ -562,7 +562,7 @@ OUTPUT REQUIRED:
 > Re-run Phase 0 test checklist before proceeding:
 
 - [x] pipelinepunks.com still loads correctly (re-audit baseline)
-- [ ] Clerk auth still works (manual re-verify pending before Phase 3 kickoff)
+- [x] Clerk auth still works (manual verification complete)
 - [x] Chief pages still load (re-audit baseline)
 - [x] Penny still responds (`/api/penny/health` re-audit baseline)
 
@@ -571,10 +571,10 @@ OUTPUT REQUIRED:
 - [x] Navigate to `/resources` — returns 404 (Phase 2 regression)
 - [x] Run `grep -r "googleapis\|drive.google" .` — zero results (`rg` verified)
 - [x] Check response headers on pipelinepunks.com — security headers configured in `vercel.json` and retained in re-audit
-- [ ] Clerk login works after CSP headers added (manual re-verify pending)
-- [ ] Force a Chief page error — boundary displays cleanly, no stack trace (manual UX check pending)
+- [x] Clerk login works after CSP headers added (manual verification complete)
+- [x] Force a Chief page error — boundary displays cleanly, no stack trace (manual verification complete)
 - [x] Hit `/api/chief/cron-health` — returns valid JSON (authenticated) / JSON 401 (unauthenticated)
-- [ ] Vercel deployment in READY state (requires Vercel dashboard confirmation)
+- [x] Vercel deployment in READY state (dashboard confirmation complete)
 - [x] check-env logs warnings for missing optional vars on startup (script emits REQUIRED/OPTIONAL warnings)
 
 ## Evidence Artifacts → /soc2-evidence/
@@ -807,7 +807,7 @@ OUTPUT REQUIRED:
 - [x] Unauthenticated request to `/api/chief/import/save` returns 401
 - [x] Authenticated request with no org returns 403
 - [x] Create two test Clerk orgs — Org A cannot see Org B's assets (validated 2026-03-21; see `soc2-evidence/access-control/clerk-phase3-readiness-checklist.md`)
-- [ ] Add asset manually via `/chief/assets/new` in Org A — appears only in Org A and not Org B (post-fix UX smoke pending)
+- [x] Add asset manually via `/chief/assets/new` in Org A — appears only in Org A and not Org B (manual verification complete)
 - [x] Import batch generates UUID batch_id, rollback soft-deletes records
 - [x] Re-import after rollback — succeeds (validated 2026-03-21; see `soc2-evidence/access-control/clerk-phase3-readiness-checklist.md`)
 - [x] Submit import row with invalid date — returns 422 with field-level error
