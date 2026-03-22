@@ -1,0 +1,9 @@
+{
+  "capturedAt": "2026-03-21",
+  "orgId": "org_3BGrjrWvxlgivTNUHXkgaGVTYak",
+  "endpoint": "/api/chief/assets",
+  "assets": [
+    { "assetId": "43585" },
+    { "assetId": "ORGA-ISO-001" }
+  ]
+}

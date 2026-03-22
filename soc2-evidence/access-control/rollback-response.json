@@ -1,0 +1,7 @@
+{
+  "capturedAt": "2026-03-21",
+  "endpoint": "/api/chief/import/rollback",
+  "orgId": "org_3BGrjrWvxlgivTNUHXkgaGVTYak",
+  "batchId": "0a6d224d-2e29-4278-b785-f3103ce809d5",
+  "rolledBack": 2
+}

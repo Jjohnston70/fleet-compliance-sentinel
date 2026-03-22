@@ -806,9 +806,10 @@ OUTPUT REQUIRED:
 
 - [x] Unauthenticated request to `/api/chief/import/save` returns 401
 - [x] Authenticated request with no org returns 403
-- [ ] Create two test Clerk orgs — Org A cannot see Org B's assets (manual runbook: `soc2-evidence/access-control/clerk-phase3-readiness-checklist.md`)
+- [x] Create two test Clerk orgs — Org A cannot see Org B's assets (validated 2026-03-21; see `soc2-evidence/access-control/clerk-phase3-readiness-checklist.md`)
+- [ ] Add asset manually via `/chief/assets/new` in Org A — appears only in Org A and not Org B (post-fix UX smoke pending)
 - [x] Import batch generates UUID batch_id, rollback soft-deletes records
-- [ ] Re-import after rollback — succeeds (manual runbook: `soc2-evidence/access-control/clerk-phase3-readiness-checklist.md`)
+- [x] Re-import after rollback — succeeds (validated 2026-03-21; see `soc2-evidence/access-control/clerk-phase3-readiness-checklist.md`)
 - [x] Submit import row with invalid date — returns 422 with field-level error
 - [x] Delete uses `SET deleted_at = NOW()` — no hard deletes in chief_records
 

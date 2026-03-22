@@ -2,19 +2,30 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import {
-  addRecord,
-  updateRecord,
-  generateId,
-  type LocalAsset,
-} from '@/lib/chief-local-store';
-
 interface Props {
-  initial?: LocalAsset;
   returnHref?: string;
 }
 
-const BLANK: Omit<LocalAsset, 'id' | 'createdAt'> = {
+interface AssetFormValues {
+  status: string;
+  assetId: string;
+  name: string;
+  category: string;
+  location: string;
+  assignedTo: string;
+  complianceFocus: string;
+  nextServiceDue: string;
+  purchaseDate: string;
+  purchasePrice: string;
+  vin: string;
+  licensePlate: string;
+  year: string;
+  make: string;
+  model: string;
+  note: string;
+}
+
+const BLANK: AssetFormValues = {
   status: 'active',
   assetId: '',
   name: '',
@@ -40,9 +51,10 @@ const COMPLIANCE_FOCUS: Record<string, string> = {
   equipment: 'Service interval, maintenance history, assignment tracking',
 };
 
-export default function AssetForm({ initial, returnHref = '/chief/assets' }: Props) {
+export default function AssetForm({ returnHref = '/chief/assets' }: Props) {
   const router = useRouter();
-  const [form, setForm] = useState<Omit<LocalAsset, 'id' | 'createdAt'>>(initial ?? BLANK);
+  const [form, setForm] = useState<AssetFormValues>(BLANK);
+  const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
   const [error, setError] = useState('');
 
@@ -56,7 +68,7 @@ export default function AssetForm({ initial, returnHref = '/chief/assets' }: Pro
     });
   }
 
-  function handleSubmit(e: React.FormEvent) {
+  async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setError('');
     if (!form.name.trim()) {
@@ -64,19 +76,32 @@ export default function AssetForm({ initial, returnHref = '/chief/assets' }: Pro
       return;
     }
 
-    if (initial) {
-      updateRecord<LocalAsset>('chief:store:assets', initial.id, form);
-    } else {
-      const record: LocalAsset = {
-        id: generateId('ast'),
-        createdAt: new Date().toISOString(),
-        ...form,
-        assetId: form.assetId || generateId('AST'),
-      };
-      addRecord<LocalAsset>('chief:store:assets', record);
+    setSaving(true);
+    try {
+      const response = await fetch('/api/chief/assets', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(form),
+      });
+
+      const payload = await response.json().catch(() => ({}));
+      if (!response.ok) {
+        if (Array.isArray(payload.fieldErrors) && payload.fieldErrors.length > 0) {
+          setError(payload.fieldErrors.join(' | '));
+        } else {
+          setError(payload.error || 'Failed to save asset.');
+        }
+        return;
+      }
+
+      setSaved(true);
+      router.push(returnHref);
+      router.refresh();
+    } catch {
+      setError('Network error while saving asset.');
+    } finally {
+      setSaving(false);
     }
-    setSaved(true);
-    setTimeout(() => router.push(returnHref), 1200);
   }
 
   const f = (
@@ -157,8 +182,8 @@ export default function AssetForm({ initial, returnHref = '/chief/assets' }: Pro
       </fieldset>
 
       <div className="chief-action-row">
-        <button type="submit" className="btn-primary" disabled={saved}>
-          {initial ? 'Save Changes' : 'Add Asset'}
+        <button type="submit" className="btn-primary" disabled={saving || saved}>
+          {saving ? 'Saving…' : 'Add Asset'}
         </button>
         <button type="button" className="btn-secondary" onClick={() => router.push(returnHref)}>
           Cancel

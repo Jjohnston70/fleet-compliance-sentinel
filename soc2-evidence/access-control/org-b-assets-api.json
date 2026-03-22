@@ -1,0 +1,10 @@
+{
+  "capturedAt": "2026-03-21",
+  "orgId": "org_3BGrldUqFLLG6WdzJyvLlJAoD8C",
+  "endpoint": "/api/chief/assets",
+  "assets": [
+    { "assetId": "202f150test2" },
+    { "assetId": "8593" },
+    { "assetId": "ORGB-ISO-001" }
+  ]
+}

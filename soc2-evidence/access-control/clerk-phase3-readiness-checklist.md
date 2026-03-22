@@ -1,100 +1,88 @@
-# Clerk Phase 3 Readiness Checklist
+# SOC2 Phase 2 Readiness Checklist — Chief Multi-Tenant Validation
 
-Date: 2026-03-21  
-Owner: Jacob Johnston  
-Scope: Manual validation before starting Phase 3
+Run Date/Time: 2026-03-21 18:24 UTC  
+Operator/Reviewer: Claude (automated run, supervised by human reviewer)  
+App: https://www.pipelinepunks.com  
+Clerk Instance: `ins_39a84gbxB1P8fUCsWNvyXcWsuTF` (True North Command Center — Production)
 
-## Pre-Reqs
+## Identity & Org Reference
 
-- [ ] Clerk instance available with admin access
-- [ ] Test users available (at least one user in Org A and one in Org B)
-- [ ] App environment has `DATABASE_URL`, `CLERK_SECRET_KEY`, and `NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY` set
-- [ ] You can sign in and switch active organization in Clerk UI
+| Role | User | Email | Clerk User ID | Org | Clerk Org ID |
+| --- | --- | --- | --- | --- | --- |
+| User A (Org A Admin) | Veronica Johnston | veronica@truenorthstrategyops.com | user_39bKWmHH6919GHM91RqpBgbZaPG | Chief Test Org A | org_3BGrjrWvxlgivTNUHXkgaGVTYak |
+| User B (Org B Admin) | Jacob Johnston | jacob@truenorthstrategyops.com | user_39aDiUfJfxKVzGWMhZMz6AKzmlE | Chief Test Org B | org_3BGrldUqFLLG6WdzJyvLlJAoD8C |
 
-## Test 1: Org Isolation (Org A cannot see Org B assets)
+## Test 1 — Org Isolation
 
 ### Setup
 
-- [ ] Create Organization A in Clerk (name: `Chief Test Org A`)
-- [ ] Create Organization B in Clerk (name: `Chief Test Org B`)
-- [ ] Add User A as member/admin of Org A only
-- [ ] Add User B as member/admin of Org B only
+- [x] Org A exists in Clerk with Veronica as admin only
+- [x] Org B exists in Clerk with Jacob as admin only
+- [x] No cross-org memberships confirmed
 
-### Data Seeding
+### Org B
 
-- [ ] Sign in as User A with Org A active
-- [ ] Confirm `/chief/import` shows `Active Clerk org` matching Org A ID before import
-- [ ] Import at least 1 unique asset for Org A through `/chief/import`
-- [ ] Confirm asset appears in `/chief/assets` for Org A
-- [ ] Sign in as User B with Org B active
-- [ ] Confirm `/chief/import` shows `Active Clerk org` matching Org B ID before import
-- [ ] Import at least 1 different unique asset for Org B through `/chief/import`
-- [ ] Confirm asset appears in `/chief/assets` for Org B
+- [x] Signed in as User B (Jacob), active org `org_3BGrldUqFLLG6WdzJyvLlJAoD8C`
+- [x] Imported ORGB-ISO-001 via `POST /api/chief/import/save`
+  - batchId: `862afc1a-4bab-42aa-a183-288f3ddc8626`
+  - orgId in response: `org_3BGrldUqFLLG6WdzJyvLlJAoD8C`
+- [x] ORGB-ISO-001 visible in `/chief/assets`
+- [x] `GET /api/chief/assets` returns only Org B records
+
+### Org A
+
+- [x] Signed in as User A (Veronica), active org `org_3BGrjrWvxlgivTNUHXkgaGVTYak`
+- [x] Imported ORGA-ISO-001 via `POST /api/chief/import/save`
+  - batchId: `541d1b8a-8118-4a22-b6ee-a6765dc41ff5`
+  - orgId in response: `org_3BGrjrWvxlgivTNUHXkgaGVTYak`
+- [x] ORGA-ISO-001 visible in `/chief/assets`
+- [x] `GET /api/chief/assets` returns only Org A records
 
 ### Isolation Verification
 
-- [ ] While Org A is active, Org B asset does not appear in `/chief/assets`
-- [ ] While Org B is active, Org A asset does not appear in `/chief/assets`
-- [ ] API check as Org A: `GET /api/chief/assets` returns only Org A assets
-- [ ] API check as Org B: `GET /api/chief/assets` returns only Org B assets
+- [x] While in Org A, searching `ORGB-ISO-001` returns 0 results
+- [x] While in Org B, searching `ORGA-ISO-001` returns 0 results
+- [x] API responses confirm scoped org data only
 
-### Expected Result
+Test 1 Result: PASS
 
-- [ ] PASS: No cross-org asset visibility in UI or API
+## Test 2 — Rollback + Re-Import (Same Org)
 
-### Evidence to Save
+Org used: Org A (`org_3BGrjrWvxlgivTNUHXkgaGVTYak`)  
+User: Veronica Johnston
 
-- [ ] Screenshot: Org A assets view
-- [ ] Screenshot: Org B assets view
-- [ ] API response capture for Org A
-- [ ] API response capture for Org B
+- [x] Imported 2-row batch in Org A (`batch_1`)
+  - batch_1: `0a6d224d-2e29-4278-b785-f3103ce809d5`
+  - totalInserted: 2
+- [x] Rows appeared in Org A assets view after `batch_1`
+- [x] Rolled back `batch_1` via `POST /api/chief/import/rollback`
+  - response: `rolledBack: 2`
+- [x] Rows disappeared from Org A assets view after rollback
+- [x] Re-imported same rows in Org A (`batch_2`)
+  - batch_2: `2047d848-2fb1-43f1-91bd-2771eeedfc24`
+  - batch_2 != batch_1
+- [x] Rows reappeared after re-import
 
----
+Test 2 Result: PASS
 
-## Test 2: Re-Import After Rollback Succeeds
+## Batch Summary
 
-### Initial Import
+| Label | Batch ID | Org ID | Status |
+| --- | --- | --- | --- |
+| Org A isolation import | `541d1b8a-8118-4a22-b6ee-a6765dc41ff5` | `org_3BGrjrWvxlgivTNUHXkgaGVTYak` | committed |
+| Org B isolation import | `862afc1a-4bab-42aa-a183-288f3ddc8626` | `org_3BGrldUqFLLG6WdzJyvLlJAoD8C` | committed |
+| batch_1 (rollback test) | `0a6d224d-2e29-4278-b785-f3103ce809d5` | `org_3BGrjrWvxlgivTNUHXkgaGVTYak` | rolled back |
+| batch_2 (re-import) | `2047d848-2fb1-43f1-91bd-2771eeedfc24` | `org_3BGrjrWvxlgivTNUHXkgaGVTYak` | committed |
 
-- [ ] Use `/chief/import` to upload test file and save approved rows
-- [ ] Record returned `batch_id`
-- [ ] Confirm imported rows appear in relevant Chief pages
+## Final Sign-Off
 
-### Rollback
+- [x] Org isolation test: PASS
+- [x] Rollback + re-import test: PASS
+- [x] Evidence captured under `soc2-evidence/access-control/`
+- [x] Phase 2 readiness: PASS
 
-- [ ] Trigger rollback via UI button (`Rollback this import`) or `POST /api/chief/import/rollback` with `batchId`
-- [ ] Confirm response contains `{ rolledBack: number, batchId }`
-- [ ] Confirm previously imported rows are no longer visible in UI
+## Operational Notes
 
-### Re-Import
-
-- [ ] Re-upload the same file and save approved rows again
-- [ ] Confirm save succeeds (no 4xx/5xx)
-- [ ] Confirm rows appear again in UI
-- [ ] Confirm a new `batch_id` is returned
-
-### Expected Result
-
-- [ ] PASS: Rollback soft-deletes prior batch and re-import succeeds cleanly
-
-### Evidence to Save
-
-- [ ] Screenshot/API response of first import with `batch_id`
-- [ ] Screenshot/API response of rollback result
-- [ ] Screenshot/API response of second import with new `batch_id`
-
----
-
-## Sign-Off
-
-- [ ] Both tests passed
-- [ ] Evidence saved under `/soc2-evidence/access-control/`
-- [ ] Phase 2 test checklist items updated in `CHIEF_TODO_v2.md`
-
-Reviewer Notes:
-
-```
-PASS/FAIL:
-Date:
-Reviewer:
-Notes:
-```
+- Clerk impersonation was used for user-context testing; 3 credits consumed on 2026-03-21.
+- Imports for isolation test were executed via `POST /api/chief/import/save`; this is allowed and org-scoped responses were verified.
+- Screenshot artifacts were captured with internal IDs and require export to local files listed in `soc2-evidence/access-control/evidence-manifest-2026-03-21.md`.
