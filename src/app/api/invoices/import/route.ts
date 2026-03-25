@@ -1,11 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { ensureInvoiceTables, importInvoice } from '@/lib/invoice-db';
 import { chiefAuthErrorResponse, requireChiefOrgWithRole } from '@/lib/chief-auth';
+import { auditLog } from '@/lib/audit-logger';
 
 export async function POST(req: NextRequest) {
+  let userId: string;
   let orgId: string;
   try {
-    ({ orgId } = await requireChiefOrgWithRole(req, 'admin'));
+    ({ userId, orgId } = await requireChiefOrgWithRole(req, 'admin'));
   } catch (error: unknown) {
     const authResponse = chiefAuthErrorResponse(error);
     if (authResponse) return authResponse;
@@ -23,6 +25,17 @@ export async function POST(req: NextRequest) {
       ...data,
       org_id: orgId,
     });
+    auditLog({
+      action: 'data.write',
+      userId,
+      orgId,
+      resourceType: 'invoices',
+      resourceId: String(invoiceId),
+      metadata: {
+        collection: 'invoices',
+        lineItemCount: data.line_items?.length ?? 0,
+      },
+    });
 
     return NextResponse.json({
       success: true,
@@ -32,6 +45,16 @@ export async function POST(req: NextRequest) {
     });
   } catch (error: unknown) {
     console.error('Invoice import error:', error);
+    auditLog({
+      action: 'data.write',
+      userId,
+      orgId,
+      resourceType: 'invoices',
+      severity: 'error',
+      metadata: {
+        failed: true,
+      },
+    });
     return NextResponse.json({ success: false, error: 'Import failed' }, { status: 500 });
   }
 }

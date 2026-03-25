@@ -1,6 +1,7 @@
 import { previewChiefAlerts } from '@/lib/chief-alert-engine';
 import { loadChiefData } from '@/lib/chief-data';
 import { chiefAuthErrorResponse, requireChiefOrg } from '@/lib/chief-auth';
+import { auditLog } from '@/lib/audit-logger';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -8,9 +9,10 @@ export const dynamic = 'force-dynamic';
 // Returns a preview of what the alert sweep would send without actually sending anything.
 // Protected by Clerk auth.
 export async function GET(request: Request) {
+  let userId: string;
   let orgId: string;
   try {
-    ({ orgId } = await requireChiefOrg(request));
+    ({ userId, orgId } = await requireChiefOrg(request));
   } catch (error: unknown) {
     const authResponse = chiefAuthErrorResponse(error);
     if (authResponse) return authResponse;
@@ -19,6 +21,17 @@ export async function GET(request: Request) {
 
   const data = await loadChiefData(orgId);
   const preview = previewChiefAlerts(data.suspense);
+  auditLog({
+    action: 'data.read',
+    userId,
+    orgId,
+    resourceType: 'chief.alerts.preview',
+    metadata: {
+      collection: 'suspense_items',
+      recordCount: data.suspense.length,
+      queuedCount: preview.alertItems.length,
+    },
+  });
   return Response.json({
     ...preview,
     dryRun: true,

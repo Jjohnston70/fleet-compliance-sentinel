@@ -11,6 +11,9 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
+    "docs:vendors": "node scripts/download-vendor-docs.mjs",
+    "docs:vendors:prepare": "node scripts/prepare-vendor-docs-package.mjs",
+    "docs:vendors:package": "npm run docs:vendors && npm run docs:vendors:prepare",
     "sync:knowledge": "node scripts/sync-local-knowledge.mjs",
     "build:cfr-index": "tsx scripts/build-cfr-index.mjs",
     "eval:penny": "node scripts/run-penny-evals.mjs"
@@ -18,6 +21,7 @@
   "dependencies": {
     "@clerk/nextjs": "^6.38.2",
     "@neondatabase/serverless": "^1.0.2",
+    "@sentry/nextjs": "^10.45.0",
     "@tnds/ingest-core": "*",
     "@tnds/memory-core": "*",
     "@tnds/retrieval-core": "*",

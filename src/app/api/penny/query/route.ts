@@ -7,6 +7,9 @@ import { NextRequest, NextResponse } from 'next/server';
 import { isClerkEnabled } from '@/lib/clerk';
 import { canAccessPenny, canBypassPennyRoleByEmail, resolvePennyRole } from '@/lib/penny-access';
 import { buildPennyContext } from '@/lib/penny-ingest';
+import { buildOrgContext } from '@/lib/penny-context';
+import { auditLog } from '@/lib/audit-logger';
+import { setSentryRequestContext } from '@/lib/sentry-context';
 
 const PENNY_API_URL = process.env.PENNY_API_URL || 'http://localhost:8000';
 const PENNY_API_KEY = process.env.PENNY_API_KEY || '';
@@ -115,18 +118,34 @@ function encodeGeneralFallbackUsed(userId: string, usedCount: number): string {
   return `${userId}|${Math.max(0, Math.min(usedCount, GENERAL_FALLBACK_SESSION_LIMIT))}`;
 }
 
+function buildOrgContextPreview(orgContext: string): string {
+  if (!orgContext) return '';
+  const preview = orgContext
+    .split('\n')
+    .filter((line) => line.startsWith('- Driver ID:'))
+    .slice(0, 2)
+    .join(' || ');
+  return preview.slice(0, 220);
+}
+
 export async function POST(request: NextRequest) {
+  const startedAt = Date.now();
   const hasClerk = isClerkEnabled();
   if (!hasClerk) {
     return NextResponse.json({ error: 'Authentication is not configured' }, { status: 503 });
   }
 
   const { userId, sessionClaims } = await auth();
+  const orgId = sessionClaims?.org_id as string | undefined;
   if (!userId) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
+  if (!orgId) {
+    return NextResponse.json({ error: 'Organization context required' }, { status: 403 });
+  }
 
   const user = await currentUser();
+  setSentryRequestContext(userId, orgId);
   const role = resolvePennyRole(sessionClaims, user);
   const hasEmailBypass = canBypassPennyRoleByEmail(user);
   const effectiveRole = canAccessPenny(role) ? role : hasEmailBypass ? 'admin' : role;
@@ -134,6 +153,9 @@ export async function POST(request: NextRequest) {
   if (!canAccessPenny(role) && !hasEmailBypass) {
     return NextResponse.json({ error: 'Insufficient permissions' }, { status: 403 });
   }
+
+  let orgContext = '';
+  let orgContextPreview = '';
 
   try {
     const body = await request.json();
@@ -144,6 +166,8 @@ export async function POST(request: NextRequest) {
     }
 
     const effectiveQuery = enrichComplianceQuery(query);
+    orgContext = await buildOrgContext(orgId);
+    orgContextPreview = buildOrgContextPreview(orgContext);
 
     const fallbackUsedCount = parseGeneralFallbackUsed(
       request.cookies.get(GENERAL_FALLBACK_COOKIE_NAME)?.value, userId
@@ -158,7 +182,6 @@ export async function POST(request: NextRequest) {
     let groundedContext: string | null = null;
     let cfrSources: string[] = [];
     try {
-      const orgId = sessionClaims?.org_id as string | undefined;
       const { groundedPrompt, sources } = await buildPennyContext({
         query: effectiveQuery,
         orgId,
@@ -183,6 +206,22 @@ export async function POST(request: NextRequest) {
         const documents = Array.isArray(catalog?.documents) ? catalog.documents : [];
         const total = typeof catalog?.knowledge_docs === 'number' ? catalog.knowledge_docs : documents.length;
         if (documents.length > 0) {
+          const responseMs = Date.now() - startedAt;
+          auditLog({
+            action: 'penny.query',
+            userId,
+            orgId,
+            resourceType: 'penny.query',
+            metadata: {
+              provider: 'catalog',
+              kbHit: true,
+              fallbackUsed: false,
+              responseMs,
+              orgContextIncluded: orgContext.length > 0,
+              orgContextChars: orgContext.length,
+              orgContextPreview,
+            },
+          });
           const categoryLine = categories.slice(0, 10).map((cat: any) => `${cat.name} (${cat.count})`).join(', ');
           const docList = documents.slice(0, 20).map((doc: any, idx: number) => `${idx + 1}. ${doc.title}`).join('\n');
           return NextResponse.json({
@@ -209,6 +248,7 @@ export async function POST(request: NextRequest) {
         'Content-Type': 'application/json',
         'X-User-Id': userId,
         'X-User-Role': effectiveRole,
+        'X-Org-Id': orgId,
         ...(PENNY_API_KEY ? { 'X-Penny-Api-Key': PENNY_API_KEY } : {}),
       },
       body: JSON.stringify({
@@ -219,6 +259,7 @@ export async function POST(request: NextRequest) {
           ? { llm_provider: llmProvider.trim().toLowerCase().slice(0, 32) } : {}),
         ...(typeof llmModel === 'string' && llmModel.trim().length > 0
           ? { llm_model: llmModel.trim().slice(0, 120) } : {}),
+        org_context: orgContext,
         allow_general_fallback: allowGeneralFallback,
       }),
     });
@@ -226,6 +267,23 @@ export async function POST(request: NextRequest) {
     if (!res.ok) {
       const errorText = await res.text();
       console.error(`Penny backend error: ${res.status} - ${errorText}`);
+      auditLog({
+        action: 'penny.query',
+        userId,
+        orgId,
+        resourceType: 'penny.query',
+        severity: 'error',
+        metadata: {
+          provider: typeof llmProvider === 'string' ? llmProvider.trim().toLowerCase() || 'default' : 'default',
+          kbHit: false,
+          fallbackUsed: false,
+          responseMs: Date.now() - startedAt,
+          status: res.status,
+          orgContextIncluded: orgContext.length > 0,
+          orgContextChars: orgContext.length,
+          orgContextPreview,
+        },
+      });
       return NextResponse.json(
         { error: 'Backend error', answer: 'Something went wrong on the backend. Try again in a moment.' },
         { status: 502 }
@@ -248,6 +306,23 @@ export async function POST(request: NextRequest) {
       data.answer.toLowerCase().includes("i don't have that information in the current knowledge base.")
         ? `\n\nGeneral fallback limit reached for this session (${GENERAL_FALLBACK_SESSION_LIMIT}/${GENERAL_FALLBACK_SESSION_LIMIT}).`
         : '';
+
+    const responseMs = Date.now() - startedAt;
+    auditLog({
+      action: 'penny.query',
+      userId,
+      orgId,
+      resourceType: 'penny.query',
+      metadata: {
+        provider: typeof llmProvider === 'string' ? llmProvider.trim().toLowerCase() || 'default' : 'default',
+        kbHit: sources.length > 0,
+        fallbackUsed: generalFallbackUsed,
+        responseMs,
+        orgContextIncluded: orgContext.length > 0,
+        orgContextChars: orgContext.length,
+        orgContextPreview,
+      },
+    });
 
     const response = NextResponse.json({
       answer:
@@ -274,6 +349,22 @@ export async function POST(request: NextRequest) {
     return response;
   } catch (error) {
     console.error('Penny proxy error:', error);
+    auditLog({
+      action: 'penny.query',
+      userId,
+      orgId,
+      resourceType: 'penny.query',
+      severity: 'error',
+      metadata: {
+        provider: 'unknown',
+        kbHit: false,
+        fallbackUsed: false,
+        responseMs: Date.now() - startedAt,
+        orgContextIncluded: orgContext.length > 0,
+        orgContextChars: orgContext.length,
+        orgContextPreview,
+      },
+    });
     return NextResponse.json(
       { error: 'Failed to reach backend', answer: 'Cannot connect to Pipeline Penny backend.' },
       { status: 503 }

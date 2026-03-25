@@ -1318,6 +1318,33 @@ a.penny-source-pill:hover {
   margin-top: 1.25rem;
 }
 
+.chief-trial-banner {
+  max-width: 1100px;
+  margin: 1rem auto 0;
+  padding: 0.8rem 1rem;
+  border-radius: 10px;
+  border: 1px solid #bfdff1;
+  background: #eaf6fd;
+  color: #0f2439;
+  font-size: 0.9rem;
+}
+
+.chief-trial-banner a {
+  color: var(--navy);
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.chief-trial-banner a:hover {
+  text-decoration: underline;
+}
+
+.chief-expired-card {
+  max-width: 680px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
 .chief-stats {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));

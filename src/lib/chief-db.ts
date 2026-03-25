@@ -54,6 +54,95 @@ export async function ensureChiefTables() {
   `;
 }
 
+export async function ensureOrgScopingTables() {
+  const sql = getSQL();
+
+  await sql`
+    CREATE TABLE IF NOT EXISTS organizations (
+      id TEXT PRIMARY KEY,
+      name TEXT NOT NULL,
+      plan TEXT NOT NULL DEFAULT 'trial',
+      trial_started_at TIMESTAMPTZ DEFAULT NOW(),
+      trial_ends_at TIMESTAMPTZ DEFAULT (NOW() + INTERVAL '30 days'),
+      onboarding_complete BOOLEAN DEFAULT FALSE,
+      metadata JSONB NOT NULL DEFAULT '{}'::jsonb,
+      created_at TIMESTAMPTZ DEFAULT NOW(),
+      updated_at TIMESTAMPTZ DEFAULT NOW()
+    )
+  `;
+  await sql`
+    ALTER TABLE organizations
+    ADD COLUMN IF NOT EXISTS metadata JSONB NOT NULL DEFAULT '{}'::jsonb
+  `;
+
+  await sql`
+    CREATE TABLE IF NOT EXISTS subscriptions (
+      id SERIAL PRIMARY KEY,
+      org_id TEXT NOT NULL REFERENCES organizations(id),
+      stripe_customer_id TEXT,
+      plan TEXT NOT NULL,
+      status TEXT NOT NULL DEFAULT 'trialing',
+      current_period_ends_at TIMESTAMPTZ,
+      created_at TIMESTAMPTZ DEFAULT NOW()
+    )
+  `;
+  await sql`
+    CREATE INDEX IF NOT EXISTS idx_subscriptions_org_id_created_at
+    ON subscriptions (org_id, created_at DESC)
+  `;
+
+  await sql`
+    CREATE TABLE IF NOT EXISTS org_audit_events (
+      id BIGSERIAL PRIMARY KEY,
+      org_id TEXT NOT NULL REFERENCES organizations(id),
+      event_type TEXT NOT NULL,
+      actor_user_id TEXT,
+      actor_type TEXT NOT NULL DEFAULT 'system',
+      metadata JSONB NOT NULL DEFAULT '{}'::jsonb,
+      occurred_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+    )
+  `;
+  await sql`
+    CREATE INDEX IF NOT EXISTS idx_org_audit_events_org_time
+    ON org_audit_events (org_id, occurred_at DESC)
+  `;
+  await sql`
+    CREATE INDEX IF NOT EXISTS idx_org_audit_events_type_time
+    ON org_audit_events (event_type, occurred_at DESC)
+  `;
+
+  await sql`
+    CREATE TABLE IF NOT EXISTS organization_contacts (
+      org_id TEXT PRIMARY KEY REFERENCES organizations(id) ON DELETE CASCADE,
+      primary_contact TEXT NOT NULL,
+      created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+      updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+    )
+  `;
+
+  await sql`
+    CREATE TABLE IF NOT EXISTS stripe_webhook_events (
+      id BIGSERIAL PRIMARY KEY,
+      event_id TEXT NOT NULL UNIQUE,
+      event_type TEXT NOT NULL,
+      org_id TEXT,
+      payload JSONB NOT NULL,
+      received_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+      processed_at TIMESTAMPTZ,
+      processing_status TEXT NOT NULL DEFAULT 'received',
+      message TEXT
+    )
+  `;
+  await sql`
+    CREATE INDEX IF NOT EXISTS idx_stripe_webhook_events_org_time
+    ON stripe_webhook_events (org_id, received_at DESC)
+  `;
+  await sql`
+    CREATE INDEX IF NOT EXISTS idx_stripe_webhook_events_type_time
+    ON stripe_webhook_events (event_type, received_at DESC)
+  `;
+}
+
 export async function ensureCronLogTable() {
   const sql = getSQL();
   await sql`

@@ -1,6 +1,7 @@
 import { ensureChiefTables, restoreChiefRecord } from '@/lib/chief-db';
 import { IMPORT_SCHEMAS, type CollectionKey } from '@/lib/chief-import-schemas';
 import { chiefAuthErrorResponse, requireChiefOrgWithRole } from '@/lib/chief-auth';
+import { auditLog } from '@/lib/audit-logger';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -13,9 +14,10 @@ interface RestoreRouteContext {
 }
 
 export async function POST(request: Request, context: RestoreRouteContext) {
+  let userId: string;
   let orgId: string;
   try {
-    ({ orgId } = await requireChiefOrgWithRole(request, 'admin'));
+    ({ userId, orgId } = await requireChiefOrgWithRole(request, 'admin'));
   } catch (error: unknown) {
     const authResponse = chiefAuthErrorResponse(error);
     if (authResponse) return authResponse;
@@ -39,6 +41,17 @@ export async function POST(request: Request, context: RestoreRouteContext) {
       return Response.json({ error: 'Record not found' }, { status: 404 });
     }
 
+    auditLog({
+      action: 'data.restore',
+      userId,
+      orgId,
+      resourceType: 'chief.collection',
+      resourceId: String(numericId),
+      metadata: {
+        collection,
+        restored: true,
+      },
+    });
     return Response.json({
       restored: true,
       collection,
@@ -46,6 +59,18 @@ export async function POST(request: Request, context: RestoreRouteContext) {
     });
   } catch (error: unknown) {
     console.error('[chief-restore] failed:', error);
+    auditLog({
+      action: 'data.restore',
+      userId,
+      orgId,
+      resourceType: 'chief.collection',
+      severity: 'error',
+      metadata: {
+        collection,
+        recordId: numericId,
+        failed: true,
+      },
+    });
     return Response.json({ error: 'Restore failed' }, { status: 500 });
   }
 }

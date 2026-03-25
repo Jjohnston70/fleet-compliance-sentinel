@@ -7,6 +7,7 @@ import {
   type CollectionKey,
 } from '@/lib/chief-import-schemas';
 import { chiefAuthErrorResponse, requireChiefOrg } from '@/lib/chief-auth';
+import { auditLog } from '@/lib/audit-logger';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -83,8 +84,10 @@ function parseSheet(
 }
 
 export async function POST(request: Request) {
+  let userId: string;
+  let orgId: string;
   try {
-    await requireChiefOrg(request);
+    ({ userId, orgId } = await requireChiefOrg(request));
   } catch (error: unknown) {
     const authResponse = chiefAuthErrorResponse(error);
     if (authResponse) return authResponse;
@@ -144,6 +147,20 @@ export async function POST(request: Request) {
 
     try {
       const result = parseSheet(workbook, targetSheet, collection as CollectionKey);
+      auditLog({
+        action: 'import.upload',
+        userId,
+        orgId,
+        resourceType: 'chief.import',
+        metadata: {
+          mode: 'single-sheet',
+          collection,
+          fileName: fileBlob.name || 'upload',
+          rowCount: result.totalRows,
+          passCount: result.passCount,
+          warnCount: result.warnCount,
+        },
+      });
       return Response.json(result);
     } catch (err: unknown) {
       console.error('[chief-import-parse] sheet parse failed:', err);
@@ -182,6 +199,21 @@ export async function POST(request: Request) {
   const totalRows = sheets.reduce((sum, s) => sum + s.totalRows, 0);
   const totalPass = sheets.reduce((sum, s) => sum + s.passCount, 0);
   const totalWarn = sheets.reduce((sum, s) => sum + s.warnCount, 0);
+
+  auditLog({
+    action: 'import.upload',
+    userId,
+    orgId,
+    resourceType: 'chief.import',
+    metadata: {
+      mode: 'multi-sheet',
+      fileName: fileBlob.name || 'upload',
+      sheetsParsed: sheets.length,
+      rowCount: totalRows,
+      passCount: totalPass,
+      warnCount: totalWarn,
+    },
+  });
 
   return Response.json({
     mode: 'multi-sheet',

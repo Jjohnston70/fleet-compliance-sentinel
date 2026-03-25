@@ -1,6 +1,7 @@
 import * as XLSX from 'xlsx';
 import { chiefUploadTemplateManifest } from '@/lib/chief-upload-template.generated';
 import { chiefAuthErrorResponse, requireChiefOrg } from '@/lib/chief-auth';
+import { auditLog } from '@/lib/audit-logger';
 
 export const runtime = 'nodejs';
 
@@ -28,8 +29,10 @@ function createTemplateSheet(sheet: (typeof chiefUploadTemplateManifest)[number]
 }
 
 export async function GET(request: Request) {
+  let userId: string;
+  let orgId: string;
   try {
-    await requireChiefOrg(request);
+    ({ userId, orgId } = await requireChiefOrg(request));
   } catch (error: unknown) {
     const authResponse = chiefAuthErrorResponse(error);
     if (authResponse) return authResponse;
@@ -44,6 +47,16 @@ export async function GET(request: Request) {
   }
 
   const buffer = XLSX.write(workbook, { bookType: 'xlsx', type: 'buffer' });
+  auditLog({
+    action: 'data.read',
+    userId,
+    orgId,
+    resourceType: 'chief.bulk-template',
+    metadata: {
+      collection: 'chief_template',
+      recordCount: chiefUploadTemplateManifest.length,
+    },
+  });
 
   return new Response(buffer, {
     status: 200,

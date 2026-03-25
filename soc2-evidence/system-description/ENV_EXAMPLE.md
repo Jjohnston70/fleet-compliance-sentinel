@@ -26,9 +26,17 @@ Canonical environment-variable reference for Phase 0 audit.
 | `CHIEF_CRON_SECRET` | REQUIRED | `POST /api/chief/alerts/run` auth | `long-random-secret` |
 | `CHIEF_ORG_NAME` | OPTIONAL | Alert email display text | `Example Fleet Co` |
 | `FMCSA_API_KEY` | OPTIONAL | FMCSA lookup page/endpoint | `your-fmcsa-key` |
+| `SENTRY_DSN` | REQUIRED | Sentry server + edge SDK init (`sentry.server.config.ts`) | `https://<key>@o<org>.ingest.us.sentry.io/<project>` |
+| `NEXT_PUBLIC_SENTRY_DSN` | REQUIRED | Sentry browser SDK init (`sentry.client.config.ts`) | same DSN as `SENTRY_DSN` |
+| `SENTRY_ORG` | REQUIRED | Next.js Sentry plugin release upload | `true-north-data-strategies-llc` |
+| `SENTRY_PROJECT` | REQUIRED | Next.js Sentry plugin release upload | `pipeline-punks-nextjs` |
+| `SENTRY_AUTH_TOKEN` | REQUIRED | Sentry release/sourcemap upload auth | `sntrys_xxxxx` (server-only secret) |
+| `DATADOG_API_KEY` | OPTIONAL | Datadog log drain API key (configured in Vercel Log Drain URL) | `dd-api-key-xxxxx` |
+| `DATADOG_SITE` | OPTIONAL | Datadog region site | `us5.datadoghq.com` |
 | `ADMIN_EMAIL` | OPTIONAL | Penny role bypass allowlist seed | `admin@yourorg.com` |
 | `PENNY_ALLOWED_EMAILS` | OPTIONAL | Additional comma-delimited allowlist | `ops@yourorg.com,cto@yourorg.com` |
 | `GOOGLE_SHEET_WEBHOOK_URL` | OPTIONAL | legacy webhook integration docs/config | `https://script.google.com/macros/s/.../exec` |
+| `STRIPE_WEBHOOK_SECRET` | REQUIRED | `POST /api/stripe/webhook` signature verification | `whsec_xxxxx` |
 | `NEXT_PUBLIC_CLERK_SIGN_IN_URL` | OPTIONAL | auth routing config | `/sign-in` |
 | `NEXT_PUBLIC_CLERK_SIGN_UP_URL` | OPTIONAL | auth routing config | `/sign-up` |
 | `NEXT_PUBLIC_CLERK_AFTER_SIGN_IN_URL` | OPTIONAL | auth routing config | `/penny` |
@@ -83,6 +91,7 @@ Canonical environment-variable reference for Phase 0 audit.
 |---|---|---|---|
 | `NODE_ENV` | OPTIONAL | `src/lib/clerk.ts`, `src/app/api/penny/query/route.ts` | auto-set by Node/Next |
 | `VERCEL_ENV` | OPTIONAL | `src/lib/clerk.ts` | auto-set by Vercel |
+| `VERCEL_GIT_COMMIT_SHA` | OPTIONAL | Sentry release tag | auto-set by Vercel |
 
 ## Minimal Starter Template (Root)
 
@@ -95,6 +104,12 @@ PENNY_API_KEY=replace-with-strong-shared-secret
 SITE_URL=https://pipelinepunks.com
 PENNY_GENERAL_FALLBACK_SESSION_LIMIT=3
 CHIEF_CRON_SECRET=replace-with-long-random-secret
+STRIPE_WEBHOOK_SECRET=whsec_xxxxx
+SENTRY_DSN=https://<key>@o<org>.ingest.us.sentry.io/<project>
+NEXT_PUBLIC_SENTRY_DSN=https://<key>@o<org>.ingest.us.sentry.io/<project>
+SENTRY_ORG=true-north-data-strategies-llc
+SENTRY_PROJECT=pipeline-punks-nextjs
+SENTRY_AUTH_TOKEN=sntrys_xxxxx
 ```
 
 ## Minimal Starter Template (Railway Backend)

@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { ensureCronLogTable, getLastCronLog } from '@/lib/chief-db';
 import { chiefAuthErrorResponse, requireChiefOrgWithRole } from '@/lib/chief-auth';
+import { auditLog } from '@/lib/audit-logger';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -9,8 +10,10 @@ const MAX_HEALTHY_AGE_HOURS = 25;
 const CRON_JOB_NAME = 'chief-alert-sweep';
 
 export async function GET(request: Request) {
+  let userId: string;
+  let orgId: string;
   try {
-    await requireChiefOrgWithRole(request, 'admin');
+    ({ userId, orgId } = await requireChiefOrgWithRole(request, 'admin'));
   } catch (error: unknown) {
     const authResponse = chiefAuthErrorResponse(error);
     if (authResponse) return authResponse;
@@ -22,6 +25,17 @@ export async function GET(request: Request) {
     const last = await getLastCronLog(CRON_JOB_NAME);
 
     if (!last) {
+      auditLog({
+        action: 'data.read',
+        userId,
+        orgId,
+        resourceType: 'chief.cron-health',
+        metadata: {
+          collection: 'cron_log',
+          recordCount: 0,
+          status: 'never',
+        },
+      });
       return NextResponse.json({
         lastRun: null,
         hoursAgo: null,
@@ -34,6 +48,19 @@ export async function GET(request: Request) {
     const hoursAgoRaw = (Date.now() - lastRunTime.getTime()) / (1000 * 60 * 60);
     const hoursAgo = Number(hoursAgoRaw.toFixed(2));
     const isHealthy = hoursAgo <= MAX_HEALTHY_AGE_HOURS;
+    auditLog({
+      action: 'data.read',
+      userId,
+      orgId,
+      resourceType: 'chief.cron-health',
+      metadata: {
+        collection: 'cron_log',
+        recordCount: 1,
+        hoursAgo,
+        isHealthy,
+      },
+      severity: isHealthy ? 'info' : 'warn',
+    });
 
     return NextResponse.json({
       lastRun: lastRunTime.toISOString(),
@@ -48,6 +75,19 @@ export async function GET(request: Request) {
     });
   } catch (err: unknown) {
     console.error('[chief-cron-health] failed:', err);
+    if (userId && orgId) {
+      auditLog({
+        action: 'data.read',
+        userId,
+        orgId,
+        resourceType: 'chief.cron-health',
+        severity: 'error',
+        metadata: {
+          collection: 'cron_log',
+          failed: true,
+        },
+      });
+    }
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }

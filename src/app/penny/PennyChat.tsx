@@ -264,9 +264,11 @@ export default function PennyChat({ userName, userRole }: PennyChatProps) {
                   <div className="penny-msg-text penny-markdown">
                     <ReactMarkdown
                       remarkPlugins={[remarkGfm]}
+                      skipHtml
                       components={{
-                        a: ({ node: _node, children, ...props }) => (
-                          <a {...props} target="_blank" rel="noopener noreferrer" className="penny-link">
+                        html: () => null,
+                        a: ({ href, children }) => (
+                          <a href={href} target="_blank" rel="noopener noreferrer" className="penny-link">
                             {children}
                           </a>
                         ),

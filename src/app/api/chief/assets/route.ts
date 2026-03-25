@@ -1,15 +1,17 @@
 import { ensureChiefTables, insertChiefRecords } from '@/lib/chief-db';
 import { loadChiefData } from '@/lib/chief-data';
 import { chiefAuthErrorResponse, requireChiefOrg } from '@/lib/chief-auth';
+import { auditLog } from '@/lib/audit-logger';
 import { validateAsset } from '@/lib/chief-validators';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
 
 export async function GET(request: Request) {
+  let userId: string;
   let orgId: string;
   try {
-    ({ orgId } = await requireChiefOrg(request));
+    ({ userId, orgId } = await requireChiefOrg(request));
   } catch (error: unknown) {
     const authResponse = chiefAuthErrorResponse(error);
     if (authResponse) return authResponse;
@@ -17,6 +19,16 @@ export async function GET(request: Request) {
   }
 
   const data = await loadChiefData(orgId);
+  auditLog({
+    action: 'data.read',
+    userId,
+    orgId,
+    resourceType: 'chief.assets',
+    metadata: {
+      collection: 'assets_master',
+      recordCount: data.assets.length,
+    },
+  });
   return Response.json({ assets: data.assets });
 }
 
@@ -110,9 +122,31 @@ export async function POST(request: Request) {
       orgId,
       importedBy: userId,
     });
+    auditLog({
+      action: 'data.write',
+      userId,
+      orgId,
+      resourceType: 'chief.assets',
+      resourceId: assetId,
+      metadata: {
+        collection: 'assets_master',
+        inserted: 1,
+      },
+    });
     return Response.json({ status: 'ok', assetId }, { status: 201 });
   } catch (error: unknown) {
     console.error('[chief-assets-post] failed:', error);
+    auditLog({
+      action: 'data.write',
+      userId,
+      orgId,
+      resourceType: 'chief.assets',
+      severity: 'error',
+      metadata: {
+        collection: 'assets_master',
+        failed: true,
+      },
+    });
     return Response.json({ error: 'Failed to create asset' }, { status: 500 });
   }
 }

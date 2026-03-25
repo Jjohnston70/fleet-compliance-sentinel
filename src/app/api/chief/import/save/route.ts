@@ -2,6 +2,7 @@ import { randomUUID } from 'crypto';
 import { ensureChiefTables, insertChiefRecords, clearChiefCollection } from '@/lib/chief-db';
 import { IMPORT_SCHEMAS, type CollectionKey } from '@/lib/chief-import-schemas';
 import { chiefAuthErrorResponse, requireChiefOrgWithRole } from '@/lib/chief-auth';
+import { auditLog } from '@/lib/audit-logger';
 import {
   validateAsset,
   validateDriver,
@@ -99,7 +100,18 @@ export async function POST(request: Request) {
 
     for (const item of body.collections) {
       if (item.replace) {
-        await clearChiefCollection(item.collection, orgId);
+        const deleted = await clearChiefCollection(item.collection, orgId);
+        auditLog({
+          action: 'data.delete',
+          userId,
+          orgId,
+          resourceType: 'chief.import',
+          metadata: {
+            collection: item.collection,
+            deletedCount: deleted,
+            mode: 'soft-delete',
+          },
+        });
       }
       const inserted = await insertChiefRecords(item.collection, item.rows, {
         orgId,
@@ -111,9 +123,32 @@ export async function POST(request: Request) {
         inserted,
         replaced: !!item.replace,
       });
+      auditLog({
+        action: 'data.write',
+        userId,
+        orgId,
+        resourceType: 'chief.import',
+        resourceId: batchId,
+        metadata: {
+          collection: item.collection,
+          inserted,
+          replaced: !!item.replace,
+        },
+      });
     }
 
     const totalInserted = results.reduce((sum, r) => sum + r.inserted, 0);
+    auditLog({
+      action: 'import.approve',
+      userId,
+      orgId,
+      resourceType: 'chief.import',
+      resourceId: batchId,
+      metadata: {
+        collectionCount: results.length,
+        rowCount: totalInserted,
+      },
+    });
 
     return Response.json({
       status: 'ok',
@@ -125,6 +160,16 @@ export async function POST(request: Request) {
     });
   } catch (err: unknown) {
     console.error('[chief-import-save] failed:', err);
+    auditLog({
+      action: 'import.approve',
+      userId,
+      orgId,
+      resourceType: 'chief.import',
+      severity: 'error',
+      metadata: {
+        failed: true,
+      },
+    });
     return Response.json({ error: 'Save failed' }, { status: 500 });
   }
 }

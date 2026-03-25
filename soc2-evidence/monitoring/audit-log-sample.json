@@ -1,0 +1,46 @@
+[
+  {
+    "timestamp": "2026-03-21T18:24:11.581Z",
+    "action": "data.read",
+    "userId": "user_39bKWmHH6919GHM91RqpBgbZaPG",
+    "orgId": "org_3BGrjrWvxlgivTNUHXkgaGVTYak",
+    "resourceType": "chief.assets",
+    "resourceId": null,
+    "metadata": {
+      "collection": "assets_master",
+      "recordCount": 4
+    },
+    "severity": "info",
+    "environment": "production"
+  },
+  {
+    "timestamp": "2026-03-21T18:28:02.332Z",
+    "action": "import.rollback",
+    "userId": "user_39bKWmHH6919GHM91RqpBgbZaPG",
+    "orgId": "org_3BGrjrWvxlgivTNUHXkgaGVTYak",
+    "resourceType": "chief.import",
+    "resourceId": "0a6d224d-2e29-4278-b785-f3103ce809d5",
+    "metadata": {
+      "rowCount": 2
+    },
+    "severity": "info",
+    "environment": "production"
+  },
+  {
+    "timestamp": "2026-03-21T19:04:43.777Z",
+    "action": "penny.query",
+    "userId": "user_39aDiUfJfxKVzGWMhZMz6AKzmlE",
+    "orgId": "org_3BGrldUqFLLG6WdzJyvLlJAoD8C",
+    "resourceType": "penny.query",
+    "resourceId": null,
+    "metadata": {
+      "provider": "anthropic",
+      "kbHit": true,
+      "fallbackUsed": false,
+      "responseMs": 842
+    },
+    "severity": "info",
+    "environment": "production"
+  }
+]
+

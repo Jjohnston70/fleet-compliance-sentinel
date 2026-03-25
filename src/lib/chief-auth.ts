@@ -1,4 +1,5 @@
 import { auth } from '@clerk/nextjs/server';
+import { setSentryRequestContext } from '@/lib/sentry-context';
 
 export class ChiefAuthError extends Error {
   status: number;
@@ -58,6 +59,8 @@ export async function requireChiefOrg(request: Request): Promise<{
     throw new ChiefAuthError(403, 'Forbidden');
   }
 
+  setSentryRequestContext(userId, orgId);
+
   return { userId, orgId };
 }
 
@@ -81,6 +84,8 @@ export async function requireChiefOrgWithRole(
       throw new ChiefAuthError(403, 'Forbidden');
     }
   }
+
+  setSentryRequestContext(userId, orgId);
 
   return { userId, orgId };
 }

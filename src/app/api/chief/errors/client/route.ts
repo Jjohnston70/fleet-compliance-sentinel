@@ -1,4 +1,5 @@
 import { chiefAuthErrorResponse, requireChiefOrg } from '@/lib/chief-auth';
+import { auditLog } from '@/lib/audit-logger';
 import {
   ensureChiefErrorEventsTable,
   insertChiefErrorEvent,
@@ -61,9 +62,29 @@ export async function POST(request: Request) {
       userAgent,
       url,
     });
+    auditLog({
+      action: 'data.write',
+      userId,
+      orgId,
+      resourceType: 'chief.error-event',
+      metadata: {
+        collection: 'chief_error_events',
+        inserted: 1,
+      },
+    });
     return Response.json({ status: 'ok' });
   } catch (error: unknown) {
     console.error('[chief-errors-client] failed:', error);
+    auditLog({
+      action: 'data.write',
+      userId,
+      orgId,
+      resourceType: 'chief.error-event',
+      severity: 'error',
+      metadata: {
+        failed: true,
+      },
+    });
     return Response.json({ error: 'Failed to record error' }, { status: 500 });
   }
 }

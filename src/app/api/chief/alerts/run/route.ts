@@ -3,6 +3,7 @@ import { runChiefAlertSweep } from '@/lib/chief-alert-engine';
 import { loadChiefData } from '@/lib/chief-data';
 import { ensureCronLogTable, insertCronLogEntry, listChiefOrgIds } from '@/lib/chief-db';
 import { chiefAuthErrorResponse, requireChiefOrgWithRole } from '@/lib/chief-auth';
+import { auditLog } from '@/lib/audit-logger';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -19,6 +20,7 @@ function isTimingSafeTokenMatch(provided: string, expected: string): boolean {
 // If RESEND_API_KEY is not set the sweep runs in dry-run mode and no emails are sent.
 export async function POST(request: Request) {
   const jobName = 'chief-alert-sweep';
+  let userId = 'system';
   let orgId: string | null = null;
 
   const cronSecret = process.env.CHIEF_CRON_SECRET;
@@ -78,6 +80,20 @@ export async function POST(request: Request) {
           message: `Evaluated ${summary.itemsEvaluated}, queued ${summary.itemsQueued}, sent ${summary.emailsSent}, failed ${summary.emailsFailed}.`,
           recordsProcessed: summary.itemsQueued,
         });
+        auditLog({
+          action: 'cron.run',
+          userId: 'system',
+          orgId: scopedOrgId,
+          resourceType: 'chief.alerts.run',
+          metadata: {
+            invocation: 'cron',
+            itemsEvaluated: summary.itemsEvaluated,
+            itemsQueued: summary.itemsQueued,
+            emailsSent: summary.emailsSent,
+            emailsFailed: summary.emailsFailed,
+          },
+          severity: summary.emailsFailed > 0 ? 'warn' : 'info',
+        });
       }
 
       return Response.json({
@@ -86,6 +102,16 @@ export async function POST(request: Request) {
       }, { status: 200 });
     } catch (error: unknown) {
       console.error('[chief-alert-sweep] cron invocation failed:', error);
+      auditLog({
+        action: 'cron.failed',
+        userId: 'system',
+        orgId: 'system',
+        resourceType: 'chief.alerts.run',
+        severity: 'error',
+        metadata: {
+          invocation: 'cron',
+        },
+      });
       try {
         await insertCronLogEntry({
           jobName,
@@ -103,6 +129,7 @@ export async function POST(request: Request) {
 
   try {
     const authContext = await requireChiefOrgWithRole(request, 'admin');
+    userId = authContext.userId;
     orgId = authContext.orgId;
   } catch (error: unknown) {
     const authResponse = chiefAuthErrorResponse(error);
@@ -111,7 +138,7 @@ export async function POST(request: Request) {
   }
 
   try {
-    const data = await loadChiefData(orgId ?? undefined);
+    const data = await loadChiefData(orgId);
     const summary = await runChiefAlertSweep(data.suspense);
     await insertCronLogEntry({
       jobName,
@@ -119,6 +146,20 @@ export async function POST(request: Request) {
       status: summary.emailsFailed > 0 ? 'partial' : 'success',
       message: `Evaluated ${summary.itemsEvaluated}, queued ${summary.itemsQueued}, sent ${summary.emailsSent}, failed ${summary.emailsFailed}.`,
       recordsProcessed: summary.itemsQueued,
+    });
+    auditLog({
+      action: 'cron.run',
+      userId,
+      orgId: orgId || 'unknown',
+      resourceType: 'chief.alerts.run',
+      metadata: {
+        invocation: 'manual',
+        itemsEvaluated: summary.itemsEvaluated,
+        itemsQueued: summary.itemsQueued,
+        emailsSent: summary.emailsSent,
+        emailsFailed: summary.emailsFailed,
+      },
+      severity: summary.emailsFailed > 0 ? 'warn' : 'info',
     });
     return Response.json(summary, { status: 200 });
   } catch (err: unknown) {
@@ -134,6 +175,16 @@ export async function POST(request: Request) {
       console.error('[chief-alert-sweep] failed to write cron_log entry:', logErr);
     }
     console.error('[chief-alert-sweep] manual invocation failed:', err);
+    auditLog({
+      action: 'cron.failed',
+      userId,
+      orgId: orgId || 'unknown',
+      resourceType: 'chief.alerts.run',
+      severity: 'error',
+      metadata: {
+        invocation: 'manual',
+      },
+    });
     return Response.json({ error: 'Internal server error' }, { status: 500 });
   }
 }
