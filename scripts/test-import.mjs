@@ -1,6 +1,6 @@
 import { readFileSync } from 'fs';
 import { neon } from '@neondatabase/serverless';
-import XLSX from 'xlsx';
+import ExcelJS from 'exceljs';
 
 // Load .env.local
 const envContent = readFileSync('.env.local', 'utf8');
@@ -17,18 +17,52 @@ for (const line of envContent.split('\n')) {
 
 const sql = neon(process.env.DATABASE_URL);
 
-// Parse the Excel file
-const wb = XLSX.readFile('chief-bulk-upload-filled.xlsx');
+function toCellText(value) {
+  if (value === null || value === undefined) return '';
+  if (value instanceof Date) return value.toISOString();
+  if (typeof value === 'object') {
+    if (typeof value.text === 'string') return value.text;
+    if (typeof value.result === 'string' || typeof value.result === 'number') return String(value.result);
+  }
+  return String(value);
+}
+
+function rowsFromWorksheet(worksheet) {
+  const headers = (worksheet.getRow(1).values || [])
+    .slice(1)
+    .map((value) => toCellText(value).trim());
+
+  const rows = [];
+  for (let rowNumber = 2; rowNumber <= worksheet.rowCount; rowNumber += 1) {
+    const row = worksheet.getRow(rowNumber);
+    const next = {};
+    let hasValue = false;
+
+    headers.forEach((header, index) => {
+      if (!header) return;
+      const value = toCellText(row.getCell(index + 1).value).trim();
+      next[header] = value;
+      if (value) hasValue = true;
+    });
+
+    if (hasValue) rows.push(next);
+  }
+
+  return rows;
+}
+
+const workbook = new ExcelJS.Workbook();
+await workbook.xlsx.readFile('chief-bulk-upload-filled.xlsx');
 const SKIP = new Set(['README', 'Config']);
 const SHEET_MAP = {
-  'Drivers': 'drivers',
+  Drivers: 'drivers',
   'Assets Master': 'assets_master',
   'STORAGE TANKS': 'storage_tanks',
   'COLORADO CONTACTS': 'colorado_contacts',
   'VEHICLES & EQUIPMENT': 'vehicles_equipment',
   'PERMITS & LICENSES': 'permits_licenses',
   'EMERGENCY CONTACTS': 'emergency_contacts',
-  'EMPLOYEES': 'employees',
+  EMPLOYEES: 'employees',
   'MAINTENANCE SCHEDULE': 'maintenance_schedule',
   'Activity Log': 'activity_log',
   'Maintenance Tracker': 'maintenance_tracker',
@@ -36,22 +70,21 @@ const SHEET_MAP = {
 
 let totalInserted = 0;
 
-for (const sheetName of wb.SheetNames) {
+for (const worksheet of workbook.worksheets) {
+  const sheetName = worksheet.name;
   if (SKIP.has(sheetName)) continue;
+
   const collection = SHEET_MAP[sheetName];
   if (!collection) {
     console.log(`Skipping unmatched sheet: ${sheetName}`);
     continue;
   }
 
-  const ws = wb.Sheets[sheetName];
-  const rows = XLSX.utils.sheet_to_json(ws, { defval: '', raw: false });
+  const rows = rowsFromWorksheet(worksheet);
   if (rows.length === 0) continue;
 
-  // Clear existing data for this collection
   await sql`DELETE FROM chief_records WHERE collection = ${collection}`;
 
-  // Insert rows
   for (const row of rows) {
     await sql`
       INSERT INTO chief_records (collection, data, imported_by)
@@ -65,7 +98,6 @@ for (const sheetName of wb.SheetNames) {
 
 console.log(`\nTotal: ${totalInserted} rows inserted`);
 
-// Verify
 const counts = await sql`
   SELECT collection, count(*)::int as count
   FROM chief_records
