@@ -1,4 +1,4 @@
-import { ensureOrgScopingTables, getSQL } from '@/lib/chief-db';
+import { ensureOrgScopingTables, getSQL } from '@/lib/fleet-compliance-db';
 
 type JsonPrimitive = string | number | boolean | null;
 type JsonValue = JsonPrimitive | JsonObject | JsonValue[];
@@ -12,7 +12,10 @@ export type OrgAuditEventType =
   | 'org.plan.changed'
   | 'org.subscription.status_changed'
   | 'org.subscription.created'
-  | 'org.subscription.webhook_received';
+  | 'org.subscription.webhook_received'
+  | 'org.offboarding.scheduled'
+  | 'org.offboarding.soft_deleted'
+  | 'org.offboarding.hard_deleted';
 
 export async function recordOrgAuditEvent(input: {
   orgId: string;

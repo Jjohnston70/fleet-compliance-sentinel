@@ -1,13 +1,13 @@
 # RUNBOOK
 
-Operational runbook for Chief + Penny production support.
+Operational runbook for Fleet-Compliance + Penny production support.
 
 ## Emergency Procedures
 
 1. Roll back Vercel deployment (UI + CLI)
    - UI: Vercel Dashboard -> Project -> Deployments -> select previous healthy deployment -> Promote to Production.
    - CLI: `vercel rollback <deployment-url-or-id> --yes`.
-   - Verify: `GET /api/penny/health` and `/api/chief/cron-health` return expected status.
+   - Verify: `GET /api/penny/health` and `/api/fleet-compliance/cron-health` return expected status.
 
 2. Restart Railway Penny service
    - Open Railway project -> Penny service -> Deployments -> Redeploy latest successful commit.
@@ -17,21 +17,21 @@ Operational runbook for Chief + Penny production support.
 3. Connect to Neon Postgres console
    - Neon console -> Project -> SQL Editor.
    - Validate critical tables:
-     - `chief_records`
+     - `fleet_compliance_records`
      - `cron_log`
-     - `chief_error_events`
+     - `fleet-compliance_error_events`
      - invoice tables
    - Use read-only checks first (`SELECT COUNT(*) ...`) before any writes.
 
 4. Check Clerk org membership
    - Clerk Dashboard -> Organizations.
    - Confirm target user is in expected org only.
-   - Validate org-scoped behavior in app by switching active org and checking `/chief/assets`.
+   - Validate org-scoped behavior in app by switching active org and checking `/fleet-compliance/assets`.
 
 5. Check cron health endpoint
-   - Call `GET /api/chief/cron-health` as an org admin.
+   - Call `GET /api/fleet-compliance/cron-health` as an org admin.
    - `isHealthy` should be `true` and `hoursAgo <= 25`.
-   - If stale: trigger `/api/chief/alerts/run` with authorized credentials and inspect logs.
+   - If stale: trigger `/api/fleet-compliance/alerts/run` with authorized credentials and inspect logs.
 
 6. Read Vercel logs for a failed request
    - Vercel Dashboard -> Project -> Logs.
@@ -99,7 +99,7 @@ Operational runbook for Chief + Penny production support.
 
 ## Escalation Contacts
 
-- Jacob: 555-555-5555
+- Security on-call: security@pipelinepunks.com
 - Vercel support: https://vercel.com/help
 - Neon support/docs: https://neon.tech/docs
 - Clerk support: https://clerk.com/contact
@@ -124,24 +124,24 @@ Operational runbook for Chief + Penny production support.
 4. Validate provider keys and Railway env (`LLM_PROVIDER`, provider API keys).
 5. Redeploy Railway service if infrastructure-level failure is detected.
 
-### Chief page error boundary triggered
+### Fleet-Compliance page error boundary triggered
 
 1. Reproduce route with org admin account.
-2. Verify client error event write in `chief_error_events`.
+2. Verify client error event write in `fleet-compliance_error_events`.
 3. Check Sentry stack trace and deployment release tag.
 4. Roll back deployment if regression is production blocking.
 
 ### Cron health shows unhealthy
 
-1. Inspect `/api/chief/cron-health` payload (`lastRun`, `hoursAgo`, `lastResult`).
+1. Inspect `/api/fleet-compliance/cron-health` payload (`lastRun`, `hoursAgo`, `lastResult`).
 2. Trigger manual alert run as org admin.
-3. Validate `CHIEF_CRON_SECRET` and invocation source for scheduled jobs.
+3. Validate `FLEET_COMPLIANCE_CRON_SECRET` and invocation source for scheduled jobs.
 4. Inspect `cron_log` table in Neon for missing/failed runs.
 
 ### Import fails silently
 
-1. Verify `/api/chief/import/parse` returns expected `totalRows` and row warnings.
-2. Verify `/api/chief/import/save` response (`batchId`, `totalInserted`, `collections`).
+1. Verify `/api/fleet-compliance/import/parse` returns expected `totalRows` and row warnings.
+2. Verify `/api/fleet-compliance/import/save` response (`batchId`, `totalInserted`, `collections`).
 3. Validate import role: admin required for save/rollback.
 4. Check Sentry and Vercel logs for 4xx/5xx and validation failures.
 5. If needed, rollback by `batchId` and retry import.

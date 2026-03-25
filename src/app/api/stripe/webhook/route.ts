@@ -1,6 +1,6 @@
 import crypto from 'crypto';
 import { NextResponse } from 'next/server';
-import { ensureOrgScopingTables, getSQL } from '@/lib/chief-db';
+import { ensureOrgScopingTables, getSQL } from '@/lib/fleet-compliance-db';
 import { recordOrgAuditEvent } from '@/lib/org-audit';
 
 export const runtime = 'nodejs';
@@ -74,6 +74,105 @@ function subscriptionPeriodEnd(obj: Record<string, unknown>): string | null {
   return null;
 }
 
+function parseMetadataObject(value: unknown): Record<string, unknown> {
+  if (!value) return {};
+  if (typeof value === 'object' && !Array.isArray(value)) {
+    return value as Record<string, unknown>;
+  }
+  if (typeof value === 'string') {
+    try {
+      const parsed = JSON.parse(value);
+      if (parsed && typeof parsed === 'object' && !Array.isArray(parsed)) {
+        return parsed as Record<string, unknown>;
+      }
+    } catch {
+      return {};
+    }
+  }
+  return {};
+}
+
+function addDays(date: Date, days: number): Date {
+  const next = new Date(date.getTime());
+  next.setUTCDate(next.getUTCDate() + days);
+  return next;
+}
+
+async function syncOrganizationLifecycleFromSubscription(
+  sql: ReturnType<typeof getSQL>,
+  orgId: string,
+  nextPlan: string,
+  nextStatus: string
+) {
+  const orgRows = await sql`
+    SELECT plan, metadata, data_deletion_scheduled_at
+    FROM organizations
+    WHERE id = ${orgId}
+    LIMIT 1
+  `;
+  const org = orgRows[0] as Record<string, unknown> | undefined;
+  if (!org) return;
+
+  const normalizedStatus = nextStatus.toLowerCase();
+  const isCanceled = ['canceled', 'cancelled', 'unpaid', 'incomplete_expired'].includes(normalizedStatus);
+  const isBillingActive = ['active', 'trialing', 'past_due'].includes(normalizedStatus);
+
+  const metadata = parseMetadataObject(org.metadata);
+  const offboarding = parseMetadataObject(metadata.offboarding);
+  const scheduledAtRaw = org.data_deletion_scheduled_at ? new Date(String(org.data_deletion_scheduled_at)) : null;
+  const scheduledAt = scheduledAtRaw && !Number.isNaN(scheduledAtRaw.getTime()) ? scheduledAtRaw : null;
+  const now = new Date();
+
+  if (isCanceled) {
+    const nextScheduledAt = scheduledAt ?? addDays(now, 30);
+    offboarding.canceledAt = typeof offboarding.canceledAt === 'string' ? offboarding.canceledAt : now.toISOString();
+    metadata.offboarding = offboarding;
+
+    await sql`
+      UPDATE organizations
+      SET
+        plan = 'canceled',
+        data_deletion_scheduled_at = ${nextScheduledAt.toISOString()},
+        metadata = ${JSON.stringify(metadata)}::jsonb,
+        updated_at = NOW()
+      WHERE id = ${orgId}
+    `;
+    await recordOrgAuditEvent({
+      orgId,
+      eventType: 'org.offboarding.scheduled',
+      actorType: 'stripe',
+      metadata: {
+        status: normalizedStatus,
+        scheduledFor: nextScheduledAt.toISOString(),
+      },
+    });
+    return;
+  }
+
+  if (!isBillingActive) {
+    return;
+  }
+
+  if (typeof offboarding.canceledAt === 'string') {
+    offboarding.reactivatedAt = now.toISOString();
+    delete offboarding.softDeletedAt;
+    delete offboarding.hardDeletedAt;
+    delete offboarding.softDeleteCounts;
+    delete offboarding.hardDeleteCounts;
+  }
+  metadata.offboarding = offboarding;
+
+  await sql`
+    UPDATE organizations
+    SET
+      plan = ${nextPlan},
+      data_deletion_scheduled_at = NULL,
+      metadata = ${JSON.stringify(metadata)}::jsonb,
+      updated_at = NOW()
+    WHERE id = ${orgId}
+  `;
+}
+
 async function resolveOrgId(sql: ReturnType<typeof getSQL>, obj: Record<string, unknown>): Promise<string | null> {
   const fromMetadata = metadataOrgId(obj.metadata);
   if (fromMetadata) return fromMetadata;
@@ -132,6 +231,7 @@ async function handleSubscriptionEvent(sql: ReturnType<typeof getSQL>, event: St
       ${nextPeriodEnd}
     )
   `;
+  await syncOrganizationLifecycleFromSubscription(sql, orgId, nextPlan, nextStatus);
 
   await recordOrgAuditEvent({
     orgId,
@@ -230,6 +330,7 @@ async function handleInvoiceEvent(sql: ReturnType<typeof getSQL>, event: StripeE
       ${nextStatus}
     )
   `;
+  await syncOrganizationLifecycleFromSubscription(sql, orgId, plan, nextStatus);
 
   await recordOrgAuditEvent({
     orgId,

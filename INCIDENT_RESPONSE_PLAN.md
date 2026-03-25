@@ -1,88 +1,96 @@
 # Incident Response Plan
 
-Owner: Jacob
+Owner: Security and Operations Team
 Last Updated: 2026-03-25
-Scope: Fleet-Compliance web app, Fleet-Compliance APIs, Penny AI backend, supporting infrastructure.
+Scope: Fleet-Compliance web app, Fleet-Compliance APIs, Penny AI backend, and supporting infrastructure.
+
+## Escalation Chain
+
+1. Incident Commander (primary on-call)
+2. Engineering Lead (secondary)
+3. Security and Compliance Lead (tertiary)
+4. Executive Stakeholder (customer-impacting P1 only)
+
+Contact methods are maintained in the internal on-call roster and are not stored in repository templates.
 
 ## Severity Levels
 
 ### P1 Critical
-Definition: Platform down, data breach, or authentication failure affecting many users.
+Definition: Platform down, confirmed or suspected data breach, or authentication failure affecting many users.
 
-- Detection: Uptime monitor alert, Sentry spike, failed auth flow checks, or confirmed breach signal.
+- Detection: Uptime monitor alert, Sentry spike, failed auth checks, or confirmed security signal.
 - First response time: 15 minutes.
 - Investigation steps:
-  1. Confirm incident scope and active impact.
-  2. Identify impacted services, organizations, and start time.
-  3. Assign incident lead and open incident record.
+  1. Confirm scope and business impact.
+  2. Identify affected services, organizations, and start time.
+  3. Assign Incident Commander and open an incident ticket.
 - Resolution steps:
-  1. Contain first (disable affected endpoint, isolate org, revoke compromised key/session).
-  2. Apply rollback, hotfix, or failover.
-  3. Verify service and security state before full restore.
-- Client communication: Initial notice within 60 minutes. Continue updates every 60 minutes until resolved.
-- Post-incident review: Required within 7 days. Include timeline, root cause, controls, and owner actions.
+  1. Contain first (disable endpoint, isolate organization, revoke compromised keys/sessions).
+  2. Roll back or patch.
+  3. Validate service restoration and security state.
+- Client communication: Initial notice within 60 minutes and hourly updates until resolved.
+- Post-incident review: Required within 7 days with timeline, root cause, corrective action, and owners.
 
 ### P2 High
 Definition: Fleet-Compliance pages failing, Penny down, or import pipeline broken.
 
-- Detection: Synthetic checks, API error alerts, customer reports, and support tickets.
+- Detection: Synthetic checks, API error alerts, support reports.
 - First response time: 30 minutes.
 - Investigation steps:
-  1. Reproduce issue in production-safe mode.
-  2. Check recent deploys, logs, and dependency changes.
-  3. Confirm impact scope by org and feature.
+  1. Reproduce safely.
+  2. Review recent deploys, logs, dependency changes.
+  3. Scope impacted orgs and features.
 - Resolution steps:
-  1. Roll back the bad deploy or patch the failing route.
-  2. Validate key flows: sign-in, data access, imports, Penny query path.
-  3. Confirm monitoring returns to baseline.
-- Client communication: Initial notice within 2 hours for customer-impacting outages. Provide updates every 2 hours.
-- Post-incident review: Required within 7 days if customer impact exceeded 30 minutes.
+  1. Roll back or patch failing routes.
+  2. Validate sign-in, core reads/writes, imports, and Penny query path.
+  3. Confirm alerts return to baseline.
+- Client communication: Initial notice within 2 hours if customer-impacting. Update every 2 hours.
+- Post-incident review: Required if impact exceeds 30 minutes.
 
 ### P3 Medium
 Definition: Cron not running, single feature broken, or degraded behavior without full outage.
 
-- Detection: Cron health endpoint failures, internal QA checks, or non-urgent support reports.
+- Detection: Cron health failures, QA checks, support tickets.
 - First response time: 4 hours.
 - Investigation steps:
-  1. Confirm exact failing job/feature.
-  2. Review logs and affected org context.
-  3. Identify last known good run or deploy.
+  1. Confirm failing job or route.
+  2. Review logs and org impact.
+  3. Confirm last known good run.
 - Resolution steps:
   1. Restart job, retry task, or patch isolated bug.
-  2. Validate impacted workflow end-to-end.
-  3. Add regression check if missing.
-- Client communication: Notify only impacted clients when behavior affects contractual workflows.
-- Post-incident review: Lightweight review in weekly ops review.
+  2. Validate workflow end-to-end.
+  3. Add regression guard if missing.
+- Client communication: Notify only directly impacted customers.
+- Post-incident review: Capture in weekly ops review.
 
 ### P4 Low
-Definition: UI issues, minor errors, cosmetic defects, or small usability regressions.
+Definition: UI defects, cosmetic regressions, or low-impact usability issues.
 
-- Detection: Internal testing, backlog grooming, user feedback.
+- Detection: Internal testing and user feedback.
 - First response time: 1 business day.
 - Investigation steps:
-  1. Confirm expected vs. actual behavior.
-  2. Check whether issue is browser, locale, or device specific.
-  3. Assign priority and owner.
+  1. Confirm expected vs actual behavior.
+  2. Scope browser/device conditions.
+  3. Assign owner and priority.
 - Resolution steps:
   1. Fix in normal sprint cycle.
   2. Validate in staging.
-  3. Deploy in next scheduled release.
-- Client communication: No broad communication required unless directly requested.
-- Post-incident review: Not required; track in product backlog.
+  3. Deploy in scheduled release.
+- Client communication: On request or when directly impacted.
+- Post-incident review: Not required.
 
 ## Data Breach Procedure
 
-1. Detect and contain
-   - Trigger incident as P1.
-   - Isolate affected org immediately (disable org access and revoke active sessions/keys).
-2. Assess scope
-   - Determine which records were exposed.
-   - Determine which org(s) were affected.
-   - Determine precise time window.
-3. Notify affected clients within 72 hours (GDPR/CCPA requirement).
-4. Contact Jacob immediately: 555-555-5555.
-5. Document all actions and evidence in `SECURITY_REPORTS/incidents/`.
-6. Complete post-breach review within 7 days.
+1. Detect and contain.
+   - Open a P1 incident.
+   - Isolate affected organization immediately.
+2. Assess scope.
+   - Identify affected records, affected organizations, and time window.
+3. Notify required parties.
+   - Notify affected clients within 72 hours.
+   - Assess GDPR Article 33 threshold and notify the relevant supervisory authority within 72 hours when required.
+4. Document all actions and evidence in `SECURITY_REPORTS/incidents/`.
+5. Complete post-breach review within 7 days.
 
 ## Communication Templates
 
@@ -113,7 +121,8 @@ Next update:
 - [Time]
 
 Primary contact:
-- Jacob, 555-555-5555
+- Incident Commander (on-call)
+- security@pipelinepunks.com
 
 We will continue to provide updates until the incident is fully resolved.
 
@@ -124,7 +133,7 @@ Status: Investigating | Identified | Monitoring | Resolved
 Time (UTC): [YYYY-MM-DD HH:MM]
 
 Message:
-We are currently [investigating/working to resolve] an incident affecting [service/feature].
+We are [investigating/mitigating] an incident affecting [service/feature].
 Impact: [who is affected]
 Current mitigation: [what has been done]
 Next update: [time]
