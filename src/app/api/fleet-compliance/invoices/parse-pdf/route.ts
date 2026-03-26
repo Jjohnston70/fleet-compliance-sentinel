@@ -144,6 +144,11 @@ export async function POST(request: Request) {
   }
 
   const pdfFile = file as File;
+  const MAX_PDF_SIZE = 10 * 1024 * 1024; // 10 MB
+  if (pdfFile.size > MAX_PDF_SIZE) {
+    return Response.json({ error: 'PDF file exceeds 10 MB limit' }, { status: 413 });
+  }
+
   const looksLikePdf =
     pdfFile.type.toLowerCase().includes('pdf') ||
     pdfFile.name.toLowerCase().endsWith('.pdf');
