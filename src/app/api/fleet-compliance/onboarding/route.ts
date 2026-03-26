@@ -49,7 +49,9 @@ export async function POST(request: Request) {
   }
 
   try {
-    await ensureOrgProvisioned(orgId, companyName);
+    await ensureOrgProvisioned(orgId, companyName, {
+      adminUserId: userId,
+    });
     const sql = getSQL();
     const metadata = {
       fleetSize,
@@ -119,3 +121,4 @@ export async function POST(request: Request) {
     return Response.json({ error: 'Failed to save onboarding' }, { status: 500 });
   }
 }
+

@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import FleetComplianceSubscribeActions from '@/components/fleet-compliance/FleetComplianceSubscribeActions';
 
 interface FleetComplianceExpiredGateProps {
   trialEndsAt: Date | null;
@@ -17,6 +18,8 @@ export default function FleetComplianceExpiredGate({
   dataDeletionScheduledAt = null,
 }: FleetComplianceExpiredGateProps) {
   const isCanceled = accessState === 'canceled';
+  const starterPriceId = process.env.STRIPE_STARTER_PRICE_ID?.trim() ?? '';
+  const proPriceId = process.env.STRIPE_PRO_PRICE_ID?.trim() ?? '';
 
   return (
     <main className="fleet-compliance-shell">
@@ -36,10 +39,15 @@ export default function FleetComplianceExpiredGate({
             </>
           )}
         </p>
+        <p className="fleet-compliance-subcopy">
+          Select a plan to reactivate access immediately:
+          Starter (<strong>$149/mo</strong>) or Professional (<strong>$299/mo</strong>).
+        </p>
+        <FleetComplianceSubscribeActions
+          starterPriceId={starterPriceId}
+          proPriceId={proPriceId}
+        />
         <div className="fleet-compliance-action-row">
-          <Link href="https://www.truenorthstrategyops.com/contact" className="btn-primary">
-            Contact Sales
-          </Link>
           <Link href="/" className="btn-secondary">
             Return Home
           </Link>

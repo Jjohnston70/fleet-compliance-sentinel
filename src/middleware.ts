@@ -12,6 +12,8 @@ const isProtectedRoute = createRouteMatcher([
   '/api/penny/query(.*)',
   '/api/fleet-compliance(.*)',
   '/api/invoices(.*)',
+  '/api/stripe/checkout(.*)',
+  '/api/stripe/portal(.*)',
 ]);
 
 const hasClerk = isClerkEnabled();

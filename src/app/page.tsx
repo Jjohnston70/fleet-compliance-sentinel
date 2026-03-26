@@ -1,46 +1,89 @@
-'use client';
-
-import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 
-const productScreens = [
+const fleetComplianceFeatures = [
   {
-    src: '/pipelinex-screenshots/command-post-welcome.png',
-    alt: 'PipelineX command post welcome screen',
-    label: 'Command Post',
+    icon: '01',
+    title: 'Driver Compliance',
+    description: 'CDL, medical cards, MVR, and drug testing are tracked with expiration alerts.',
   },
   {
-    src: '/pipelinex-screenshots/prompt-run-result.png',
-    alt: 'PipelineX prompt run result screen',
-    label: 'Prompt Run Result',
+    icon: '02',
+    title: 'Vehicle and Asset Tracking',
+    description: 'Manage fleet inventory with VINs, inspection dates, and maintenance schedules.',
   },
   {
-    src: '/pipelinex-screenshots/sop-succeeded.png',
-    alt: 'PipelineX SOP success workflow screen',
-    label: 'SOP Workflow Success',
+    icon: '03',
+    title: 'Permit and License Management',
+    description: 'Track DOT permits, state licenses, renewals, and automated reminder dates.',
+  },
+  {
+    icon: '04',
+    title: 'FMCSA Safety Lookups',
+    description: 'Pull live carrier safety data from the federal FMCSA database.',
+  },
+  {
+    icon: '05',
+    title: 'Compliance Alerts',
+    description: 'Run daily automated email sweeps for overdue and upcoming deadlines.',
+  },
+  {
+    icon: '06',
+    title: 'Bulk Data Import',
+    description: 'Upload fleet records from Excel across 12 validated collection types.',
+  },
+];
+
+const pricingTiers = [
+  {
+    name: 'STARTER',
+    price: '$149/mo',
+    cta: 'Start Free Trial',
+    href: '/sign-up',
+    featured: false,
+    features: [
+      'Up to 15 vehicles',
+      'Up to 10 drivers',
+      'Compliance alerts and reminders',
+      'Bulk Excel import',
+      'FMCSA carrier lookups',
+      'Email support',
+    ],
+  },
+  {
+    name: 'PROFESSIONAL',
+    price: '$299/mo',
+    cta: 'Start Free Trial',
+    href: '/sign-up',
+    featured: true,
+    features: [
+      'Up to 50 vehicles',
+      'Up to 25 drivers',
+      'Everything in Starter',
+      'Pipeline Penny AI assistant',
+      'Priority support',
+      'Custom alert configurations',
+    ],
+  },
+  {
+    name: 'ENTERPRISE',
+    price: 'Custom',
+    cta: 'Contact Us',
+    href: 'https://www.truenorthstrategyops.com/contact',
+    featured: false,
+    features: [
+      'Unlimited vehicles and drivers',
+      'Everything in Professional',
+      'Dedicated onboarding',
+      'Custom integrations',
+      'SLA guarantee',
+    ],
   },
 ];
 
 export default function HomePage() {
-  const [activeScreen, setActiveScreen] = useState<number | null>(null);
-
-  useEffect(() => {
-    if (activeScreen === null) return;
-
-    const handleEscape = (event: KeyboardEvent) => {
-      if (event.key === 'Escape') {
-        setActiveScreen(null);
-      }
-    };
-
-    window.addEventListener('keydown', handleEscape);
-    return () => window.removeEventListener('keydown', handleEscape);
-  }, [activeScreen]);
-
   return (
-    <main>
-      {/* Hero */}
+    <main className="landing-main">
       <section className="hero">
         <div className="hero-badge">By True North Data Strategies</div>
         <div className="hero-logo-wrap">
@@ -53,170 +96,139 @@ export default function HomePage() {
             priority
           />
         </div>
-        <h1>Pipeline Penny</h1>
+        <h1>Fleet Compliance, Simplified.</h1>
         <p className="hero-sub">
-          Your business knowledge — searchable, queryable, and working for you.
+          Track drivers, vehicles, permits, and DOT deadlines - with an AI compliance assistant that knows the regulations.
         </p>
         <p className="hero-desc">
-          Upload your SOPs, pricing sheets, contracts, and playbooks.
-          Ask questions in plain English. Get answers from your actual documents — not guesses.
+          Fleet-Compliance Sentinel keeps every requirement visible, every deadline tracked, and every team member aligned.
+          Pipeline Penny adds CFR-grounded answers so your staff can move faster without guessing.
         </p>
         <div className="hero-actions">
-          <Link href="/sign-in" className="btn-primary">
-            Sign In
+          <Link href="/sign-up" className="btn-primary">
+            Start Free Trial
           </Link>
           <Link href="https://www.truenorthstrategyops.com/contact" className="btn-secondary">
-            Book a Call with Jacob
+            Book a Demo
           </Link>
         </div>
       </section>
 
-      <section className="screenshots screenshots-top">
-        <h2>Product Preview</h2>
-        <p>Click any view to enlarge and read details.</p>
-        <div className="screenshot-grid">
-          {productScreens.map((screen, index) => (
-            <figure className="screenshot-card" key={screen.src}>
-              <button
-                className="screenshot-card-btn"
-                type="button"
-                onClick={() => setActiveScreen(index)}
-                aria-label={`Open ${screen.label} image`}
-              >
-                <Image
-                  src={screen.src}
-                  alt={screen.alt}
-                  width={1520}
-                  height={870}
-                />
-              </button>
-              <figcaption>{screen.label}</figcaption>
-            </figure>
+      <section className="features">
+        <h2>Fleet-Compliance Features</h2>
+        <div className="feature-grid">
+          {fleetComplianceFeatures.map((feature) => (
+            <article className="feature-card" key={feature.title}>
+              <div className="feature-icon">{feature.icon}</div>
+              <h3>{feature.title}</h3>
+              <p>{feature.description}</p>
+            </article>
           ))}
         </div>
       </section>
 
-      {/* What It Does */}
-      <section className="features">
-        <h2>What Pipeline Penny Does</h2>
-        <div className="feature-grid">
-          <div className="feature-card">
-            <div className="feature-icon">01</div>
-            <h3>Reads Your Documents</h3>
-            <p>
-              Upload SOPs, contracts, price sheets, employee handbooks — anything your
-              business runs on. Penny reads them, indexes them, and makes them searchable.
-            </p>
-          </div>
-          <div className="feature-card">
-            <div className="feature-icon">02</div>
-            <h3>Answers Your Questions</h3>
-            <p>
-              Ask in plain English: "What's our markup on residential jobs?" or
-              "What's the onboarding process for new hires?" Penny pulls the answer
-              from your actual documents.
-            </p>
-          </div>
-          <div className="feature-card">
-            <div className="feature-icon">03</div>
-            <h3>Doesn't Make Things Up</h3>
-            <p>
-              If Penny doesn't have the answer in your documents, she says so.
-              No hallucinations. No guesses. Just what you actually put in.
-            </p>
-          </div>
-          <div className="feature-card">
-            <div className="feature-icon">04</div>
-            <h3>Your Data Stays Yours</h3>
-            <p>
-              Your documents are processed and stored securely. Nothing gets shared
-              with other users. Nothing gets used to train AI models. Period.
-            </p>
-          </div>
-        </div>
-      </section>
-
-      {/* Who It's For */}
-      <section className="who">
-        <h2>Built for Business Owners Who...</h2>
-        <div className="who-grid">
-          <div className="who-item">
-            <span className="who-marker">&mdash;</span>
-            <p>Can't take a day off without things falling apart</p>
-          </div>
-          <div className="who-item">
-            <span className="who-marker">&mdash;</span>
-            <p>Have critical knowledge trapped in one person's head</p>
-          </div>
-          <div className="who-item">
-            <span className="who-marker">&mdash;</span>
-            <p>Run on spreadsheets, text messages, and "ask Steve"</p>
-          </div>
-          <div className="who-item">
-            <span className="who-marker">&mdash;</span>
-            <p>Want AI that works for them — not another tool to learn</p>
-          </div>
-        </div>
-      </section>
-
-      {/* How It Works */}
       <section className="how">
-        <h2>How It Works</h2>
+        <h2>Your AI Compliance Assistant</h2>
         <div className="steps">
-          <div className="step">
+          <article className="step">
             <div className="step-num">1</div>
             <div className="step-content">
-              <h3>We Talk</h3>
-              <p>15-minute call. You tell me what's broken. I tell you if Penny can fix it.</p>
+              <h3>Built for 13 CFR Knowledge</h3>
+              <p>Pipeline Penny is grounded in 13 CFR parts 040-397 and returns regulation-aware guidance.</p>
             </div>
-          </div>
-          <div className="step">
+          </article>
+          <article className="step">
             <div className="step-num">2</div>
             <div className="step-content">
-              <h3>We Build It</h3>
-              <p>
-                I load your documents, configure your knowledge base, and set up
-                Penny for your business. Fixed scope. Fixed price. 2-4 weeks.
-              </p>
+              <h3>Answers With Your Fleet Context</h3>
+              <p>Questions are answered with your actual fleet data, permit records, and compliance timelines.</p>
             </div>
-          </div>
-          <div className="step">
+          </article>
+          <article className="step">
             <div className="step-num">3</div>
             <div className="step-content">
-              <h3>You Use It</h3>
-              <p>
-                Log in, ask questions, get answers. Your team can use it too.
-                No training required — if you can send an email, you can use Penny.
-              </p>
+              <h3>Source-Cited, No Guessing</h3>
+              <p>Penny does not make things up - responses are grounded in your data and federal source references.</p>
             </div>
+          </article>
+        </div>
+      </section>
+
+      <section className="pricing">
+        <h2>Pricing</h2>
+        <div className="pricing-grid">
+          {pricingTiers.map((tier) => (
+            <article
+              key={tier.name}
+              className={`pricing-card${tier.featured ? ' featured' : ''}`}
+              aria-label={`${tier.name} plan`}
+            >
+              <p className="pricing-tier">{tier.name}</p>
+              <p className="pricing-price">{tier.price}</p>
+              <ul className="pricing-features">
+                {tier.features.map((item) => (
+                  <li key={`${tier.name}-${item}`}>{item}</li>
+                ))}
+              </ul>
+              <Link href={tier.href} className={tier.featured ? 'btn-primary' : 'btn-secondary'}>
+                {tier.cta}
+              </Link>
+            </article>
+          ))}
+        </div>
+        <p className="pricing-note">All plans include a 30-day free trial. No credit card required.</p>
+      </section>
+
+      <section className="who trust">
+        <h2>SOC 2 Type I Audit-Ready</h2>
+        <div className="who-grid">
+          <div className="who-item">
+            <span className="who-marker">-</span>
+            <p>Your data is encrypted, org-isolated, and never used to train AI models.</p>
+          </div>
+          <div className="who-item">
+            <span className="who-marker">-</span>
+            <p>Veteran-owned. Built in Colorado.</p>
           </div>
         </div>
+        <div className="footer-badges trust-badges">
+          <Image
+            src="/Veteran-Owned Certified.png"
+            alt="SBA Certified Veteran-Owned badge"
+            width={64}
+            height={80}
+          />
+          <Image
+            src="/Service-Disabled Veteran-Owned-Certified.png"
+            alt="SBA Certified Service-Disabled Veteran-Owned badge"
+            width={64}
+            height={80}
+          />
+        </div>
       </section>
 
-      {/* CTA */}
       <section className="cta">
-        <h2>Ready to See It?</h2>
-        <p>
-          Every Pipeline Penny deployment starts with a conversation.
-          No pitch deck. No pressure. Just clarity.
-        </p>
+        <h2>Ready to stop tracking compliance in spreadsheets?</h2>
+        <p>Launch Fleet-Compliance Sentinel for your team and activate Pipeline Penny when you need AI support.</p>
         <div className="cta-actions">
-          <Link href="https://www.truenorthstrategyops.com/contact" className="btn-primary">
-            Book a Free 15-Min Call
+          <Link href="/sign-up" className="btn-primary">
+            Start your 30-day free trial
+          </Link>
+          <Link href="https://www.truenorthstrategyops.com/contact" className="btn-secondary">
+            Book a Demo
           </Link>
           <a href="tel:555-555-5555" className="btn-secondary">
-            Call Jacob: 555-555-5555
+            Call 555-555-5555
           </a>
         </div>
-        <p className="cta-note">
-          Fixed scope. Fixed price. No open-ended projects. No surprise invoices.
-        </p>
       </section>
 
-      {/* Footer */}
       <footer className="site-footer">
         <div className="footer-brand">
-          <p>Pipeline Penny is a product of <a href="https://www.truenorthstrategyops.com">True North Data Strategies LLC</a></p>
+          <p>
+            Pipeline Penny is a product of{' '}
+            <a href="https://www.truenorthstrategyops.com">True North Data Strategies LLC</a>
+          </p>
           <p className="footer-certs">SBA-Certified VOSB/SDVOSB &middot; Colorado Springs, CO</p>
           <div className="footer-badges">
             <Image
@@ -241,40 +253,6 @@ export default function HomePage() {
         </div>
         <p className="footer-copy">&copy; 2026 True North Data Strategies LLC. All rights reserved.</p>
       </footer>
-
-      {activeScreen !== null && (
-        <div
-          className="lightbox"
-          role="dialog"
-          aria-modal="true"
-          aria-label={productScreens[activeScreen].label}
-        >
-          <button
-            type="button"
-            className="lightbox-backdrop"
-            onClick={() => setActiveScreen(null)}
-            aria-label="Close enlarged image"
-          />
-          <div className="lightbox-inner" role="document">
-            <button
-              type="button"
-              className="lightbox-close"
-              onClick={() => setActiveScreen(null)}
-              aria-label="Close enlarged image"
-            >
-              Close
-            </button>
-            <Image
-              src={productScreens[activeScreen].src}
-              alt={productScreens[activeScreen].alt}
-              width={3040}
-              height={1740}
-              className="lightbox-image"
-            />
-            <p className="lightbox-caption">{productScreens[activeScreen].label}</p>
-          </div>
-        </div>
-      )}
     </main>
   );
 }

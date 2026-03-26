@@ -24,7 +24,9 @@ export default async function FleetComplianceOnboardingPage() {
   const claimedOrgName = typeof sessionClaims?.org_name === 'string'
     ? sessionClaims.org_name
     : '';
-  const org = await ensureOrgProvisioned(orgId, claimedOrgName || `Organization ${orgId}`);
+  const org = await ensureOrgProvisioned(orgId, claimedOrgName || `Organization ${orgId}`, {
+    adminUserId: userId,
+  });
   const contact = await getOrganizationContact(orgId);
 
   if (org.onboardingComplete) {
@@ -56,3 +58,4 @@ export default async function FleetComplianceOnboardingPage() {
     </FleetComplianceErrorBoundary>
   );
 }
+

@@ -40,6 +40,52 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 
+.landing-main {
+  background: radial-gradient(circle at top, #234a6e 0%, #0f2439 38%, #081623 100%);
+  color: #e2e8f0;
+}
+
+.landing-main .hero,
+.landing-main .features,
+.landing-main .how,
+.landing-main .pricing {
+  max-width: 1100px;
+}
+
+.landing-main .hero h1,
+.landing-main .features h2,
+.landing-main .how h2,
+.landing-main .pricing h2,
+.landing-main .who h2 {
+  color: #f8fafc;
+}
+
+.landing-main .hero-sub,
+.landing-main .hero-desc,
+.landing-main .feature-card p,
+.landing-main .step-content p,
+.landing-main .who-item p,
+.landing-main .pricing-note {
+  color: rgba(226, 232, 240, 0.86);
+}
+
+.landing-main .feature-card,
+.landing-main .pricing-card,
+.landing-main .who {
+  border-color: rgba(148, 163, 184, 0.36);
+  background: rgba(15, 36, 57, 0.62);
+}
+
+.landing-main .btn-secondary {
+  color: #e2e8f0;
+  border-color: rgba(226, 232, 240, 0.38);
+}
+
+.landing-main .btn-secondary:hover {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(226, 232, 240, 0.7);
+}
+
 /* ===== NAVIGATION ===== */
 .nav {
   display: flex;
@@ -443,6 +489,89 @@ body {
   font-size: 0.95rem;
   color: var(--text-secondary);
   line-height: 1.6;
+}
+
+/* ===== PRICING ===== */
+.pricing {
+  padding: 5rem 2rem;
+  margin: 0 auto;
+}
+
+.pricing h2 {
+  font-size: 1.75rem;
+  font-weight: 700;
+  margin-bottom: 2rem;
+  letter-spacing: -0.02em;
+}
+
+.pricing-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1rem;
+}
+
+.pricing-card {
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 1.4rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.95rem;
+}
+
+.pricing-card.featured {
+  border-color: var(--teal);
+  box-shadow: 0 0 0 2px rgba(61, 142, 185, 0.25);
+}
+
+.pricing-tier {
+  font-size: 0.82rem;
+  letter-spacing: 0.06em;
+  font-weight: 700;
+  color: var(--teal-light);
+}
+
+.pricing-price {
+  font-size: 2rem;
+  line-height: 1;
+  color: #f8fafc;
+  font-weight: 700;
+}
+
+.pricing-features {
+  list-style: none;
+  display: grid;
+  gap: 0.45rem;
+  margin: 0;
+  padding: 0;
+  color: rgba(226, 232, 240, 0.9);
+  font-size: 0.92rem;
+  flex: 1;
+}
+
+.pricing-features li {
+  position: relative;
+  padding-left: 1rem;
+}
+
+.pricing-features li::before {
+  content: '-';
+  position: absolute;
+  left: 0;
+  color: var(--teal);
+}
+
+.pricing-note {
+  margin-top: 1rem;
+  font-size: 0.9rem;
+}
+
+.trust {
+  border-top: 1px solid rgba(148, 163, 184, 0.28);
+}
+
+.trust-badges {
+  justify-content: flex-start;
 }
 
 /* ===== CTA ===== */
@@ -1218,8 +1347,13 @@ a.penny-source-pill:hover {
 
   .features,
   .who,
-  .how {
+  .how,
+  .pricing {
     padding: 3rem 1.5rem;
+  }
+
+  .pricing-grid {
+    grid-template-columns: 1fr;
   }
 
   .step {

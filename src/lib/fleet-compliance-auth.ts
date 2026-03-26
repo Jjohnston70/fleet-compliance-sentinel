@@ -46,7 +46,10 @@ function resolveOrgRole(sessionClaims: any): FleetComplianceRole {
   return 'member';
 }
 
-export async function requireFleetComplianceOrg(request: Request): Promise<{
+export async function requireFleetComplianceOrg(
+  request: Request,
+  options: { allowCanceled?: boolean } = {},
+): Promise<{
   userId: string;
   orgId: string;
 }> {
@@ -60,7 +63,7 @@ export async function requireFleetComplianceOrg(request: Request): Promise<{
     throw new FleetComplianceAuthError(403, 'Forbidden');
   }
   const plan = await getOrgPlan(orgId);
-  if (plan.accessState === 'canceled') {
+  if (!options.allowCanceled && plan.accessState === 'canceled') {
     throw new FleetComplianceAuthError(403, 'Organization access is canceled');
   }
 
@@ -71,7 +74,8 @@ export async function requireFleetComplianceOrg(request: Request): Promise<{
 
 export async function requireFleetComplianceOrgWithRole(
   request: Request,
-  requiredRole: 'admin' | 'member'
+  requiredRole: 'admin' | 'member',
+  options: { allowCanceled?: boolean } = {},
 ): Promise<{ userId: string; orgId: string }> {
   assertRequestShape(request);
   const { userId, orgId, sessionClaims } = await auth();
@@ -83,7 +87,7 @@ export async function requireFleetComplianceOrgWithRole(
     throw new FleetComplianceAuthError(403, 'Forbidden');
   }
   const plan = await getOrgPlan(orgId);
-  if (plan.accessState === 'canceled') {
+  if (!options.allowCanceled && plan.accessState === 'canceled') {
     throw new FleetComplianceAuthError(403, 'Organization access is canceled');
   }
 

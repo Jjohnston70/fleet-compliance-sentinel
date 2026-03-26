@@ -22,7 +22,9 @@ export default async function FleetComplianceLayout({ children }: { children: Re
     ? sessionClaims.org_name
     : '';
   const fallbackOrgName = claimedOrgName || `Organization ${orgId}`;
-  const organization = await ensureOrgProvisioned(orgId, fallbackOrgName);
+  const organization = await ensureOrgProvisioned(orgId, fallbackOrgName, {
+    adminUserId: userId,
+  });
   const plan = await getOrgPlan(orgId);
 
   if (!plan.isActive) {

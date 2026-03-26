@@ -15,11 +15,10 @@
     "docs:vendors:prepare": "node scripts/prepare-vendor-docs-package.mjs",
     "docs:vendors:package": "npm run docs:vendors && npm run docs:vendors:prepare",
     "compliance:legal-check": "node scripts/check-legal-pages.mjs",
-    "compliance:ops-check": "node scripts/check-operational-gaps.mjs",
+    "compliance:ops-check": "node scripts/ops-check.mjs",
     "sync:knowledge": "node scripts/sync-local-knowledge.mjs",
     "build:cfr-index": "tsx scripts/build-cfr-index.mjs",
-    "eval:penny": "node scripts/run-penny-evals.mjs",
-        "compliance:ops-check": "node scripts/ops-check.mjs"
+    "eval:penny": "node scripts/run-penny-evals.mjs"
   },
   "dependencies": {
     "@clerk/nextjs": "^6.38.2",
@@ -40,7 +39,8 @@
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "react-markdown": "^10.1.0",
-    "remark-gfm": "^4.0.1"
+    "remark-gfm": "^4.0.1",
+    "stripe": "^21.0.0"
   },
   "devDependencies": {
     "@types/node": "^20.19.0",

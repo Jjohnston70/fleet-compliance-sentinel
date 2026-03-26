@@ -1,5 +1,7 @@
+import { clerkClient } from '@clerk/nextjs/server';
 import { getSQL, ensureOrgScopingTables } from '@/lib/fleet-compliance-db';
 import { recordOrgAuditEvent } from '@/lib/org-audit';
+import { stripe } from '@/lib/stripe';
 
 export interface OrganizationRecord {
   id: string;
@@ -18,6 +20,11 @@ export interface OrganizationContactRecord {
   primaryContact: string;
   createdAt: Date | null;
   updatedAt: Date | null;
+}
+
+export interface EnsureOrgProvisionedOptions {
+  adminEmail?: string | null;
+  adminUserId?: string | null;
 }
 
 function parseDate(value: unknown): Date | null {
@@ -47,6 +54,24 @@ function normalizeOrgName(orgName: string): string {
   return trimmed.length > 0 ? trimmed.slice(0, 160) : 'Fleet-Compliance Organization';
 }
 
+function normalizeEmail(value: unknown): string | null {
+  if (typeof value !== 'string') return null;
+  const trimmed = value.trim().toLowerCase();
+  return trimmed.length > 0 ? trimmed.slice(0, 320) : null;
+}
+
+async function resolveClerkUserEmail(userId: string): Promise<string | null> {
+  const client = await clerkClient();
+  const user = await client.users.getUser(userId);
+  const primary = normalizeEmail(user.primaryEmailAddress?.emailAddress);
+  if (primary) return primary;
+  for (const item of user.emailAddresses ?? []) {
+    const value = normalizeEmail(item.emailAddress);
+    if (value) return value;
+  }
+  return null;
+}
+
 function mapOrgRow(row: Record<string, unknown>): OrganizationRecord {
   return {
     id: String(row.id),
@@ -61,7 +86,11 @@ function mapOrgRow(row: Record<string, unknown>): OrganizationRecord {
   };
 }
 
-export async function ensureOrgProvisioned(orgId: string, orgName: string): Promise<OrganizationRecord> {
+export async function ensureOrgProvisioned(
+  orgId: string,
+  orgName: string,
+  options: EnsureOrgProvisionedOptions = {},
+): Promise<OrganizationRecord> {
   await ensureOrgScopingTables();
   const sql = getSQL();
   const safeOrgName = normalizeOrgName(orgName);
@@ -117,6 +146,58 @@ export async function ensureOrgProvisioned(orgId: string, orgName: string): Prom
   `;
 
   const row = mapOrgRow(inserted[0] as Record<string, unknown>);
+  const existingSubscriptionRows = await sql`
+    SELECT id, stripe_customer_id
+    FROM subscriptions
+    WHERE org_id = ${orgId}
+    ORDER BY created_at DESC
+    LIMIT 1
+  `;
+  const existingSubscriptionId = Number(existingSubscriptionRows[0]?.id);
+  const existingStripeCustomerId = typeof existingSubscriptionRows[0]?.stripe_customer_id === 'string'
+    ? existingSubscriptionRows[0].stripe_customer_id.trim()
+    : '';
+
+  if (existingStripeCustomerId) {
+    return row;
+  }
+
+  const adminEmail = normalizeEmail(options.adminEmail)
+    ?? (options.adminUserId ? await resolveClerkUserEmail(options.adminUserId) : null);
+
+  const customer = await stripe.customers.create({
+    name: row.name,
+    email: adminEmail ?? undefined,
+    metadata: {
+      org_id: orgId,
+      user_id: options.adminUserId ?? '',
+    },
+  });
+
+  if (Number.isFinite(existingSubscriptionId) && existingSubscriptionId > 0) {
+    await sql`
+      UPDATE subscriptions
+      SET stripe_customer_id = ${customer.id}
+      WHERE id = ${existingSubscriptionId}
+    `;
+  } else {
+    await sql`
+      INSERT INTO subscriptions (
+        org_id,
+        stripe_customer_id,
+        plan,
+        status,
+        current_period_ends_at
+      ) VALUES (
+        ${orgId},
+        ${customer.id},
+        'trial',
+        'trialing',
+        ${row.trialEndsAt ? row.trialEndsAt.toISOString() : null}
+      )
+    `;
+  }
+
   await recordOrgAuditEvent({
     orgId,
     eventType: 'org.provisioned',
@@ -124,6 +205,7 @@ export async function ensureOrgProvisioned(orgId: string, orgName: string): Prom
     metadata: {
       plan: row.plan,
       onboardingComplete: row.onboardingComplete,
+      stripeCustomerId: customer.id,
     },
   });
   return row;

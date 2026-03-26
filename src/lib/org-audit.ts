@@ -9,6 +9,8 @@ export type OrgAuditEventType =
   | 'org.onboarding.completed'
   | 'org.trial.active'
   | 'org.trial.expired'
+  | 'org.subscription.checkout_started'
+  | 'org.subscription.portal_session_created'
   | 'org.plan.changed'
   | 'org.subscription.status_changed'
   | 'org.subscription.created'

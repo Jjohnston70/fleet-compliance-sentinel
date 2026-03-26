@@ -25,6 +25,10 @@ const SPECS: EnvVarSpec[] = [
   { name: 'SITE_URL', category: 'REQUIRED', reason: 'Canonical base URL for sitemap/robots metadata' },
   { name: 'PENNY_GENERAL_FALLBACK_SESSION_LIMIT', category: 'REQUIRED', reason: 'Session fallback throttle control' },
   { name: 'CORS_ORIGINS', category: 'REQUIRED', reason: 'Railway backend CORS allowlist lock-down' },
+  { name: 'STRIPE_SECRET_KEY', category: 'REQUIRED', reason: 'Stripe server SDK key for checkout and portal sessions' },
+  { name: 'NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY', category: 'REQUIRED', reason: 'Stripe publishable key used by frontend Stripe integrations' },
+  { name: 'STRIPE_STARTER_PRICE_ID', category: 'REQUIRED', reason: 'Stripe price id for Starter subscription plan' },
+  { name: 'STRIPE_PRO_PRICE_ID', category: 'REQUIRED', reason: 'Stripe price id for Professional subscription plan' },
 
   // OPTIONAL: monitoring, alerts, and access controls
   { name: 'RESEND_API_KEY', category: 'OPTIONAL', reason: 'Email delivery for Fleet-Compliance alert engine' },
