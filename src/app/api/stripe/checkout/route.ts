@@ -3,7 +3,7 @@ import { NextResponse } from 'next/server';
 import { fleetComplianceAuthErrorResponse, requireFleetComplianceOrg } from '@/lib/fleet-compliance-auth';
 import { ensureOrgScopingTables, getSQL } from '@/lib/fleet-compliance-db';
 import { recordOrgAuditEvent } from '@/lib/org-audit';
-import { stripe } from '@/lib/stripe';
+import { getStripeClient } from '@/lib/stripe';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -125,6 +125,10 @@ export async function POST(request: Request) {
 
   await ensureOrgScopingTables();
   const sql = getSQL();
+  const stripe = getStripeClient();
+  if (!stripe) {
+    return NextResponse.json({ error: 'Stripe is not configured' }, { status: 503 });
+  }
 
   try {
     const orgRows = await sql`

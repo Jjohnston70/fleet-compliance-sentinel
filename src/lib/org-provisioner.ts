@@ -1,7 +1,7 @@
 import { clerkClient } from '@clerk/nextjs/server';
 import { getSQL, ensureOrgScopingTables } from '@/lib/fleet-compliance-db';
 import { recordOrgAuditEvent } from '@/lib/org-audit';
-import { stripe } from '@/lib/stripe';
+import { getStripeClient } from '@/lib/stripe';
 
 export interface OrganizationRecord {
   id: string;
@@ -164,6 +164,36 @@ export async function ensureOrgProvisioned(
 
   const adminEmail = normalizeEmail(options.adminEmail)
     ?? (options.adminUserId ? await resolveClerkUserEmail(options.adminUserId) : null);
+  const stripe = getStripeClient();
+
+  if (!stripe) {
+    if (!(Number.isFinite(existingSubscriptionId) && existingSubscriptionId > 0)) {
+      await sql`
+        INSERT INTO subscriptions (
+          org_id,
+          plan,
+          status,
+          current_period_ends_at
+        ) VALUES (
+          ${orgId},
+          'trial',
+          'trialing',
+          ${row.trialEndsAt ? row.trialEndsAt.toISOString() : null}
+        )
+      `;
+    }
+    await recordOrgAuditEvent({
+      orgId,
+      eventType: 'org.provisioned',
+      actorType: 'system',
+      metadata: {
+        plan: row.plan,
+        onboardingComplete: row.onboardingComplete,
+        stripeConfigured: false,
+      },
+    });
+    return row;
+  }
 
   const customer = await stripe.customers.create({
     name: row.name,
@@ -206,6 +236,7 @@ export async function ensureOrgProvisioned(
       plan: row.plan,
       onboardingComplete: row.onboardingComplete,
       stripeCustomerId: customer.id,
+      stripeConfigured: true,
     },
   });
   return row;

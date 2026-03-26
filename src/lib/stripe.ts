@@ -1,16 +1,29 @@
 import Stripe from 'stripe';
 
-const stripeSecretKey = process.env.STRIPE_SECRET_KEY;
-if (!stripeSecretKey) {
-  throw new Error('STRIPE_SECRET_KEY is not set');
+interface StripeCache {
+  client: Stripe;
+  key: string;
 }
 
-const globalForStripe = globalThis as unknown as { stripe?: Stripe };
+const globalForStripe = globalThis as unknown as {
+  __stripeCache?: StripeCache;
+};
 
-export const stripe = globalForStripe.stripe ?? new Stripe(stripeSecretKey, {
-  typescript: true,
-});
+function readStripeSecretKey(): string | null {
+  const key = process.env.STRIPE_SECRET_KEY?.trim();
+  return key && key.length > 0 ? key : null;
+}
 
-if (process.env.NODE_ENV !== 'production') {
-  globalForStripe.stripe = stripe;
+export function getStripeClient(): Stripe | null {
+  const key = readStripeSecretKey();
+  if (!key) return null;
+
+  const cached = globalForStripe.__stripeCache;
+  if (cached && cached.key === key) {
+    return cached.client;
+  }
+
+  const client = new Stripe(key, { typescript: true });
+  globalForStripe.__stripeCache = { client, key };
+  return client;
 }
