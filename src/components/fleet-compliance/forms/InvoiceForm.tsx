@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import {
   addRecord,
@@ -12,6 +12,7 @@ import {
 interface Props {
   initial?: LocalInvoice;
   returnHref?: string;
+  orgAssets?: Array<{ assetId: string; label: string }>;
 }
 
 const BLANK: Omit<LocalInvoice, 'id' | 'createdAt'> = {
@@ -29,11 +30,22 @@ const BLANK: Omit<LocalInvoice, 'id' | 'createdAt'> = {
   note: '',
 };
 
-export default function InvoiceForm({ initial, returnHref = '/fleet-compliance/invoices' }: Props) {
+export default function InvoiceForm({
+  initial,
+  returnHref = '/fleet-compliance/invoices',
+  orgAssets = [],
+}: Props) {
   const router = useRouter();
   const [form, setForm] = useState<Omit<LocalInvoice, 'id' | 'createdAt'>>(initial ?? BLANK);
   const [saved, setSaved] = useState(false);
   const [error, setError] = useState('');
+  const isEditing = Boolean(initial?.id && initial?.createdAt);
+
+  useEffect(() => {
+    setForm(initial ?? BLANK);
+    setSaved(false);
+    setError('');
+  }, [initial]);
 
   function set(field: keyof typeof BLANK, value: string) {
     setForm((prev) => ({ ...prev, [field]: value }));
@@ -46,7 +58,7 @@ export default function InvoiceForm({ initial, returnHref = '/fleet-compliance/i
     if (!form.invoiceNumber.trim()) { setError('Invoice number is required.'); return; }
     if (!form.invoiceDate) { setError('Invoice date is required.'); return; }
 
-    if (initial) {
+    if (isEditing && initial) {
       updateRecord<LocalInvoice>('fleet-compliance:store:invoices', initial.id, form);
     } else {
       addRecord<LocalInvoice>('fleet-compliance:store:invoices', {
@@ -111,7 +123,17 @@ export default function InvoiceForm({ initial, returnHref = '/fleet-compliance/i
       <fieldset className="fleet-compliance-fieldset">
         <legend>Asset Link</legend>
         <div className="fleet-compliance-form-grid">
-          {f('assetId', 'Asset ID', { placeholder: 'Link to an asset' })}
+          <label className="fleet-compliance-field-stack">
+            <span>Asset ID</span>
+            <select value={form.assetId} onChange={(e) => set('assetId', e.target.value)}>
+              <option value="">— Select Asset —</option>
+              {orgAssets.map((asset) => (
+                <option key={asset.assetId} value={asset.assetId}>
+                  {asset.assetId} — {asset.label}
+                </option>
+              ))}
+            </select>
+          </label>
           {f('serviceType', 'Service Type', { placeholder: 'Oil change, DOT inspection, etc.' })}
         </div>
       </fieldset>
@@ -126,7 +148,7 @@ export default function InvoiceForm({ initial, returnHref = '/fleet-compliance/i
 
       <div className="fleet-compliance-action-row">
         <button type="submit" className="btn-primary" disabled={saved}>
-          {initial ? 'Save Changes' : 'Add Invoice'}
+          {isEditing ? 'Save Changes' : 'Add Invoice'}
         </button>
         <button type="button" className="btn-secondary" onClick={() => router.push(returnHref)}>
           Cancel

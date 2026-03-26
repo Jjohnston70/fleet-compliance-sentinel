@@ -1,6 +1,6 @@
-import { loadFleetComplianceData } from '@/lib/fleet-compliance-data';
+import { loadFleetComplianceData, loadFleetComplianceInvoices } from '@/lib/fleet-compliance-data';
 
-const MAX_CONTEXT_CHARS = 8000;
+const MAX_CONTEXT_CHARS = 12000;
 
 type ContextEntry = {
   line: string;
@@ -12,6 +12,8 @@ type ContextSections = {
   assets: ContextEntry[];
   permits: ContextEntry[];
   suspense: ContextEntry[];
+  maintenance: ContextEntry[];
+  invoices: ContextEntry[];
 };
 
 function stringValue(value: unknown, fallback = 'Unknown'): string {
@@ -59,6 +61,32 @@ function sortEntriesByDateAscending(entries: ContextEntry[]): ContextEntry[] {
   return [...entries].sort((a, b) => toSortableTimestamp(a.sortKey) - toSortableTimestamp(b.sortKey));
 }
 
+function sortEntriesByDateDescending(entries: ContextEntry[]): ContextEntry[] {
+  return [...entries].sort((a, b) => toSortableTimestamp(b.sortKey) - toSortableTimestamp(a.sortKey));
+}
+
+function oldestEntryIndex(entries: ContextEntry[]): number {
+  if (entries.length === 0) return -1;
+  let oldestIndex = 0;
+  let oldestSortKey = toSortableTimestamp(entries[0].sortKey);
+  for (let index = 1; index < entries.length; index += 1) {
+    const timestamp = toSortableTimestamp(entries[index].sortKey);
+    if (timestamp < oldestSortKey) {
+      oldestSortKey = timestamp;
+      oldestIndex = index;
+    }
+  }
+  return oldestIndex;
+}
+
+function formatCurrency(value: string): string {
+  const cleaned = value.replace(/[^0-9.-]/g, '').trim();
+  if (!cleaned) return 'Unknown';
+  const parsed = Number(cleaned);
+  if (Number.isNaN(parsed)) return 'Unknown';
+  return `$${parsed.toFixed(2)}`;
+}
+
 function renderContext(sections: ContextSections): string {
   const lines: string[] = [];
   lines.push('--- OPERATOR FLEET DATA ---');
@@ -73,6 +101,12 @@ function renderContext(sections: ContextSections): string {
   lines.push('');
   lines.push(`OPEN SUSPENSE ITEMS (${sections.suspense.length} items):`);
   lines.push(...(sections.suspense.length ? sections.suspense.map((entry) => entry.line) : ['- None']));
+  lines.push('');
+  lines.push(`RECENT MAINTENANCE (${sections.maintenance.length} events):`);
+  lines.push(...(sections.maintenance.length ? sections.maintenance.map((entry) => entry.line) : ['- None']));
+  lines.push('');
+  lines.push(`RECENT INVOICES (${sections.invoices.length} records):`);
+  lines.push(...(sections.invoices.length ? sections.invoices.map((entry) => entry.line) : ['- None']));
   lines.push('--- END OPERATOR DATA ---');
   return lines.join('\n');
 }
@@ -83,26 +117,38 @@ function trimToMaxContextChars(sections: ContextSections): ContextSections {
     assets: [...sections.assets],
     permits: [...sections.permits],
     suspense: [...sections.suspense],
+    maintenance: [...sections.maintenance],
+    invoices: [...sections.invoices],
   };
 
   let rendered = renderContext(mutable);
   while (rendered.length > MAX_CONTEXT_CHARS) {
-    const candidates = [
-      { key: 'drivers' as const, item: mutable.drivers[0] },
-      { key: 'assets' as const, item: mutable.assets[0] },
-      { key: 'permits' as const, item: mutable.permits[0] },
-      { key: 'suspense' as const, item: mutable.suspense[0] },
-    ].filter((candidate) => Boolean(candidate.item)) as Array<{
+    const sectionsWithOldest = [
+      { key: 'drivers' as const, index: oldestEntryIndex(mutable.drivers) },
+      { key: 'assets' as const, index: oldestEntryIndex(mutable.assets) },
+      { key: 'permits' as const, index: oldestEntryIndex(mutable.permits) },
+      { key: 'suspense' as const, index: oldestEntryIndex(mutable.suspense) },
+      { key: 'maintenance' as const, index: oldestEntryIndex(mutable.maintenance) },
+      { key: 'invoices' as const, index: oldestEntryIndex(mutable.invoices) },
+    ]
+      .filter((candidate) => candidate.index >= 0)
+      .map((candidate) => ({
+        key: candidate.key,
+        index: candidate.index,
+        item: mutable[candidate.key][candidate.index],
+      })) as Array<{
       key: keyof ContextSections;
+      index: number;
       item: ContextEntry;
     }>;
 
-    if (candidates.length === 0) {
+    if (sectionsWithOldest.length === 0) {
       break;
     }
 
-    candidates.sort((a, b) => toSortableTimestamp(a.item.sortKey) - toSortableTimestamp(b.item.sortKey));
-    mutable[candidates[0].key].shift();
+    sectionsWithOldest.sort((a, b) => toSortableTimestamp(a.item.sortKey) - toSortableTimestamp(b.item.sortKey));
+    const toTrim = sectionsWithOldest[0];
+    mutable[toTrim.key].splice(toTrim.index, 1);
     rendered = renderContext(mutable);
   }
 
@@ -125,9 +171,17 @@ export async function buildOrgContext(orgId: string): Promise<string> {
   const normalizedOrgId = orgId.trim();
   if (!normalizedOrgId) return '';
 
-  const data = await loadFleetComplianceData(normalizedOrgId);
+  const [data, dbInvoices] = await Promise.all([
+    loadFleetComplianceData(normalizedOrgId),
+    loadFleetComplianceInvoices(normalizedOrgId),
+  ]);
   const hasData =
-    data.drivers.length > 0 || data.assets.length > 0 || data.permits.length > 0 || data.suspense.length > 0;
+    data.drivers.length > 0 ||
+    data.assets.length > 0 ||
+    data.permits.length > 0 ||
+    data.suspense.length > 0 ||
+    data.maintenanceEvents.length > 0 ||
+    dbInvoices.length > 0;
   if (!hasData) return '';
 
   const employeeCdlMap = new Map<string, string>();
@@ -209,18 +263,50 @@ export async function buildOrgContext(orgId: string): Promise<string> {
       })
   );
 
+  const maintenance = sortEntriesByDateDescending(
+    data.maintenanceEvents.map((event) => {
+      const unit = stringValue(event.assetId, 'Unknown');
+      const maintenanceType = titleCase(stringValue(event.serviceType, 'Service'));
+      const date = normalizeDate(event.completedDate);
+      const cost = formatCurrency(stringValue(event.estimatedCost, ''));
+      const status = titleCase(stringValue(event.status, 'Unknown'));
+      return {
+        line: `- Unit: ${unit} | Type: ${maintenanceType} | Date: ${date} | Cost: ${cost} | Status: ${status}`,
+        sortKey: date,
+      };
+    })
+  ).slice(0, 20);
+
+  const invoices = sortEntriesByDateDescending(
+    dbInvoices.map((invoice) => {
+      const vendor = stringValue(invoice.vendor, 'Unknown Vendor');
+      const amount = formatCurrency(String(invoice.amount));
+      const date = normalizeDate(invoice.invoiceDate);
+      const category = titleCase(stringValue(invoice.category, 'other'));
+      const asset = stringValue(invoice.assetId, 'Unknown');
+      return {
+        line: `- Vendor: ${vendor} | Amount: ${amount} | Date: ${date} | Category: ${category} | Asset: ${asset}`,
+        sortKey: date,
+      };
+    })
+  ).slice(0, 20);
+
   const trimmed = trimToMaxContextChars({
     drivers,
     assets,
     permits,
     suspense,
+    maintenance,
+    invoices,
   });
   const context = renderContext(trimmed);
   if (
     trimmed.drivers.length === 0 &&
     trimmed.assets.length === 0 &&
     trimmed.permits.length === 0 &&
-    trimmed.suspense.length === 0
+    trimmed.suspense.length === 0 &&
+    trimmed.maintenance.length === 0 &&
+    trimmed.invoices.length === 0
   ) {
     return '';
   }

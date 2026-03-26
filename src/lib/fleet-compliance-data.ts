@@ -80,8 +80,19 @@ export interface FleetComplianceMaintenanceEventRecord {
   serviceType: string;
   status: string;
   completedDate: string;
+  estimatedCost: string;
   vendor: string;
   notes: string;
+}
+
+export interface FleetComplianceInvoiceRecord {
+  invoiceId: string;
+  vendor: string;
+  amount: number;
+  invoiceDate: string;
+  category: string;
+  assetId: string;
+  source: 'fleet_records' | 'invoice_table';
 }
 
 export interface FleetComplianceResourceLink {
@@ -197,6 +208,46 @@ function addOneYear(dateText: string | null | undefined): string {
   if (isNaN(parsed.getTime())) return '';
   parsed.setFullYear(parsed.getFullYear() + 1);
   return parsed.toISOString().slice(0, 10);
+}
+
+function parseCurrency(value: unknown): number {
+  if (typeof value === 'number') return Number.isFinite(value) ? value : 0;
+  if (typeof value !== 'string') return 0;
+  const cleaned = value.replace(/[^0-9.-]/g, '').trim();
+  if (!cleaned) return 0;
+  const parsed = Number(cleaned);
+  return Number.isFinite(parsed) ? parsed : 0;
+}
+
+function normalizeDate(value: unknown): string {
+  if (typeof value !== 'string') return '';
+  const trimmed = value.trim();
+  if (!trimmed) return '';
+  if (/^\d{4}-\d{2}-\d{2}/.test(trimmed)) return trimmed.slice(0, 10);
+
+  const slashDate = trimmed.match(/^(\d{1,2})[/-](\d{1,2})[/-](\d{2,4})$/);
+  if (slashDate) {
+    const month = Number(slashDate[1]);
+    const day = Number(slashDate[2]);
+    const rawYear = Number(slashDate[3]);
+    const year = rawYear < 100 ? 2000 + rawYear : rawYear;
+    if (month >= 1 && month <= 12 && day >= 1 && day <= 31) {
+      return `${year.toString().padStart(4, '0')}-${month.toString().padStart(2, '0')}-${day.toString().padStart(2, '0')}`;
+    }
+  }
+
+  const parsed = new Date(trimmed);
+  if (Number.isNaN(parsed.getTime())) return '';
+  return parsed.toISOString().slice(0, 10);
+}
+
+function categorizeSpend(text: string, fallback = 'other'): string {
+  const lower = text.toLowerCase();
+  if (/(permit|license|ifta|irp|ucr|mc-?150|authority)/.test(lower)) return 'permit';
+  if (/(fuel|diesel|gas|gasoline|def\b)/.test(lower)) return 'fuel';
+  if (/(insurance|premium|policy|liability|coverage)/.test(lower)) return 'insurance';
+  if (/(maintenance|repair|service|parts|labor|inspection|work order)/.test(lower)) return 'maintenance';
+  return fallback;
 }
 
 // ── Raw DB access ─────────────────────────────────────────────────────────
@@ -374,6 +425,7 @@ function transformMaintenanceEvents(raw: RawRow[]): FleetComplianceMaintenanceEv
     serviceType: s(r['Service Type'], 'Service'),
     status: s(r['Status'], 'open').toLowerCase(),
     completedDate: s(r['Completed Date'], s(r['Scheduled Date'])),
+    estimatedCost: s(r['Invoice Total'], s(r['Estimated Cost'], s(r['Cost']))),
     vendor: s(r['Vendor'], 'Unknown'),
     notes: s(r['Notes'], ''),
   }));
@@ -386,6 +438,7 @@ function transformMaintenanceSchedule(raw: RawRow[]): FleetComplianceMaintenance
     serviceType: s(r['Maintenance Type'], 'Scheduled'),
     status: s(r['Status'], 'scheduled').toLowerCase(),
     completedDate: s(r['Last Performed'], s(r['Next Due Date'])),
+    estimatedCost: s(r['Estimated Cost']),
     vendor: s(r['Service Provider'], 'Unknown'),
     notes: s(r['Notes'], ''),
   }));
@@ -585,6 +638,133 @@ export async function loadFleetComplianceData(orgId: string): Promise<FleetCompl
     suspenseAlertStates: uniqueValues(allSuspense.map((s) => s.alertState)),
     suspenseSeverities: uniqueValues(allSuspense.map((s) => s.severity)),
   };
+}
+
+function extractImportedInvoiceAmount(row: Record<string, unknown>): number {
+  const amountFields = [
+    'Invoice Total',
+    'Grand Total',
+    'Total Amount',
+    'Amount Due',
+    'Balance Due',
+    'Amount',
+    'Total',
+  ];
+  for (const field of amountFields) {
+    const parsed = parseCurrency(row[field]);
+    if (parsed > 0) return parsed;
+  }
+  return 0;
+}
+
+function extractImportedInvoiceDate(row: Record<string, unknown>): string {
+  const dateFields = ['Invoice Date', 'Completed Date', 'Date', 'Service Date'];
+  for (const field of dateFields) {
+    const parsed = normalizeDate(row[field]);
+    if (parsed) return parsed;
+  }
+  return '';
+}
+
+export async function loadFleetComplianceInvoices(orgId: string): Promise<FleetComplianceInvoiceRecord[]> {
+  const sql = getSQL();
+  const invoices: FleetComplianceInvoiceRecord[] = [];
+
+  try {
+    const importedRows = await sql`
+      SELECT collection, data, imported_at
+      FROM fleet_compliance_records
+      WHERE org_id = ${orgId}
+        AND deleted_at IS NULL
+        AND collection IN ('invoices', 'maintenance_tracker')
+    `;
+
+    for (const row of importedRows) {
+      const data = (row.data as Record<string, unknown>) ?? {};
+      const amount = extractImportedInvoiceAmount(data);
+      if (amount <= 0) continue;
+
+      const invoiceDate = extractImportedInvoiceDate(data) || normalizeDate(String(row.imported_at ?? ''));
+      if (!invoiceDate) continue;
+
+      const vendor = s(data['Vendor'], 'Unknown Vendor');
+      const assetId = s(data['Unit Number'], s(data['Asset ID'], s(data['Asset Name'])));
+      const categorySeed = [
+        s(data['Category']),
+        s(data['Invoice Category']),
+        vendor,
+        s(data['Work Completed']),
+        s(data['Work Requested']),
+        s(data['Notes']),
+      ].join(' ');
+      const fallback = row.collection === 'maintenance_tracker' ? 'maintenance' : 'other';
+
+      invoices.push({
+        invoiceId: s(data['Invoice ID'], `imported-${String(row.imported_at ?? Date.now())}`),
+        vendor,
+        amount,
+        invoiceDate,
+        category: categorizeSpend(categorySeed, fallback),
+        assetId,
+        source: 'fleet_records',
+      });
+    }
+  } catch {
+    // fleet_compliance_records may be unavailable in some environments
+  }
+
+  try {
+    const dbRows = await sql`
+      SELECT
+        id,
+        vendor,
+        unit_number,
+        invoice_date,
+        imported_at,
+        source_file,
+        grand_total,
+        subtotal,
+        parts_total,
+        labor_total,
+        shop_supplies,
+        sales_tax
+      FROM invoices
+      WHERE org_id = ${orgId}
+        AND deleted_at IS NULL
+    `;
+
+    for (const row of dbRows) {
+      const partsTotal = parseCurrency(row.parts_total);
+      const laborTotal = parseCurrency(row.labor_total);
+      const shopSupplies = parseCurrency(row.shop_supplies);
+      const salesTax = parseCurrency(row.sales_tax);
+      const computed = partsTotal + laborTotal + shopSupplies + salesTax;
+      const amount = parseCurrency(row.grand_total) || parseCurrency(row.subtotal) || computed;
+      if (amount <= 0) continue;
+
+      const invoiceDate =
+        normalizeDate(String(row.invoice_date ?? '')) ||
+        normalizeDate(String(row.imported_at ?? ''));
+      if (!invoiceDate) continue;
+
+      const vendor = s(row.vendor, 'Unknown Vendor');
+      const category = categorizeSpend(`${vendor} ${s(row.source_file)}`, 'maintenance');
+
+      invoices.push({
+        invoiceId: `db-${String(row.id)}`,
+        vendor,
+        amount,
+        invoiceDate,
+        category,
+        assetId: s(row.unit_number),
+        source: 'invoice_table',
+      });
+    }
+  } catch {
+    // invoices table may not exist in some environments
+  }
+
+  return invoices.sort((a, b) => b.invoiceDate.localeCompare(a.invoiceDate));
 }
 
 // ── Filter functions ──────────────────────────────────────────────────────

@@ -54,6 +54,12 @@ const modules = [
     status: 'Live',
   },
   {
+    href: '/fleet-compliance/spend',
+    title: 'Spend Dashboard',
+    description: 'Track monthly spend across maintenance, permits, fuel, insurance, and other categories.',
+    status: 'Live',
+  },
+  {
     href: '/fleet-compliance/alerts',
     title: 'Alerts',
     description: 'Compliance reminder emails grouped by owner. Vercel Cron at 08:00 UTC daily.',
@@ -141,6 +147,9 @@ export default async function FleetCompliancePage() {
           </Link>
           <Link href="/fleet-compliance/invoices/new" className="btn-secondary">
             Add Invoice
+          </Link>
+          <Link href="/fleet-compliance/spend" className="btn-secondary">
+            Spend Dashboard
           </Link>
           <Link href="/fleet-compliance/alerts" className="btn-secondary">
             Alerts
@@ -291,4 +300,3 @@ export default async function FleetCompliancePage() {
     </FleetComplianceErrorBoundary>
   );
 }
-

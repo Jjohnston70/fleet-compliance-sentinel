@@ -17,7 +17,8 @@ export type OrgAuditEventType =
   | 'org.subscription.webhook_received'
   | 'org.offboarding.scheduled'
   | 'org.offboarding.soft_deleted'
-  | 'org.offboarding.hard_deleted';
+  | 'org.offboarding.hard_deleted'
+  | 'invoice.pdf_parsed';
 
 export async function recordOrgAuditEvent(input: {
   orgId: string;
