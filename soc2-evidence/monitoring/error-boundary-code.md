@@ -1,25 +1,25 @@
-# Chief Error Boundary Evidence
+# Fleet-Compliance Error Boundary Evidence
 
 ## Source Files
-- `src/components/chief/ChiefErrorBoundary.tsx`
-- `src/app/chief/error.tsx`
+- `src/components/fleet-compliance/FleetComplianceErrorBoundary.tsx`
+- `src/app/fleet-compliance/error.tsx`
 - Wrapped pages:
   - `/chief`
-  - `/chief/assets`
-  - `/chief/compliance`
-  - `/chief/suspense`
-  - `/chief/employees`
-  - `/chief/invoices`
-  - `/chief/fmcsa`
-  - `/chief/alerts`
-  - `/chief/import`
+  - `/fleet-compliance/assets`
+  - `/fleet-compliance/compliance`
+  - `/fleet-compliance/suspense`
+  - `/fleet-compliance/employees`
+  - `/fleet-compliance/invoices`
+  - `/fleet-compliance/fmcsa`
+  - `/fleet-compliance/alerts`
+  - `/fleet-compliance/import`
 
 ## Structured Logging Contract
 
 ```json
 {
   "timestamp": "ISO-8601",
-  "page": "/chief/...",
+  "page": "/fleet-compliance/...",
   "error": "error.message",
   "userId": "string|null",
   "orgId": "string|null"

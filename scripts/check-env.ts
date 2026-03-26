@@ -17,7 +17,7 @@ const SPECS: EnvVarSpec[] = [
   // CRITICAL: auth + database
   { name: 'NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY', category: 'CRITICAL', reason: 'Clerk frontend auth bootstrap' },
   { name: 'CLERK_SECRET_KEY', category: 'CRITICAL', reason: 'Clerk server-side auth verification' },
-  { name: 'DATABASE_URL', category: 'CRITICAL', reason: 'Neon Postgres connection used by Chief APIs' },
+  { name: 'DATABASE_URL', category: 'CRITICAL', reason: 'Neon Postgres connection used by Fleet-Compliance APIs' },
 
   // REQUIRED: core app features and service security
   { name: 'PENNY_API_URL', category: 'REQUIRED', reason: 'Next.js Penny proxy target (Railway FastAPI)' },
@@ -27,11 +27,11 @@ const SPECS: EnvVarSpec[] = [
   { name: 'CORS_ORIGINS', category: 'REQUIRED', reason: 'Railway backend CORS allowlist lock-down' },
 
   // OPTIONAL: monitoring, alerts, and access controls
-  { name: 'RESEND_API_KEY', category: 'OPTIONAL', reason: 'Email delivery for Chief alert engine' },
-  { name: 'CHIEF_ALERT_FROM_EMAIL', category: 'OPTIONAL', reason: 'From address for compliance alerts' },
-  { name: 'CHIEF_ALERT_EMAIL', category: 'OPTIONAL', reason: 'Default compliance manager email destination' },
-  { name: 'CHIEF_CRON_SECRET', category: 'OPTIONAL', reason: 'Auth for cron-triggered alert sweep endpoint' },
-  { name: 'CHIEF_ORG_NAME', category: 'OPTIONAL', reason: 'Branding text in alert notifications' },
+  { name: 'RESEND_API_KEY', category: 'OPTIONAL', reason: 'Email delivery for Fleet-Compliance alert engine' },
+  { name: 'FLEET_COMPLIANCE_ALERT_FROM_EMAIL', category: 'OPTIONAL', reason: 'From address for compliance alerts' },
+  { name: 'FLEET_COMPLIANCE_ALERT_EMAIL', category: 'OPTIONAL', reason: 'Default compliance manager email destination' },
+  { name: 'FLEET_COMPLIANCE_CRON_SECRET', category: 'OPTIONAL', reason: 'Auth for cron-triggered alert sweep endpoint' },
+  { name: 'FLEET_COMPLIANCE_ORG_NAME', category: 'OPTIONAL', reason: 'Branding text in alert notifications' },
   { name: 'FMCSA_API_KEY', category: 'OPTIONAL', reason: 'FMCSA lookup route enablement' },
   { name: 'ADMIN_EMAIL', category: 'OPTIONAL', reason: 'Penny role bypass allowlist seed' },
   { name: 'PENNY_ALLOWED_EMAILS', category: 'OPTIONAL', reason: 'Additional email allowlist for Penny access' },
@@ -64,7 +64,7 @@ function check(category: EnvCategory) {
 export function runEnvCheck(options: { exitOnCritical?: boolean } = {}) {
   const { exitOnCritical = false } = options;
 
-  console.log('Environment check: Chief Sentinel');
+  console.log('Environment check: Fleet-Compliance Sentinel');
 
   const critical = check('CRITICAL');
   const required = check('REQUIRED');

@@ -65,5 +65,9 @@ knowledge/cfr-index/
 knowledge/org-data/
 knowledge/timeline/
 
+# Security pentest artifacts (keep folder, not reports)
+SECURITY_REPORTS/*.html
+SECURITY_REPORTS/*.pdf
+
 # Non-gov source backup (in repo for integration only, not deployed)
 pipeline_x_non_gov-main/

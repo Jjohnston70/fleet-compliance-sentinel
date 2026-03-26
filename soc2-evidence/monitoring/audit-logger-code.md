@@ -74,19 +74,19 @@ Audit logs are emitted via `console.log(JSON.stringify(payload))` and captured b
 
 | Route | Methods | Audit Actions |
 |---|---|---|
-| `/api/chief/alerts/preview` | GET | `data.read` |
-| `/api/chief/alerts/run` | POST | `cron.run` |
-| `/api/chief/alerts/trigger` | POST | `admin.action` |
-| `/api/chief/assets` | GET, POST | `data.read`, `data.write` |
-| `/api/chief/bulk-template` | GET | `data.read` |
-| `/api/chief/cron-health` | GET | `cron.run` |
-| `/api/chief/errors/client` | POST | `data.write` |
-| `/api/chief/fmcsa/lookup` | GET | `data.read` |
-| `/api/chief/import/parse` | POST | `import.upload` |
-| `/api/chief/import/rollback` | POST | `import.rollback`, `data.delete` |
-| `/api/chief/import/save` | POST | `import.approve`, `data.write`, `data.delete` |
-| `/api/chief/import/setup` | POST | `data.read` |
-| `/api/chief/[collection]/[id]/restore` | POST | `data.restore` |
+| `/api/fleet-compliance/alerts/preview` | GET | `data.read` |
+| `/api/fleet-compliance/alerts/run` | POST | `cron.run` |
+| `/api/fleet-compliance/alerts/trigger` | POST | `admin.action` |
+| `/api/fleet-compliance/assets` | GET, POST | `data.read`, `data.write` |
+| `/api/fleet-compliance/bulk-template` | GET | `data.read` |
+| `/api/fleet-compliance/cron-health` | GET | `cron.run` |
+| `/api/fleet-compliance/errors/client` | POST | `data.write` |
+| `/api/fleet-compliance/fmcsa/lookup` | GET | `data.read` |
+| `/api/fleet-compliance/import/parse` | POST | `import.upload` |
+| `/api/fleet-compliance/import/rollback` | POST | `import.rollback`, `data.delete` |
+| `/api/fleet-compliance/import/save` | POST | `import.approve`, `data.write`, `data.delete` |
+| `/api/fleet-compliance/import/setup` | POST | `data.read` |
+| `/api/fleet-compliance/[collection]/[id]/restore` | POST | `data.restore` |
 | `/api/invoices/import` | POST | `import.upload` |
 | `/api/invoices/setup` | POST | `data.read` |
 | `/api/penny/query` | POST | `penny.query` (no query text logged) |

@@ -1,15 +1,15 @@
 import { NextResponse } from 'next/server';
 import { ensureInvoiceTables } from '@/lib/invoice-db';
-import { chiefAuthErrorResponse, requireChiefOrgWithRole } from '@/lib/chief-auth';
+import { fleetComplianceAuthErrorResponse, requireFleetComplianceOrgWithRole } from '@/lib/fleet-compliance-auth';
 import { auditLog } from '@/lib/audit-logger';
 
 export async function POST(request: Request) {
   let userId: string;
   let orgId: string;
   try {
-    ({ userId, orgId } = await requireChiefOrgWithRole(request, 'admin'));
+    ({ userId, orgId } = await requireFleetComplianceOrgWithRole(request, 'admin'));
   } catch (error: unknown) {
-    const authResponse = chiefAuthErrorResponse(error);
+    const authResponse = fleetComplianceAuthErrorResponse(error);
     if (authResponse) return authResponse;
     return NextResponse.json({ success: false, error: 'Unauthorized' }, { status: 401 });
   }

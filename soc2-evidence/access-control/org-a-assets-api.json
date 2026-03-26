@@ -1,7 +1,7 @@
 {
   "capturedAt": "2026-03-21",
   "orgId": "org_3BGrjrWvxlgivTNUHXkgaGVTYak",
-  "endpoint": "/api/chief/assets",
+  "endpoint": "/api/fleet-compliance/assets",
   "assets": [
     { "assetId": "43585" },
     { "assetId": "ORGA-ISO-001" }

@@ -13,18 +13,20 @@ Canonical environment-variable reference for Phase 0 audit.
 |---|---|---|---|
 | `NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY` | CRITICAL | `src/lib/clerk.ts` | `pk_test_xxxxx` |
 | `CLERK_SECRET_KEY` | CRITICAL | `src/lib/clerk.ts` | `sk_test_xxxxx` |
-| `DATABASE_URL` | CRITICAL | `src/lib/chief-db.ts`, `scripts/init-db.mjs`, `scripts/test-import.mjs` | `postgresql://USER:PASSWORD@HOST/DB?sslmode=require` |
+| `DATABASE_URL` | CRITICAL | `src/lib/fleet-compliance-db.ts`, `scripts/init-db.mjs`, `scripts/test-import.mjs` | `postgresql://USER:PASSWORD@HOST/DB?sslmode=require` |
 | `PENNY_API_URL` | REQUIRED | `src/app/api/penny/{query,health,catalog}`, eval/sync scripts | `https://your-penny-service.up.railway.app` |
 | `PENNY_API_KEY` | REQUIRED | Penny proxy + Railway backend auth | `replace-with-strong-shared-secret` |
 | `SITE_URL` | REQUIRED | `src/app/robots.ts`, `src/app/sitemap.ts` | `https://pipelinepunks.com` |
 | `PENNY_GENERAL_FALLBACK_SESSION_LIMIT` | REQUIRED | `src/app/api/penny/query/route.ts` | `3` |
+| `UPSTASH_REDIS_REST_URL` | OPTIONAL | `src/lib/penny-rate-limit.ts` distributed rate limiting | `https://...upstash.io` |
+| `UPSTASH_REDIS_REST_TOKEN` | OPTIONAL | `src/lib/penny-rate-limit.ts` distributed rate limiting | `upstash-token` |
 | `CORS_ORIGINS` | REQUIRED | Railway backend CORS lock-down | `https://www.pipelinepunks.com,https://pipelinepunks.com` |
 | `PENNY_ENABLE_GENERAL_FALLBACK` | OPTIONAL | `src/app/api/penny/query/route.ts` | `true` or `false` |
-| `RESEND_API_KEY` | OPTIONAL | Chief alerts email delivery | `re_xxxxx` |
-| `CHIEF_ALERT_FROM_EMAIL` | OPTIONAL | Chief alerts pages + email sender | `compliance@yourorg.com` |
-| `CHIEF_ALERT_EMAIL` | OPTIONAL | `src/lib/chief-alert-engine.ts` fallback manager | `manager@yourorg.com` |
-| `CHIEF_CRON_SECRET` | REQUIRED | `POST /api/chief/alerts/run` auth | `long-random-secret` |
-| `CHIEF_ORG_NAME` | OPTIONAL | Alert email display text | `Example Fleet Co` |
+| `RESEND_API_KEY` | OPTIONAL | Fleet-Compliance alerts email delivery | `re_xxxxx` |
+| `FLEET_COMPLIANCE_ALERT_FROM_EMAIL` | OPTIONAL | Fleet-Compliance alerts pages + email sender | `compliance@yourorg.com` |
+| `FLEET_COMPLIANCE_ALERT_EMAIL` | OPTIONAL | `src/lib/fleet-compliance-alert-engine.ts` fallback manager | `manager@yourorg.com` |
+| `FLEET_COMPLIANCE_CRON_SECRET` | REQUIRED | `POST /api/fleet-compliance/alerts/run` auth | `long-random-secret` |
+| `FLEET_COMPLIANCE_ORG_NAME` | OPTIONAL | Alert email display text | `Fleet Compliance` |
 | `FMCSA_API_KEY` | OPTIONAL | FMCSA lookup page/endpoint | `your-fmcsa-key` |
 | `SENTRY_DSN` | REQUIRED | Sentry server + edge SDK init (`sentry.server.config.ts`) | `https://<key>@o<org>.ingest.us.sentry.io/<project>` |
 | `NEXT_PUBLIC_SENTRY_DSN` | REQUIRED | Sentry browser SDK init (`sentry.client.config.ts`) | same DSN as `SENTRY_DSN` |
@@ -103,7 +105,7 @@ PENNY_API_URL=https://your-penny-service.up.railway.app
 PENNY_API_KEY=replace-with-strong-shared-secret
 SITE_URL=https://pipelinepunks.com
 PENNY_GENERAL_FALLBACK_SESSION_LIMIT=3
-CHIEF_CRON_SECRET=replace-with-long-random-secret
+FLEET_COMPLIANCE_CRON_SECRET=replace-with-long-random-secret
 STRIPE_WEBHOOK_SECRET=whsec_xxxxx
 SENTRY_DSN=https://<key>@o<org>.ingest.us.sentry.io/<project>
 NEXT_PUBLIC_SENTRY_DSN=https://<key>@o<org>.ingest.us.sentry.io/<project>

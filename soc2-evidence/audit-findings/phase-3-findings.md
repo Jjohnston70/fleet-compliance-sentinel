@@ -69,9 +69,9 @@ All three Sentry configs (client, server, edge) implement `beforeSend` scrubbing
 
 **MF-1: Auth lifecycle events are defined but never emitted** — OPEN
 
-`AuditAction` includes `auth.login`, `auth.logout`, and `auth.failed`, but no route or middleware emits these events. Failed auth attempts throw `ChiefAuthError` and return before any `auditLog()` call.
+`AuditAction` includes `auth.login`, `auth.logout`, and `auth.failed`, but no route or middleware emits these events. Failed auth attempts throw `Fleet-ComplianceAuthError` and return before any `auditLog()` call.
 
-- **File**: `src/lib/audit-logger.ts:10-12`, `src/lib/chief-auth.ts:54-64`
+- **File**: `src/lib/audit-logger.ts:10-12`, `src/lib/fleet-compliance-auth.ts:54-64`
 - **Impact**: SOC 2 CC6.1 (logical access) expects login success/failure logging.
 - **Remediation**: Add `auditLog({ action: 'auth.failed' })` in auth error paths, or implement Clerk webhooks for login/logout events.
 

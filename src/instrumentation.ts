@@ -1,7 +1,7 @@
 import { runEnvCheck } from '../scripts/check-env';
 import * as Sentry from '@sentry/nextjs';
 
-const STARTUP_CHECK_FLAG = '__chief_env_check_ran__';
+const STARTUP_CHECK_FLAG = '__fleet_compliance_env_check_ran__';
 
 export async function register() {
   if (process.env.NEXT_RUNTIME === 'nodejs') {

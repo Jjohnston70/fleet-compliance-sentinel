@@ -4,7 +4,7 @@
     "action": "data.read",
     "userId": "user_39bKWmHH6919GHM91RqpBgbZaPG",
     "orgId": "org_3BGrjrWvxlgivTNUHXkgaGVTYak",
-    "resourceType": "chief.assets",
+    "resourceType": "fleet-compliance.assets",
     "resourceId": null,
     "metadata": {
       "collection": "assets_master",
@@ -18,7 +18,7 @@
     "action": "import.rollback",
     "userId": "user_39bKWmHH6919GHM91RqpBgbZaPG",
     "orgId": "org_3BGrjrWvxlgivTNUHXkgaGVTYak",
-    "resourceType": "chief.import",
+    "resourceType": "fleet-compliance.import",
     "resourceId": "0a6d224d-2e29-4278-b785-f3103ce809d5",
     "metadata": {
       "rowCount": 2

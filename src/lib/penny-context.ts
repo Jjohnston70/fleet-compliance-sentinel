@@ -1,4 +1,4 @@
-import { loadChiefData } from '@/lib/chief-data';
+import { loadFleetComplianceData } from '@/lib/fleet-compliance-data';
 
 const MAX_CONTEXT_CHARS = 8000;
 
@@ -125,7 +125,7 @@ export async function buildOrgContext(orgId: string): Promise<string> {
   const normalizedOrgId = orgId.trim();
   if (!normalizedOrgId) return '';
 
-  const data = await loadChiefData(normalizedOrgId);
+  const data = await loadFleetComplianceData(normalizedOrgId);
   const hasData =
     data.drivers.length > 0 || data.assets.length > 0 || data.permits.length > 0 || data.suspense.length > 0;
   if (!hasData) return '';

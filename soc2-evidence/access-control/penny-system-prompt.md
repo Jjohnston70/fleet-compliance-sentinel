@@ -32,3 +32,9 @@ SECURITY RULES — HIGHEST PRIORITY:
   - Gemini
   - Ollama
 
+## General Fallback Hardening
+
+- `GENERAL_FALLBACK_SYSTEM_PROMPT` now starts with the same six-rule `SECURITY_RULES_BLOCK`.
+- This closes the fallback-path bypass risk by enforcing the same injection, cross-org, and data-enumeration rules before any general-knowledge answer.
+- Fallback answers still require DOT-compliance scope and are prefixed:
+  - `General knowledge fallback (not from your uploaded docs):`

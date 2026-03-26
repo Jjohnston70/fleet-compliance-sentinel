@@ -32,7 +32,7 @@ The migration sets `DEFAULT 'org_default'` on all `org_id` columns. Clerk will n
 
 The response still includes `rows[0]` from the organizations table. This exposes `plan` and `trial_ends_at` to the client. Low severity since it's the org's own data.
 
-- **File**: `src/app/api/chief/onboarding/route.ts:103-106`
+- **File**: `src/app/api/fleet-compliance/onboarding/route.ts:103-106`
 - **Remediation**: Return only `{ status: 'ok', onboardingComplete: true }`.
 
 ---
@@ -53,9 +53,9 @@ The response still includes `rows[0]` from the organizations table. This exposes
 
 **MF-3: Client-side onboarding redirect flash** — OPEN (UX only)
 
-`ChiefOnboardingRedirect` still uses client-side `router.replace()` which briefly shows "Redirecting to onboarding..." before navigation.
+`Fleet-ComplianceOnboardingRedirect` still uses client-side `router.replace()` which briefly shows "Redirecting to onboarding..." before navigation.
 
-- **File**: `src/components/chief/ChiefOnboardingRedirect.tsx:25-32`
+- **File**: `src/components/fleet-compliance/Fleet-ComplianceOnboardingRedirect.tsx:25-32`
 
 **MF-4: `past_due` subscription status treated as active** — OPEN (intentional, now documented in code)
 

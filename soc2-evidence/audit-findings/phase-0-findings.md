@@ -17,7 +17,7 @@
 
 1. **Live secrets present in `.env` / `.env.local` on developer workstation** — While these files are correctly `.gitignore`'d and were never committed to git history, the audit confirmed they contain production-grade credentials (Clerk secret key, Google OAuth refresh token, Neon DB connection string, Vercel OIDC token). **Recommended fix**: Rotate all credentials immediately. Migrate all secrets to Vercel Environment Variables (production/preview) and Railway secret store. Remove `.env.local` from developer machines and use `vercel env pull` workflow instead. Document the rotation in `COMPLIANCE_MILESTONES.md`.
 
-2. **Google Drive coupling is broad and deeply embedded** — The `/resources` route, middleware matcher, Penny query proxy, Chief dashboard cards, and `chief-data.ts` link data all reference Google Drive / `googleapis`. This is a security surface (OAuth refresh tokens, Drive API scopes) and an architectural liability for SOC 2 system boundary definition. **Recommended fix**: Execute the full removal plan in AUDIT_REPORT.md Section 3 during Phase 1. Delete `src/lib/drive.ts`, both `/resources` routes, the middleware matcher, Navigation link, sitemap entry, and all `/resources` href references in `chief-data.ts`. Remove `googleapis` from `package.json`. Update `ENV_EXAMPLE.md` to drop Drive-related vars.
+2. **Google Drive coupling is broad and deeply embedded** — The `/resources` route, middleware matcher, Penny query proxy, Fleet-Compliance dashboard cards, and `fleet-compliance-data.ts` link data all reference Google Drive / `googleapis`. This is a security surface (OAuth refresh tokens, Drive API scopes) and an architectural liability for SOC 2 system boundary definition. **Recommended fix**: Execute the full removal plan in AUDIT_REPORT.md Section 3 during Phase 1. Delete `src/lib/drive.ts`, both `/resources` routes, the middleware matcher, Navigation link, sitemap entry, and all `/resources` href references in `fleet-compliance-data.ts`. Remove `googleapis` from `package.json`. Update `ENV_EXAMPLE.md` to drop Drive-related vars.
 
 ---
 
@@ -27,7 +27,7 @@
 
 2. **`demo` role codepath active in production** — `penny-access.ts:3` includes `demo` in the role allowlist, `penny/page.tsx:56` branches on it, and `penny/query/route.ts:165` has fallback behavior tied to it. Demo users may have different security boundaries than production users. **Recommended fix**: Remove `demo` role from allowlist and all demo-specific branching before first paying client. If demo access is still needed, gate it behind a feature flag checked at the edge, not in role logic.
 
-3. **15 environment variables referenced in code but missing from `.env.example` documentation** — Including `ADMIN_EMAIL`, `CHIEF_ALERT_EMAIL`, `PENNY_ALLOWED_EMAILS`, and various `KNOWLEDGE_*` / `RAILWAY_*` vars. This creates deployment risk — a new developer or CI pipeline will have silent failures. **Recommended fix**: `ENV_EXAMPLE.md` was created during this audit but the root `.env.example` file still lacks these entries. Reconcile both files and keep one canonical source.
+3. **15 environment variables referenced in code but missing from `.env.example` documentation** — Including `ADMIN_EMAIL`, `FLEET_COMPLIANCE_ALERT_EMAIL`, `PENNY_ALLOWED_EMAILS`, and various `KNOWLEDGE_*` / `RAILWAY_*` vars. This creates deployment risk — a new developer or CI pipeline will have silent failures. **Recommended fix**: `ENV_EXAMPLE.md` was created during this audit but the root `.env.example` file still lacks these entries. Reconcile both files and keep one canonical source.
 
 4. **Dependency hygiene issues** — `typescript` is listed in `dependencies` instead of `devDependencies` (ships to production unnecessarily). `lucide-react` is declared but not imported anywhere. Workspace packages (`@tnds/*`) declare dependencies only at root, which is brittle if packages are ever published or isolated. **Recommended fix**: Move `typescript` to `devDependencies`. Remove `lucide-react` if confirmed unused via build. Add `mammoth`, `pdf-parse`, `csv-parse`, `cheerio` to `packages/tnds-ingest-core/package.json`.
 
@@ -73,7 +73,7 @@
 ### Resolved Since Original Audit
 - **Critical 1 (secrets in .env)**: Resolved in Phase 1 — secrets are `.gitignore`'d, never committed. Rotation and migration to managed secret stores is an operational task tracked separately.
 - **Critical 2 (Google Drive coupling)**: Fully resolved in Phase 1 — `googleapis` removed from package.json, all `/resources` routes deleted, `drive.ts` deleted, zero grep matches confirmed across `src/`.
-- **High 1 (localStorage dependencies)**: Resolved — localStorage removed from Chief business-state components; only cookie consent remains in localStorage (non-critical).
+- **High 1 (localStorage dependencies)**: Resolved — localStorage removed from Fleet-Compliance business-state components; only cookie consent remains in localStorage (non-critical).
 - **High 2 (demo role codepath)**: Resolved — demo role removed from Penny access allowlist and trial-mode branching.
 - **Medium 2 (dead code files)**: Resolved — `LocalRecordsPanel.tsx`, `chief-knowledge-timeline.ts`, and root `PennyChat.tsx` deleted.
 - **High 4 (dependency hygiene)**: Resolved — `typescript` moved to `devDependencies`, `lucide-react` removed.

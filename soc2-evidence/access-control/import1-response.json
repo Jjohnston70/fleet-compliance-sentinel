@@ -1,6 +1,6 @@
 {
   "capturedAt": "2026-03-21",
-  "endpoint": "/api/chief/import/save",
+  "endpoint": "/api/fleet-compliance/import/save",
   "status": "ok",
   "orgId": "org_3BGrjrWvxlgivTNUHXkgaGVTYak",
   "totalInserted": 2,

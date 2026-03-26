@@ -8,6 +8,7 @@ import { isClerkEnabled } from '@/lib/clerk';
 import { canAccessPenny, canBypassPennyRoleByEmail, resolvePennyRole } from '@/lib/penny-access';
 import { buildPennyContext } from '@/lib/penny-ingest';
 import { buildOrgContext } from '@/lib/penny-context';
+import { checkPennyRateLimit } from '@/lib/penny-rate-limit';
 import { auditLog } from '@/lib/audit-logger';
 import { setSentryRequestContext } from '@/lib/sentry-context';
 
@@ -152,6 +153,24 @@ export async function POST(request: NextRequest) {
 
   if (!canAccessPenny(role) && !hasEmailBypass) {
     return NextResponse.json({ error: 'Insufficient permissions' }, { status: 403 });
+  }
+
+  const rateLimitResult = await checkPennyRateLimit(userId);
+  if (!rateLimitResult.success) {
+    auditLog({
+      action: 'rate_limit.exceeded',
+      userId,
+      orgId,
+      resourceType: 'penny.query',
+      metadata: { userId },
+    });
+    return NextResponse.json(
+      { error: 'Rate limit exceeded', retryAfter: 60 },
+      {
+        status: 429,
+        headers: { 'Retry-After': '60' },
+      }
+    );
   }
 
   let orgContext = '';

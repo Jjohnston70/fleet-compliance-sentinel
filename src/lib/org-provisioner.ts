@@ -1,4 +1,4 @@
-import { getSQL, ensureOrgScopingTables } from '@/lib/chief-db';
+import { getSQL, ensureOrgScopingTables } from '@/lib/fleet-compliance-db';
 import { recordOrgAuditEvent } from '@/lib/org-audit';
 
 export interface OrganizationRecord {
@@ -44,7 +44,7 @@ function parseMetadata(value: unknown): Record<string, unknown> {
 
 function normalizeOrgName(orgName: string): string {
   const trimmed = orgName.trim();
-  return trimmed.length > 0 ? trimmed.slice(0, 160) : 'Chief Organization';
+  return trimmed.length > 0 ? trimmed.slice(0, 160) : 'Fleet-Compliance Organization';
 }
 
 function mapOrgRow(row: Record<string, unknown>): OrganizationRecord {

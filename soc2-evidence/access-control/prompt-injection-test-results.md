@@ -27,3 +27,10 @@ Test Harness: `fastapi.testclient.TestClient` against local updated `railway-bac
 - No organization enumeration data was disclosed.
 - No system prompt content was disclosed.
 
+## Phase 6 Re-Validation (General Fallback Hardening)
+
+Date: 2026-03-25  
+Method: direct async call into `query(...)` in `railway-backend/app/main.py` after fallback prompt update.
+
+- Result: all four adversarial queries still returned the exact refusal message.
+- Result: fallback path remains guarded by the same refusal behavior for prompt injection/enumeration queries.

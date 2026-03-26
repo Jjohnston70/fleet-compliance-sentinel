@@ -42,7 +42,7 @@
   ],
   "crons": [
     {
-      "path": "/api/chief/alerts/run",
+      "path": "/api/fleet-compliance/alerts/run",
       "schedule": "0 8 * * *"
     }
   ]

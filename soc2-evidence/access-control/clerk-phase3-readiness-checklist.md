@@ -1,4 +1,4 @@
-# SOC2 Phase 2 Readiness Checklist — Chief Multi-Tenant Validation
+# SOC2 Phase 2 Readiness Checklist — Fleet-Compliance Multi-Tenant Validation
 
 Run Date/Time: 2026-03-21 18:24 UTC  
 Operator/Reviewer: Claude (automated run, supervised by human reviewer)  
@@ -9,8 +9,8 @@ Clerk Instance: `ins_39a84gbxB1P8fUCsWNvyXcWsuTF` (True North Command Center —
 
 | Role | User | Email | Clerk User ID | Org | Clerk Org ID |
 | --- | --- | --- | --- | --- | --- |
-| User A (Org A Admin) | Veronica Johnston | veronica@truenorthstrategyops.com | user_39bKWmHH6919GHM91RqpBgbZaPG | Chief Test Org A | org_3BGrjrWvxlgivTNUHXkgaGVTYak |
-| User B (Org B Admin) | Jacob Johnston | jacob@truenorthstrategyops.com | user_39aDiUfJfxKVzGWMhZMz6AKzmlE | Chief Test Org B | org_3BGrldUqFLLG6WdzJyvLlJAoD8C |
+| User A (Org A Admin) | Veronica Johnston | veronica@truenorthstrategyops.com | user_39bKWmHH6919GHM91RqpBgbZaPG | Fleet-Compliance Test Org A | org_3BGrjrWvxlgivTNUHXkgaGVTYak |
+| User B (Org B Admin) | Jacob Johnston | jacob@truenorthstrategyops.com | user_39aDiUfJfxKVzGWMhZMz6AKzmlE | Fleet-Compliance Test Org B | org_3BGrldUqFLLG6WdzJyvLlJAoD8C |
 
 ## Test 1 — Org Isolation
 
@@ -23,20 +23,20 @@ Clerk Instance: `ins_39a84gbxB1P8fUCsWNvyXcWsuTF` (True North Command Center —
 ### Org B
 
 - [x] Signed in as User B (Jacob), active org `org_3BGrldUqFLLG6WdzJyvLlJAoD8C`
-- [x] Imported ORGB-ISO-001 via `POST /api/chief/import/save`
+- [x] Imported ORGB-ISO-001 via `POST /api/fleet-compliance/import/save`
   - batchId: `862afc1a-4bab-42aa-a183-288f3ddc8626`
   - orgId in response: `org_3BGrldUqFLLG6WdzJyvLlJAoD8C`
-- [x] ORGB-ISO-001 visible in `/chief/assets`
-- [x] `GET /api/chief/assets` returns only Org B records
+- [x] ORGB-ISO-001 visible in `/fleet-compliance/assets`
+- [x] `GET /api/fleet-compliance/assets` returns only Org B records
 
 ### Org A
 
 - [x] Signed in as User A (Veronica), active org `org_3BGrjrWvxlgivTNUHXkgaGVTYak`
-- [x] Imported ORGA-ISO-001 via `POST /api/chief/import/save`
+- [x] Imported ORGA-ISO-001 via `POST /api/fleet-compliance/import/save`
   - batchId: `541d1b8a-8118-4a22-b6ee-a6765dc41ff5`
   - orgId in response: `org_3BGrjrWvxlgivTNUHXkgaGVTYak`
-- [x] ORGA-ISO-001 visible in `/chief/assets`
-- [x] `GET /api/chief/assets` returns only Org A records
+- [x] ORGA-ISO-001 visible in `/fleet-compliance/assets`
+- [x] `GET /api/fleet-compliance/assets` returns only Org A records
 
 ### Isolation Verification
 
@@ -55,7 +55,7 @@ User: Veronica Johnston
   - batch_1: `0a6d224d-2e29-4278-b785-f3103ce809d5`
   - totalInserted: 2
 - [x] Rows appeared in Org A assets view after `batch_1`
-- [x] Rolled back `batch_1` via `POST /api/chief/import/rollback`
+- [x] Rolled back `batch_1` via `POST /api/fleet-compliance/import/rollback`
   - response: `rolledBack: 2`
 - [x] Rows disappeared from Org A assets view after rollback
 - [x] Re-imported same rows in Org A (`batch_2`)
@@ -84,5 +84,5 @@ Test 2 Result: PASS
 ## Operational Notes
 
 - Clerk impersonation was used for user-context testing; 3 credits consumed on 2026-03-21.
-- Imports for isolation test were executed via `POST /api/chief/import/save`; this is allowed and org-scoped responses were verified.
+- Imports for isolation test were executed via `POST /api/fleet-compliance/import/save`; this is allowed and org-scoped responses were verified.
 - Screenshot artifacts were captured with internal IDs and require export to local files listed in `soc2-evidence/access-control/evidence-manifest-2026-03-21.md`.

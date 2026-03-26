@@ -2,12 +2,12 @@
 
 ## Source Files
 - `migrations/001_cron_log.sql`
-- `src/lib/chief-db.ts`
-- `src/app/api/chief/alerts/run/route.ts`
-- `src/app/api/chief/cron-health/route.ts`
+- `src/lib/fleet-compliance-db.ts`
+- `src/app/api/fleet-compliance/alerts/run/route.ts`
+- `src/app/api/fleet-compliance/cron-health/route.ts`
 
 ## Health Route Contract
-- Endpoint: `GET /api/chief/cron-health`
+- Endpoint: `GET /api/fleet-compliance/cron-health`
 - Admin protected via Clerk role/email bypass checks.
 - Response fields:
   - `lastRun`
@@ -16,7 +16,7 @@
   - `isHealthy`
 
 ## Health Threshold
-- `isHealthy = true` when latest `chief-alert-sweep` run is within `25` hours.
+- `isHealthy = true` when latest `fleet-compliance-alert-sweep` run is within `25` hours.
 
 ## Local Verification Snapshot
 - Request without auth returned `401` with JSON body:

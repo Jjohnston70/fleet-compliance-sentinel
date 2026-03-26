@@ -1,4 +1,4 @@
-# System Boundary Diagram — PipelineX / Chief Sentinel
+# System Boundary Diagram — PipelineX / Fleet-Compliance Sentinel
 
 > SOC 2 Evidence | Phase 0 | Generated 2026-03-21
 
@@ -30,11 +30,11 @@
 │  │  ┌────────▼─────────────────────────────────────────────────┐  │ │
 │  │  │                     API Routes                           │  │ │
 │  │  │                                                          │  │ │
-│  │  │  /api/chief/*          Fleet management CRUD             │  │ │
-│  │  │  /api/chief/alerts/run Cron-triggered alert sweep        │  │ │
-│  │  │  /api/chief/cron-health Health check (admin only)        │  │ │
-│  │  │  /api/chief/fmcsa/*   FMCSA carrier lookup ──────────┐   │  │ │
-│  │  │  /api/chief/import/*   Bulk XLSX import pipeline     │   │  │ │
+│  │  │  /api/fleet-compliance/*          Fleet management CRUD             │  │ │
+│  │  │  /api/fleet-compliance/alerts/run Cron-triggered alert sweep        │  │ │
+│  │  │  /api/fleet-compliance/cron-health Health check (admin only)        │  │ │
+│  │  │  /api/fleet-compliance/fmcsa/*   FMCSA carrier lookup ──────────┐   │  │ │
+│  │  │  /api/fleet-compliance/import/*   Bulk XLSX import pipeline     │   │  │ │
 │  │  │  /api/penny/query      AI compliance Q&A proxy ───┐  │   │  │ │
 │  │  │  /api/invoices/*       Invoice management         │  │   │  │ │
 │  │  │  /api/csp-report       CSP violation collector    │  │   │  │ │
@@ -43,11 +43,11 @@
 │  │  ┌────────▼─────────────────────────────────────┐ │   │  │     │ │
 │  │  │              Business Logic (src/lib/)        │ │   │  │     │ │
 │  │  │                                               │ │   │  │     │ │
-│  │  │  chief-db.ts        DB operations             │ │   │  │     │ │
-│  │  │  chief-data.ts      Data loading              │ │   │  │     │ │
-│  │  │  chief-auth.ts      Role enforcement          │ │   │  │     │ │
-│  │  │  chief-alert-engine Alert classification      │ │   │  │     │ │
-│  │  │  chief-validators   Input validation          │ │   │  │     │ │
+│  │  │  fleet-compliance-db.ts        DB operations             │ │   │  │     │ │
+│  │  │  fleet-compliance-data.ts      Data loading              │ │   │  │     │ │
+│  │  │  fleet-compliance-auth.ts      Role enforcement          │ │   │  │     │ │
+│  │  │  fleet-compliance-alert-engine Alert classification      │ │   │  │     │ │
+│  │  │  fleet-compliance-validators   Input validation          │ │   │  │     │ │
 │  │  │  penny-access.ts    Penny role allowlist      │ │   │  │     │ │
 │  │  │  penny-ingest.ts    Context builder           │ │   │  │     │ │
 │  │  └────────┬──────────────────────────────────────┘ │   │  │     │ │
@@ -104,9 +104,9 @@
 │  Serverless Postgres             │
 │                                  │
 │  Tables:                         │
-│  • chief_records (JSONB)         │
+│  • fleet_compliance_records (JSONB)         │
 │  • cron_log (audit trail)        │
-│  • chief_error_events            │
+│  • fleet_compliance_error_events            │
 │  • invoice tables                │
 │                                  │
 │  Auth: DATABASE_URL conn string  │
@@ -130,23 +130,23 @@ graph TB
             Headers["Security Headers\nCSP · HSTS · X-Frame-Options"]
 
             subgraph Routes["API Routes"]
-                ChiefAPI["/api/chief/*\nFleet CRUD"]
-                AlertRun["/api/chief/alerts/run\nCron Alert Sweep"]
-                CronHealth["/api/chief/cron-health\nHealth Check"]
-                FmcsaRoute["/api/chief/fmcsa/*\nCarrier Lookup"]
-                ImportRoute["/api/chief/import/*\nBulk XLSX Import"]
+                Fleet-ComplianceAPI["/api/fleet-compliance/*\nFleet CRUD"]
+                AlertRun["/api/fleet-compliance/alerts/run\nCron Alert Sweep"]
+                CronHealth["/api/fleet-compliance/cron-health\nHealth Check"]
+                FmcsaRoute["/api/fleet-compliance/fmcsa/*\nCarrier Lookup"]
+                ImportRoute["/api/fleet-compliance/import/*\nBulk XLSX Import"]
                 PennyQuery["/api/penny/query\nAI Compliance Q&A"]
                 InvoiceAPI["/api/invoices/*\nInvoice Mgmt"]
                 CSPReport["/api/csp-report\nCSP Violation Log"]
             end
 
             subgraph Logic["Business Logic (src/lib/)"]
-                ChiefDB["chief-db.ts"]
-                ChiefAuth["chief-auth.ts"]
-                AlertEngine["chief-alert-engine.ts"]
+                Fleet-ComplianceDB["fleet-compliance-db.ts"]
+                Fleet-ComplianceAuth["fleet-compliance-auth.ts"]
+                AlertEngine["fleet-compliance-alert-engine.ts"]
                 PennyAccess["penny-access.ts"]
                 PennyIngest["penny-ingest.ts"]
-                Validators["chief-validators.ts"]
+                Validators["fleet-compliance-validators.ts"]
             end
 
             subgraph Packages["@tnds/* Workspace Packages"]
@@ -173,12 +173,12 @@ graph TB
 
     subgraph Neon["TRUST BOUNDARY: Neon"]
         Postgres["Serverless Postgres"]
-        Tables["chief_records · cron_log\nchief_error_events · invoices"]
+        Tables["fleet_compliance_records · cron_log\nfleet_compliance_error_events · invoices"]
     end
 
     %% User flows
     Browser -->|"HTTPS\nClerk session cookie"| Middleware
-    VercelCron -->|"HTTPS\nBearer CHIEF_CRON_SECRET"| AlertRun
+    VercelCron -->|"HTTPS\nBearer FLEET_COMPLIANCE_CRON_SECRET"| AlertRun
     Browser -->|"HTTPS\nCSP violation"| CSPReport
 
     %% Internal flows
@@ -187,12 +187,12 @@ graph TB
     Logic --> Packages
 
     %% External service flows
-    ChiefAuth -.->|"HTTPS\nCLERK_SECRET_KEY"| ClerkAuth
+    Fleet-ComplianceAuth -.->|"HTTPS\nCLERK_SECRET_KEY"| ClerkAuth
     PennyQuery -->|"HTTPS\nX-Penny-Api-Key"| Penny
     Penny --> LLM
     AlertEngine -->|"HTTPS\nRESEND_API_KEY"| Email
     FmcsaRoute -->|"HTTPS\nFMCSA_API_KEY"| FMCSA
-    ChiefDB -->|"TLS PostgreSQL\nDATABASE_URL"| Postgres
+    Fleet-ComplianceDB -->|"TLS PostgreSQL\nDATABASE_URL"| Postgres
     Postgres --- Tables
 
     %% Styling
@@ -203,7 +203,7 @@ graph TB
 
     class Internet,Vercel,Clerk,Railway,Resend,Neon boundary
     class FMCSA,ClerkAuth,Penny,Email external
-    class ChiefAPI,AlertRun,CronHealth,FmcsaRoute,ImportRoute,PennyQuery,InvoiceAPI,CSPReport internal
+    class Fleet-ComplianceAPI,AlertRun,CronHealth,FmcsaRoute,ImportRoute,PennyQuery,InvoiceAPI,CSPReport internal
     class Postgres,Tables db
 ```
 
@@ -212,7 +212,7 @@ graph TB
 | Flow              | Source             | Destination             | Protocol       | Auth Method                 |
 | ----------------- | ------------------ | ----------------------- | -------------- | --------------------------- |
 | User requests     | Browser            | Vercel (Next.js)        | HTTPS          | Clerk session cookie        |
-| Cron trigger      | Vercel Scheduler   | `/api/chief/alerts/run` | HTTPS          | Bearer `CHIEF_CRON_SECRET`  |
+| Cron trigger      | Vercel Scheduler   | `/api/fleet-compliance/alerts/run` | HTTPS          | Bearer `FLEET_COMPLIANCE_CRON_SECRET`  |
 | DB operations     | Next.js API routes | Neon Postgres           | TLS PostgreSQL | Connection string           |
 | Penny queries     | Next.js API        | Railway FastAPI         | HTTPS          | `X-Penny-Api-Key` header    |
 | Alert emails      | Next.js API        | Resend API              | HTTPS          | `RESEND_API_KEY`            |
@@ -239,6 +239,6 @@ graph TB
 | `CLERK_SECRET_KEY`  | Vercel env vars           | Clerk dashboard  |
 | `DATABASE_URL`      | Vercel env vars           | Neon dashboard   |
 | `PENNY_API_KEY`     | Vercel + Railway env vars | Manual           |
-| `CHIEF_CRON_SECRET` | Vercel env vars           | Manual           |
+| `FLEET_COMPLIANCE_CRON_SECRET` | Vercel env vars           | Manual           |
 | `RESEND_API_KEY`    | Vercel env vars           | Resend dashboard |
 | `FMCSA_API_KEY`     | Vercel env vars           | FMCSA portal     |

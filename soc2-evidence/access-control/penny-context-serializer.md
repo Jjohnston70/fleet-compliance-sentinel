@@ -6,7 +6,7 @@ Source File: `src/lib/penny-context.ts`
 ## Implemented Controls
 
 - Server-side function: `buildOrgContext(orgId: string): Promise<string>`
-- Data source: Postgres via `loadChiefData(orgId)` (`chief_records` scoped by `org_id`)
+- Data source: Postgres via `loadFleet-ComplianceData(orgId)` (`fleet_compliance_records` scoped by `org_id`)
 - Driver anonymization: output uses `Driver ID` only, never driver names
 - Client isolation: context built in server API route only (`src/app/api/penny/query/route.ts`)
 - Size control: context trimmed to max `8000` characters (~2000 tokens)

@@ -1,4 +1,4 @@
-import { getSQL } from './chief-db';
+import { getSQL } from './fleet-compliance-db';
 
 /**
  * Ensures the invoice tables exist.
