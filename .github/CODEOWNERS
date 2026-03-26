@@ -1,0 +1,11 @@
+# Global owners
+* jacob@truenorthstrategyops.com
+
+# Security and compliance critical files
+/docs/policies/ jacob@truenorthstrategyops.com
+/soc2-evidence/ jacob@truenorthstrategyops.com
+/src/app/privacy/page.tsx jacob@truenorthstrategyops.com
+/src/app/terms/page.tsx jacob@truenorthstrategyops.com
+/src/lib/fleet-compliance-auth.ts jacob@truenorthstrategyops.com
+/src/lib/plan-gate.ts jacob@truenorthstrategyops.com
+/src/app/api/stripe/webhook/route.ts jacob@truenorthstrategyops.com

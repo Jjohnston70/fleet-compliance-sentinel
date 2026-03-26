@@ -14,6 +14,7 @@
     "docs:vendors": "node scripts/download-vendor-docs.mjs",
     "docs:vendors:prepare": "node scripts/prepare-vendor-docs-package.mjs",
     "docs:vendors:package": "npm run docs:vendors && npm run docs:vendors:prepare",
+    "compliance:legal-check": "node scripts/check-legal-pages.mjs",
     "compliance:ops-check": "node scripts/check-operational-gaps.mjs",
     "sync:knowledge": "node scripts/sync-local-knowledge.mjs",
     "build:cfr-index": "tsx scripts/build-cfr-index.mjs",

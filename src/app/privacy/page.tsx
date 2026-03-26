@@ -2,55 +2,75 @@ import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
   title: 'Privacy Policy',
-  description: 'How True North Data Strategies collects, uses, and protects personal information for Pipeline Penny.',
+  description: 'How True North Data Strategies collects, uses, and protects Fleet-Compliance and Pipeline Penny data.',
 };
 
 export default function PrivacyPage() {
   return (
     <main className="legal-page">
       <h1>Privacy Policy</h1>
-      <p className="legal-updated">Last Updated: January 21, 2026</p>
+      <p className="legal-updated">Last Updated: March 25, 2026</p>
       <p className="legal-intro">
         True North Data Strategies LLC (&quot;we,&quot; &quot;our,&quot; or &quot;us&quot;) is committed to protecting your privacy when you
-        use this website and Pipeline Penny services.
+        use Fleet-Compliance and Pipeline Penny services.
       </p>
 
       <div className="legal-card">
         <section className="legal-section">
           <h2>Information We Collect</h2>
-          <p>We collect personal information you provide directly and technical usage information collected automatically.</p>
+          <p>We collect data required to deliver fleet and DOT compliance workflows, plus technical service telemetry.</p>
           <ul>
-            <li>Directly provided: name, email, phone, company details, and submitted business documents</li>
-            <li>Automatically collected: IP address, browser/device details, page usage, and referral data</li>
+            <li>Account and organization data: names, email addresses, role and organization membership</li>
+            <li>Fleet-compliance records: driver qualification records, CDL/license data, medical compliance dates, permits, fleet assets, and invoice records</li>
+            <li>Operational metadata: audit logs, error logs, and API usage events</li>
+            <li>Automatically collected technical data: IP address, browser/device details, and route usage</li>
           </ul>
         </section>
 
         <section className="legal-section">
           <h2>How We Use Information</h2>
           <ul>
-            <li>Provide and improve Pipeline Penny services</li>
-            <li>Respond to support and sales inquiries</li>
+            <li>Operate Fleet-Compliance and Penny features requested by authorized users</li>
+            <li>Provide compliance workflows, reminders, and reporting</li>
+            <li>Respond to support requests and operational incidents</li>
             <li>Maintain service security and prevent abuse</li>
             <li>Comply with legal obligations</li>
           </ul>
         </section>
 
         <section className="legal-section">
+          <h2>AI Processing and Model Training</h2>
+          <p>
+            Penny queries may be processed by configured AI providers to generate responses. We do not permit customer data to be
+            used to train shared foundation models. We send only the minimum context needed for the requested response.
+          </p>
+        </section>
+
+        <section className="legal-section">
           <h2>Information Sharing</h2>
           <p>We do not sell personal information. We only share data when needed to operate services or comply with law.</p>
           <ul>
-            <li>Trusted service providers under confidentiality obligations</li>
+            <li>Trusted subprocessors under confidentiality and security obligations</li>
             <li>Legal requests or rights/safety protection</li>
             <li>Business transfer events (merger/acquisition/asset sale)</li>
           </ul>
         </section>
 
         <section className="legal-section">
+          <h2>Subprocessors</h2>
+          <p>Key subprocessors used by the service include Vercel, Neon, Clerk, Railway, Anthropic, Sentry, Stripe, Resend, Datadog, and Upstash.</p>
+          <p>
+            The current subprocessor list is maintained in <code>SUBPROCESSORS.md</code>.
+          </p>
+        </section>
+
+        <section className="legal-section">
           <h2>Security and Retention</h2>
           <p>
             We apply administrative, technical, and organizational safeguards, including encrypted transport and restricted access.
-            Data is retained only as long as required for legitimate business and legal purposes.
+            For canceled organizations, data is soft deleted at 30 days and hard deleted at 60 days under the offboarding lifecycle.
           </p>
+          <p>Individual deletion requests are handled through our privacy request process and may be completed earlier when legally required.</p>
         </section>
 
         <section className="legal-section">
@@ -76,7 +96,8 @@ export default function PrivacyPage() {
         <section className="legal-section">
           <h2>GDPR and CCPA</h2>
           <p>
-            We support GDPR and CCPA principles, including transparency, lawful processing, and user rights management.
+            We support GDPR and CCPA requirements, including transparency, lawful processing, data subject rights, and breach
+            notification procedures.
           </p>
         </section>
 

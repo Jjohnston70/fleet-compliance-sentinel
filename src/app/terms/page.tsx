@@ -2,17 +2,17 @@ import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
   title: 'Terms of Service',
-  description: 'Terms governing use of the Pipeline Penny website and related services.',
+  description: 'Terms governing Fleet-Compliance and Pipeline Penny services.',
 };
 
 export default function TermsPage() {
   return (
     <main className="legal-page">
       <h1>Terms of Service</h1>
-      <p className="legal-updated">Last Updated: January 21, 2026</p>
+      <p className="legal-updated">Last Updated: March 25, 2026</p>
       <p className="legal-intro">
-        These Terms of Service (&quot;Terms&quot;) govern your use of the Pipeline Penny website and services operated by True North
-        Data Strategies LLC.
+        These Terms of Service (&quot;Terms&quot;) govern your use of Fleet-Compliance, Pipeline Penny, and related services operated by
+        True North Data Strategies LLC.
       </p>
 
       <div className="legal-card">
@@ -26,9 +26,9 @@ export default function TermsPage() {
         <section className="legal-section">
           <h2>Services Provided</h2>
           <ul>
-            <li>AI-powered business knowledge search and answer workflows</li>
-            <li>Document ingestion and operational support tooling</li>
-            <li>Advisory and implementation services as defined in individual agreements</li>
+            <li>Fleet and DOT compliance workflow management</li>
+            <li>AI-assisted compliance knowledge workflows</li>
+            <li>Document ingestion, validation, and operational support tooling</li>
           </ul>
         </section>
 
@@ -42,16 +42,34 @@ export default function TermsPage() {
         </section>
 
         <section className="legal-section">
-          <h2>Intellectual Property</h2>
+          <h2>Data Ownership and Intellectual Property</h2>
           <p>
-            Platform and site content remain the property of True North Data Strategies LLC or its licensors. Client-owned
-            deliverables are governed by signed service agreements.
+            Clients own their organization data uploaded to or generated within Fleet-Compliance, including compliance records and
+            related operational data. Platform software and site content remain the property of True North Data Strategies LLC or
+            its licensors.
           </p>
         </section>
 
         <section className="legal-section">
           <h2>Payment Terms</h2>
           <p>Commercial terms, billing schedules, and scope are defined in project statements and service agreements.</p>
+        </section>
+
+        <section className="legal-section">
+          <h2>Service Availability and Incident Communication</h2>
+          <p>
+            We operate and monitor the service using commercially reasonable efforts. During material incidents, we provide status
+            updates through established support and incident communication channels.
+          </p>
+        </section>
+
+        <section className="legal-section">
+          <h2>Cancellation and Data Lifecycle</h2>
+          <p>
+            If a client cancels service, organization access is blocked. Data retention and deletion follow the documented
+            offboarding lifecycle: soft delete at 30 days and hard delete at 60 days, unless a longer retention period is required
+            by law or contract.
+          </p>
         </section>
 
         <section className="legal-section">
