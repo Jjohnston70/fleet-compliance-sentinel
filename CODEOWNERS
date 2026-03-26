@@ -1,0 +1,21 @@
+# CODEOWNERS — Pipeline Punks / PipelineX v2
+# SOC2 change-management control: all production code changes require review
+# from designated owners before merging to main.
+#
+# Reference: https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/about-code-owners
+# Enforced via branch protection rule on main (Phases 8, 2026-03-25)
+
+# Global owner — all files require review from Jacob Johnston
+* @Jjohnston70
+
+# SOC2 evidence directory — extra sensitivity
+soc2-evidence/ @Jjohnston70
+
+# Security and environment config
+.env.example @Jjohnston70
+vercel.json @Jjohnston70
+next.config.js @Jjohnston70
+railway.toml @Jjohnston70
+
+# Scripts and compliance tooling
+scripts/ @Jjohnston70
