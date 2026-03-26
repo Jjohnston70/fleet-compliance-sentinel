@@ -62,11 +62,15 @@ body {
 
 .landing-main .hero-sub,
 .landing-main .hero-desc,
-.landing-main .feature-card p,
 .landing-main .step-content p,
 .landing-main .who-item p,
 .landing-main .pricing-note {
   color: rgba(226, 232, 240, 0.86);
+}
+
+.landing-main .feature-card h3,
+.landing-main .feature-card p {
+  color: #ffffff;
 }
 
 .landing-main .feature-card,
