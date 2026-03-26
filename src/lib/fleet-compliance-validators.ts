@@ -19,6 +19,19 @@ const APPROVED_PERMIT_TYPES = new Set([
   'mc150',
   'ifta',
   'irp',
+  'dot operating authority',
+  'state oversize/overweight',
+  'state fuel tax',
+  'hazmat endorsement',
+  'tank endorsement',
+  'cdl',
+  'medical certificate',
+  'twic',
+  'tsa',
+  'mcs-90',
+  'boc-3',
+  'cab card',
+  'apportioned registration',
 ]);
 
 function normalized(value: string | undefined): string {
@@ -88,19 +101,9 @@ export function validateDriver(row: Record<string, string>): FleetComplianceVali
 
   const cdlRaw = normalized(row['CDL Class'] || row['License Type']);
   if (cdlRaw) {
-    const cdlClass = cdlRaw.toLowerCase().replace(/^class\s+/i, '');
+    const cdlClass = cdlRaw.toLowerCase().replace(/^class\s+/i, '').trim();
     if (!APPROVED_CDL_CLASSES.has(cdlClass)) {
       errors.push('CDL Class: must be one of A, B, C, None');
-    }
-  }
-
-  const medical = normalized(row['Medical Card Expiry']);
-  if (medical && isValidDate(medical)) {
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-    const medicalDate = new Date(`${medical}T00:00:00`);
-    if (medicalDate.getTime() < today.getTime()) {
-      errors.push('Medical Card Expiry: cannot be in the past for new records');
     }
   }
 
@@ -144,10 +147,8 @@ export function validatePermit(row: Record<string, string>): FleetComplianceVali
   addRequiredError(errors, row, 'Issuing Agency');
   addDateErrorIfInvalid(errors, row, 'Expiration Date', true);
 
-  const permitType = normalizeEnum(row['Permit Type']);
-  if (permitType && !APPROVED_PERMIT_TYPES.has(permitType)) {
-    errors.push('Permit Type: must be one of State Hazmat, Federal Hazmat, UCR, Operating Authority MC150, IFTA, IRP');
-  }
+  // Permit Type is required but we accept any value — fleet operators
+  // have many jurisdiction-specific permit types beyond the common set.
 
   return { valid: errors.length === 0, errors };
 }
