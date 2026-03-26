@@ -16,7 +16,8 @@
     "docs:vendors:package": "npm run docs:vendors && npm run docs:vendors:prepare",
     "sync:knowledge": "node scripts/sync-local-knowledge.mjs",
     "build:cfr-index": "tsx scripts/build-cfr-index.mjs",
-    "eval:penny": "node scripts/run-penny-evals.mjs"
+    "eval:penny": "node scripts/run-penny-evals.mjs",
+        "compliance:ops-check": "node scripts/ops-check.mjs"
   },
   "dependencies": {
     "@clerk/nextjs": "^6.38.2",
