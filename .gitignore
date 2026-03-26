@@ -71,3 +71,6 @@ SECURITY_REPORTS/*.pdf
 
 # Non-gov source backup (in repo for integration only, not deployed)
 pipeline_x_non_gov-main/
+
+# Generated demo data
+demo-fleet-data.xlsx
