@@ -5,9 +5,10 @@ import asyncpg
 
 ENCRYPTION_KEY = os.environ["APP_ENCRYPTION_KEY"]
 DATABASE_URL   = os.environ["DATABASE_URL"]
-ORG_ID         = "example-fleet-co"
-USERNAME       = "REST_FleetComplianceSentinelTest_9912@1097559.com"
-PASSWORD       = "DTjm9xqz"
+ORG_ID         = os.getenv("REVEAL_ORG_ID", "example-fleet-co")
+USERNAME       = os.environ["REVEAL_USERNAME"]
+PASSWORD       = os.environ["REVEAL_PASSWORD"]
+APP_ID         = os.environ["REVEAL_APP_ID"]
 
 MIGRATION_SQL = """
 CREATE EXTENSION IF NOT EXISTS pgcrypto;
@@ -196,7 +197,7 @@ async def main():
     db = await asyncpg.connect(DATABASE_URL)
 
     print("Setting encryption key...")
-    await db.execute(f"SET app.encryption_key = '{ENCRYPTION_KEY}'")
+    await db.execute("SELECT set_config('app.encryption_key', $1, false)", ENCRYPTION_KEY)
 
     print("Running migration (CREATE IF NOT EXISTS)...")
     try:

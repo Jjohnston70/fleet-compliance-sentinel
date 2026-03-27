@@ -83,7 +83,7 @@ Fleet-Compliance Sentinel is the fleet and DOT compliance module inside the Pipe
 - `knowledge/`: large local corpus/chunk storage used for retrieval workflows
 - `archive/`: historical snapshots (inactive)
 
-## 8) Current Architectural Constraints
+## 8) Current Architectural Constraints (Pre-Telematics)
 - `/resources` and Google Drive dependencies are deeply coupled into navigation, middleware, Penny prompts, and static Fleet-Compliance document-link data.
 - Secret-bearing `.env` and `.env.local` files are present in the repo workspace and include production-like credentials.
 - Production endpoint baseline check (2026-03-20):
@@ -91,3 +91,91 @@ Fleet-Compliance Sentinel is the fleet and DOT compliance module inside the Pipe
   - `https://pipelinepunks.com/chief` -> `200`
   - `https://pipelinepunks.com/api/penny/health` -> `200`
   - `https://pipelinepunks.com/penny` -> `404`
+
+## 9) Telematics Integration Layer (Added 2026-03-27)
+
+### Overview
+
+Fleet-Compliance Sentinel now integrates with telematics providers to ingest vehicle GPS, driver roster, HOS/ELD status, alerts, and DVIR records. The first supported provider is **Verizon Connect Reveal** (Fleetmatics).
+
+The integration follows an **adapter pattern**: a `BaseTelematicsAdapter` abstract base class (`railway-backend/integrations/base_adapter.py`) defines the contract that all telematics provider adapters must implement. Adding a new provider (Geotab, Samsara, Motive) requires implementing this class — zero changes to compliance logic, risk scoring, or API routes above the adapter layer.
+
+The Verizon Connect Reveal adapter (`railway-backend/integrations/verizon_reveal/`) provides:
+- `RevealAdapter` — main entry point, credential management, wires together all components
+- `RevealCredentialStore` — per-org credential read/write/deactivate with pgcrypto encryption
+- `RevealRESTClient` — polling data fetches (vehicles, drivers, HOS, alerts, DVIR)
+- `RevealNormalizer` — maps Verizon API payloads to internal normalized models
+- `reveal_webhook_router` — FastAPI router for GPS Push Service and alert webhooks
+
+### New Data Flows
+
+#### E) Telematics Sync Flow (Cron)
+
+1. Vercel cron triggers `GET /api/fleet-compliance/telematics-sync` with `TELEMATICS_CRON_SECRET` bearer token.
+2. Route validates token (timing-safe comparison), then calls `POST /telematics/sync` on Railway with `X-Penny-Api-Key` header.
+3. Railway `telematics_router.py` executes `scripts/reveal_sync_neon.py` via subprocess.
+4. Sync script authenticates to Verizon Connect REST API (`fim.api.us.fleetmatics.com`) using per-org credentials.
+5. Verizon returns vehicle roster, driver roster, GPS segments, current locations, and ELD settings.
+6. Script writes normalized data to Neon telematics tables (`telematics_vehicles`, `telematics_drivers`, `telematics_gps_events`).
+7. Script writes sync audit record to `telematics_sync_log`.
+8. Next.js route logs to `cron_log` and emits `auditLog()` event.
+
+#### F) Webhook Flow (GPS Push Service)
+
+1. Verizon GPS Push Service sends real-time GPS events to `POST /api/telematics/reveal/gps` on Railway.
+2. Webhook receiver resolves `Username` field to `org_id` via `telematics_credentials` lookup.
+3. Event is normalized via `RevealNormalizer.gps_event()` and processed asynchronously (FastAPI background task).
+4. Normalized GPS event is written to `telematics_gps_events` table.
+5. Alert webhooks follow the same pattern via `POST /api/telematics/reveal/alerts`.
+
+#### G) Risk Score Flow
+
+1. Authenticated user calls `GET /api/fleet-compliance/telematics-risk`.
+2. Route verifies Clerk session and resolves `orgId` via `requireFleetComplianceOrg()`.
+3. Route queries `telematics_vehicles`, `telematics_drivers`, and `telematics_gps_events` tables (all scoped by `org_id`).
+4. Risk scores (0-100) are computed per vehicle and per driver based on GPS staleness, fleet age, ELD status, and event frequency.
+5. Response includes `{ vehicles, drivers, summary }` with risk levels (HIGH/MEDIUM/LOW).
+6. `auditLog()` event emitted with `action: 'data.read'`.
+
+### New Database Tables
+
+| Table | Migration | Purpose |
+|---|---|---|
+| `telematics_credentials` | 008 | Per-org provider credentials, encrypted via pgcrypto |
+| `telematics_vehicles` | 008 | Normalized vehicle roster synced from provider |
+| `telematics_drivers` | 008 | Normalized driver roster (contains PII: name, license, email, phone) |
+| `telematics_hos_logs` | 008 | HOS/ELD duty status records (8-day FMCSA rolling window) |
+| `telematics_alerts` | 008 | Exception/alert events (speeding, HOS violation, geofence, etc.) |
+| `telematics_dvir_records` | 008 | Driver Vehicle Inspection Reports |
+| `telematics_gps_events` | 008 | Real-time GPS events (high-volume, needs retention policy) |
+| `telematics_sync_log` | 008 | Sync job audit trail (started, completed, records, status) |
+| `telematics_risk_scores` | 009 | Computed risk scores per entity (vehicle/driver) |
+
+### New Environment Variables
+
+| Variable | Location | Purpose |
+|---|---|---|
+| `REVEAL_USERNAME` | Railway | Verizon Connect integration username |
+| `REVEAL_PASSWORD` | Railway | Verizon Connect integration password |
+| `REVEAL_APP_ID` | Railway | Verizon Connect FIM Application ID |
+| `APP_ENCRYPTION_KEY` | Railway | Symmetric key for pgcrypto credential encryption |
+| `TELEMATICS_CRON_SECRET` | Vercel | Bearer token for telematics sync cron route |
+
+### Adapter Pattern
+
+The `BaseTelematicsAdapter` abstract class defines 6 data methods (`get_vehicles`, `get_drivers`, `get_hos_logs`, `get_alerts`, `get_dvir_records`, `validate_credentials`) and a `provider_name` property. All methods accept `org_id` for multi-tenant credential lookup and return normalized internal models from `models/telematics_event.py`.
+
+To add a new provider:
+1. Create `railway-backend/integrations/{provider_name}/` directory.
+2. Implement `BaseTelematicsAdapter` with provider-specific REST/webhook client and normalizer.
+3. Register adapter in sync script or adapter factory.
+4. No changes required to compliance logic, risk scoring, API routes, or database schema.
+
+### Credential Security Model
+
+- Credentials stored in `telematics_credentials` table with `password_enc` column.
+- Encryption: `pgp_sym_encrypt(password, current_setting('app.encryption_key'))` using pgcrypto AES-256.
+- Per-org isolation: unique constraint `(org_id, provider)`.
+- Consent tracking: `consent_recorded_at` records client authorization date.
+- Lifecycle: onboard (encrypt + store) → validate (lightweight API test) → use (Basic Auth) → deactivate (soft delete).
+- Passwords never logged, never serialized, never sent to Penny/LLM.

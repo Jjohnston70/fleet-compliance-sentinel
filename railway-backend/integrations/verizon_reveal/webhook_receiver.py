@@ -27,12 +27,15 @@ Schema note: Reveal's GPS Push Service schema is fixed — Verizon defines it
 and it cannot be modified on their end. We normalize it on ours.
 """
 
-import hashlib
 import hmac
 import logging
-from datetime import datetime
+import ipaddress
+import os
+import socket
 from typing import Optional
+from urllib.parse import urlparse
 
+import asyncpg
 import httpx
 from fastapi import APIRouter, BackgroundTasks, Header, HTTPException, Request
 from pydantic import BaseModel, Field
@@ -43,6 +46,102 @@ from models.telematics_event import NormalizedAlert, NormalizedGPSEvent
 logger = logging.getLogger(__name__)
 
 reveal_webhook_router = APIRouter(tags=["telematics", "verizon-reveal"])
+
+REVEAL_WEBHOOKS_ENABLED = os.getenv("REVEAL_WEBHOOKS_ENABLED", "false").strip().lower() in {"1", "true", "yes", "on"}
+REVEAL_WEBHOOK_SECRET = os.getenv("REVEAL_WEBHOOK_SECRET", "")
+REVEAL_WEBHOOK_ALLOWED_IPS = os.getenv("REVEAL_WEBHOOK_ALLOWED_IPS", "")
+ALLOWED_CONFIRM_HOST_SUFFIXES = (
+    "verizonconnect.com",
+    "fleetmatics.com",
+    "amazonaws.com",
+)
+
+
+def _parse_allowed_ip_networks() -> list[ipaddress._BaseNetwork]:
+    raw = [part.strip() for part in REVEAL_WEBHOOK_ALLOWED_IPS.split(",") if part.strip()]
+    networks: list[ipaddress._BaseNetwork] = []
+    for value in raw:
+        try:
+            if "/" in value:
+                networks.append(ipaddress.ip_network(value, strict=False))
+            else:
+                host_ip = ipaddress.ip_address(value)
+                suffix = "/32" if host_ip.version == 4 else "/128"
+                networks.append(ipaddress.ip_network(f"{value}{suffix}", strict=False))
+        except ValueError:
+            logger.warning("invalid_reveal_webhook_allowed_ip", extra={"value": value})
+    return networks
+
+
+ALLOWED_WEBHOOK_IP_NETWORKS = _parse_allowed_ip_networks()
+
+
+def _require_webhooks_enabled() -> None:
+    if not REVEAL_WEBHOOKS_ENABLED:
+        raise HTTPException(status_code=503, detail="Reveal webhooks are disabled")
+
+
+def _verify_webhook_secret(x_reveal_webhook_secret: Optional[str]) -> None:
+    if not REVEAL_WEBHOOK_SECRET:
+        raise HTTPException(status_code=503, detail="Reveal webhook secret is not configured")
+
+    provided = x_reveal_webhook_secret or ""
+    if not hmac.compare_digest(provided, REVEAL_WEBHOOK_SECRET):
+        raise HTTPException(status_code=401, detail="Unauthorized")
+
+
+def _verify_source_ip(request: Request) -> None:
+    if not ALLOWED_WEBHOOK_IP_NETWORKS:
+        return
+
+    client_host = request.client.host if request.client else ""
+    if not client_host:
+        raise HTTPException(status_code=403, detail="Forbidden")
+
+    try:
+        client_ip = ipaddress.ip_address(client_host)
+    except ValueError:
+        raise HTTPException(status_code=403, detail="Forbidden")
+
+    if not any(client_ip in network for network in ALLOWED_WEBHOOK_IP_NETWORKS):
+        raise HTTPException(status_code=403, detail="Forbidden")
+
+
+def _is_allowed_confirm_hostname(hostname: str) -> bool:
+    normalized = hostname.strip().lower().rstrip(".")
+    if not normalized:
+        return False
+
+    for suffix in ALLOWED_CONFIRM_HOST_SUFFIXES:
+        if normalized == suffix or normalized.endswith(f".{suffix}"):
+            return True
+    return False
+
+
+def _is_public_hostname(hostname: str) -> bool:
+    try:
+        addresses = {item[4][0] for item in socket.getaddrinfo(hostname, 443, type=socket.SOCK_STREAM)}
+    except socket.gaierror:
+        return False
+
+    if not addresses:
+        return False
+
+    for address in addresses:
+        try:
+            ip = ipaddress.ip_address(address)
+        except ValueError:
+            return False
+        if (
+            ip.is_private
+            or ip.is_loopback
+            or ip.is_link_local
+            or ip.is_multicast
+            or ip.is_reserved
+            or ip.is_unspecified
+        ):
+            return False
+    return True
 
 
 # ---------------------------------------------------------------------------
@@ -94,7 +193,10 @@ class RevealAlertPayload(BaseModel):
 # ---------------------------------------------------------------------------
 
 @reveal_webhook_router.post("/confirm")
-async def confirm_subscription(request: Request):
+async def confirm_subscription(
+    request: Request,
+    x_reveal_webhook_secret: Optional[str] = Header(default=None, alias="X-Reveal-Webhook-Secret"),
+):
     """
     Verizon sends a confirmation POST before activating the GPS push feed.
     The body contains a SubscribeURL — you must GET that URL to confirm.
@@ -104,6 +206,10 @@ async def confirm_subscription(request: Request):
     the subscription by browsing to the Subscribe URL value."
     We automate that step here.
     """
+    _require_webhooks_enabled()
+    _verify_webhook_secret(x_reveal_webhook_secret)
+    _verify_source_ip(request)
+
     try:
         body = await request.json()
         subscribe_url = body.get("SubscribeURL")
@@ -112,8 +218,16 @@ async def confirm_subscription(request: Request):
             logger.warning("reveal_confirm_no_subscribe_url", extra={"body": body})
             raise HTTPException(status_code=400, detail="No SubscribeURL in payload")
 
+        parsed = urlparse(subscribe_url)
+        if parsed.scheme.lower() != "https" or not parsed.hostname:
+            raise HTTPException(status_code=400, detail="Invalid SubscribeURL")
+        if not _is_allowed_confirm_hostname(parsed.hostname):
+            raise HTTPException(status_code=400, detail="Untrusted SubscribeURL host")
+        if not _is_public_hostname(parsed.hostname):
+            raise HTTPException(status_code=400, detail="SubscribeURL resolved to non-public address")
+
         # Confirm the subscription by GETting the URL
-        async with httpx.AsyncClient(timeout=10.0) as client:
+        async with httpx.AsyncClient(timeout=5.0, follow_redirects=False) as client:
             response = await client.get(subscribe_url)
 
         if response.status_code == 200:
@@ -140,6 +254,7 @@ async def receive_gps_event(
     payload: RevealGPSPayload,
     background_tasks: BackgroundTasks,
     request: Request,
+    x_reveal_webhook_secret: Optional[str] = Header(default=None, alias="X-Reveal-Webhook-Secret"),
 ):
     """
     Receives real-time GPS events from Verizon Connect Reveal.
@@ -150,6 +265,10 @@ async def receive_gps_event(
     Verizon will retry if they don't receive 200 within timeout.
     Never do heavy processing synchronously in this handler.
     """
+    _require_webhooks_enabled()
+    _verify_webhook_secret(x_reveal_webhook_secret)
+    _verify_source_ip(request)
+
     # Resolve org_id from the integration username
     # In production: lookup username → org_id from telematics_credentials
     org_id = await _resolve_org_from_username(payload.Username, request)
@@ -170,12 +289,17 @@ async def receive_alert_event(
     payload: RevealAlertPayload,
     background_tasks: BackgroundTasks,
     request: Request,
+    x_reveal_webhook_secret: Optional[str] = Header(default=None, alias="X-Reveal-Webhook-Secret"),
 ):
     """
     Receives alert/exception events from Verizon Connect Reveal.
     Alert webhook requires phone activation: 844-617-1100.
     Same pattern as GPS — return 200 immediately, process async.
     """
+    _require_webhooks_enabled()
+    _verify_webhook_secret(x_reveal_webhook_secret)
+    _verify_source_ip(request)
+
     org_id = await _resolve_org_from_username(payload.Username, request)
     if not org_id:
         logger.warning(
@@ -278,10 +402,36 @@ async def _resolve_org_from_username(
     In production: SELECT org_id FROM telematics_credentials
                    WHERE username = $1 AND provider = 'verizon_reveal'
     """
-    # TODO: inject db and execute lookup
-    # For now, return placeholder so you can test the flow
-    logger.debug(
-        "reveal_username_resolution",
-        extra={"username": username},
-    )
-    return None  # Replace with actual DB lookup
+    del request  # Reserved for future app-level dependency injection.
+
+    database_url = os.getenv("DATABASE_URL")
+    if not database_url:
+        logger.error("reveal_username_resolution_db_url_missing")
+        return None
+
+    normalized_username = (username or "").strip()
+    if not normalized_username:
+        return None
+
+    conn = await asyncpg.connect(database_url)
+    try:
+        row = await conn.fetchrow(
+            """
+            SELECT org_id
+            FROM telematics_credentials
+            WHERE lower(username) = lower($1)
+              AND provider = 'verizon_reveal'
+              AND is_active = true
+            LIMIT 1
+            """,
+            normalized_username,
+        )
+    except Exception as e:
+        logger.error("reveal_username_resolution_error", extra={"error": str(e)})
+        return None
+    finally:
+        await conn.close()
+
+    if not row:
+        return None
+    return str(row["org_id"])

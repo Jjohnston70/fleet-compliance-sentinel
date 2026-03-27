@@ -6,7 +6,7 @@ USERNAME       = os.environ["REVEAL_USERNAME"]
 PASSWORD       = os.environ["REVEAL_PASSWORD"]
 APP_ID         = os.environ["REVEAL_APP_ID"]
 BASE           = "https://fim.api.us.fleetmatics.com"
-ORG_ID         = "example-fleet-co"
+ORG_ID         = os.getenv("REVEAL_ORG_ID", "example-fleet-co")
 ENCRYPTION_KEY = os.environ["APP_ENCRYPTION_KEY"]
 DATABASE_URL   = os.environ["DATABASE_URL"]
 KM_TO_MI       = 0.621371
@@ -19,7 +19,7 @@ async def get_token(client):
 async def main():
     print("Connecting to Neon...")
     db = await asyncpg.connect(DATABASE_URL)
-    await db.execute("SET app.encryption_key = '" + ENCRYPTION_KEY + "'")
+    await db.execute("SELECT set_config('app.encryption_key', $1, false)", ENCRYPTION_KEY)
 
     async with httpx.AsyncClient(timeout=20.0) as client:
         token = await get_token(client)
@@ -247,6 +247,19 @@ async def main():
         print("  Drivers in Neon:     " + str(row2["c"]))
         print("  GPS events in Neon:  " + str(row3["c"]))
         print("  Sync log entries:    " + str(row4["c"]))
+
+        # ── RETENTION CLEANUP ─────────────────────────────────────
+        gps_deleted = await db.execute("""
+            DELETE FROM telematics_gps_events
+            WHERE org_id = $1
+              AND received_at < NOW() - INTERVAL '90 days'
+        """, ORG_ID)
+        sync_deleted = await db.execute("""
+            DELETE FROM telematics_sync_log
+            WHERE org_id = $1
+              AND started_at < NOW() - INTERVAL '365 days'
+        """, ORG_ID)
+        print("  Retention cleanup:   " + str(gps_deleted) + " (gps), " + str(sync_deleted) + " (sync_log)")
 
     await db.close()
 

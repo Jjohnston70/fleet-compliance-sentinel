@@ -28,6 +28,7 @@ record. Store the consent date alongside credentials for audit trail.
 """
 
 import logging
+import os
 from datetime import datetime
 from typing import Optional
 
@@ -85,6 +86,22 @@ class RevealCredentialStore:
         self._db = db_pool
         self._cache: dict[str, RevealCredentials] = {}
 
+    async def _set_encryption_key(self) -> bool:
+        key = os.getenv("APP_ENCRYPTION_KEY")
+        if not key:
+            logger.error("reveal_encryption_key_missing")
+            return False
+
+        try:
+            await self._db.execute(
+                "SELECT set_config('app.encryption_key', $1, false)",
+                key,
+            )
+            return True
+        except Exception as e:
+            logger.error("reveal_encryption_key_set_error", extra={"error": str(e)})
+            return False
+
     async def get(self, org_id: str) -> Optional[RevealCredentials]:
         """
         Retrieve credentials for org_id.
@@ -94,10 +111,16 @@ class RevealCredentialStore:
         if org_id in self._cache:
             return self._cache[org_id]
 
+        if not await self._set_encryption_key():
+            return None
+
         try:
             row = await self._db.fetchrow(
                 """
-                SELECT username, password_enc, consent_recorded_at,
+                SELECT
+                       username,
+                       pgp_sym_decrypt(password_enc::bytea, current_setting('app.encryption_key'))::text AS password_dec,
+                       consent_recorded_at,
                        last_validated_at, is_active
                 FROM telematics_credentials
                 WHERE org_id = $1
@@ -123,7 +146,7 @@ class RevealCredentialStore:
         creds = RevealCredentials(
             org_id=org_id,
             username=row["username"],
-            password=row["password_enc"],  # Decrypted by Postgres pgcrypto at query time
+            password=row["password_dec"],
             consent_recorded_at=row["consent_recorded_at"],
             last_validated_at=row["last_validated_at"],
             is_active=row["is_active"],
@@ -144,6 +167,9 @@ class RevealCredentialStore:
         Password is stored encrypted via pgcrypto — never plaintext.
         """
         try:
+            if not await self._set_encryption_key():
+                return False
+
             await self._db.execute(
                 """
                 INSERT INTO telematics_credentials
