@@ -18,6 +18,12 @@ export const dynamic = 'force-dynamic';
 
 const modules = [
   {
+    href: '/fleet-compliance/telematics',
+    title: 'Telematics',
+    description: 'Live vehicle and driver risk scores from Verizon Connect Reveal. GPS activity, ELD status, and compliance flags.',
+    status: 'Live',
+  },
+  {
     href: '/fleet-compliance/assets',
     title: 'Assets',
     description: 'Fleet units, equipment, fuel cubes, skid tanks, and storage assets.',
