@@ -1,5 +1,6 @@
 # Phase 1 Audit Findings
-**Auditor**: Claude Code (automated static analysis review)
+
+**Auditor**: Jacob Johnston
 **Date**: 2026-03-20
 **Phase**: 1 — Infrastructure Hardening
 **Build Cycles**: 3 (as reported in STATUS.md)
@@ -8,6 +9,7 @@
 ---
 
 ## Phase 1 Audit Findings
+
 **Overall Score**: 8/10
 **Pass/Conditional Pass/Fail**: Pass
 **Blocker Count**: 0
@@ -61,6 +63,7 @@ None. All Phase 1 deliverables are present and structurally sound. No blockers f
 The Content-Security-Policy is **adequate for current operational needs** but has documented weaknesses:
 
 **Strengths:**
+
 - `default-src 'self'` — restrictive baseline
 - `object-src 'none'` — blocks Flash/Java plugin vectors
 - `base-uri 'self'` — prevents base tag hijacking
@@ -70,6 +73,7 @@ The Content-Security-Policy is **adequate for current operational needs** but ha
 - Clerk domains correctly allowlisted in `script-src`, `connect-src`, and `frame-src`
 
 **Gaps:**
+
 1. **`'unsafe-inline'` in `script-src`** — Required by Clerk SDK and Next.js. Allows inline script injection. Severity: High, but unavoidable with current Clerk integration. Mitigated by Clerk's own script integrity checks.
 2. **`'unsafe-eval'` in `script-src`** — Required by Next.js dev mode and some Clerk operations. Allows `eval()`. Severity: High. Test if removable in production builds.
 3. **`'unsafe-inline'` in `style-src`** — Required by Next.js and Clerk inline styles. Allows CSS injection. Severity: Medium. Less exploitable than script injection.
@@ -93,11 +97,13 @@ The Content-Security-Policy is **adequate for current operational needs** but ha
 ---
 
 ## Re-Audit Update (2026-03-21)
+
 **Updated Score**: 9/10
 **Updated Result**: Pass
 **Updated Blocker Count**: 0
 
 ### Resolved Since Original Audit
+
 - **High 2 (`/fleet-compliance/*` not in middleware)**: Resolved — `middleware.ts` now protects `/chief(.*)`, `/api/chief(.*)`, and `/api/invoices(.*)` via `createRouteMatcher`.
 - **High 3 (cron-health uses Penny roles)**: Resolved — `cron-health/route.ts` now uses `requireFleetComplianceOrgWithRole(request, 'admin')` from `fleet-compliance-auth.ts`. No Penny role coupling remains.
 - **Medium 2 (raw error strings in 500 responses)**: Resolved — all Fleet-Compliance API routes now return generic error messages; detailed errors logged server-side only.
@@ -108,11 +114,13 @@ The Content-Security-Policy is **adequate for current operational needs** but ha
 - **High (`unsafe-eval` in script-src)**: Resolved — `unsafe-eval` removed from `script-src` and `script-src-elem`.
 
 ### Still Open (carried forward)
+
 - **Accepted Risk**: CSP `script-src 'unsafe-inline'` for Clerk/Next.js runtime scripts.
 - **Accepted Risk**: CSP `style-src 'unsafe-inline'` for Clerk/Next.js runtime styles.
 - **Open Actionable Findings**: 0
 
 ### Updated SOC 2 Assessment
+
 - **CC6.7 (Transmission Security)**: **Satisfied** — unchanged, headers comprehensive
 - **CC7.2 (System Monitoring)**: **Partial** — cron dead-man switch works; Fleet-Compliance UI errors are now captured server-side in Neon via `/api/fleet-compliance/errors/client`. Remaining gap is alerting workflow integration (Phase 3).
 - **A1.1 (Availability)**: **Partial** — unchanged, needs uptime monitoring and Railway Pro
@@ -120,6 +128,7 @@ The Content-Security-Policy is **adequate for current operational needs** but ha
 ---
 
 ### Audit Metadata
+
 - **Build Cycles**: 3
 - **Google Drive Reference Count**: 0 (verified via grep — complete removal confirmed)
 - **Security Headers Deployed**: 8 (X-Content-Type-Options, X-Frame-Options, Strict-Transport-Security, Referrer-Policy, Permissions-Policy, Report-To, Reporting-Endpoints, CSP)

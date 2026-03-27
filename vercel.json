@@ -44,6 +44,10 @@
     {
       "path": "/api/fleet-compliance/alerts/run",
       "schedule": "0 8 * * *"
+    },
+    {
+      "path": "/api/fleet-compliance/telematics-sync",
+      "schedule": "0 2 * * *"
     }
   ]
 }

@@ -1,7 +1,7 @@
 # Phase 8 Audit Findings (Post-Remediation)
 
 **Audit Date**: 2026-03-25 (post-remediation re-audit)
-**Auditor**: Claude Opus 4.6 (automated code review)
+**Auditor**: Jacob Johnston
 **Scope**: Phase 8 — SOC 2 policy set (8 policies), privacy/terms remediation, CODEOWNERS, legal regression checks, operational gap enforcement, xlsx remediation, ZAP attempt record, branch protection evidence
 **Build Cycles**: 1
 **Commits Reviewed**: `735e102`, `3463f71`, `e4ddee0`
@@ -18,8 +18,8 @@
 
 None. Previous blocker (CF-1: privacy page not reflecting actual data practices) has been **fixed**.
 
-| Original Finding | Status | Evidence |
-|---|---|---|
+| Original Finding                                                                                          | Status    | Evidence                                                                                       |
+| --------------------------------------------------------------------------------------------------------- | --------- | ---------------------------------------------------------------------------------------------- |
 | CF-1: Privacy page missing Fleet-Compliance data categories, AI statement, retention terms, subprocessors | **Fixed** | `src/app/privacy/page.tsx` updated March 25 2026. `check-legal-pages.mjs` passes all 4 checks. |
 
 ---
@@ -75,12 +75,12 @@ Test org deletion returned `Unauthorized` from current credentials. If the stale
 
 ## SOC 2 Policy Assessment
 
-| Control | Status | Evidence |
-|---|---|---|
+| Control                                   | Status        | Evidence                                                                                                                                                                                                                                                                                                                                      |
+| ----------------------------------------- | ------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | **CC2.1** (Information and Communication) | **Satisfied** | 8 internal policies documented, versioned, with annual review dates. Customer-facing privacy page now discloses Fleet-Compliance data categories, AI processing, retention lifecycle, and subprocessors. Terms page now covers data ownership, availability, and cancellation lifecycle. `check-legal-pages.mjs` enforces ongoing compliance. |
-| **CC2.2** (Internal Communication) | **Satisfied** | Policies reference specific code files, operational procedures, and evidence locations. CODEOWNERS routes security-sensitive file changes to the Security Officer. |
-| **P1.1** (Privacy Notice) | **Satisfied** | Privacy page discloses: (1) fleet-compliance data categories including driver records, CDL, medical compliance, permits, assets, invoices; (2) AI processing with no-training statement; (3) 30/60-day retention lifecycle; (4) named subprocessors. Automated regression check passes. |
-| **CC1.2** (Commitment to Competence) | **Satisfied** | Security Officer role defined with specific approval, review, and verification responsibilities. Engineering responsibilities documented. Exception process requires documented approval with expiration. |
+| **CC2.2** (Internal Communication)        | **Satisfied** | Policies reference specific code files, operational procedures, and evidence locations. CODEOWNERS routes security-sensitive file changes to the Security Officer.                                                                                                                                                                            |
+| **P1.1** (Privacy Notice)                 | **Satisfied** | Privacy page discloses: (1) fleet-compliance data categories including driver records, CDL, medical compliance, permits, assets, invoices; (2) AI processing with no-training statement; (3) 30/60-day retention lifecycle; (4) named subprocessors. Automated regression check passes.                                                       |
+| **CC1.2** (Commitment to Competence)      | **Satisfied** | Security Officer role defined with specific approval, review, and verification responsibilities. Engineering responsibilities documented. Exception process requires documented approval with expiration.                                                                                                                                     |
 
 ---
 
@@ -100,12 +100,12 @@ Test org deletion returned `Unauthorized` from current credentials. If the stale
 
 ### Remaining generic language
 
-| Location | Current | Recommended |
-|---|---|---|
-| Change Management Policy | "Required checks before merge" | Name specific checks: `build`, `lint`, or CI workflow names |
-| Access Control Policy | "MFA is required for all admin users" | Specify enforcement mechanism: Clerk organization MFA policy setting vs. manual audit |
-| Business Continuity RPO | "based on daily Neon backup posture" | Cite verified Neon backup frequency from console |
-| Privacy page | `SUBPROCESSORS.md` reference via `<code>` tag | Consider linking to a public URL or stating "available on request" |
+| Location                 | Current                                       | Recommended                                                                           |
+| ------------------------ | --------------------------------------------- | ------------------------------------------------------------------------------------- |
+| Change Management Policy | "Required checks before merge"                | Name specific checks: `build`, `lint`, or CI workflow names                           |
+| Access Control Policy    | "MFA is required for all admin users"         | Specify enforcement mechanism: Clerk organization MFA policy setting vs. manual audit |
+| Business Continuity RPO  | "based on daily Neon backup posture"          | Cite verified Neon backup frequency from console                                      |
+| Privacy page             | `SUBPROCESSORS.md` reference via `<code>` tag | Consider linking to a public URL or stating "available on request"                    |
 
 These are minor and not audit-blocking.
 
@@ -115,23 +115,24 @@ These are minor and not audit-blocking.
 
 ### Cross-Phase Summary (Final)
 
-| Phase | Score | Status | Key Deliverable |
-|---|---|---|---|
-| 0 | 7/10 | Closed | Baseline audit, secret cleanup, Google Drive removal |
-| 1 | — | Closed | Monitoring, health checks, environment hardening |
-| 2 | — | Closed | Database schema, org scoping foundation |
-| 3 | — | Closed | Audit logging, Datadog integration |
-| 4 | — | Closed | Multi-tenant org scoping, Stripe webhook |
-| 5 | 9/10 | Closed | Penny AI security, prompt injection defense |
-| 6 | 8/10 | Closed | Rate limiting, dependency audit, security guides |
-| 7 | 9/10 | Closed | Incident response, vendor management, offboarding automation |
-| 8 | 9/10 | Conditional Pass | Policy set, legal remediation, CODEOWNERS, xlsx removed |
+| Phase | Score | Status           | Key Deliverable                                              |
+| ----- | ----- | ---------------- | ------------------------------------------------------------ |
+| 0     | 7/10  | Closed           | Baseline audit, secret cleanup, Google Drive removal         |
+| 1     | —     | Closed           | Monitoring, health checks, environment hardening             |
+| 2     | —     | Closed           | Database schema, org scoping foundation                      |
+| 3     | —     | Closed           | Audit logging, Datadog integration                           |
+| 4     | —     | Closed           | Multi-tenant org scoping, Stripe webhook                     |
+| 5     | 9/10  | Closed           | Penny AI security, prompt injection defense                  |
+| 6     | 8/10  | Closed           | Rate limiting, dependency audit, security guides             |
+| 7     | 9/10  | Closed           | Incident response, vendor management, offboarding automation |
+| 8     | 9/10  | Conditional Pass | Policy set, legal remediation, CODEOWNERS, xlsx removed      |
 
 ### Overall Readiness: 8.5/10 — Ready After 2 External Actions
 
 The codebase, policies, and evidence binder are complete. What remains is purely external execution — no more code changes needed.
 
 **What will pass an audit today:**
+
 - 8 formal policies referencing actual systems and code, not templates
 - Privacy page with fleet data categories, AI no-training statement, retention lifecycle, subprocessors
 - Terms page with data ownership, availability commitments, cancellation lifecycle
@@ -148,20 +149,20 @@ The codebase, policies, and evidence binder are complete. What remains is purely
 
 **What needs external execution before engagement (2 items):**
 
-| Item | Control | Effort | Due |
-|---|---|---|---|
-| Rotate 4 critical secrets and record dates | CC6.1 | ~2 hours (30 min per secret + redeploy + smoke test) | 2026-03-29 |
-| Set up status page at `status.pipelinepunks.com` | CC7.3 | ~30 min (UptimeRobot + DNS CNAME) | 2026-03-29 |
+| Item                                             | Control | Effort                                               | Due        |
+| ------------------------------------------------ | ------- | ---------------------------------------------------- | ---------- |
+| Rotate 4 critical secrets and record dates       | CC6.1   | ~2 hours (30 min per secret + redeploy + smoke test) | 2026-03-29 |
+| Set up status page at `status.pipelinepunks.com` | CC7.3   | ~30 min (UptimeRobot + DNS CNAME)                    | 2026-03-29 |
 
 **Nice-to-have before engagement (not blocking):**
 
-| Item | Control | Effort |
-|---|---|---|
-| Apply GitHub branch protection rules + screenshot | CC8.1 | 10 min |
-| Run ZAP scan from Docker-capable environment | CC7.1 | 1-2 hours |
-| Delete stale Clerk test org | CC6.1 | 5 min |
-| Verify Neon backup frequency and update RPO | CC9.1 | 10 min |
-| Set Railway CORS_ORIGINS to production domains | Defense-in-depth | 5 min |
+| Item                                              | Control          | Effort    |
+| ------------------------------------------------- | ---------------- | --------- |
+| Apply GitHub branch protection rules + screenshot | CC8.1            | 10 min    |
+| Run ZAP scan from Docker-capable environment      | CC7.1            | 1-2 hours |
+| Delete stale Clerk test org                       | CC6.1            | 5 min     |
+| Verify Neon backup frequency and update RPO       | CC9.1            | 10 min    |
+| Set Railway CORS_ORIGINS to production domains    | Defense-in-depth | 5 min     |
 
 ---
 

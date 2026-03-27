@@ -1,7 +1,7 @@
 # Phase 6 Audit Findings
 
 **Audit Date**: 2026-03-25
-**Auditor**: Claude Opus 4.6 (automated code review)
+**Auditor**: Jacob Johnston
 **Scope**: Phase 6 — Rate limiting, dependency audit, secret rotation schedule, penetration test guide, GitHub security hardening guide, test data cleanup, general fallback prompt security hardening
 **Build Cycles**: 2
 
@@ -96,11 +96,11 @@ Phase 5 finding MF-4 identified that `is_prompt_injection_or_enumeration_query` 
 
 ## SOC 2 Assessment
 
-| Control | Status | Evidence |
-|---|---|---|
-| **CC6.1** (Logical Access) | **Partial** | Secret rotation schedule documented but no rotation has been performed. All "Last Rotated" fields are empty. Credential lifecycle management is procedurally defined but not yet operationally demonstrated. |
+| Control                             | Status      | Evidence                                                                                                                                                                                                                                      |
+| ----------------------------------- | ----------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **CC6.1** (Logical Access)          | **Partial** | Secret rotation schedule documented but no rotation has been performed. All "Last Rotated" fields are empty. Credential lifecycle management is procedurally defined but not yet operationally demonstrated.                                  |
 | **CC7.1** (Vulnerability Detection) | **Partial** | Dependency audit performed and documented. 4 high-severity vulnerabilities identified. `next` upgrade recommended but not applied. Pentest guide created but no scan executed. Prompt injection detection exists but produces no audit trail. |
-| **CC8.1** (Change Management) | **Partial** | GitHub branch protection guide documented but not verified as applied. No CODEOWNERS file exists. Direct pushes to `main` may still be possible. |
+| **CC8.1** (Change Management)       | **Partial** | GitHub branch protection guide documented but not verified as applied. No CODEOWNERS file exists. Direct pushes to `main` may still be possible.                                                                                              |
 
 ---
 
@@ -171,7 +171,7 @@ Phase 5 finding MF-4 identified that `is_prompt_injection_or_enumeration_query` 
 
 **What needs follow-through:**
 
-- The dependency audit and security guides are *plans*, not *completed actions*. The audit identified the right issues; now the fixes must be applied.
+- The dependency audit and security guides are _plans_, not _completed actions_. The audit identified the right issues; now the fixes must be applied.
 - The rotation schedule is a template — it becomes SOC 2 evidence only when dates are filled in.
 - Branch protection is documented but must be applied to the GitHub repository.
 

@@ -1,7 +1,7 @@
 # Phase 3 Audit Findings
 
 **Audit Date**: 2026-03-21 (initial), 2026-03-24 (re-audit after Datadog integration)
-**Auditor**: Claude Opus 4.6 (automated code review)
+**Auditor**: Jacob Johnston
 **Scope**: Phase 3 — Structured audit logging, Sentry error monitoring, PII scrubbing, Datadog log drain
 **SOC 2 90-Day Observation Window**: Started 2026-03-24 (Datadog log drain confirmed flowing)
 
@@ -21,10 +21,10 @@
 
 **Resolution**: Datadog log drain configured and confirmed flowing. Two-index cost-split strategy implemented:
 
-| Index | Filter | Retention | Purpose |
-|---|---|---|---|
-| `audit-logs-soc2` | `source:vercel @action:*` | 15 days (trial) → 365 days on Pro | SOC 2 / CCPA audit trail |
-| `vercel-general-7d` | `source:vercel` | 7 days | Build, request, general logs |
+| Index               | Filter                    | Retention                         | Purpose                      |
+| ------------------- | ------------------------- | --------------------------------- | ---------------------------- |
+| `audit-logs-soc2`   | `source:vercel @action:*` | 15 days (trial) → 365 days on Pro | SOC 2 / CCPA audit trail     |
+| `vercel-general-7d` | `source:vercel`           | 7 days                            | Build, request, general logs |
 
 Datadog pipeline with 9 processors parses structured audit JSON into queryable facets (`@ACTION`, `@USR.ID`, `@ORG.ID`, `@RESOURCE.TYPE`, `@RESOURCE.ID`, status-based severity). Logs confirmed flowing with 202 Accepted from intake endpoint.
 
@@ -44,14 +44,14 @@ Datadog pipeline with 9 processors parses structured audit JSON into queryable f
 
 The `REDACTED_METADATA_KEYS` set covers 8 keys (`name`, `drivername`, `email`, `ssn`, `dob`, `medicalcard`, `licensenumber`, `address`). Missing PII-bearing keys that exist or could exist in fleet management data:
 
-| Missing Key | Risk |
-|---|---|
-| `phone` / `phonenumber` | Driver/employee contact info |
-| `emergencycontact` | PII of third party |
-| `dateofbirth` | Variant of `dob` |
-| `bankaccount` / `routingnumber` | Financial PII |
-| `dl` / `cdl` | License number variants |
-| `vin` | Arguable PII under CCPA for personal vehicles |
+| Missing Key                     | Risk                                          |
+| ------------------------------- | --------------------------------------------- |
+| `phone` / `phonenumber`         | Driver/employee contact info                  |
+| `emergencycontact`              | PII of third party                            |
+| `dateofbirth`                   | Variant of `dob`                              |
+| `bankaccount` / `routingnumber` | Financial PII                                 |
+| `dl` / `cdl`                    | License number variants                       |
+| `vin`                           | Arguable PII under CCPA for personal vehicles |
 
 - **File**: `src/lib/audit-logger.ts:22-31`
 - **Remediation**: Expand the deny-list. Consider switching to an allow-list approach where only known-safe metadata keys are permitted through.
@@ -99,13 +99,13 @@ The action type exists but no rate-limiting middleware emits it.
 
 ## SOC 2 Assessment
 
-| Control | Status | Notes |
-|---|---|---|
-| **CC6.1** (Logical Access) | Partial | Auth enforcement solid (Clerk + org scoping). Login/logout/failure audit events NOT emitted yet. |
-| **CC6.2** (Access Provisioning) | Partial | Clerk handles provisioning. No audit trail of role changes or org membership changes. |
-| **CC7.1** (Vulnerability Detection) | Partial | Sentry captures runtime exceptions. No active DAST/SAST or dependency audit in CI. |
-| **CC7.2** (System Monitoring) | **Satisfied** | Structured audit logging on all 17+ API routes. Cron health monitoring. Sentry error alerting with Slack integration. **Datadog log drain with parsed facets and 365-day retention path.** |
-| **CC7.3** (Incident Response) | Partial | RUNBOOK covers 8+ common incidents with escalation contacts. Datadog queries documented. Missing: post-incident review template. |
+| Control                             | Status        | Notes                                                                                                                                                                                      |
+| ----------------------------------- | ------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| **CC6.1** (Logical Access)          | Partial       | Auth enforcement solid (Clerk + org scoping). Login/logout/failure audit events NOT emitted yet.                                                                                           |
+| **CC6.2** (Access Provisioning)     | Partial       | Clerk handles provisioning. No audit trail of role changes or org membership changes.                                                                                                      |
+| **CC7.1** (Vulnerability Detection) | Partial       | Sentry captures runtime exceptions. No active DAST/SAST or dependency audit in CI.                                                                                                         |
+| **CC7.2** (System Monitoring)       | **Satisfied** | Structured audit logging on all 17+ API routes. Cron health monitoring. Sentry error alerting with Slack integration. **Datadog log drain with parsed facets and 365-day retention path.** |
+| **CC7.3** (Incident Response)       | Partial       | RUNBOOK covers 8+ common incidents with escalation contacts. Datadog queries documented. Missing: post-incident review template.                                                           |
 
 ---
 
@@ -121,12 +121,12 @@ Partially. The sanitize function strips 8 known PII keys from the `metadata` fie
 
 **What fields might still leak PII through the metadata field?**
 
-| Scenario | Leak Vector |
-|---|---|
-| Asset creation with driver name in metadata | `assignedTo` field value could appear if passed as metadata |
-| Import rows containing PII columns | Column names are not metadata keys; row counts are safe |
-| Penny query text | Correctly excluded. Only `provider`, `kbHit`, `fallbackUsed`, `responseMs` logged |
-| Error stack traces via `console.error` | Not structured audit logs, but catch blocks could include PII in error messages |
+| Scenario                                    | Leak Vector                                                                       |
+| ------------------------------------------- | --------------------------------------------------------------------------------- |
+| Asset creation with driver name in metadata | `assignedTo` field value could appear if passed as metadata                       |
+| Import rows containing PII columns          | Column names are not metadata keys; row counts are safe                           |
+| Penny query text                            | Correctly excluded. Only `provider`, `kbHit`, `fallbackUsed`, `responseMs` logged |
+| Error stack traces via `console.error`      | Not structured audit logs, but catch blocks could include PII in error messages   |
 
 ---
 
@@ -134,12 +134,12 @@ Partially. The sanitize function strips 8 known PII keys from the `metadata` fie
 
 **What log retention policy is needed to satisfy SOC 2 and CCPA?**
 
-| Requirement | Minimum Retention | Recommended |
-|---|---|---|
-| SOC 2 Type II observation | 90 days (audit period) | 1 year |
-| SOC 2 ongoing compliance | 1 year | 2 years |
-| CCPA (right to know) | 12 months of activity | 12 months |
-| CCPA (right to delete) | Must be able to identify and purge PII | Requires log PII tagging |
+| Requirement               | Minimum Retention                      | Recommended              |
+| ------------------------- | -------------------------------------- | ------------------------ |
+| SOC 2 Type II observation | 90 days (audit period)                 | 1 year                   |
+| SOC 2 ongoing compliance  | 1 year                                 | 2 years                  |
+| CCPA (right to know)      | 12 months of activity                  | 12 months                |
+| CCPA (right to delete)    | Must be able to identify and purge PII | Requires log PII tagging |
 
 **Is Vercel's retention sufficient?**
 
@@ -150,6 +150,7 @@ Partially. The sanitize function strips 8 known PII keys from the `metadata` fie
 - **Sentry errors**: Retained per Sentry plan (90 days default, configurable)
 
 **Datadog verification queries:**
+
 - All audit events: `source:vercel @action:*`
 - High-severity for SOC 2 window: `source:vercel @action:* status:error index:audit-logs-soc2`
 - User-specific CCPA: `source:vercel @action:* @usr.id:<clerk_user_id>`
