@@ -1,6 +1,7 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useMemo, useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
 
 type CategoryTotals = {
   maintenance: number;
@@ -16,12 +17,35 @@ type SpendSummary = {
   categories: CategoryTotals;
 };
 
+type CostBreakdown = {
+  parts: number;
+  labor: number;
+  shopSupplies: number;
+  tax: number;
+  other: number;
+  total: number;
+};
+
+type AssetSpend = {
+  assetId: string;
+  label: string;
+  total: number;
+  parts: number;
+  labor: number;
+  invoiceCount: number;
+  lastServiceDate: string;
+};
+
 type SpendResponse = {
   months: SpendSummary[];
   currentMonth: CategoryTotals;
   quarter: CategoryTotals;
   year: CategoryTotals;
+  costBreakdown: CostBreakdown;
+  assetSpend: AssetSpend[];
 };
+
+type SortKey = 'assetId' | 'total' | 'parts' | 'labor' | 'invoiceCount' | 'lastServiceDate';
 
 function formatMoney(value: number): string {
   return new Intl.NumberFormat('en-US', {
@@ -41,6 +65,18 @@ function formatMonth(monthKey: string): string {
   });
 }
 
+function formatDate(dateText: string): string {
+  if (!dateText) return '—';
+  const parsed = new Date(`${dateText}T00:00:00Z`);
+  if (Number.isNaN(parsed.getTime())) return dateText;
+  return parsed.toLocaleDateString('en-US', {
+    month: 'short',
+    day: '2-digit',
+    year: 'numeric',
+    timeZone: 'UTC',
+  });
+}
+
 const EMPTY_TOTALS: CategoryTotals = {
   maintenance: 0,
   permits: 0,
@@ -50,10 +86,22 @@ const EMPTY_TOTALS: CategoryTotals = {
   total: 0,
 };
 
+const EMPTY_BREAKDOWN: CostBreakdown = {
+  parts: 0,
+  labor: 0,
+  shopSupplies: 0,
+  tax: 0,
+  other: 0,
+  total: 0,
+};
+
 export default function SpendDashboardClient() {
+  const router = useRouter();
   const [data, setData] = useState<SpendResponse | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const [sortKey, setSortKey] = useState<SortKey>('total');
+  const [sortDir, setSortDir] = useState<'asc' | 'desc'>('desc');
 
   useEffect(() => {
     let alive = true;
@@ -89,6 +137,27 @@ export default function SpendDashboardClient() {
     };
   }, []);
 
+  function setSort(nextKey: SortKey) {
+    if (sortKey === nextKey) {
+      setSortDir((prev) => (prev === 'asc' ? 'desc' : 'asc'));
+      return;
+    }
+    setSortKey(nextKey);
+    setSortDir(nextKey === 'assetId' || nextKey === 'lastServiceDate' ? 'asc' : 'desc');
+  }
+
+  const sortedAssetSpend = useMemo(() => {
+    if (!data?.assetSpend) return [];
+    const rows = [...data.assetSpend];
+    rows.sort((a, b) => {
+      const dir = sortDir === 'asc' ? 1 : -1;
+      if (sortKey === 'assetId') return dir * a.assetId.localeCompare(b.assetId);
+      if (sortKey === 'lastServiceDate') return dir * a.lastServiceDate.localeCompare(b.lastServiceDate);
+      return dir * ((a[sortKey] as number) - (b[sortKey] as number));
+    });
+    return rows;
+  }, [data?.assetSpend, sortDir, sortKey]);
+
   if (loading) {
     return (
       <div className="fleet-compliance-empty-state">
@@ -118,6 +187,7 @@ export default function SpendDashboardClient() {
 
   const trendRows = data.months.slice(-6);
   const currentMonthTotals = data.currentMonth ?? EMPTY_TOTALS;
+  const breakdown = data.costBreakdown ?? EMPTY_BREAKDOWN;
 
   return (
     <>
@@ -198,6 +268,81 @@ export default function SpendDashboardClient() {
             </tbody>
           </table>
         </div>
+      </section>
+
+      <section className="fleet-compliance-section">
+        <div className="fleet-compliance-section-head">
+          <div>
+            <p className="fleet-compliance-eyebrow">Current Month</p>
+            <h2>Cost Breakdown</h2>
+          </div>
+        </div>
+        <div className="fleet-compliance-import-table">
+          <table>
+            <thead>
+              <tr>
+                <th>Component</th>
+                <th>Amount</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td>Parts</td><td>{formatMoney(breakdown.parts)}</td></tr>
+              <tr><td>Labor</td><td>{formatMoney(breakdown.labor)}</td></tr>
+              <tr><td>Shop Supplies</td><td>{formatMoney(breakdown.shopSupplies)}</td></tr>
+              <tr><td>Tax</td><td>{formatMoney(breakdown.tax)}</td></tr>
+              <tr><td>Other</td><td>{formatMoney(breakdown.other)}</td></tr>
+              <tr><td>Total</td><td>{formatMoney(breakdown.total)}</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <section className="fleet-compliance-section">
+        <div className="fleet-compliance-section-head">
+          <div>
+            <p className="fleet-compliance-eyebrow">Asset Analysis</p>
+            <h2>Spend by Asset</h2>
+          </div>
+        </div>
+        {sortedAssetSpend.length === 0 ? (
+          <div className="fleet-compliance-empty-state">
+            <p>No asset-linked spend records available.</p>
+          </div>
+        ) : (
+          <div className="fleet-compliance-table-wrap">
+            <table className="fleet-compliance-table">
+              <thead>
+                <tr>
+                  <th><button type="button" onClick={() => setSort('assetId')} style={{ all: 'unset', cursor: 'pointer', fontWeight: 700 }}>Asset</button></th>
+                  <th><button type="button" onClick={() => setSort('total')} style={{ all: 'unset', cursor: 'pointer', fontWeight: 700 }}>Total</button></th>
+                  <th><button type="button" onClick={() => setSort('parts')} style={{ all: 'unset', cursor: 'pointer', fontWeight: 700 }}>Parts</button></th>
+                  <th><button type="button" onClick={() => setSort('labor')} style={{ all: 'unset', cursor: 'pointer', fontWeight: 700 }}>Labor</button></th>
+                  <th><button type="button" onClick={() => setSort('invoiceCount')} style={{ all: 'unset', cursor: 'pointer', fontWeight: 700 }}>Invoices</button></th>
+                  <th><button type="button" onClick={() => setSort('lastServiceDate')} style={{ all: 'unset', cursor: 'pointer', fontWeight: 700 }}>Last Service</button></th>
+                </tr>
+              </thead>
+              <tbody>
+                {sortedAssetSpend.map((asset) => (
+                  <tr
+                    key={asset.assetId}
+                    onClick={() => router.push(`/fleet-compliance/assets/${encodeURIComponent(asset.assetId)}`)}
+                    style={{ cursor: 'pointer' }}
+                  >
+                    <td>
+                      <strong>{asset.assetId}</strong>
+                      <p className="fleet-compliance-table-note">{asset.label}</p>
+                    </td>
+                    <td>{formatMoney(asset.total)}</td>
+                    <td>{formatMoney(asset.parts)}</td>
+                    <td>{formatMoney(asset.labor)}</td>
+                    <td>{asset.invoiceCount}</td>
+                    <td>{formatDate(asset.lastServiceDate)}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
       </section>
     </>
   );

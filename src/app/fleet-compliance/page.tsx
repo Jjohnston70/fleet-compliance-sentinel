@@ -129,38 +129,6 @@ export default async function FleetCompliancePage() {
           consistent with the existing product while the operational module is built out.
           The current view is now driven by an import snapshot generated from the workbook and mapped source files.
         </p>
-        <div className="fleet-compliance-action-row">
-          <Link href="/fleet-compliance/suspense" className="btn-primary">
-            Open Suspense
-          </Link>
-          <Link href="/penny" className="btn-secondary">
-            Open Penny
-          </Link>
-          <Link href="/fleet-compliance/fmcsa" className="btn-secondary">
-            FMCSA Lookup
-          </Link>
-          <Link href="/fleet-compliance/employees/new" className="btn-secondary">
-            Add Employee
-          </Link>
-          <Link href="/fleet-compliance/assets/new" className="btn-secondary">
-            Add Asset
-          </Link>
-          <Link href="/fleet-compliance/invoices/new" className="btn-secondary">
-            Add Invoice
-          </Link>
-          <Link href="/fleet-compliance/spend" className="btn-secondary">
-            Spend Dashboard
-          </Link>
-          <Link href="/fleet-compliance/alerts" className="btn-secondary">
-            Alerts
-          </Link>
-          <Link href="/fleet-compliance/import" className="btn-secondary">
-            Import Review
-          </Link>
-          <Link href="/api/fleet-compliance/bulk-template" className="btn-secondary">
-            Download Bulk Template
-          </Link>
-        </div>
       </section>
 
       <section className="fleet-compliance-stats">

@@ -8,6 +8,7 @@ export type CollectionKey =
   | 'maintenance_schedule'
   | 'activity_log'
   | 'maintenance_tracker'
+  | 'invoices'
   | 'maintenance_line_items'
   | 'colorado_contacts'
   | 'emergency_contacts';
@@ -274,7 +275,7 @@ export const IMPORT_SCHEMAS: Record<CollectionKey, CollectionSchema> = {
   },
   maintenance_tracker: {
     label: 'Maintenance Tracker (Invoices)',
-    sheetName: 'Invoices',
+    sheetName: 'Maintenance Tracker',
     fields: {
       'Invoice ID':       { required: true },
       'Completed Date':   { isDate: true },
@@ -299,6 +300,27 @@ export const IMPORT_SCHEMAS: Record<CollectionKey, CollectionSchema> = {
       'Work Requested':   {},
       'Work Completed':   {},
       'Source File':      {},
+    },
+  },
+  invoices: {
+    label: 'Invoices',
+    sheetName: 'Invoices',
+    fields: {
+      'Vendor': { required: true },
+      'Invoice Number': { required: true },
+      'Invoice Date': { required: true, isDate: true },
+      'Due Date': { isDate: true },
+      'Total Amount': { required: true },
+      'Parts Cost': {},
+      'Labor Cost': {},
+      'Shop Supplies': {},
+      'Sales Tax': {},
+      'Category': { oneOf: ['maintenance', 'permit', 'fuel', 'insurance', 'other'] },
+      'Asset ID': {},
+      'Service Type': {},
+      'Status': { oneOf: ['pending', 'paid', 'overdue', ''] },
+      'PO Number': {},
+      'Notes': {},
     },
   },
   maintenance_line_items: {

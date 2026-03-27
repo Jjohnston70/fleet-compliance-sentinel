@@ -6,6 +6,7 @@ import { getOrgPlan } from '@/lib/plan-gate';
 import FleetComplianceTrialBanner from '@/components/fleet-compliance/FleetComplianceTrialBanner';
 import FleetComplianceExpiredGate from '@/components/fleet-compliance/FleetComplianceExpiredGate';
 import FleetComplianceOnboardingRedirect from '@/components/fleet-compliance/FleetComplianceOnboardingRedirect';
+import FleetComplianceShell from '@/components/fleet-compliance/FleetComplianceShell';
 
 export const dynamic = 'force-dynamic';
 
@@ -41,7 +42,7 @@ export default async function FleetComplianceLayout({ children }: { children: Re
     <>
       {plan.plan === 'trial' && <FleetComplianceTrialBanner trialEndsAt={plan.trialEndsAt} />}
       <FleetComplianceOnboardingRedirect onboardingComplete={organization.onboardingComplete}>
-        {children}
+        <FleetComplianceShell>{children}</FleetComplianceShell>
       </FleetComplianceOnboardingRedirect>
     </>
   );

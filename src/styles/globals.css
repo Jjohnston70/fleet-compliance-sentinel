@@ -1407,6 +1407,68 @@ a.penny-source-pill:hover {
 }
 
 /* ===== FLEET-COMPLIANCE ===== */
+.fc-shell {
+  display: flex;
+  min-height: 100vh;
+  height: 100vh;
+}
+
+.fc-sidebar {
+  width: 260px;
+  background: #13212f;
+  color: #fff;
+  padding: 1.5rem 1rem;
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  overflow-y: auto;
+  flex-shrink: 0;
+}
+
+.fc-sidebar-title {
+  font-size: 0.8rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  margin-bottom: 1.5rem;
+  color: #8ba4b8;
+  font-weight: 700;
+}
+
+.fc-sidebar-link {
+  display: block;
+  padding: 0.5rem 0.75rem;
+  color: #d8e8f3;
+  text-decoration: none;
+  border-radius: 4px;
+  margin-bottom: 0.25rem;
+  font-size: 0.9rem;
+}
+
+.fc-sidebar-link:hover {
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.fc-sidebar-link.active {
+  background: rgba(255, 255, 255, 0.12);
+  color: #fff;
+  font-weight: 600;
+}
+
+.fc-main {
+  flex: 1;
+  min-width: 0;
+  height: 100vh;
+  overflow-y: auto;
+}
+
+.fc-sidebar-toggle {
+  display: none;
+}
+
+.fc-sidebar-backdrop {
+  display: none;
+}
+
 .fleet-compliance-shell {
   max-width: 1100px;
   margin: 0 auto;
@@ -2119,6 +2181,60 @@ a.penny-source-pill:hover {
 }
 
 @media (max-width: 768px) {
+  .fc-shell {
+    display: block;
+    min-height: auto;
+    height: auto;
+  }
+
+  .fc-sidebar-toggle {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    position: fixed;
+    top: 0.75rem;
+    left: 0.75rem;
+    z-index: 60;
+    border: 1px solid #1f3b52;
+    border-radius: 8px;
+    background: #13212f;
+    color: #d8e8f3;
+    padding: 0.5rem 0.8rem;
+    font-size: 0.82rem;
+    font-weight: 600;
+    cursor: pointer;
+  }
+
+  .fc-sidebar {
+    display: block;
+    position: fixed;
+    left: -280px;
+    top: 0;
+    width: 260px;
+    z-index: 70;
+    transition: left 0.2s ease;
+  }
+
+  .fc-sidebar.mobile-open {
+    left: 0;
+  }
+
+  .fc-sidebar-backdrop {
+    display: block;
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.45);
+    border: 0;
+    z-index: 65;
+    cursor: pointer;
+  }
+
+  .fc-main {
+    width: 100%;
+    height: auto;
+    overflow-y: visible;
+  }
+
   .fleet-compliance-shell {
     padding: 2rem 1rem 3rem;
   }

@@ -608,6 +608,50 @@ export const fleetComplianceUploadTemplateManifest = [
     ]
   },
   {
+    "datasetKey": "schema:invoices",
+    "kind": "schema",
+    "sourcePath": "src/lib/fleet-compliance-import-schemas.ts",
+    "worksheet": "Invoices",
+    "sheetName": "Invoices",
+    "notes": "Invoice import sheet for vendor and cost tracking.",
+    "headers": [
+      "Vendor",
+      "Invoice Number",
+      "Invoice Date",
+      "Due Date",
+      "Total Amount",
+      "Parts Cost",
+      "Labor Cost",
+      "Shop Supplies",
+      "Sales Tax",
+      "Category",
+      "Asset ID",
+      "Service Type",
+      "Status",
+      "PO Number",
+      "Notes"
+    ],
+    "sampleRows": [
+      {
+        "Vendor": "",
+        "Invoice Number": "",
+        "Invoice Date": "",
+        "Due Date": "",
+        "Total Amount": "",
+        "Parts Cost": "",
+        "Labor Cost": "",
+        "Shop Supplies": "",
+        "Sales Tax": "",
+        "Category": "",
+        "Asset ID": "",
+        "Service Type": "",
+        "Status": "",
+        "PO Number": "",
+        "Notes": ""
+      }
+    ]
+  },
+  {
     "datasetKey": "worksheet:Config",
     "kind": "config_sheet",
     "sourcePath": "asset-command_vs.001/asset-command-working-testing-03-07-2026.xlsx",

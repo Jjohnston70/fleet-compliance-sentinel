@@ -20,6 +20,25 @@ type SpendSummary = {
   categories: CategoryTotals;
 };
 
+type CostBreakdown = {
+  parts: number;
+  labor: number;
+  shopSupplies: number;
+  tax: number;
+  other: number;
+  total: number;
+};
+
+type AssetSpendRow = {
+  assetId: string;
+  label: string;
+  total: number;
+  parts: number;
+  labor: number;
+  invoiceCount: number;
+  lastServiceDate: string;
+};
+
 const CATEGORY_LIST: SpendCategory[] = ['maintenance', 'permits', 'fuel', 'insurance', 'other'];
 
 function emptyTotals(): CategoryTotals {
@@ -41,6 +60,17 @@ function cloneTotals(input: CategoryTotals): CategoryTotals {
     insurance: input.insurance,
     other: input.other,
     total: input.total,
+  };
+}
+
+function emptyCostBreakdown(): CostBreakdown {
+  return {
+    parts: 0,
+    labor: 0,
+    shopSupplies: 0,
+    tax: 0,
+    other: 0,
+    total: 0,
   };
 }
 
@@ -145,6 +175,102 @@ function extractFirstDate(row: Record<string, unknown>, keys: string[]): string 
   return '';
 }
 
+function extractFirstString(row: Record<string, unknown>, keys: string[]): string {
+  for (const key of keys) {
+    const value = row[key];
+    if (typeof value === 'string' && value.trim()) return value.trim();
+  }
+  return '';
+}
+
+function addToCostBreakdown(
+  breakdown: CostBreakdown,
+  input: { total: number; parts?: number; labor?: number; shopSupplies?: number; tax?: number }
+) {
+  const total = input.total > 0 ? input.total : 0;
+  const parts = input.parts && input.parts > 0 ? input.parts : 0;
+  const labor = input.labor && input.labor > 0 ? input.labor : 0;
+  const shopSupplies = input.shopSupplies && input.shopSupplies > 0 ? input.shopSupplies : 0;
+  const tax = input.tax && input.tax > 0 ? input.tax : 0;
+  const known = parts + labor + shopSupplies + tax;
+  const other = Math.max(total - known, 0);
+
+  breakdown.parts += parts;
+  breakdown.labor += labor;
+  breakdown.shopSupplies += shopSupplies;
+  breakdown.tax += tax;
+  breakdown.other += other;
+  breakdown.total += total;
+}
+
+function addToAssetSpend(
+  assetMap: Map<string, AssetSpendRow>,
+  input: {
+    assetId: string;
+    label: string;
+    total: number;
+    parts?: number;
+    labor?: number;
+    serviceDate?: string;
+  }
+) {
+  const assetId = input.assetId.trim() || 'UNASSIGNED';
+  const existing = assetMap.get(assetId);
+  const total = input.total > 0 ? input.total : 0;
+  const parts = input.parts && input.parts > 0 ? input.parts : 0;
+  const labor = input.labor && input.labor > 0 ? input.labor : 0;
+  const serviceDate = parseDate(input.serviceDate ?? '');
+
+  if (!existing) {
+    assetMap.set(assetId, {
+      assetId,
+      label: input.label.trim() || assetId,
+      total,
+      parts,
+      labor,
+      invoiceCount: total > 0 ? 1 : 0,
+      lastServiceDate: serviceDate,
+    });
+    return;
+  }
+
+  existing.total += total;
+  existing.parts += parts;
+  existing.labor += labor;
+  if (total > 0) {
+    existing.invoiceCount += 1;
+  }
+  if (serviceDate && (!existing.lastServiceDate || serviceDate > existing.lastServiceDate)) {
+    existing.lastServiceDate = serviceDate;
+  }
+}
+
+function roundMoney(value: number): number {
+  return Math.round((value + Number.EPSILON) * 100) / 100;
+}
+
+function roundCategoryTotals(input: CategoryTotals): CategoryTotals {
+  return {
+    maintenance: roundMoney(input.maintenance),
+    permits: roundMoney(input.permits),
+    fuel: roundMoney(input.fuel),
+    insurance: roundMoney(input.insurance),
+    other: roundMoney(input.other),
+    total: roundMoney(input.total),
+  };
+}
+
+function roundCostBreakdown(input: CostBreakdown): CostBreakdown {
+  return {
+    parts: roundMoney(input.parts),
+    labor: roundMoney(input.labor),
+    shopSupplies: roundMoney(input.shopSupplies),
+    tax: roundMoney(input.tax),
+    other: roundMoney(input.other),
+    total: roundMoney(input.total),
+  };
+}
+
 export async function GET(request: Request) {
   let orgId: string;
   try {
@@ -156,10 +282,14 @@ export async function GET(request: Request) {
   }
 
   const sql = getSQL();
+  const last12Months = getMonthKeys(12);
+  const currentMonthKey = last12Months[last12Months.length - 1];
   const totalsByMonth = new Map<string, CategoryTotals>();
+  const costBreakdown = emptyCostBreakdown();
+  const assetSpendMap = new Map<string, AssetSpendRow>();
 
   const importInvoiceRows = await sql`
-    SELECT collection, data
+    SELECT collection, data, imported_at
     FROM fleet_compliance_records
     WHERE org_id = ${orgId}
       AND deleted_at IS NULL
@@ -168,12 +298,19 @@ export async function GET(request: Request) {
 
   for (const row of importInvoiceRows) {
     const data = (row.data as Record<string, unknown>) ?? {};
-    const date = extractFirstDate(data, ['Invoice Date', 'Completed Date', 'Date', 'Service Date']);
+    const date =
+      extractFirstDate(data, ['Invoice Date', 'Completed Date', 'Date', 'Service Date']) ||
+      parseDate(String(row.imported_at ?? ''));
     const month = monthKeyFromDate(date);
     if (!month) continue;
 
+    const parts = extractFirstAmount(data, ['Parts Cost', 'Parts Total']);
+    const labor = extractFirstAmount(data, ['Labor Cost', 'Labor Total']);
+    const shopSupplies = extractFirstAmount(data, ['Shop Supplies']);
+    const tax = extractFirstAmount(data, ['Sales Tax', 'Tax']);
     const amount = extractFirstAmount(data, [
       'Invoice Total',
+      'Total Cost',
       'Grand Total',
       'Total Amount',
       'Amount Due',
@@ -197,10 +334,31 @@ export async function GET(request: Request) {
 
     if (!totalsByMonth.has(month)) totalsByMonth.set(month, emptyTotals());
     addToTotals(totalsByMonth.get(month)!, category, amount);
+
+    if (month === currentMonthKey) {
+      addToCostBreakdown(costBreakdown, {
+        total: amount,
+        parts,
+        labor,
+        shopSupplies,
+        tax,
+      });
+    }
+
+    const assetId = extractFirstString(data, ['Asset ID', 'Unit Number', 'Unit/Equipment', 'Asset Name']) || 'UNASSIGNED';
+    const label = extractFirstString(data, ['Asset Name', 'Unit Number', 'Asset ID', 'Unit/Equipment']) || assetId;
+    addToAssetSpend(assetSpendMap, {
+      assetId,
+      label,
+      total: amount,
+      parts,
+      labor,
+      serviceDate: date,
+    });
   }
 
   const maintenanceRows = await sql`
-    SELECT data
+    SELECT data, imported_at
     FROM fleet_compliance_records
     WHERE org_id = ${orgId}
       AND deleted_at IS NULL
@@ -209,20 +367,44 @@ export async function GET(request: Request) {
 
   for (const row of maintenanceRows) {
     const data = (row.data as Record<string, unknown>) ?? {};
-    const date = extractFirstDate(data, ['Completed Date', 'Scheduled Date', 'Date', 'Next Due Date']);
+    const date =
+      extractFirstDate(data, ['Completed Date', 'Scheduled Date', 'Date', 'Next Due Date']) ||
+      parseDate(String(row.imported_at ?? ''));
     const month = monthKeyFromDate(date);
     if (!month) continue;
 
+    const parts = extractFirstAmount(data, ['Parts Cost', 'Parts Total']);
+    const labor = extractFirstAmount(data, ['Labor Cost', 'Labor Total']);
     const amount = extractFirstAmount(data, ['Estimated Cost', 'Cost', 'Invoice Total', 'Total Cost', 'Amount']);
     if (amount <= 0) continue;
 
     if (!totalsByMonth.has(month)) totalsByMonth.set(month, emptyTotals());
     addToTotals(totalsByMonth.get(month)!, 'maintenance', amount);
+
+    if (month === currentMonthKey) {
+      addToCostBreakdown(costBreakdown, {
+        total: amount,
+        parts,
+        labor,
+      });
+    }
+
+    const assetId = extractFirstString(data, ['Asset ID', 'Unit Number', 'Unit/Equipment', 'Asset Name']) || 'UNASSIGNED';
+    const label = extractFirstString(data, ['Asset Name', 'Unit Number', 'Asset ID', 'Unit/Equipment']) || assetId;
+    addToAssetSpend(assetSpendMap, {
+      assetId,
+      label,
+      total: amount,
+      parts,
+      labor,
+      serviceDate: date,
+    });
   }
 
   try {
     const dbInvoices = await sql`
       SELECT
+        unit_number,
         invoice_date,
         imported_at,
         vendor,
@@ -245,14 +427,12 @@ export async function GET(request: Request) {
       const month = monthKeyFromDate(date);
       if (!month) continue;
 
-      const grandTotal = parseAmount(row.grand_total);
-      const subtotal = parseAmount(row.subtotal);
-      const partsTotal = parseAmount(row.parts_total);
-      const laborTotal = parseAmount(row.labor_total);
+      const parts = parseAmount(row.parts_total);
+      const labor = parseAmount(row.labor_total);
       const shopSupplies = parseAmount(row.shop_supplies);
-      const salesTax = parseAmount(row.sales_tax);
-      const computed = partsTotal + laborTotal + shopSupplies + salesTax;
-      const amount = grandTotal || subtotal || computed;
+      const tax = parseAmount(row.sales_tax);
+      const computed = parts + labor + shopSupplies + tax;
+      const amount = parseAmount(row.grand_total) || parseAmount(row.subtotal) || computed;
       if (amount <= 0) continue;
 
       const categorySeed = `${String(row.vendor ?? '')} ${String(row.source_file ?? '')}`;
@@ -260,24 +440,54 @@ export async function GET(request: Request) {
 
       if (!totalsByMonth.has(month)) totalsByMonth.set(month, emptyTotals());
       addToTotals(totalsByMonth.get(month)!, category, amount);
+
+      if (month === currentMonthKey) {
+        addToCostBreakdown(costBreakdown, {
+          total: amount,
+          parts,
+          labor,
+          shopSupplies,
+          tax,
+        });
+      }
+
+      const assetId = String(row.unit_number ?? '').trim() || 'UNASSIGNED';
+      addToAssetSpend(assetSpendMap, {
+        assetId,
+        label: assetId,
+        total: amount,
+        parts,
+        labor,
+        serviceDate: date,
+      });
     }
   } catch {
-    // Invoices table may not exist in all environments.
+    // invoices table may not exist in all environments.
   }
 
-  const last12Months = getMonthKeys(12);
-  const currentMonth = [last12Months[last12Months.length - 1]];
+  const currentMonth = [currentMonthKey];
   const quarter = last12Months.slice(-3);
 
   const months: SpendSummary[] = last12Months.map((month) => ({
     month,
-    categories: cloneTotals(totalsByMonth.get(month) ?? emptyTotals()),
+    categories: roundCategoryTotals(cloneTotals(totalsByMonth.get(month) ?? emptyTotals())),
   }));
+
+  const assetSpend: AssetSpendRow[] = Array.from(assetSpendMap.values())
+    .map((row) => ({
+      ...row,
+      total: roundMoney(row.total),
+      parts: roundMoney(row.parts),
+      labor: roundMoney(row.labor),
+    }))
+    .sort((a, b) => b.total - a.total);
 
   return Response.json({
     months,
-    currentMonth: sumPeriods(currentMonth, totalsByMonth),
-    quarter: sumPeriods(quarter, totalsByMonth),
-    year: sumPeriods(last12Months, totalsByMonth),
+    currentMonth: roundCategoryTotals(sumPeriods(currentMonth, totalsByMonth)),
+    quarter: roundCategoryTotals(sumPeriods(quarter, totalsByMonth)),
+    year: roundCategoryTotals(sumPeriods(last12Months, totalsByMonth)),
+    costBreakdown: roundCostBreakdown(costBreakdown),
+    assetSpend,
   });
 }
