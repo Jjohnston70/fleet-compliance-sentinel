@@ -136,17 +136,16 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: 'Authentication is not configured' }, { status: 503 });
   }
 
-  const { userId, sessionClaims } = await auth();
-  const orgId = sessionClaims?.org_id as string | undefined;
+  const { userId, orgId: authOrgId, sessionClaims } = await auth();
+  const orgIdFromClaims = sessionClaims?.org_id as string | undefined;
+  const orgId = authOrgId || orgIdFromClaims || undefined;
+  const auditOrgId = orgId || 'no-org';
   if (!userId) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
-  if (!orgId) {
-    return NextResponse.json({ error: 'Organization context required' }, { status: 403 });
-  }
 
   const user = await currentUser();
-  setSentryRequestContext(userId, orgId);
+  setSentryRequestContext(userId, auditOrgId);
   const role = resolvePennyRole(sessionClaims, user);
   const hasEmailBypass = canBypassPennyRoleByEmail(user);
   const effectiveRole = canAccessPenny(role) ? role : hasEmailBypass ? 'admin' : role;
@@ -160,7 +159,7 @@ export async function POST(request: NextRequest) {
     auditLog({
       action: 'rate_limit.exceeded',
       userId,
-      orgId,
+      orgId: auditOrgId,
       resourceType: 'penny.query',
       metadata: { userId },
     });
@@ -185,7 +184,7 @@ export async function POST(request: NextRequest) {
     }
 
     const effectiveQuery = enrichComplianceQuery(query);
-    orgContext = await buildOrgContext(orgId);
+    orgContext = orgId ? await buildOrgContext(orgId) : '';
     orgContextPreview = buildOrgContextPreview(orgContext);
 
     const fallbackUsedCount = parseGeneralFallbackUsed(
@@ -203,7 +202,7 @@ export async function POST(request: NextRequest) {
     try {
       const { groundedPrompt, sources } = await buildPennyContext({
         query: effectiveQuery,
-        orgId,
+        orgId: orgId || 'no-org',
         topK: 5,
       });
       if (groundedPrompt && sources.length > 0) {
@@ -229,7 +228,7 @@ export async function POST(request: NextRequest) {
           auditLog({
             action: 'penny.query',
             userId,
-            orgId,
+            orgId: auditOrgId,
             resourceType: 'penny.query',
             metadata: {
               provider: 'catalog',
@@ -267,7 +266,7 @@ export async function POST(request: NextRequest) {
         'Content-Type': 'application/json',
         'X-User-Id': userId,
         'X-User-Role': effectiveRole,
-        'X-Org-Id': orgId,
+        ...(orgId ? { 'X-Org-Id': orgId } : {}),
         ...(PENNY_API_KEY ? { 'X-Penny-Api-Key': PENNY_API_KEY } : {}),
       },
       body: JSON.stringify({
@@ -289,7 +288,7 @@ export async function POST(request: NextRequest) {
       auditLog({
         action: 'penny.query',
         userId,
-        orgId,
+        orgId: auditOrgId,
         resourceType: 'penny.query',
         severity: 'error',
         metadata: {
@@ -330,7 +329,7 @@ export async function POST(request: NextRequest) {
     auditLog({
       action: 'penny.query',
       userId,
-      orgId,
+      orgId: auditOrgId,
       resourceType: 'penny.query',
       metadata: {
         provider: typeof llmProvider === 'string' ? llmProvider.trim().toLowerCase() || 'default' : 'default',
@@ -371,7 +370,7 @@ export async function POST(request: NextRequest) {
     auditLog({
       action: 'penny.query',
       userId,
-      orgId,
+      orgId: auditOrgId,
       resourceType: 'penny.query',
       severity: 'error',
       metadata: {
