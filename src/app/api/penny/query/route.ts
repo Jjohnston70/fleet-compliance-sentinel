@@ -14,6 +14,14 @@ import { setSentryRequestContext } from '@/lib/sentry-context';
 
 const PENNY_API_URL = process.env.PENNY_API_URL || 'http://localhost:8000';
 const PENNY_API_KEY = process.env.PENNY_API_KEY || '';
+const PENNY_ALLOW_NO_ORG = ['1', 'true', 'yes', 'on'].includes(
+  (
+    process.env.PENNY_ALLOW_NO_ORG ||
+    (process.env.NODE_ENV === 'production' ? 'false' : 'true')
+  )
+    .trim()
+    .toLowerCase()
+);
 const GENERAL_FALLBACK_COOKIE_NAME = 'penny_general_fallback_used';
 const GENERAL_FALLBACK_ENABLED = ['1', 'true', 'yes', 'on'].includes(
   (process.env.PENNY_ENABLE_GENERAL_FALLBACK || 'false').trim().toLowerCase()
@@ -149,9 +157,24 @@ export async function POST(request: NextRequest) {
   const role = resolvePennyRole(sessionClaims, user);
   const hasEmailBypass = canBypassPennyRoleByEmail(user);
   const effectiveRole = canAccessPenny(role) ? role : hasEmailBypass ? 'admin' : role;
+  const contextMode = orgId ? 'org' : 'no-org';
 
   if (!canAccessPenny(role) && !hasEmailBypass) {
     return NextResponse.json({ error: 'Insufficient permissions' }, { status: 403 });
+  }
+
+  if (!orgId && !PENNY_ALLOW_NO_ORG) {
+    return NextResponse.json(
+      { error: 'Active organization required for Penny access' },
+      { status: 403 }
+    );
+  }
+
+  if (!orgId && effectiveRole !== 'admin') {
+    return NextResponse.json(
+      { error: 'No-organization Penny mode is restricted to admins' },
+      { status: 403 }
+    );
   }
 
   const rateLimitResult = await checkPennyRateLimit(userId);
@@ -161,7 +184,7 @@ export async function POST(request: NextRequest) {
       userId,
       orgId: auditOrgId,
       resourceType: 'penny.query',
-      metadata: { userId },
+      metadata: { userId, contextMode },
     });
     return NextResponse.json(
       { error: 'Rate limit exceeded', retryAfter: 60 },
@@ -202,7 +225,7 @@ export async function POST(request: NextRequest) {
     try {
       const { groundedPrompt, sources } = await buildPennyContext({
         query: effectiveQuery,
-        orgId: orgId || 'no-org',
+        orgId,
         topK: 5,
       });
       if (groundedPrompt && sources.length > 0) {
@@ -235,6 +258,7 @@ export async function POST(request: NextRequest) {
               kbHit: true,
               fallbackUsed: false,
               responseMs,
+              contextMode,
               orgContextIncluded: orgContext.length > 0,
               orgContextChars: orgContext.length,
               orgContextPreview,
@@ -297,6 +321,7 @@ export async function POST(request: NextRequest) {
           fallbackUsed: false,
           responseMs: Date.now() - startedAt,
           status: res.status,
+          contextMode,
           orgContextIncluded: orgContext.length > 0,
           orgContextChars: orgContext.length,
           orgContextPreview,
@@ -336,6 +361,7 @@ export async function POST(request: NextRequest) {
         kbHit: sources.length > 0,
         fallbackUsed: generalFallbackUsed,
         responseMs,
+        contextMode,
         orgContextIncluded: orgContext.length > 0,
         orgContextChars: orgContext.length,
         orgContextPreview,
@@ -378,6 +404,7 @@ export async function POST(request: NextRequest) {
         kbHit: false,
         fallbackUsed: false,
         responseMs: Date.now() - startedAt,
+        contextMode,
         orgContextIncluded: orgContext.length > 0,
         orgContextChars: orgContext.length,
         orgContextPreview,
