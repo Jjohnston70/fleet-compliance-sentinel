@@ -1,12 +1,12 @@
 # Fleet-Compliance Sentinel — Status
 
-Last Updated: 2026-03-25 (All 9 phases complete)
-Current Phase: All complete
-Overall Completion: 100% (code-level controls)
+Last Updated: 2026-03-26 (Go-to-market sprint complete)
+Current Phase: All 9 phases complete + go-to-market features shipped
+Overall Completion: 100% (code-level controls) + sales infrastructure live
 Open Findings: 0 blockers + 9 open (non-blocking, accepted risk)
 SOC 2 Observation Window Start: 2026-03-24
 SOC 2 Type I Earliest Eligibility: 2026-06-22
-Days Until Type I Eligible: 89
+Days Until Type I Eligible: 88
 
 ## Phase Completion Log
 
@@ -61,7 +61,43 @@ SOC 2 clock started at Phase 3 completion (2026-03-24) when Datadog log drain wa
 - MF-1: Prompt injection detection uses keyword matching only (primary defense is LLM-level rules)
 - MF-4: No audit event when prompt injection is detected
 
+## Go-to-Market Features (Shipped 2026-03-26)
+
+| Feature | Commit | Status |
+|---------|--------|--------|
+| Stripe checkout flow (Starter $149, Pro $299) | `bac1ee7` | Live |
+| Landing page with pricing | `bac1ee7` | Live |
+| Sidebar navigation (all fleet-compliance pages) | `bc71a67` | Live |
+| PDF invoice upload with auto-extraction | `8efc7f4` | Live |
+| Asset dropdown on invoice form | `8efc7f4` | Live |
+| Spend dashboard (monthly, category, per-asset) | `8efc7f4`, `bc71a67` | Live |
+| Penny context: maintenance + invoices | `8efc7f4` | Live |
+| Invoice import via bulk XLSX | `bc71a67` | Live |
+| Penny no-org hardening (admin-only, env-gated) | `a0667ce` | Live |
+| CSP worker-src fix for Clerk | `62fe345` | Live |
+| 10 MB PDF upload size limit | `ce5f42d` | Live |
+| Post-Phase 8 audit (9 commits reviewed, all pass) | `ff6f5ce` | Recorded |
+
+## Stripe Configuration (Test Mode)
+
+| Component | ID |
+|-----------|-----|
+| Starter Product | `prod_UDl8sDwN0dXIv8` |
+| Starter Price ($149/mo) | `price_1TFJeXBUt3vlThKDmf1ovq7d` |
+| Professional Product | `prod_UDlAJnLRniyq9w` |
+| Professional Price ($299/mo) | `price_1TFJeiBUt3vlThKDxWtbkNCb` |
+| Webhook Endpoint | `we_1TFJfCBUt3vlThKDX57WsB0U` |
+| Customer Portal | `bpc_1TFJfOBUt3vlThKDuFGKmv4G` |
+
+**Note**: Switch to live mode keys (`sk_live_`, `pk_live_`) before accepting real payments.
+
+## Pending: Invoice Extraction Module Integration
+
+A production-ready Python invoice extraction module exists at `<REPO_ROOT>\Desktop\DOC_GEN\invoice-module` with 12 vendor parsers, SOC 2 controls, and Fleet-Compliance format export. See `docs/INVOICE_MODULE_PRICING_ANALYSIS.md` for pricing analysis and integration plan.
+
 ## Remaining External Actions (No Code Changes)
 
 1. **Secret Rotation** (CC6.1) — Execute rotation of 4 critical secrets (due 2026-03-29)
 2. **Status Page** (CC7.3) — Operationalize status.pipelinepunks.com via UptimeRobot + DNS
+3. **Stripe Live Mode** — Switch from test keys to live keys when ready to accept payments
+4. **Demo Org** — Create in Clerk, upload demo-fleet-data.xlsx for live demos

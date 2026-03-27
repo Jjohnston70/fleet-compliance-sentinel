@@ -1,6 +1,6 @@
 # Fleet-Compliance Sentinel — Repo Index
 
-Last updated: 2026-03-25 (post-Phase 8 completion)
+Last updated: 2026-03-26 (go-to-market sprint complete)
 
 ## Platform Documentation
 
@@ -65,13 +65,13 @@ Last updated: 2026-03-25 (post-Phase 8 completion)
 | `evals/` | Penny evaluation results and test questions |
 | `tooling/fleet-compliance-sentinel/cfr_dot_markdown/` | 13 CFR parts in Markdown (Parts 040-397) |
 
-## SOC 2 Compliance Evidence (60+ artifacts)
+## SOC 2 Compliance Evidence (65+ artifacts)
 
 | Path | Purpose |
 |------|---------|
 | `soc2-evidence/system-description/` | ARCHITECTURE.md, AUDIT_REPORT.md, ENV_EXAMPLE.md, system boundary diagram |
 | `soc2-evidence/access-control/` | 18 files — auth code, isolation tests, prompt injection tests, secret rotation, Clerk readiness |
-| `soc2-evidence/audit-findings/` | 10 files — Phase 0-8 findings (8-9/10 scores), full audit summary |
+| `soc2-evidence/audit-findings/` | 11 files — Phase 0-8 findings + post-Phase 8 go-to-market audit + full summary |
 | `soc2-evidence/change-management/` | Branch protection verification, GitHub security guide |
 | `soc2-evidence/compliance-milestones/` | SOC 2 observation window dates (started 2026-03-24) |
 | `soc2-evidence/incident-response/` | IRP (4 severity levels), runbook (8+ playbooks), status page setup |
@@ -84,8 +84,12 @@ Last updated: 2026-03-25 (post-Phase 8 completion)
 
 | Path | Purpose |
 |------|---------|
-| `docs/STATUS.md` | Current phase status, infrastructure status, open findings |
+| `docs/STATUS.md` | Current phase status, infrastructure, go-to-market features, Stripe config |
 | `docs/FLEET_COMPLIANCE_TODO_v2.md` | Phase-based implementation tracker (Phases 0-8, all complete) |
+| `docs/INVOICE_MODULE_PRICING_ANALYSIS.md` | Invoice extraction module pricing, capabilities, integration plan |
+| `docs/STRIPE_AND_LANDING_PAGE_PROMPT.md` | Implementation prompt: Stripe checkout + landing page |
+| `docs/INVOICE_DASHBOARD_PENNY_PROMPT.md` | Implementation prompt: PDF upload, spend dashboard, Penny data access |
+| `docs/SIDEBAR_AND_ENHANCEMENTS_PROMPT.md` | Implementation prompt: sidebar navigation, enhanced spend, invoice import |
 | `docs/RAILWAY_CONFIG.md` | Railway environment variable reference |
 | `docs/UPTIME_SETUP.md` | UptimeRobot monitoring setup |
 | `docs/NEON_MIGRATION.md` | Neon PostgreSQL migration documentation |
