@@ -1,7 +1,7 @@
 # Phase 7 Audit Findings
 
 **Audit Date**: 2026-03-25 (post-remediation re-audit)
-**Auditor**: Claude Opus 4.6 (automated code review)
+**Auditor**: Jacob Johnston
 **Scope**: Phase 7 — Incident response plan, subprocessor registry, client offboarding process, offboarding lifecycle automation, status page setup, offboarding migration
 **Build Cycles**: 1
 **Commits Reviewed**: `75d764d`, `a1e87f2`, `f133b5d`, `edf0258`
@@ -26,11 +26,11 @@ None.
 
 All three High findings from the initial Phase 7 audit have been remediated:
 
-| Original Finding | Status | Evidence |
-|---|---|---|
-| HF-1: Subprocessor registry incomplete (6 of 13 vendors) | **Fixed** | `SUBPROCESSORS.md` now lists 13 vendors with compensating controls for non-SOC2 providers |
-| HF-2: Offboarding entirely manual, no automation | **Fixed** | `src/lib/offboarding-lifecycle.ts` implements automated 30-day soft delete and 60-day hard delete, integrated into cron via `alerts/run/route.ts` |
-| HF-3: Migration numbering collision (two `006_*.sql`) | **Fixed** | Renumbered to `migrations/007_offboarding.sql`, old `006_offboarding.sql` removed in `f133b5d` |
+| Original Finding                                         | Status    | Evidence                                                                                                                                          |
+| -------------------------------------------------------- | --------- | ------------------------------------------------------------------------------------------------------------------------------------------------- |
+| HF-1: Subprocessor registry incomplete (6 of 13 vendors) | **Fixed** | `SUBPROCESSORS.md` now lists 13 vendors with compensating controls for non-SOC2 providers                                                         |
+| HF-2: Offboarding entirely manual, no automation         | **Fixed** | `src/lib/offboarding-lifecycle.ts` implements automated 30-day soft delete and 60-day hard delete, integrated into cron via `alerts/run/route.ts` |
+| HF-3: Migration numbering collision (two `006_*.sql`)    | **Fixed** | Renumbered to `migrations/007_offboarding.sql`, old `006_offboarding.sql` removed in `f133b5d`                                                    |
 
 ---
 
@@ -73,11 +73,11 @@ The offboarding automation handles `data_deletion_scheduled_at` scheduling, soft
 
 ## SOC 2 Assessment
 
-| Control | Status | Evidence |
-|---|---|---|
-| **CC7.3** (Incident Response) | **Satisfied** | Incident response plan covers 4 severity levels (P1-P4) with defined response times (15 min to 1 business day), multi-role escalation chain, investigation/resolution procedures, 72-hour breach notification, GDPR Article 33 supervisory authority notification, and communication templates. Personal contact info removed from repository templates. Status page setup guide ready but not yet operational (separate MF-1). |
-| **CC9.1** (Vendor Management) | **Satisfied** | Subprocessor registry lists all 13 data-processing vendors with purpose, data categories, and security certification status. Quarterly review frequency documented. Compensating controls section covers non-SOC2 vendors (Railway, Anthropic) with 6 specific mitigations: data minimization, transport security, secret rotation, endpoint controls, prompt controls, and logging. Vendor management onboarding procedure defined. |
-| **P4.3** (Data Retention) | **Satisfied** | Automated offboarding lifecycle (`offboarding-lifecycle.ts`) enforces 30-day soft delete and 60-day hard delete across 10 org-scoped tables. Schedule is set automatically by cron (`alerts/run/route.ts`) for canceled orgs or triggered by Stripe webhook on subscription cancellation (`stripe/webhook/route.ts`). `data_deletion_scheduled_at` is read and enforced by the plan gate. Reactivation clears the deletion schedule. Individual deletion request procedure documented for non-cancellation GDPR/CCPA requests. |
+| Control                       | Status        | Evidence                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       |
+| ----------------------------- | ------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| **CC7.3** (Incident Response) | **Satisfied** | Incident response plan covers 4 severity levels (P1-P4) with defined response times (15 min to 1 business day), multi-role escalation chain, investigation/resolution procedures, 72-hour breach notification, GDPR Article 33 supervisory authority notification, and communication templates. Personal contact info removed from repository templates. Status page setup guide ready but not yet operational (separate MF-1).                                                                                                |
+| **CC9.1** (Vendor Management) | **Satisfied** | Subprocessor registry lists all 13 data-processing vendors with purpose, data categories, and security certification status. Quarterly review frequency documented. Compensating controls section covers non-SOC2 vendors (Railway, Anthropic) with 6 specific mitigations: data minimization, transport security, secret rotation, endpoint controls, prompt controls, and logging. Vendor management onboarding procedure defined.                                                                                           |
+| **P4.3** (Data Retention)     | **Satisfied** | Automated offboarding lifecycle (`offboarding-lifecycle.ts`) enforces 30-day soft delete and 60-day hard delete across 10 org-scoped tables. Schedule is set automatically by cron (`alerts/run/route.ts`) for canceled orgs or triggered by Stripe webhook on subscription cancellation (`stripe/webhook/route.ts`). `data_deletion_scheduled_at` is read and enforced by the plan gate. Reactivation clears the deletion schedule. Individual deletion request procedure documented for non-cancellation GDPR/CCPA requests. |
 
 ---
 
@@ -117,12 +117,12 @@ The updated `CLIENT_OFFBOARDING.md` also addresses the individual deletion reque
 
 ### Vendors Lacking SOC 2 Certification
 
-| Vendor | Gap | Compensating Controls | Risk Level |
-|---|---|---|---|
-| **Railway** | No SOC 2 | 6 compensating controls documented in `SUBPROCESSORS.md:24-31` | High — primary AI backend runtime |
-| **Anthropic** | No SOC 2 | Same 6 controls + zero-retention API terms | Medium — ephemeral processing only |
-| **Google AI (Gemini)** | Not verified | Optional provider, same prompt controls apply | Low — only used when explicitly selected |
-| **UptimeRobot** | No SOC 2 | Receives only public endpoint URLs and monitor metadata — no customer PII | Low — minimal data exposure |
+| Vendor                 | Gap          | Compensating Controls                                                     | Risk Level                               |
+| ---------------------- | ------------ | ------------------------------------------------------------------------- | ---------------------------------------- |
+| **Railway**            | No SOC 2     | 6 compensating controls documented in `SUBPROCESSORS.md:24-31`            | High — primary AI backend runtime        |
+| **Anthropic**          | No SOC 2     | Same 6 controls + zero-retention API terms                                | Medium — ephemeral processing only       |
+| **Google AI (Gemini)** | Not verified | Optional provider, same prompt controls apply                             | Low — only used when explicitly selected |
+| **UptimeRobot**        | No SOC 2     | Receives only public endpoint URLs and monitor metadata — no customer PII | Low — minimal data exposure              |
 
 **Recommendation**: For Railway specifically, evaluate whether the Penny backend could be migrated to a SOC 2-certified compute provider (e.g., AWS Fargate, Google Cloud Run, Render) to eliminate the highest-risk vendor gap. This is not a blocker but would significantly strengthen the CC9.1 posture.
 

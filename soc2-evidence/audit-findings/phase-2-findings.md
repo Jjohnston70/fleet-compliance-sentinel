@@ -1,5 +1,6 @@
 # Phase 2 Audit Findings
-**Auditor**: Claude Code (automated static analysis review)
+
+**Auditor**:Jacob Johnston
 **Date**: 2026-03-20
 **Phase**: 2 — Data Integrity + Access Control
 **Scope**: `requireFleetComplianceOrg` / `requireFleetComplianceOrgWithRole` auth middleware, `fleet-compliance-validators.ts` field validation, parameterized query audit across all API routes, invoice module access control, cross-tenant isolation assessment
@@ -7,6 +8,7 @@
 ---
 
 ## Phase 2 Audit Findings
+
 **Overall Score**: 8/10
 **Pass/Conditional Pass/Fail**: Pass
 **Blocker Count**: 0
@@ -14,11 +16,13 @@
 ---
 
 ## Remediation Update (2026-03-21)
-**Updated Score**: 8/10  
-**Updated Result**: Pass  
+
+**Updated Score**: 8/10
+**Updated Result**: Pass
 **Updated Blocker Count**: 0
 
 Resolved from original blockers/findings:
+
 - Invoice module now enforces org-admin auth in both invoice API routes and stores/scopes by `org_id`.
 - Cron secret comparison now uses `crypto.timingSafeEqual` with length pre-check.
 - Middleware matcher now protects `/chief(.*)`, `/api/chief(.*)`, and `/api/invoices(.*)`.
@@ -28,6 +32,7 @@ Resolved from original blockers/findings:
 ---
 
 ### Critical Findings (must fix before Phase 3)
+
 All critical findings listed in this original section are resolved as of the remediation update on 2026-03-21.
 
 1. **Invoice module has ZERO authentication or authorization** — Both `/api/invoices/setup` and `/api/invoices/import` accept unauthenticated POST requests from anyone on the internet. No `requireFleetComplianceOrg()`, no Clerk check, no org scoping. The `invoices` table schema has no `org_id` column, so all invoices are in a single flat namespace. Any HTTP client can create invoices, and any authenticated user can read all invoices regardless of org. **Recommended fix**: Add `requireFleetComplianceOrgWithRole(request, 'admin')` to both routes. Add `org_id TEXT NOT NULL` column to the `invoices` table. Add org_id filtering to `listInvoices()`, `getInvoice()`, and `deleteInvoice()`. This is a data exposure and integrity violation.
@@ -111,12 +116,14 @@ const rows = await sql`
 Neon's `neon()` function processes tagged template literals by extracting interpolated values as parameterized query arguments. The `${variable}` expressions are converted to `$1`, `$2`, etc. in the generated SQL, with values passed separately. **This is not string concatenation — it is parameterized query construction.**
 
 **Verified patterns (all safe):**
+
 - `fleet-compliance-db.ts`: 12 queries — all parameterized via template literals
 - `invoice-db.ts`: 8 queries — all parameterized via template literals
 - `cron-health/route.ts`: reads via `getLastCronLog()` — parameterized
 - All INSERT, UPDATE, SELECT, and DELETE operations use `${value}` interpolation
 
 **One edge case identified:**
+
 - [fleet-compliance-db.ts:150](src/lib/fleet-compliance-db.ts#L150): `${JSON.stringify(row)}::jsonb` — The row data is JSON-serialized and cast to JSONB. The `JSON.stringify()` output is passed as a parameterized string value, so it is safe from SQL injection. However, if the JSON contains deeply nested or extremely large objects, it could cause Postgres JSONB parsing errors. **Verdict: Safe from injection, minor robustness concern.**
 
 **Overall SQL injection assessment: No injection risks found.** The Neon template literal pattern provides consistent protection across all queries.
@@ -134,6 +141,7 @@ Neon's `neon()` function processes tagged template literals by extracting interp
 ---
 
 ### Audit Metadata
+
 - **Auth Pattern Applied**: `requireFleetComplianceOrg*` on 12/12 Fleet-Compliance API routes, 2/2 Invoice routes
 - **Role Enforcement**: Admin-only on save, setup, trigger, cron-health, alerts/run, import rollback, restore, and invoice routes
 - **Org-Scoped Queries**: 12/12 fleet_compliance_records queries include `org_id` filter

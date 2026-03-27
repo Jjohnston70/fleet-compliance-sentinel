@@ -204,6 +204,21 @@ export default function HomePage() {
             width={64}
             height={80}
           />
+          <a
+            href="https://www.bbb.org/us/co/colorado-springs/profile/consultant/true-north-data-strategies-llc-0785-1000034167#sealclick"
+            target="_blank"
+            rel="noopener noreferrer nofollow"
+            aria-label="View True North Data Strategies LLC BBB Business Review"
+          >
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src="https://seal-southerncolorado.bbb.org/seals/blue-seal-200-42-bbb-1000034167.png"
+              style={{ border: 0 }}
+              alt="True North Data Strategies LLC BBB Business Review"
+              width={200}
+              height={42}
+            />
+          </a>
         </div>
       </section>
 

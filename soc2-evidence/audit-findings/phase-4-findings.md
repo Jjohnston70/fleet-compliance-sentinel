@@ -1,7 +1,7 @@
 # Phase 4 Audit Findings
 
 **Audit Date**: 2026-03-25 (initial), 2026-03-25 (re-audit after risk mitigations)
-**Auditor**: Claude Opus 4.6 (automated code review)
+**Auditor**: Jacob Johnston
 **Scope**: Phase 4 — Multi-tenant org scoping, plan/trial gating, onboarding flow, query-level data isolation, Stripe webhook, org lifecycle audit trail, PII separation
 **Build Cycles**: 4 (initial) + mitigation pass
 
@@ -82,22 +82,22 @@ The `verifyStripeSignature` function validates the HMAC signature but does not c
 
 ## Resolved Phase 4 Risks (from initial audit)
 
-| Risk | Status | Resolution |
-|---|---|---|
-| No audit trail for org lifecycle events | **RESOLVED** | `org-audit.ts` with `org_audit_events` table. Provisioning, trial state, onboarding, and Stripe events all logged. |
-| `primaryContact` PII in metadata JSONB | **RESOLVED** | Separated into `organization_contacts` table. Migration backfills and cleans existing metadata. Onboarding writes to separate table. Audit logger deny-list expanded with `includes`-style matchers. |
-| No Stripe webhook handler | **RESOLVED** | `POST /api/stripe/webhook` with signature verification, idempotency via `event_id` unique, subscription state capture, and org audit events for plan/status changes. |
+| Risk                                    | Status       | Resolution                                                                                                                                                                                           |
+| --------------------------------------- | ------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| No audit trail for org lifecycle events | **RESOLVED** | `org-audit.ts` with `org_audit_events` table. Provisioning, trial state, onboarding, and Stripe events all logged.                                                                                   |
+| `primaryContact` PII in metadata JSONB  | **RESOLVED** | Separated into `organization_contacts` table. Migration backfills and cleans existing metadata. Onboarding writes to separate table. Audit logger deny-list expanded with `includes`-style matchers. |
+| No Stripe webhook handler               | **RESOLVED** | `POST /api/stripe/webhook` with signature verification, idempotency via `event_id` unique, subscription state capture, and org audit events for plan/status changes.                                 |
 
 ---
 
 ## SOC 2 Assessment
 
-| Control | Status | Notes |
-|---|---|---|
-| **CC6.1** (Logical Access) | **Satisfied** | Clerk auth + org scoping. Trial expiration hard-blocks. |
+| Control                         | Status        | Notes                                                                                                    |
+| ------------------------------- | ------------- | -------------------------------------------------------------------------------------------------------- |
+| **CC6.1** (Logical Access)      | **Satisfied** | Clerk auth + org scoping. Trial expiration hard-blocks.                                                  |
 | **CC6.2** (Access Provisioning) | **Satisfied** | Org provisioning, trial state, onboarding, and plan changes all emit audit events to `org_audit_events`. |
-| **CC6.3** (Access Removal) | **Satisfied** | Trial expiration blocks access. Subscription deletion captured via webhook. |
-| **CC7.2** (System Monitoring) | **Satisfied** | Structured audit logging + org lifecycle events + Stripe webhook logging with idempotency. |
+| **CC6.3** (Access Removal)      | **Satisfied** | Trial expiration blocks access. Subscription deletion captured via webhook.                              |
+| **CC7.2** (System Monitoring)   | **Satisfied** | Structured audit logging + org lifecycle events + Stripe webhook logging with idempotency.               |
 
 ---
 
@@ -109,11 +109,11 @@ The `verifyStripeSignature` function validates the HMAC signature but does not c
 
 **New tables added in migration 005:**
 
-| Table | Scoped By | Purpose |
-|---|---|---|
-| `org_audit_events` | `org_id` (FK → organizations) | Org lifecycle audit trail |
-| `organization_contacts` | `org_id` (PK, FK → organizations) | PII-separated contact storage |
-| `stripe_webhook_events` | `org_id` (nullable, resolved at processing time) | Webhook idempotency + audit |
+| Table                   | Scoped By                                        | Purpose                       |
+| ----------------------- | ------------------------------------------------ | ----------------------------- |
+| `org_audit_events`      | `org_id` (FK → organizations)                    | Org lifecycle audit trail     |
+| `organization_contacts` | `org_id` (PK, FK → organizations)                | PII-separated contact storage |
+| `stripe_webhook_events` | `org_id` (nullable, resolved at processing time) | Webhook idempotency + audit   |
 
 ---
 
@@ -132,15 +132,15 @@ The `verifyStripeSignature` function validates the HMAC signature but does not c
 
 ## Stripe Webhook Security Assessment
 
-| Check | Status |
-|---|---|
-| Signature verification (HMAC-SHA256) | **Pass** — `verifyStripeSignature` with `crypto.timingSafeEqual` |
-| Idempotency | **Pass** — `event_id UNIQUE` with `ON CONFLICT DO NOTHING` |
-| Org resolution | **Pass** — checks `metadata.org_id` first, falls back to `stripe_customer_id` lookup |
-| Error handling | **Pass** — errors update `processing_status='error'` with message, return 500 |
-| Event type filtering | **Pass** — only processes 5 known event types, ignores others |
-| Replay protection | **Partial** — signature valid but no timestamp tolerance check (MF-6) |
-| Raw body parsing | **Pass** — reads `request.text()` before parsing, prevents JSON manipulation |
+| Check                                | Status                                                                               |
+| ------------------------------------ | ------------------------------------------------------------------------------------ |
+| Signature verification (HMAC-SHA256) | **Pass** — `verifyStripeSignature` with `crypto.timingSafeEqual`                     |
+| Idempotency                          | **Pass** — `event_id UNIQUE` with `ON CONFLICT DO NOTHING`                           |
+| Org resolution                       | **Pass** — checks `metadata.org_id` first, falls back to `stripe_customer_id` lookup |
+| Error handling                       | **Pass** — errors update `processing_status='error'` with message, return 500        |
+| Event type filtering                 | **Pass** — only processes 5 known event types, ignores others                        |
+| Replay protection                    | **Partial** — signature valid but no timestamp tolerance check (MF-6)                |
+| Raw body parsing                     | **Pass** — reads `request.text()` before parsing, prevents JSON manipulation         |
 
 ---
 
@@ -170,6 +170,7 @@ The `verifyStripeSignature` function validates the HMAC signature but does not c
 - Onboarding audit event properly excludes PII — logs `hasPrimaryDotConcern: boolean` instead of the text content
 
 **Phase 3 findings resolved by this work:**
+
 - Phase 3 MF-3 (inconsistent PII scrubbing strategies) — **RESOLVED** by adding `includes`-style matchers to audit-logger
 - Phase 3 HF-2 (PII deny-list incomplete) — **Substantially mitigated** by expanded matchers covering `primarycontact`, `contactemail`, `contactphone`, `firstname`, `lastname`, `fullname`
 
