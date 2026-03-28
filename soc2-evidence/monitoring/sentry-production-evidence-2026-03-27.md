@@ -42,7 +42,7 @@ Reviewer: Coworker (Claude) + Jacob Johnston
 
 - Data Scrubber (server-side scrubbing): ENABLED
 - Default Scrubbers (passwords, credit cards): ENABLED
-- Prevent Storing IP Addresses: **Pending manual enable in Sentry dashboard**
+- Prevent Storing IP Addresses: ENABLED (2026-03-27 by Jacob Johnston)
 - sendDefaultPii in SDK configs: false (hardened from wizard default of true)
 - Advanced Data Scrubbing Rules: None configured
 
@@ -53,11 +53,4 @@ Reviewer: Coworker (Claude) + Jacob Johnston
 - Example verification files removed from repo:
   - `src/app/sentry-example-page/page.tsx`
   - `src/app/api/sentry-example-api/route.ts`
-- Direct Sentry dashboard confirmation is still required for final auditor screenshot (not possible from this runtime due missing Sentry auth session/token).
-
-## Remaining Action Items
-
-1. Enable "Prevent Storing IP Addresses" in Sentry project settings (Settings > Security & Privacy).
-2. Confirm the triggered production test event appears in Sentry Issues dashboard and capture screenshot evidence.
-3. Confirm Neon password rotation health by checking authenticated DB-backed route behavior in production session.
-4. Consider reducing tracesSampleRate from 1.0 to 0.2-0.5 for production cost optimization.
+- Direct Sentry dashboard confirmation is still required for final auditor screenshot (not possible from this runtime due missing Sentry auth session/t
