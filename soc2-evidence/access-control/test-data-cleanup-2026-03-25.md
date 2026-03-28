@@ -1,49 +1,71 @@
-# Database Test Data Cleanup (Phase 6)
+# Database + Clerk Test Data Cleanup Evidence (Phase 6)
 
-Date: 2026-03-25  
-Operator: Codex
+Date Opened: 2026-03-25  
+Primary Scope: Test data removal from production data plane and identity plane
 
-## Scope
+## A) Neon Postgres Cleanup (Completed)
 
-- Neon Postgres (`DATABASE_URL` from `.env.local`)
+Operator: Codex  
+Completion Date: 2026-03-25
+
+### Scope
+
+- Neon Postgres (`DATABASE_URL`)
 - Tables inspected: `organizations`, `chief_records`, `org_audit_events`, `organization_contacts`, `subscriptions`, `stripe_webhook_events`
 
-## Before Cleanup
+### Before Cleanup
 
 - `organizations`: 1
 - `chief_records` (active): 75
 - `chief_records` with `org_id IS NULL`: 72
 - `chief_records` with orphan `org_id` (no matching org): 1
 
-## Cleanup Actions Executed
+### Cleanup Actions Executed
 
-- Deleted all legacy unscoped records (`chief_records` where `org_id IS NULL`): 72 rows
-- Deleted orphan org record(s) in `chief_records`: 1 row
+- Deleted legacy unscoped records (`chief_records` where `org_id IS NULL`): 72 rows
+- Deleted orphan `chief_records` row(s): 1 row
 - Deleted records for test org(s) (`name` like `Organization org_%`): 2 rows
 - Deleted related `org_audit_events` for test org(s): 2 rows
 - Deleted test org(s) from `organizations`: 1 row
 
-## After Cleanup
+### After Cleanup
 
 - `organizations`: 0
 - `chief_records` (active): 0
 - `chief_records` with `org_id IS NULL`: 0
 - `chief_records` with orphan `org_id`: 0
 
-## Notes
+## B) Clerk Cleanup (Manual Admin Action Required)
 
-- Attempted Clerk org cleanup for matching org IDs via MCP tool, but operation returned `Unauthorized` from Clerk API in this environment.
-- Clerk-side deletion must be completed from an authorized admin session if those org IDs still exist in Clerk.
+### Attempted Automation (2026-03-28 UTC)
 
-## Update 2026-03-27 (Coworker)
+- Attempted Clerk MCP verification/cleanup from this environment.
+- Result: `Unauthorized` (no active authorized Clerk admin session/API token in this runtime).
 
-Clerk test org cleanup still required. Jacob to complete:
+### Clerk Cleanup Date
 
-1. Log into https://dashboard.clerk.com
-2. Go to Organizations
-3. Find and delete any test organizations (e.g., orgs created during development)
-4. Confirm no test users remain with production-level access
-5. Record cleanup date below
+- **Pending (admin dashboard action required)**
 
-Clerk Cleanup Date: Pending
-Clerk Cleanup By: Pending
+### Clerk Cleanup By
+
+- **Pending (Jacob Johnston or authorized Clerk admin)**
+
+### Required Manual Checklist (Clerk Dashboard)
+
+1. Open Organizations in Clerk dashboard.
+2. Delete any test orgs (examples: `Organization org_*`, `Test Org`, non-customer orgs).
+3. Open Users and remove test/dummy users with production access.
+4. Capture before/after screenshots for auditor packet.
+5. Record final counts below.
+
+### Final Clerk Results (To Be Filled After Admin Action)
+
+- Test organizations found: Pending
+- Test organizations deleted: Pending
+- Test users found: Pending
+- Test users deleted: Pending
+- Confirmation no test production access remains: Pending
+
+## Control Mapping
+
+- **CC6.1 (Access Control):** Database-side cleanup complete; Clerk identity-plane cleanup still pending authorized manual completion.
