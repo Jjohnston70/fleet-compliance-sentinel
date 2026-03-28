@@ -16,10 +16,17 @@ const isProtectedRoute = createRouteMatcher([
   '/api/stripe/portal(.*)',
 ]);
 
+// Routes that handle their own auth (cron jobs, system endpoints).
+// These must bypass Clerk so their custom Bearer-token auth can run.
+const isSelfAuthedRoute = createRouteMatcher([
+  '/api/fleet-compliance/telematics-sync(.*)',
+  '/api/fleet-compliance/alerts/run(.*)',
+]);
+
 const hasClerk = isClerkEnabled();
 
 const clerkAuthMiddleware = clerkMiddleware(async (auth, req) => {
-  if (isProtectedRoute(req)) {
+  if (isProtectedRoute(req) && !isSelfAuthedRoute(req)) {
     await auth.protect();
   }
 });
