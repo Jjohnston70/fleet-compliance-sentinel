@@ -33,7 +33,7 @@ export default function AlertsRunPanel({ resendConfigured }: { resendConfigured:
       <h3>Run Alert Sweep</h3>
       <p className="fleet-compliance-table-note" style={{ marginBottom: '1rem' }}>
         Dry run evaluates all open suspense items and shows what emails would be sent without
-        actually sending anything. Live run requires <code>RESEND_API_KEY</code>.
+        actually sending anything. Live run requires the email delivery provider to be configured.
       </p>
       <div className="fleet-compliance-action-row">
         <button

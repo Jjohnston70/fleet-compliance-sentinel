@@ -13,7 +13,7 @@
 ### Pages (`src/app/**/page.tsx`)
 - `src/app/page.tsx` - homepage/marketing shell.
 - `src/app/accessibility/page.tsx` - accessibility statement page.
-- `src/app/assetcommand/page.tsx` - AssetCommand product/lead page.
+- `src/app/Fleet-Compliance Sentinel/page.tsx` - Fleet-Compliance Sentinel product/lead page.
 - `src/app/penny/page.tsx` - authenticated Penny chat entry page.
 - `src/app/privacy/page.tsx` - privacy policy page.
 - `src/app/terms/page.tsx` - terms page.
@@ -166,8 +166,8 @@ All current dev deps are appropriately classified. Most are config/build-time an
 ### 4.1 Hardcoded URLs in runtime code
 | File | Line(s) | Value / Type | Risk |
 |---|---|---|---|
-| `src/app/assetcommand/page.tsx` | 6 | Gumroad URL hardcoded | low (marketing link), but not env-managed |
-| `src/app/assetcommand/page.tsx` | 8 | Google Apps Script URL hardcoded | medium (integration endpoint pinned in code) |
+| `src/app/Fleet-Compliance Sentinel/page.tsx` | 6 | Gumroad URL hardcoded | low (marketing link), but not env-managed |
+| `src/app/Fleet-Compliance Sentinel/page.tsx` | 8 | Google Apps Script URL hardcoded | medium (integration endpoint pinned in code) |
 | `src/app/page.tsx` | 68, 204, 219, 240 | hardcoded TNDS URLs | low |
 | `src/app/layout.tsx` | 30, 32, 36 | hardcoded metadata base URL | low/medium (multi-env drift risk) |
 | `src/lib/fleet-compliance-fmcsa-client.ts` | 199 | FMCSA base URL constant | low (expected API constant) |

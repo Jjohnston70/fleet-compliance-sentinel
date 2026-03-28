@@ -5,9 +5,14 @@
 
 import { auth, currentUser } from '@clerk/nextjs/server';
 import { redirect } from 'next/navigation';
+import type { Metadata } from 'next';
 import PennyChat from './PennyChat';
 import { isClerkEnabled } from '@/lib/clerk';
 import { canAccessPenny, canBypassPennyRoleByEmail, resolvePennyRole } from '@/lib/penny-access';
+
+export const metadata: Metadata = {
+  title: 'Penny AI',
+};
 
 export default async function PennyPage() {
   const hasClerk = isClerkEnabled();
@@ -16,6 +21,7 @@ export default async function PennyPage() {
     return (
       <div className="penny-container">
         <div className="penny-header">
+          <p><a href="/fleet-compliance" className="penny-back-link">Back to Fleet-Compliance</a></p>
           <h1>Pipeline Penny</h1>
           <p>Configure Clerk environment variables to enable protected Penny access.</p>
         </div>
@@ -38,6 +44,7 @@ export default async function PennyPage() {
     return (
       <div className="penny-container">
         <div className="penny-header">
+          <p><a href="/fleet-compliance" className="penny-back-link">Back to Fleet-Compliance</a></p>
           <h1>Pipeline Penny</h1>
           <p>Access pending. Your account hasn't been approved for Penny yet.</p>
           <p style={{ marginTop: '1rem', fontSize: '0.9rem', color: 'var(--text-muted)' }}>

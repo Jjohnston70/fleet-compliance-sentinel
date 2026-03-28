@@ -4,7 +4,7 @@
 **Title:** 49 — Transportation  
 **Agency:** Federal Motor Carrier Safety Administration (FMCSA)  
 **Last scraped:** 2026-03-21  
-**Purpose:** DOT compliance reference for AssetCommand / Pipeline Penny knowledge base
+**Purpose:** DOT compliance reference for Fleet-Compliance Sentinel / Pipeline Penny knowledge base
 
 ---
 

@@ -1,12 +1,12 @@
 import Link from 'next/link';
 import { auth } from '@clerk/nextjs/server';
 import { redirect } from 'next/navigation';
+import type { Metadata } from 'next';
 import { isClerkEnabled } from '@/lib/clerk';
 import FleetComplianceErrorBoundary from '@/components/fleet-compliance/FleetComplianceErrorBoundary';
 import FmcsaSnapshotCard from '@/components/fleet-compliance/FmcsaSnapshotCard';
 import {
   loadFleetComplianceData,
-  getFleetComplianceModuleSummary,
   fleetComplianceResourceLinks,
   getAssetStats,
   getComplianceStats,
@@ -15,6 +15,9 @@ import {
 } from '@/lib/fleet-compliance-data';
 
 export const dynamic = 'force-dynamic';
+export const metadata: Metadata = {
+  title: 'Dashboard',
+};
 
 const modules = [
   {
@@ -57,7 +60,7 @@ const modules = [
     href: '/fleet-compliance/invoices',
     title: 'Invoices',
     description: 'Enter vendor invoices for maintenance, permits, fuel, and insurance.',
-    status: 'Live',
+    status: 'Live — manual + PDF parse',
   },
   {
     href: '/fleet-compliance/spend',
@@ -111,17 +114,16 @@ export default async function FleetCompliancePage() {
   }
 
   const data = await loadFleetComplianceData(orgId);
-  const fleetComplianceModuleSummary = getFleetComplianceModuleSummary(data);
   const assetStats = getAssetStats(data.assets);
   const complianceStats = getComplianceStats(data.drivers, data.permits);
   const suspenseStats = getSuspenseStats(data.suspense);
   const importStats = await getImportStats(orgId);
 
   const quickStats = [
-    { label: 'Source Systems', value: String(fleetComplianceModuleSummary.sourceSystems), note: 'CSV, workbook, CFR, FMCSA' },
-    { label: 'Planned Collections', value: String(fleetComplianceModuleSummary.plannedCollections), note: 'Firestore-ready layout' },
-    { label: 'Alert Tracks', value: String(fleetComplianceModuleSummary.alertTracks), note: 'Hazmat, IRP, IFTA, UCR, MC150, licenses' },
-    { label: 'Penny Corpus', value: fleetComplianceModuleSummary.pennyCorpus, note: 'Chunked CFR reference set' },
+    { label: 'Tracked Assets', value: String(data.assets.length), note: 'Vehicles, equipment, tanks, and trailers' },
+    { label: 'Driver Records', value: String(data.drivers.length), note: 'CDL and compliance profiles' },
+    { label: 'Open Suspense', value: String(suspenseStats.totalOpen), note: `${suspenseStats.overdue} currently overdue` },
+    { label: 'Permit Records', value: String(data.permits.length), note: 'Renewals and filing cadence' },
   ];
 
   return (
@@ -129,11 +131,9 @@ export default async function FleetCompliancePage() {
       <main className="fleet-compliance-shell">
       <section className="fleet-compliance-hero">
         <p className="fleet-compliance-eyebrow">Fleet-Compliance Operations</p>
-        <h1>Protected command shell for assets, compliance, suspense, and CFR-backed Penny.</h1>
+        <h1>Operational command center for assets, compliance, suspense, and telematics risk.</h1>
         <p className="fleet-compliance-subcopy">
-          This route lives inside the current Pipeline Punks site, reuses Clerk, and keeps the visual system
-          consistent with the existing product while the operational module is built out.
-          The current view is now driven by an import snapshot generated from the workbook and mapped source files.
+          Review your fleet posture at a glance, then drill into module-specific pages for records, remediation, and alerts.
         </p>
       </section>
 
@@ -153,7 +153,7 @@ export default async function FleetCompliancePage() {
             <p className="fleet-compliance-eyebrow">Operational Snapshot</p>
             <h2>Metrics</h2>
           </div>
-          <p className="fleet-compliance-section-copy">These numbers are now driven by the imported Fleet-Compliance snapshot generated from your current source files.</p>
+          <p className="fleet-compliance-section-copy">Current compliance and activity totals from your connected Fleet-Compliance data sources.</p>
         </div>
         <div className="fleet-compliance-list-grid">
           <div className="fleet-compliance-list-card">
@@ -185,7 +185,8 @@ export default async function FleetCompliancePage() {
             <ul>
               {fleetComplianceResourceLinks.map((item) => (
                 <li key={item.href}>
-                  <Link href={item.href}>{item.label}</Link>: {item.note}
+                  <Link href={item.href}>{item.label?.trim() || item.href}</Link>
+                  {item.note ? `: ${item.note}` : null}
                 </li>
               ))}
             </ul>
@@ -198,9 +199,9 @@ export default async function FleetCompliancePage() {
         <div className="fleet-compliance-section-head">
           <div>
             <p className="fleet-compliance-eyebrow">Modules</p>
-            <h2>First route shells</h2>
+            <h2>Operational modules</h2>
           </div>
-          <p className="fleet-compliance-section-copy">These are the first protected surfaces for Fleet-Compliance inside the site.</p>
+          <p className="fleet-compliance-section-copy">Each module is protected with Clerk auth and tied to your active organization context.</p>
         </div>
         <div className="fleet-compliance-module-grid">
           {modules.map((module) => (
@@ -216,10 +217,13 @@ export default async function FleetCompliancePage() {
       <section className="fleet-compliance-section">
         <div className="fleet-compliance-section-head">
           <div>
-            <p className="fleet-compliance-eyebrow">Import Health</p>
-            <h2>Last import snapshot</h2>
+            <p className="fleet-compliance-eyebrow">Data Coverage</p>
+            <h2>Collection counts</h2>
           </div>
-          <p className="fleet-compliance-section-copy">Generated {importStats.generatedAt}. Run <code>py build_fleet_compliance_imports.py</code> from tooling/fleet-compliance-sentinel to refresh.</p>
+          <p className="fleet-compliance-section-copy">
+            Snapshot refreshed {importStats.generatedAt || 'N/A'}.
+            Source collections feed dashboard metrics, module pages, and alert previews.
+          </p>
         </div>
         <div className="fleet-compliance-import-table">
           <table>
@@ -238,36 +242,6 @@ export default async function FleetCompliancePage() {
               ))}
             </tbody>
           </table>
-        </div>
-      </section>
-
-      <section className="fleet-compliance-section">
-        <div className="fleet-compliance-section-head">
-          <div>
-            <p className="fleet-compliance-eyebrow">Build Shape</p>
-            <h2>Current architecture</h2>
-          </div>
-        </div>
-        <div className="fleet-compliance-list-grid">
-          <div className="fleet-compliance-list-card">
-            <h3>Now</h3>
-            <ul>
-              <li>Next.js site on Vercel</li>
-              <li>Clerk auth reused for all protected routes</li>
-              <li>Railway Penny backend retained</li>
-              <li>Fleet-Compliance data layer wired into the site</li>
-              <li>Bulk upload workbook export added</li>
-            </ul>
-          </div>
-          <div className="fleet-compliance-list-card">
-            <h3>Next</h3>
-            <ul>
-              <li>Validation-driven import review loop</li>
-              <li>Suspense email reminders</li>
-              <li>Firestore write path and Storage upload flow</li>
-              <li>FMCSA lookup refactor</li>
-            </ul>
-          </div>
         </div>
       </section>
       </main>

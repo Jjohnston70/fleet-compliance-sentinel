@@ -5,6 +5,7 @@
 'use client';
 
 import { useState, useRef, useEffect } from 'react';
+import Link from 'next/link';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 
@@ -236,6 +237,7 @@ export default function PennyChat({ userName, userRole }: PennyChatProps) {
       <div className="penny-shell">
         <section className="penny-main">
           <div className="penny-header">
+            <p><Link href="/fleet-compliance" className="penny-back-link">Back to Fleet-Compliance</Link></p>
             <h1>Pipeline Penny</h1>
             <p>Ask questions about the current CFR and DOT compliance knowledge base</p>
             <div className="penny-status">

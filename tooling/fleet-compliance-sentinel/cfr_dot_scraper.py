@@ -200,7 +200,7 @@ def scrape_part(part_info, converter):
 **Title:** 49 — Transportation  
 **Agency:** Federal Motor Carrier Safety Administration (FMCSA)  
 **Last scraped:** {time.strftime('%Y-%m-%d')}  
-**Purpose:** DOT compliance reference for AssetCommand / Pipeline Penny knowledge base
+**Purpose:** DOT compliance reference for Fleet-Compliance Sentinel / Pipeline Penny knowledge base
 
 ---
 
@@ -221,7 +221,7 @@ def write_index(results):
     lines = [
         "# DOT CFR Regulation Knowledge Base",
         "",
-        "**True North Data Strategies — AssetCommand Compliance Reference**  ",
+        "**True North Data Strategies — Fleet-Compliance Sentinel Compliance Reference**  ",
         f"**Generated:** {time.strftime('%Y-%m-%d')}  ",
         "**Source:** https://www.ecfr.gov — Title 49, Transportation  ",
         "",
@@ -273,7 +273,7 @@ def write_index(results):
         "### Pipeline Penny",
         "Load each `.md` file into Penny's knowledge base under a `DOT Compliance` category.",
         "",
-        "### AssetCommand Dashboard",
+        "### Fleet-Compliance Sentinel Dashboard",
         "Link to the NotebookLM shared notebook from the dashboard toolbar.",
         "",
         "---",

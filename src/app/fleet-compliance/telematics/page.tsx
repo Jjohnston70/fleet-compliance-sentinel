@@ -2,11 +2,15 @@ import Link from 'next/link';
 import { auth } from '@clerk/nextjs/server';
 import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
+import type { Metadata } from 'next';
 import { isClerkEnabled } from '@/lib/clerk';
 import FleetComplianceErrorBoundary from '@/components/fleet-compliance/FleetComplianceErrorBoundary';
 import TelematicsRiskBadge from '@/components/fleet-compliance/TelematicsRiskBadge';
 
 export const dynamic = 'force-dynamic';
+export const metadata: Metadata = {
+  title: 'Telematics',
+};
 
 type RiskLevel = 'HIGH' | 'MEDIUM' | 'LOW';
 

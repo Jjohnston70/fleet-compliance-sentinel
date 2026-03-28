@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import { auth } from '@clerk/nextjs/server';
 import { redirect } from 'next/navigation';
+import type { Metadata } from 'next';
 import { isClerkEnabled } from '@/lib/clerk';
 import FleetComplianceErrorBoundary from '@/components/fleet-compliance/FleetComplianceErrorBoundary';
 import { previewFleetComplianceAlerts } from '@/lib/fleet-compliance-alert-engine';
@@ -8,6 +9,9 @@ import { loadFleetComplianceData } from '@/lib/fleet-compliance-data';
 import AlertsRunPanel from '@/components/fleet-compliance/AlertsRunPanel';
 
 export const dynamic = 'force-dynamic';
+export const metadata: Metadata = {
+  title: 'Alerts',
+};
 
 const WINDOW_LABELS: Record<string, string> = {
   overdue: 'Overdue',
@@ -46,28 +50,28 @@ export default async function FleetComplianceAlertsPage() {
           receives the full list. Vercel Cron triggers daily at 08:00 UTC.
         </p>
 
-        {/* Config status */}
+        {/* Delivery status */}
         <div className="fleet-compliance-list-card" style={{ marginTop: '1.5rem' }}>
-          <h3>Configuration</h3>
+          <h3>Delivery Status</h3>
           <dl className="fleet-compliance-kv-list">
             <div>
-              <dt>RESEND_API_KEY</dt>
+              <dt>Email delivery</dt>
               <dd>
                 {resendConfigured
                   ? <span className="fleet-compliance-pill fleet-compliance-pill-active">Configured</span>
-                  : <span className="fleet-compliance-pill">Not set — dry-run only</span>}
+                  : <span className="fleet-compliance-pill">Not configured — dry run available</span>}
               </dd>
             </div>
             <div>
-              <dt>FLEET_COMPLIANCE_CRON_SECRET</dt>
+              <dt>Daily scheduler</dt>
               <dd>
                 {cronConfigured
                   ? <span className="fleet-compliance-pill fleet-compliance-pill-active">Set</span>
-                  : <span className="fleet-compliance-pill">Not set — cron endpoint is open</span>}
+                  : <span className="fleet-compliance-pill">Missing secure scheduler token</span>}
               </dd>
             </div>
             <div>
-              <dt>FLEET_COMPLIANCE_ALERT_FROM_EMAIL</dt>
+              <dt>From address</dt>
               <dd className="fleet-compliance-table-note">
                 {process.env.FLEET_COMPLIANCE_ALERT_FROM_EMAIL || 'compliance@fleetcompliance.com (default)'}
               </dd>
@@ -149,4 +153,3 @@ export default async function FleetComplianceAlertsPage() {
     </FleetComplianceErrorBoundary>
   );
 }
-

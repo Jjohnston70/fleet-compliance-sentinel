@@ -427,7 +427,7 @@ export const fleetComplianceUploadTemplateManifest = [
     "sourcePath": "asset-command_vs.001/asset-command-working-testing-03-07-2026.xlsx",
     "worksheet": "Assets Master",
     "sheetName": "Assets Master",
-    "notes": "AssetCommand asset master sheet. Operational asset summary data.",
+    "notes": "Fleet-Compliance Sentinel asset master sheet. Operational asset summary data.",
     "headers": [
       "Asset ID",
       "Asset Name",
@@ -465,7 +465,7 @@ export const fleetComplianceUploadTemplateManifest = [
     "sourcePath": "asset-command_vs.001/asset-command-working-testing-03-07-2026.xlsx",
     "worksheet": "Drivers",
     "sheetName": "Drivers",
-    "notes": "AssetCommand driver sheet with operational compliance fields.",
+    "notes": "Fleet-Compliance Sentinel driver sheet with operational compliance fields.",
     "headers": [
       "Driver ID",
       "Driver Name",
@@ -573,7 +573,7 @@ export const fleetComplianceUploadTemplateManifest = [
     "sourcePath": "asset-command_vs.001/asset-command-working-testing-03-07-2026.xlsx",
     "worksheet": "Maintenance Tracker",
     "sheetName": "Maintenance Tracker",
-    "notes": "Executed maintenance event log from AssetCommand.",
+    "notes": "Executed maintenance event log from Fleet-Compliance Sentinel.",
     "headers": [
       "Maintenance ID",
       "Asset ID",
@@ -657,7 +657,7 @@ export const fleetComplianceUploadTemplateManifest = [
     "sourcePath": "asset-command_vs.001/asset-command-working-testing-03-07-2026.xlsx",
     "worksheet": "Config",
     "sheetName": "Config",
-    "notes": "AssetCommand key/value config sheet.",
+    "notes": "Fleet-Compliance Sentinel key/value config sheet.",
     "headers": [
       "Setting",
       "Value"

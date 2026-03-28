@@ -167,7 +167,7 @@ The platform consists of two integrated modules:
 | `/privacy` | Privacy policy (fleet data categories, AI no-training statement, 30/60-day retention, 10 subprocessors) |
 | `/terms` | Terms of service (data ownership, availability commitments, cancellation lifecycle) |
 | `/accessibility` | WCAG 2.1 accessibility statement |
-| `/assetcommand` | AssetCommand product page (Google Sheets fleet management add-on) |
+| `/Fleet-Compliance Sentinel` | Fleet-Compliance Sentinel product page (Google Sheets fleet management add-on) |
 | `/sign-in`, `/sign-up` | Clerk-powered authentication pages |
 
 ---

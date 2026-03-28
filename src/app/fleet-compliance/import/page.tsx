@@ -1,12 +1,16 @@
 import Link from 'next/link';
 import { auth } from '@clerk/nextjs/server';
 import { redirect } from 'next/navigation';
+import type { Metadata } from 'next';
 import { isClerkEnabled } from '@/lib/clerk';
 import FleetComplianceErrorBoundary from '@/components/fleet-compliance/FleetComplianceErrorBoundary';
 import { IMPORT_SCHEMAS } from '@/lib/fleet-compliance-import-schemas';
 import ImportReviewer from '@/components/fleet-compliance/ImportReviewer';
 
 export const dynamic = 'force-dynamic';
+export const metadata: Metadata = {
+  title: 'Import Data',
+};
 
 export default async function FleetComplianceImportPage() {
   if (!isClerkEnabled()) return null;

@@ -1,6 +1,6 @@
 # DOT CFR Regulation Knowledge Base
 
-**True North Data Strategies — AssetCommand Compliance Reference**  
+**True North Data Strategies — Fleet-Compliance Sentinel Compliance Reference**  
 **Generated:** 2026-03-17  
 **Source:** https://www.ecfr.gov — Title 49, Transportation  
 
@@ -46,7 +46,7 @@ Upload each `.md` file as a source, or paste the eCFR URLs directly.
 ### Pipeline Penny
 Load each `.md` file into Penny's knowledge base under a `DOT Compliance` category.
 
-### AssetCommand Dashboard
+### Fleet-Compliance Sentinel Dashboard
 Link to the NotebookLM shared notebook from the dashboard toolbar.
 
 ---
