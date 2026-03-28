@@ -1,11 +1,22 @@
-# Global owners
-* jacob@truenorthstrategyops.com
+# CODEOWNERS — Pipeline Punks / PipelineX v2
+# SOC 2 change-management control: all production code changes require
+# Security Officer review before merge to main.
 
-# Security and compliance critical files
-/docs/policies/ jacob@truenorthstrategyops.com
-/soc2-evidence/ jacob@truenorthstrategyops.com
-/src/app/privacy/page.tsx jacob@truenorthstrategyops.com
-/src/app/terms/page.tsx jacob@truenorthstrategyops.com
-/src/lib/fleet-compliance-auth.ts jacob@truenorthstrategyops.com
-/src/lib/plan-gate.ts jacob@truenorthstrategyops.com
-/src/app/api/stripe/webhook/route.ts jacob@truenorthstrategyops.com
+# Global owner — all files
+* @Jjohnston70
+
+# SOC2 evidence and policy artifacts
+/soc2-evidence/ @Jjohnston70
+/soc2-evidence/policies/ @Jjohnston70
+
+# Security, auth, and billing controls
+/.env.example @Jjohnston70
+/vercel.json @Jjohnston70
+/next.config.js @Jjohnston70
+/railway.toml @Jjohnston70
+/src/lib/fleet-compliance-auth.ts @Jjohnston70
+/src/lib/plan-gate.ts @Jjohnston70
+/src/app/api/stripe/webhook/route.ts @Jjohnston70
+/src/app/privacy/page.tsx @Jjohnston70
+/src/app/terms/page.tsx @Jjohnston70
+/scripts/ @Jjohnston70

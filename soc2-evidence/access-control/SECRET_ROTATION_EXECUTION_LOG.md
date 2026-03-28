@@ -12,5 +12,5 @@ Owner: Jacob Johnston
 | REVEAL_USERNAME | Railway | 2026-03-27 | Jacob Johnston | Set in Railway dashboard | telematics-credential-security.md |
 | REVEAL_PASSWORD | Railway | 2026-03-27 | Jacob Johnston | Set in Railway dashboard | telematics-credential-security.md |
 | REVEAL_APP_ID | Railway | 2026-03-27 | Jacob Johnston | Set in Railway dashboard | telematics-credential-security.md |
-| APP_ENCRYPTION_KEY | Railway + Neon | 2026-03-27 | Jacob Johnston | pgcrypto key set in Railway + Neon ALTER DATABASE | telematics-credential-security.md |
+| SENTRY_AUTH_TOKEN | Vercel + local build plugin env | 2026-03-27 | Sentry Wizard | New token generated during SDK wizard run; updated in Vercel and `.env.sentry-build-plugin` | monitoring/sentry-production-evidence-2026-03-27.md |
 | TELEMATICS_CRON_SECRET | Vercel | 2026-03-27 | Jacob Johnston | Generated via crypto.randomBytes(32) — set in Vercel dashboard (Production environment only) | telematics-credential-security.md |

@@ -1,28 +1,35 @@
 # UPTIME_SETUP.md
 
-## UptimeRobot Setup (Manual)
+## UptimeRobot Setup (Current Production Baseline)
 
-Create two HTTP(s) monitors for production availability checks.
+Plan: **Solo**  
+Status page: **https://status.pipelinepunks.com**
 
 ## Monitor 1 — Website
 - Friendly name: `Pipeline Punks Website`
 - Monitor type: `HTTP(s)`
 - URL: `https://www.pipelinepunks.com`
-- Check interval: `5 minutes`
-- Alert contacts: `jacob@truenorthstrategyops.com`
+- Check interval: `1 minute`
 
-## Monitor 2 — Penny Backend Health
-- Friendly name: `Pipeline Penny Railway Health`
+## Monitor 2 — Penny API Health
+- Friendly name: `Pipeline Penny API Health`
 - Monitor type: `HTTP(s)`
-- URL: `https://pipeline-punks-v2-production.up.railway.app/health`
-- Check interval: `5 minutes`
-- Alert contacts: `jacob@truenorthstrategyops.com`
+- URL: `https://www.pipelinepunks.com/api/penny/health`
+- Check interval: `1 minute`
 
-## Alerting Recommendations
-- Trigger alert on 2 consecutive failures.
-- Send recovery notification when monitor returns to UP state.
-- Keep alerts enabled for email at minimum.
+## Monitor 3 — Railway Backend Health
+- Friendly name: `Pipeline Penny Railway Health`
+- Monitor type: `HTTP(s)` using `GET`
+- URL: `https://pipeline-punks-v2-production.up.railway.app/health`
+- Check interval: `1 minute`
+
+## Status Page Configuration
+- Name: `Pipeline Punks Status`
+- Custom domain: `status.pipelinepunks.com`
+- DNS record: `status` CNAME `stats.uptimerobot.com`
+- SSL/TLS: auto-provisioned by UptimeRobot
 
 ## Validation
-- Confirm both monitors show `UP` after creation.
-- Save screenshots of monitor configuration and active status for SOC2 evidence.
+- Confirm all three monitors show `UP`.
+- Confirm status page renders over HTTPS at `https://status.pipelinepunks.com`.
+- Save screenshots for SOC2 evidence (`soc2-evidence/monitoring/UPTIMEROBOT_STATUS_PAGE.md`).

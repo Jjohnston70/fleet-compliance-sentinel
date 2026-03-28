@@ -19,8 +19,8 @@ const ROOT = resolve(__dirname, '..');
 const REQUIRED_EVIDENCE = [
     // Task 1 — Secret Rotation
   {
-        path: 'SECURITY_ROTATION.md',
-        label: 'Secret rotation registry (root)',
+        path: 'soc2-evidence/access-control/SECURITY_ROTATION.md',
+        label: 'Secret rotation registry (canonical)',
   },
   {
         path: 'soc2-evidence/access-control/SECRET_ROTATION_EXECUTION_LOG.md',
@@ -35,8 +35,8 @@ const REQUIRED_EVIDENCE = [
 
     // Task 3 — Branch Protection
   {
-        path: 'CODEOWNERS',
-        label: 'CODEOWNERS file',
+        path: '.github/CODEOWNERS',
+        label: 'CODEOWNERS file (canonical)',
   },
   {
         path: 'soc2-evidence/change-management/BRANCH_PROTECTION_AND_CODEOWNERS_VERIFICATION.md',

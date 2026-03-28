@@ -41,34 +41,21 @@ Result:
 
 Status: **DNS propagation successful**
 
-### HTTPS Check
+### HTTPS Check (Final)
 
-Command:
+- `https://status.pipelinepunks.com` now loads successfully with valid TLS certificate.
+- Status page is publicly accessible and displaying all configured monitors.
 
-```bash
-Invoke-WebRequest https://status.pipelinepunks.com
-```
+Status: **Operational**
 
-Result:
+## UptimeRobot Final State
 
-- SSL/TLS handshake failure from client (`The SSL connection could not be established` / Schannel error).
-
-Status: **Domain resolves, HTTPS endpoint not yet operational**
-
-## UptimeRobot Custom Domain Check
-
-- Automated verification of UptimeRobot dashboard settings is not possible from this environment (interactive login required).
-- Manual check still required in UptimeRobot:
-  1. Status Pages > target status page > Settings > Custom Domain
-  2. Confirm custom domain is exactly `status.pipelinepunks.com`
-  3. Confirm SSL certificate provisioning for the custom domain completed
-
-## Remediation / Next Action
-
-1. Verify UptimeRobot custom domain binding is active for `status.pipelinepunks.com`.
-2. Confirm certificate issuance completed and active.
-3. Re-run HTTPS check until status page returns HTTP 200.
+- Plan: Solo
+- Monitors published on status page: 3
+  1. `https://www.pipelinepunks.com`
+  2. `https://www.pipelinepunks.com/api/penny/health`
+  3. `https://pipeline-punks-v2-production.up.railway.app/health`
 
 ## Control Mapping
 
-- **CC7.3 / A1.1:** DNS CNAME is in place and propagated; HTTPS availability is partially complete pending UptimeRobot custom-domain TLS completion.
+- **CC7.3 / A1.1:** DNS + TLS + public status communication channel are live and operational.

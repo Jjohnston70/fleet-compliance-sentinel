@@ -5,8 +5,8 @@
 **Organization:** True North Data Strategies LLC
 **Product:** Fleet-Compliance Sentinel + Pipeline Penny
 **Production URL:** https://www.pipelinepunks.com
-**SOC 2 Type I Readiness:** 8.5/10 (90-day observation window started 2026-03-24)
-**Last Updated:** 2026-03-25
+**SOC 2 Type I Readiness:** Operational task batch complete (observation window active since 2026-03-24)
+**Last Updated:** 2026-03-27
 
 ---
 
@@ -45,10 +45,11 @@ The platform consists of two integrated modules:
 | **Pipeline Penny** | Document-grounded AI assistant for DOT/FMCSA compliance questions, powered by multi-LLM orchestration (Anthropic Claude, OpenAI, Google Gemini, Ollama) with retrieval-augmented generation over 1,100+ CFR document chunks and real-time operator fleet context |
 
 **Key differentiators:**
-- SOC 2 Type I audit-ready with 60+ evidence artifacts across 9 control domains
+- SOC 2 Type I operational batch complete with 70+ evidence artifacts across control domains
 - Multi-tenant org isolation enforced at auth, query, and database layers
 - Automated compliance alerting (daily cron sweep with email delivery)
 - FMCSA SAFER API integration for live carrier safety lookups
+- Verizon Connect Reveal telematics integration with risk scoring dashboard
 - AI security hardened against prompt injection (OWASP LLM Top 10 assessed)
 - Full data lifecycle automation (trial, subscription, offboarding, deletion)
 
@@ -116,6 +117,12 @@ The platform consists of two integrated modules:
 - Operational event tracking (checkout, refuel, location, incidents)
 - Per-asset activity timeline
 - Driver-linked activity association
+
+#### Telematics Risk Module
+- Fleet telematics dashboard at `/fleet-compliance/telematics`
+- Verizon Connect Reveal ingestion adapter in Railway backend (`railway-backend/integrations/verizon_reveal/`)
+- Risk scoring endpoint and UI badges (`/api/fleet-compliance/telematics-risk`, `TelematicsRiskBadge`)
+- Scheduled sync route (`/api/fleet-compliance/telematics-sync`) secured by `TELEMATICS_CRON_SECRET`
 
 ### 2.2 Pipeline Penny — AI Compliance Assistant
 
@@ -226,7 +233,7 @@ The platform consists of two integrated modules:
 - **Deployment:** Automatic on git push to `main`
 - **Runtime:** Node.js (server components) + Edge (middleware)
 - **Security headers:** 8 headers configured in `vercel.json`
-- **Cron job:** Daily compliance alert sweep at 08:00 UTC
+- **Cron jobs:** Daily compliance alert sweep (08:00 UTC) + telematics sync (02:00 UTC)
 - **CDN:** Global edge network for static assets
 - **SSL:** Automatic HTTPS with certificate management
 
@@ -254,6 +261,12 @@ The platform consists of two integrated modules:
 - **Limit:** 20 queries per 60 seconds per user
 - **Fallback:** In-memory rate limiting if Upstash unavailable
 - **Data:** Ephemeral counters only (no PII stored)
+
+### UptimeRobot (Availability Monitoring)
+- **Plan:** Solo
+- **Status page:** `https://status.pipelinepunks.com`
+- **Monitors:** 3 public monitors at 1-minute intervals (website, Penny health, Railway health)
+- **DNS:** `status` CNAME -> `stats.uptimerobot.com`
 
 ---
 
@@ -348,9 +361,12 @@ invoice_line_items / invoice_work_descriptions
 | `002_soft_delete.sql` | Soft delete with `deleted_at` column |
 | `003_import_batch.sql` | UUID-based import batch tracking |
 | `004_org_scoping.sql` | Multi-tenant org isolation columns + indexes |
-| `005_org_lifecycle.sql` | Organizations, subscriptions, audit events tables |
+| `005_org_lifecycle_controls.sql` | Organizations, subscriptions, audit events tables |
 | `006_rename_chief.sql` | Rename from legacy "Chief" branding |
 | `007_offboarding.sql` | Data deletion scheduling + lifecycle automation |
+| `008_telematics_adapter.sql` | Telematics adapter persistence schema |
+| `009_risk_scores.sql` | Telematics risk scoring tables and indexes |
+| `010_telematics_location_pii_comments.sql` | PII annotation and data-handling comments |
 
 ---
 
@@ -404,21 +420,27 @@ invoice_line_items / invoice_work_descriptions
 | `/api/penny/query` | POST | Clerk + role | Chat query with rate limiting, org context injection, LLM proxy |
 | `/api/penny/catalog` | GET | Clerk + admin/client | List available knowledge documents with pagination |
 
-### Fleet-Compliance (Compliance Management) — 14 Endpoints
+### Fleet-Compliance (Compliance Management) — 18 Endpoints
 
 | Route | Method | Auth | Purpose |
 |-------|--------|------|---------|
 | `/api/fleet-compliance/assets` | GET | Clerk | List org fleet assets |
+| `/api/fleet-compliance/bulk-template` | GET | Clerk | Generate and download XLSX bulk-import template |
 | `/api/fleet-compliance/alerts/preview` | GET | Clerk | Preview alerts that would be sent |
 | `/api/fleet-compliance/alerts/trigger` | POST | Clerk + admin | Manually trigger alert for a suspense item |
 | `/api/fleet-compliance/alerts/run` | POST | Cron secret | Daily alert sweep across all orgs (Vercel cron) |
 | `/api/fleet-compliance/cron-health` | GET | Clerk | Check last cron execution status (24hr threshold) |
 | `/api/fleet-compliance/fmcsa/lookup` | GET | Clerk | Query FMCSA carrier data by USDOT number |
 | `/api/fleet-compliance/import/setup` | POST | Clerk + admin | Initialize fleet_compliance_records tables |
+| `/api/fleet-compliance/import/parse` | POST | Clerk + admin | Parse and validate uploaded XLSX before commit |
 | `/api/fleet-compliance/import/save` | POST | Clerk + admin | Persist parsed records with batch UUID |
 | `/api/fleet-compliance/import/rollback` | POST | Clerk + admin | Delete records by import_batch_id |
+| `/api/fleet-compliance/invoices/parse-pdf` | POST | Clerk + admin | Parse invoice PDF into structured line items |
 | `/api/fleet-compliance/onboarding` | POST | Clerk | Complete org onboarding |
 | `/api/fleet-compliance/errors/client` | POST | Clerk | Capture client-side errors to error_events table |
+| `/api/fleet-compliance/spend` | GET | Clerk | Return spend analytics for dashboard pages |
+| `/api/fleet-compliance/telematics-sync` | GET | Cron secret | Pull Verizon Reveal telematics events and normalize |
+| `/api/fleet-compliance/telematics-risk` | GET | Clerk | Return org telematics risk score + trend data |
 | `/api/fleet-compliance/[collection]/[id]/restore` | POST | Clerk + admin | Soft-restore deleted records |
 
 ### Invoices — 2 Endpoints
@@ -428,14 +450,21 @@ invoice_line_items / invoice_work_descriptions
 | `/api/invoices/setup` | POST | Clerk + admin | Initialize invoice tables |
 | `/api/invoices/import` | POST | Clerk + admin | Import invoice data from XLSX |
 
-### Infrastructure — 2 Endpoints
+### Stripe Billing — 3 Endpoints
+
+| Route | Method | Auth | Purpose |
+|-------|--------|------|---------|
+| `/api/stripe/webhook` | POST | Stripe HMAC | Stripe subscription event handler |
+| `/api/stripe/checkout` | POST | Clerk | Create checkout session for selected plan |
+| `/api/stripe/portal` | POST | Clerk | Create customer portal session |
+
+### Infrastructure — 1 Endpoint
 
 | Route | Method | Auth | Purpose |
 |-------|--------|------|---------|
 | `/api/csp-report` | POST | Public | Content Security Policy violation reporting |
-| `/api/stripe/webhook` | POST | Stripe HMAC | Stripe subscription event handler |
 
-**Total: 21 API endpoints**
+**Total: 27 API endpoints**
 
 ---
 
@@ -516,12 +545,16 @@ OPEN SUSPENSE ITEMS (L items):
 ### Sentry (Error Tracking & Performance)
 | Feature | Configuration |
 |---------|--------------|
-| **Integration** | `@sentry/nextjs 10.45.0` with server, client, and edge configs |
+| **Integration** | `@sentry/nextjs ^10.46.0` with server, client, and edge configs |
 | **DSN** | Via `SENTRY_DSN` / `NEXT_PUBLIC_SENTRY_DSN` environment variables |
 | **Release tracking** | Tagged with `VERCEL_GIT_COMMIT_SHA` |
 | **Environment** | From `VERCEL_ENV` or `NODE_ENV` |
 | **Trace sample rate** | 10% of transactions |
-| **PII scrubbing** | Custom `scrubSentryEvent()` sanitizes events before transmission |
+| **Session Replay** | 10% of normal sessions, 100% of error sessions |
+| **Structured Logs** | Enabled via Sentry SDK integration |
+| **Ad-blocker bypass** | `tunnelRoute: /monitoring` configured in `next.config.js` |
+| **Source maps** | Upload enabled with `widenClientFileUpload: true` |
+| **PII controls** | `sendDefaultPii: false` on server/edge + Sentry setting `Prevent Storing IP Addresses: ENABLED` |
 | **Context enrichment** | `setSentryRequestContext()` sets userId and orgId on every API request |
 | **Error boundaries** | React error boundary in Fleet-Compliance module captures + reports errors |
 
@@ -551,6 +584,15 @@ OPEN SUSPENSE ITEMS (L items):
 | **Integration** | Datadog monitors → Slack channel notifications |
 | **Alert types** | Error rate spikes, cron failures, rate limit exceeded events |
 | **Escalation** | Configurable via Datadog monitor rules |
+
+### UptimeRobot (External Availability)
+| Feature | Detail |
+|---------|--------|
+| **Plan** | Solo |
+| **Status page** | `https://status.pipelinepunks.com` |
+| **Monitor count** | 3 (website, Penny health, Railway health) |
+| **Check interval** | 1 minute |
+| **Public comms** | Incidents and uptime exposed via public status page |
 
 ### Cron Health Monitoring
 | Feature | Detail |
@@ -628,8 +670,10 @@ OPEN SUSPENSE ITEMS (L items):
 | **Storage** | Vercel + Railway environment variable stores (not in code) |
 | **Rotation schedule** | 18 secrets with 90/180-day rotation cycles documented |
 | **Categories** | 4 critical (Clerk, DB, Penny API key, cron secret) + 14 standard |
+| **Execution evidence** | 2026-03-27 batch completed with 9 rotations recorded in SOC2 evidence |
+| **Runbook** | `docs/ROTATION_RUNBOOK.md` is the canonical rotation procedure |
 | **Validation** | `scripts/check-env.ts` runs at startup; CRITICAL vars exit process if missing |
-| **53 env vars** | Categorized as CRITICAL, REQUIRED, or OPTIONAL with startup validation |
+| **Env reference** | Canonical matrix maintained in `soc2-evidence/system-description/ENV_EXAMPLE.md` |
 
 ---
 
@@ -637,7 +681,7 @@ OPEN SUSPENSE ITEMS (L items):
 
 ### Program Overview
 
-**Readiness Score:** 8.5/10
+**Readiness Status:** Operational SOC 2 task batch complete (2026-03-27)
 **SOC 2 Clock Started:** 2026-03-24 (Phase 3 Datadog drain deployed)
 **90-Day Observation Window Ends:** 2026-06-22
 **Type I Earliest Engagement:** 2026-06-22
@@ -795,6 +839,11 @@ Trial (30 days) → Active (Stripe subscription) → Past Due → Canceled → O
 
 ## 15. Operational Tooling
 
+### Operational Runbooks
+- `docs/ROTATION_RUNBOOK.md` — secret rotation procedures for Clerk, Neon, Vercel, Railway, Sentry, and telematics credentials
+- `docs/GIT_WORKFLOW.md` — enforced PR workflow under main branch protection
+- `docs/UPTIME_SETUP.md` — UptimeRobot Solo configuration and status page baseline
+
 ### Fleet-Compliance Sentinel (Python Tooling)
 | Tool | Purpose |
 |------|---------|
@@ -846,7 +895,7 @@ Trial (30 days) → Active (Stripe subscription) → Past Due → Canceled → O
 | **Build command** | `next build` |
 | **Output** | `.next/` directory |
 | **Environment** | Production, Preview, Development |
-| **Cron jobs** | `/api/fleet-compliance/alerts/run` at `0 8 * * *` (daily 8 AM UTC) |
+| **Cron jobs** | `/api/fleet-compliance/alerts/run` at `0 8 * * *` + `/api/fleet-compliance/telematics-sync` at `0 2 * * *` |
 | **Headers** | 8 security headers applied via `vercel.json` |
 | **Domain** | `www.pipelinepunks.com` |
 
@@ -866,6 +915,8 @@ Trial (30 days) → Active (Stripe subscription) → Past Due → Canceled → O
 |---------|---------------|
 | **PR-only merges** | All changes via pull request (branch protection) |
 | **CODEOWNERS** | Security-sensitive files require Security Officer review |
+| **PR verification evidence** | 5 PRs (#1-#5) merged after branch protection enforcement check |
+| **Workflow runbook** | `docs/GIT_WORKFLOW.md` documents branch, PR, and merge process |
 | **Automated checks** | Legal regression + operational gap checks in CI |
 | **Emergency procedure** | Documented in Change Management Policy (hotfix branch → expedited review) |
 
@@ -873,17 +924,17 @@ Trial (30 days) → Active (Stripe subscription) → Past Due → Canceled → O
 
 ## 17. Evidence Binder Inventory
 
-All SOC 2 evidence is maintained in `/soc2-evidence/` with 60+ artifacts across 9 subdirectories:
+All SOC 2 evidence is maintained in `/soc2-evidence/` with 73 artifacts across 10 subdirectories:
 
 | Directory | Files | Contents |
 |-----------|-------|----------|
-| `access-control/` | 18 | Auth code evidence, isolation tests, prompt injection tests, secret rotation log, Clerk readiness checklist |
-| `audit-findings/` | 10 | Phase 0-8 findings with scores (8-9/10), full audit summary |
+| `access-control/` | 19 | Auth code evidence, isolation tests, prompt injection tests, secret rotation log, Clerk readiness checklist |
+| `audit-findings/` | 13 | Phase 0-9 findings, post-phase audits, full audit summary |
 | `change-management/` | 2 | Branch protection verification, GitHub security guide |
 | `compliance-milestones/` | 1 | SOC 2 observation window dates |
 | `incident-response/` | 4 | IRP (4 severity levels, GDPR Art 33), runbook (8+ playbooks), status page setup |
-| `monitoring/` | 7 | Audit log samples, cron health route, error boundary code, Vercel headers config, dependency audit |
-| `penetration-testing/` | 2 | OWASP ZAP guide, baseline attempt record |
+| `monitoring/` | 10 | Audit logs, cron health, Sentry production evidence, UptimeRobot status page evidence |
+| `penetration-testing/` | 5 | OWASP ZAP guide, baseline attempt, completed baseline reports (.html/.json/.md) |
 | `policies/` | 14 | 8 SOC 2 policies + gap analyses + action plans |
 | `system-description/` | 4 | Architecture, audit report, env example, system boundary diagram |
 | `vendor-management/` | 1 | 13-vendor subprocessor registry with compensating controls |
@@ -895,16 +946,16 @@ All SOC 2 evidence is maintained in `/soc2-evidence/` with 60+ artifacts across 
 ### Codebase
 | Metric | Value |
 |--------|-------|
-| TypeScript/TSX files | 104 |
-| API endpoints | 21 |
-| Frontend pages/routes | 35+ |
-| React components | 20+ |
-| Library modules | 25+ |
-| FastAPI backend | 1,137 lines |
-| SQL migrations | 7 |
+| TypeScript/TSX files | 129 |
+| API endpoints | 27 |
+| Frontend pages/routes | 33 |
+| React components | 26 |
+| Library modules | 26 |
+| FastAPI backend | 957 lines (`railway-backend/app/main.py`) |
+| SQL migrations | 10 |
 | Database tables | 9 |
 | NPM dependencies | 0 vulnerabilities |
-| Environment variables | 53 (validated at startup) |
+| Environment variables | 53 canonical + extended tooling/telematics template vars |
 
 ### Knowledge & AI
 | Metric | Value |
@@ -923,11 +974,11 @@ All SOC 2 evidence is maintained in `/soc2-evidence/` with 60+ artifacts across 
 |--------|-------|
 | SOC 2 audit phases | 9 (all complete) |
 | SOC 2 policies | 8 (auditor-ready) |
-| Evidence artifacts | 60+ |
+| Evidence artifacts | 73 |
 | Security headers | 8 |
 | Audit log coverage | 17+ API routes |
 | Subprocessors registered | 13 |
-| Secret rotation targets | 18 |
+| Secret rotation targets | 20 |
 | Automated compliance checks | 3 scripts |
 
 ### Infrastructure
@@ -939,7 +990,7 @@ All SOC 2 evidence is maintained in `/soc2-evidence/` with 60+ artifacts across 
 | Payment processor | Stripe (SOC 2 Type II) |
 | Email provider | Resend |
 | Rate limiter | Upstash Redis |
-| Cron jobs | 1 (daily alert sweep) |
+| Cron jobs | 2 (daily alert sweep + telematics sync) |
 | Production uptime | Active since 2026-03-20 |
 
 ---
@@ -964,8 +1015,8 @@ All SOC 2 evidence is maintained in `/soc2-evidence/` with 60+ artifacts across 
                     │           ┌────────────┼────────────┐            │
                     │  ┌────────▼──────┐ ┌──▼──────────┐ ┌▼─────────┐ │
                     │  │ Fleet-Comp.   │ │ Penny API   │ │ Stripe   │ │
-                    │  │ API Routes    │ │ Routes      │ │ Webhook  │ │
-                    │  │ (14 endpoints)│ │ (3 endpts)  │ │          │ │
+                    │  │ API Routes    │ │ Routes      │ │ Routes   │ │
+                    │  │ (18 endpoints)│ │ (3 endpts)  │ │ (3 endpts)│ │
                     │  └───────┬───────┘ └──────┬──────┘ └────┬─────┘ │
                     │          │                 │             │        │
                     │  ┌───────▼─────────────────▼─────────────▼─────┐ │
@@ -976,7 +1027,7 @@ All SOC 2 evidence is maintained in `/soc2-evidence/` with 60+ artifacts across 
                     │  │ Sentry  │  │ Vercel Logs   │  │ CSP       │  │
                     │  │ Errors  │  │ → Datadog     │  │ Reports   │  │
                     │  └─────────┘  └───────────────┘  └───────────┘  │
-                    │  Cron: /alerts/run @ 08:00 UTC daily             │
+                    │  Cron: /alerts/run @ 08:00 UTC + /telematics-sync @ 02:00 UTC │
                     └──────┬──────────────────┬───────────────────────┘
                            │                  │
               ┌────────────▼────┐    ┌────────▼──────────┐

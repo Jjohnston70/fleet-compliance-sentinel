@@ -53,4 +53,4 @@ Reviewer: Coworker (Claude) + Jacob Johnston
 - Example verification files removed from repo:
   - `src/app/sentry-example-page/page.tsx`
   - `src/app/api/sentry-example-api/route.ts`
-- Direct Sentry dashboard confirmation is still required for final auditor screenshot (not possible from this runtime due missing Sentry auth session/t
+- Direct Sentry dashboard confirmation is still required for final auditor screenshot (not possible from this runtime due missing authenticated Sentry browser session).

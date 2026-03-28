@@ -15,9 +15,26 @@ async function checkStatusPage() {
 }
 
 function checkRotationSchedule() {
-  const schedule = readFileSync('SECURITY_ROTATION.md', 'utf8');
-  if (schedule.includes('Not recorded')) {
-    failures.push('Security rotation schedule still contains "Not recorded" entries.');
+  const schedule = readFileSync('soc2-evidence/access-control/SECURITY_ROTATION.md', 'utf8');
+  const requiredRotated = [
+    'CLERK_SECRET_KEY',
+    'DATABASE_URL',
+    'PENNY_API_KEY',
+    'FLEET_COMPLIANCE_CRON_SECRET',
+    'SENTRY_AUTH_TOKEN',
+  ];
+
+  for (const secret of requiredRotated) {
+    const row = schedule
+      .split('\n')
+      .find((line) => line.includes(`\`${secret}\``));
+    if (!row) {
+      failures.push(`Security rotation schedule is missing required secret: ${secret}`);
+      continue;
+    }
+    if (row.includes('Not recorded')) {
+      failures.push(`Security rotation schedule shows no rotation date for required secret: ${secret}`);
+    }
   }
 }
 
@@ -25,6 +42,22 @@ function checkRotationExecutionLog() {
   const log = readFileSync('soc2-evidence/access-control/SECRET_ROTATION_EXECUTION_LOG.md', 'utf8');
   if (log.includes('Pending')) {
     failures.push('Secret rotation execution log contains pending entries.');
+  }
+  const requiredLogged = [
+    'CLERK_SECRET_KEY',
+    'DATABASE_URL',
+    'PENNY_API_KEY',
+    'FLEET_COMPLIANCE_CRON_SECRET',
+    'SENTRY_AUTH_TOKEN',
+    'REVEAL_USERNAME',
+    'REVEAL_PASSWORD',
+    'REVEAL_APP_ID',
+    'TELEMATICS_CRON_SECRET',
+  ];
+  for (const secret of requiredLogged) {
+    if (!log.includes(secret)) {
+      failures.push(`Secret rotation execution log missing required rotation entry: ${secret}`);
+    }
   }
 }
 

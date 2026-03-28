@@ -8,7 +8,7 @@ Owner: Jacob Johnston
 - File created: `.github/CODEOWNERS`
 - Coverage includes:
   - Entire repository (`*`)
-  - `docs/policies/`
+  - `soc2-evidence/policies/`
   - `soc2-evidence/`
   - Privacy/Terms legal pages
   - Key auth and lifecycle enforcement files
@@ -21,7 +21,7 @@ Verification method: Claude Code attempted git push origin main on commit 43ab98
 Classic branch protection rule created for `main` branch with the following settings:
 
 1. Require pull request before merging: ENABLED
-2. Require at least 1 approval: ENABLED
+2. Require approvals before merging: ENABLED, set to `0` for solo-developer workflow compatibility
 3. Require status checks to pass before merging: ENABLED
 4. Force pushes: RESTRICTED (not allowed)
 5. Branch deletions: RESTRICTED (not allowed)

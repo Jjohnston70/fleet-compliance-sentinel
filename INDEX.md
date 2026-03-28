@@ -1,114 +1,94 @@
 # Fleet-Compliance Sentinel — Repo Index
 
-Last updated: 2026-03-26 (go-to-market sprint complete)
+Last updated: 2026-03-27 (full audit cleanup)
 
-## Platform Documentation
-
-| Path | Purpose |
-|------|---------|
-| `PLATFORM_OVERVIEW.md` | Comprehensive platform overview — capabilities, compliance, security, infrastructure (sale-ready) |
-| `README.md` | Quick-start guide, stack summary, SOC 2 status |
-
-## Active Source Code
+## Root Files
 
 | Path | Purpose |
 |------|---------|
-| `src/app/` | Next.js pages (35+ routes) and API routes (21 endpoints) — Fleet-Compliance dashboard, Penny chat, import pipeline, alerts, FMCSA, Stripe webhook |
-| `src/components/` | React components — Fleet-Compliance forms, error boundaries, trial banners, onboarding, navigation, cookie consent |
-| `src/lib/` | Server utilities — fleet-compliance-db, fleet-compliance-auth, fleet-compliance-validators, alert engine, penny-ingest, penny-rate-limit, org-provisioner, plan-gate, offboarding-lifecycle, org-audit, audit-logger, sentry-context, clerk |
-| `src/middleware.ts` | Clerk route protection (/penny, /fleet-compliance, /api/fleet-compliance, /api/invoices, /api/penny/query) |
-| `src/instrumentation.ts` | Startup environment validation + Sentry initialization |
-| `src/styles/globals.css` | Tailwind CSS + global styles |
+| `README.md` | Primary product + SOC2 status summary |
+| `INDEX.md` | Repository map (this file) |
+| `PLATFORM_OVERVIEW.md` | Canonical platform and control document |
+| `.env.example` | Sectioned env template (core + telematics + backend + tooling) |
+| `.mcp.json` | MCP config for Claude Code |
+| `.vscode/mcp.json` | MCP config for VS Code |
+| `package.json` / `package-lock.json` | Node dependency graph |
+| `next.config.js` / `vercel.json` | Next.js + Vercel runtime configuration |
+| `sentry.*.config.ts` | Sentry client/server/edge SDK configuration |
 
-## Workspace Packages
+## Source Tree
 
-| Package | Path | Status |
-|---------|------|--------|
-| @tnds/types | `packages/tnds-types/` | Active — shared type definitions |
-| @tnds/ingest-core | `packages/tnds-ingest-core/` | Active — document ingestion (PDF, DOCX, CSV, HTML) |
-| @tnds/retrieval-core | `packages/tnds-retrieval-core/` | Active — chunked retrieval for Penny RAG |
-| @tnds/memory-core | `packages/tnds-memory-core/` | Declared — ready for expansion |
+| Path | Current State |
+|------|---------------|
+| `src/app/` | 33 page routes + 27 API route files |
+| `src/components/` | 26 React components including telematics risk UI |
+| `src/lib/` | 26 TS utility modules (db/auth/audit/alerts/telematics) |
+| `src/app/fleet-compliance/telematics/page.tsx` | Telematics dashboard route |
+| `src/components/fleet-compliance/TelematicsRiskBadge.tsx` | Risk badge component |
+| `src/app/api/fleet-compliance/telematics-sync/route.ts` | Scheduled telematics sync endpoint |
+| `src/app/api/fleet-compliance/telematics-risk/route.ts` | Telematics risk endpoint |
 
-## Infrastructure
+## Backend and Data
 
-| Path | Purpose |
-|------|---------|
-| `railway-backend/` | FastAPI Penny backend (deployed on Railway) — multi-LLM orchestration, knowledge retrieval, 512 docs loaded |
-| `railway-backend/app/main.py` | 1,137-line FastAPI service (Anthropic, OpenAI, Gemini, Ollama providers) |
-| `vercel.json` | Vercel deployment config (8 security headers, daily alert cron at 08:00 UTC) |
-| `migrations/` | 7 SQL migration files (cron_log, soft_delete, import_batch, org_scoping, org_lifecycle, rename_chief, offboarding) |
-| `.env.example` | Environment variable template (53 vars) |
-| `sentry.server.config.ts` | Sentry server-side configuration |
-| `sentry.client.config.ts` | Sentry client-side configuration |
+| Path | Current State |
+|------|---------------|
+| `railway-backend/app/main.py` | FastAPI backend (957 lines) |
+| `railway-backend/app/telematics_router.py` | Reveal telematics API routes |
+| `railway-backend/integrations/verizon_reveal/` | Reveal adapter/auth/normalizer/rest client/webhook receiver |
+| `migrations/` | 10 SQL migrations (`001` through `010`) |
+| `tooling/fleet-compliance-sentinel/templates/fleet-compliance-bulk-upload-template.xlsx` | Moved from root; canonical tracked template artifact |
 
-## Build, Dev & Compliance Tools
-
-| Path | Purpose |
-|------|---------|
-| `scripts/check-env.ts` | Environment variable validation (53 vars, CRITICAL/REQUIRED/OPTIONAL) |
-| `scripts/sync-local-knowledge.mjs` | Sync Railway docs to local knowledge/ |
-| `scripts/build-cfr-index.mjs` | Index CFR chunks for Penny RAG |
-| `scripts/run-penny-evals.mjs` | Penny evaluation suite |
-| `scripts/prepare-railway-docs.mjs` | Prepare docs for Railway ingestion |
-| `scripts/init-db.mjs` | One-time database initialization |
-| `scripts/check-legal-pages.mjs` | Automated legal regression checks (privacy + terms, 7 checks) |
-| `scripts/check-operational-gaps.mjs` | SOC 2 operational readiness verification |
-| `scripts/download-vendor-docs.mjs` | Fetch vendor documentation (Vercel, Railway, Neon, Clerk) |
-| `scripts/prepare-vendor-docs-package.mjs` | Package vendor docs for distribution |
-| `tooling/fleet-compliance-sentinel/` | Python build tools (import generator, CFR scraper, FMCSA client) |
-
-## Knowledge & Evaluation
+## Packages and Scripts
 
 | Path | Purpose |
 |------|---------|
-| `knowledge/` | Chunked CFR docs for Penny RAG (1,100+ files, generated by sync scripts) |
-| `evals/` | Penny evaluation results and test questions |
-| `tooling/fleet-compliance-sentinel/cfr_dot_markdown/` | 13 CFR parts in Markdown (Parts 040-397) |
+| `packages/tnds-types/` | Shared TypeScript types |
+| `packages/tnds-ingest-core/` | Ingestion primitives |
+| `packages/tnds-retrieval-core/` | Retrieval primitives |
+| `packages/tnds-memory-core/` | Memory/timeline package |
+| `scripts/check-env.ts` | Runtime env guardrail script |
+| `scripts/check-operational-gaps.mjs` | Operational evidence gap scanner |
+| `scripts/reveal_sync_neon.py` | Reveal telematics ingestion utility |
 
-## SOC 2 Compliance Evidence (65+ artifacts)
+## SOC2 Evidence Inventory
+
+Total evidence files: **73**
+
+| Path | File Count | Notes |
+|------|------------|------|
+| `soc2-evidence/access-control/` | 19 | Secret rotation, auth isolation, test-data cleanup |
+| `soc2-evidence/audit-findings/` | 13 | Phase findings + post-phase updates |
+| `soc2-evidence/change-management/` | 2 | Branch protection + CODEOWNERS verification |
+| `soc2-evidence/compliance-milestones/` | 1 | Observation window record |
+| `soc2-evidence/incident-response/` | 4 | IRP + runbook + status-page checks |
+| `soc2-evidence/monitoring/` | 10 | Sentry, UptimeRobot, logs, cron health |
+| `soc2-evidence/penetration-testing/` | 5 | ZAP baseline attempt + completed reports |
+| `soc2-evidence/policies/` | 14 | Policy set and associated analyses |
+| `soc2-evidence/system-description/` | 4 | Architecture + env matrix + boundary diagram |
+| `soc2-evidence/vendor-management/` | 1 | Subprocessor registry |
+
+## Documentation (`docs/`)
 
 | Path | Purpose |
 |------|---------|
-| `soc2-evidence/system-description/` | ARCHITECTURE.md, AUDIT_REPORT.md, ENV_EXAMPLE.md, system boundary diagram |
-| `soc2-evidence/access-control/` | 18 files — auth code, isolation tests, prompt injection tests, secret rotation, Clerk readiness |
-| `soc2-evidence/audit-findings/` | 11 files — Phase 0-8 findings + post-Phase 8 go-to-market audit + full summary |
-| `soc2-evidence/change-management/` | Branch protection verification, GitHub security guide |
-| `soc2-evidence/compliance-milestones/` | SOC 2 observation window dates (started 2026-03-24) |
-| `soc2-evidence/incident-response/` | IRP (4 severity levels), runbook (8+ playbooks), status page setup |
-| `soc2-evidence/monitoring/` | Audit log samples, cron health, error boundary, headers config, dependency audit |
-| `soc2-evidence/penetration-testing/` | OWASP ZAP guide, baseline attempt record |
-| `soc2-evidence/policies/` | 14 files — 8 SOC 2 policies + gap analyses + action plans |
-| `soc2-evidence/vendor-management/` | 13-vendor subprocessor registry with compensating controls |
+| `docs/STATUS.md` | Current execution status and completion log |
+| `docs/ROTATION_RUNBOOK.md` | Secret rotation runbook |
+| `docs/GIT_WORKFLOW.md` | PR workflow under branch protection |
+| `docs/UPTIME_SETUP.md` | UptimeRobot Solo baseline (3 monitors + status page) |
+| `docs/RAILWAY_CONFIG.md` | Railway variable and deployment notes |
+| `docs/NEON_MIGRATION.md` | Neon migration notes |
+| `docs/PENNY_EVALS.md` | Penny eval approach and baseline info |
 
-## Operational Documentation (`docs/`)
+## Archive
 
 | Path | Purpose |
 |------|---------|
-| `docs/STATUS.md` | Current phase status, infrastructure, go-to-market features, Stripe config |
-| `docs/FLEET_COMPLIANCE_TODO_v2.md` | Phase-based implementation tracker (Phases 0-8, all complete) |
-| `docs/INVOICE_MODULE_PRICING_ANALYSIS.md` | Invoice extraction module pricing, capabilities, integration plan |
-| `docs/STRIPE_AND_LANDING_PAGE_PROMPT.md` | Implementation prompt: Stripe checkout + landing page |
-| `docs/INVOICE_DASHBOARD_PENNY_PROMPT.md` | Implementation prompt: PDF upload, spend dashboard, Penny data access |
-| `docs/SIDEBAR_AND_ENHANCEMENTS_PROMPT.md` | Implementation prompt: sidebar navigation, enhanced spend, invoice import |
-| `docs/RAILWAY_CONFIG.md` | Railway environment variable reference |
-| `docs/UPTIME_SETUP.md` | UptimeRobot monitoring setup |
-| `docs/NEON_MIGRATION.md` | Neon PostgreSQL migration documentation |
-| `docs/PENNY_EVALS.md` | Penny evaluation strategy and baselines |
-| `docs/CLAUDE_CODE_INTEGRATION_PROMPT.md` | Claude Code integration prompt for TNDS packages |
+| `archive/2026-03-27-cleanup/` | Superseded prompts/docs and duplicate root files moved during this cleanup |
+| `archive/2026-03-21-pre-phase3-cleanup/` | Earlier legacy cleanup snapshot |
+| `archive/2026-02-26-pre-penny-cleanup/` | Pre-Penny historical artifacts |
 
-## Archived
+## Removed/Relocated in This Rebuild
 
-| Path | Contents |
-|------|----------|
-| `archive/2026-02-26-pre-penny-cleanup/` | Legacy marketing assets, old Google Apps Script webhook |
-| `archive/2026-03-21-pre-phase3-cleanup/` | Legacy TODOs, duplicate root docs, test data, old monorepo reference |
-
-## Not Source Code (gitignored or local-only)
-
-| Path | Note |
-|------|------|
-| `.env`, `.env.local` | Secrets — never committed, managed via Vercel/Railway stores |
-| `node_modules/` | Dependencies — gitignored |
-| `.next/` | Build output — gitignored |
-| `tsconfig.tsbuildinfo` | TS build cache — gitignored |
-| `SECURITY_REPORTS/` | Pentest results — gitignored (sensitive) |
+- Removed from active tree: `src/app/sentry-example-page/page.tsx`
+- Removed from active tree: `src/app/api/sentry-example-api/route.ts`
+- Relocated to archive: superseded SOC2 prompt docs, root `SECURITY_ROTATION.md`, root `CODEOWNERS`
