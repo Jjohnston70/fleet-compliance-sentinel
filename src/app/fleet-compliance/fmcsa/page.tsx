@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import { auth } from '@clerk/nextjs/server';
 import { redirect } from 'next/navigation';
+import type { Metadata } from 'next';
 import { isClerkEnabled } from '@/lib/clerk';
 import FleetComplianceErrorBoundary from '@/components/fleet-compliance/FleetComplianceErrorBoundary';
 import {
@@ -11,6 +12,9 @@ import {
 import FmcsaResultSaver from '@/components/fleet-compliance/FmcsaResultSaver';
 
 export const dynamic = 'force-dynamic';
+export const metadata: Metadata = {
+  title: 'FMCSA Lookup',
+};
 
 type SearchParams = Promise<Record<string, string | string[] | undefined>>;
 
@@ -301,4 +305,3 @@ export default async function FleetComplianceFmcsaPage({ searchParams }: { searc
     </FleetComplianceErrorBoundary>
   );
 }
-

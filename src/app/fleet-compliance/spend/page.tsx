@@ -1,11 +1,15 @@
 import Link from 'next/link';
 import { auth } from '@clerk/nextjs/server';
 import { redirect } from 'next/navigation';
+import type { Metadata } from 'next';
 import { isClerkEnabled } from '@/lib/clerk';
 import FleetComplianceErrorBoundary from '@/components/fleet-compliance/FleetComplianceErrorBoundary';
 import SpendDashboardClient from '@/components/fleet-compliance/SpendDashboardClient';
 
 export const dynamic = 'force-dynamic';
+export const metadata: Metadata = {
+  title: 'Spend Dashboard',
+};
 
 export default async function FleetComplianceSpendPage() {
   if (!isClerkEnabled()) return null;

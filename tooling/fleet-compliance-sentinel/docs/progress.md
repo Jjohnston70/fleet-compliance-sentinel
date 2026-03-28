@@ -8,7 +8,7 @@ Project planning is active. Architecture is defined around the existing Pipeline
 
 - Reviewed the existing website stack and confirmed it already uses Next.js with Clerk.
 - Confirmed the site styling can be reused for Chief.
-- Reviewed the AssetCommand Apps Script implementation and workbook structure.
+- Reviewed the Fleet-Compliance Sentinel Apps Script implementation and workbook structure.
 - Reviewed the root `databases` folder and mapped the major source datasets.
 - Identified the `cfr_dot_markdown` output as the initial Penny knowledge base for the demo.
 - Identified the current resources flow as a usable protected document/file layer for the demo.

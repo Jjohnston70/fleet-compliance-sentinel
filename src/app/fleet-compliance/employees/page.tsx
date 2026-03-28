@@ -1,11 +1,15 @@
 import Link from 'next/link';
 import { auth } from '@clerk/nextjs/server';
 import { redirect } from 'next/navigation';
+import type { Metadata } from 'next';
 import { isClerkEnabled } from '@/lib/clerk';
 import FleetComplianceErrorBoundary from '@/components/fleet-compliance/FleetComplianceErrorBoundary';
 import { loadFleetComplianceData, formatDueLabel } from '@/lib/fleet-compliance-data';
 
 export const dynamic = 'force-dynamic';
+export const metadata: Metadata = {
+  title: 'Employees',
+};
 
 export default async function FleetComplianceEmployeesPage() {
   if (!isClerkEnabled()) return null;
@@ -134,4 +138,3 @@ export default async function FleetComplianceEmployeesPage() {
     </FleetComplianceErrorBoundary>
   );
 }
-

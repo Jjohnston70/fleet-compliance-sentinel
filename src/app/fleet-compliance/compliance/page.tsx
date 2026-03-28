@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import { auth } from '@clerk/nextjs/server';
 import { redirect } from 'next/navigation';
+import type { Metadata } from 'next';
 import { isClerkEnabled } from '@/lib/clerk';
 import FleetComplianceErrorBoundary from '@/components/fleet-compliance/FleetComplianceErrorBoundary';
 import {
@@ -13,6 +14,9 @@ import {
 } from '@/lib/fleet-compliance-data';
 
 export const dynamic = 'force-dynamic';
+export const metadata: Metadata = {
+  title: 'Compliance',
+};
 
 type SearchParams = Promise<Record<string, string | string[] | undefined>>;
 
@@ -284,4 +288,3 @@ export default async function FleetComplianceCompliancePage({ searchParams }: { 
     </FleetComplianceErrorBoundary>
   );
 }
-

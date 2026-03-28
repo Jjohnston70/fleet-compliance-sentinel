@@ -1,5 +1,6 @@
 import { auth } from '@clerk/nextjs/server';
 import { redirect } from 'next/navigation';
+import type { Metadata } from 'next';
 import { isClerkEnabled } from '@/lib/clerk';
 import { ensureOrgProvisioned } from '@/lib/org-provisioner';
 import { getOrgPlan } from '@/lib/plan-gate';
@@ -9,6 +10,12 @@ import FleetComplianceOnboardingRedirect from '@/components/fleet-compliance/Fle
 import FleetComplianceShell from '@/components/fleet-compliance/FleetComplianceShell';
 
 export const dynamic = 'force-dynamic';
+export const metadata: Metadata = {
+  title: {
+    default: 'Fleet-Compliance',
+    template: '%s | Fleet-Compliance',
+  },
+};
 
 export default async function FleetComplianceLayout({ children }: { children: React.ReactNode }) {
   if (!isClerkEnabled()) {

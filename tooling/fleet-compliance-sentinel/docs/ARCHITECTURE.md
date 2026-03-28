@@ -35,7 +35,7 @@ This approach keeps the demo simple now and preserves a clean path to a fuller p
 - Clerk auth is already wired into the website.
 - Protected resources already exist.
 - The current site styling is already usable and should be reused.
-- The existing AssetCommand implementation is a useful source model, but it is tightly coupled to Google Sheets and Apps Script.
+- The existing Fleet-Compliance Sentinel implementation is a useful source model, but it is tightly coupled to Google Sheets and Apps Script.
 - The Firebase functions bundle is only a starter and should not define the architecture.
 
 ## Existing Source Systems To Preserve
@@ -50,7 +50,7 @@ This approach keeps the demo simple now and preserves a clean path to a fuller p
 - `databases/EMERGENCY CONTACTS.csv`
 - `databases/COLORADO CONTACTS.csv`
 
-### AssetCommand source system
+### Fleet-Compliance Sentinel source system
 
 - `asset-command_vs.001/asset-command-working-testing-03-07-2026.xlsx`
 - `asset-command_vs.001/code.md`

@@ -303,7 +303,7 @@ DATASET_MAPPINGS: tuple[DatasetMapping, ...] = (
         source_path="asset-command_vs.001/asset-command-working-testing-03-07-2026.xlsx",
         worksheet="Assets Master",
         merge_key="assets.assetId",
-        notes="AssetCommand asset master sheet. Operational asset summary data.",
+        notes="Fleet-Compliance Sentinel asset master sheet. Operational asset summary data.",
         column_mappings=(
             column("Asset ID", assign("assets", "assetId", required=True)),
             column("Asset Name", assign("assets", "name")),
@@ -328,7 +328,7 @@ DATASET_MAPPINGS: tuple[DatasetMapping, ...] = (
         source_path="asset-command_vs.001/asset-command-working-testing-03-07-2026.xlsx",
         worksheet="Drivers",
         merge_key="employee_compliance.driverId",
-        notes="AssetCommand driver sheet with operational compliance fields.",
+        notes="Fleet-Compliance Sentinel driver sheet with operational compliance fields.",
         column_mappings=(
             column("Driver ID", assign("people", "employeeId"), assign("employee_compliance", "driverId", required=True)),
             column("Driver Name", assign("people", "fullName")),
@@ -398,7 +398,7 @@ DATASET_MAPPINGS: tuple[DatasetMapping, ...] = (
         source_path="asset-command_vs.001/asset-command-working-testing-03-07-2026.xlsx",
         worksheet="Maintenance Tracker",
         merge_key="maintenance_events.maintenanceEventId",
-        notes="Executed maintenance event log from AssetCommand.",
+        notes="Executed maintenance event log from Fleet-Compliance Sentinel.",
         column_mappings=(
             column("Maintenance ID", assign("maintenance_events", "maintenanceEventId", required=True)),
             column("Asset ID", assign("maintenance_events", "assetId")),
@@ -424,7 +424,7 @@ DATASET_MAPPINGS: tuple[DatasetMapping, ...] = (
         source_path="asset-command_vs.001/asset-command-working-testing-03-07-2026.xlsx",
         worksheet="Config",
         merge_key="organizations.orgId",
-        notes="AssetCommand key/value config sheet.",
+        notes="Fleet-Compliance Sentinel key/value config sheet.",
         column_mappings=(
             column("Setting"),
             column("Value"),

@@ -68,6 +68,10 @@ body {
   color: rgba(226, 232, 240, 0.86);
 }
 
+.landing-main .step-content h3 {
+  color: #f8fafc;
+}
+
 .landing-main .feature-card h3,
 .landing-main .feature-card p {
   color: #ffffff;
@@ -201,6 +205,7 @@ body {
 .hero-logo {
   width: 132px;
   height: auto;
+  mix-blend-mode: multiply;
 }
 
 .hero h1 {
@@ -444,6 +449,10 @@ body {
   padding: 5rem 2rem;
   max-width: 720px;
   margin: 0 auto;
+}
+
+.landing-main .how {
+  padding-top: 2.5rem;
 }
 
 .how h2 {
@@ -941,6 +950,17 @@ body {
   font-size: 0.9rem;
   color: var(--text-muted);
   margin-top: 0.25rem;
+}
+
+.penny-back-link {
+  color: var(--navy);
+  font-size: 0.85rem;
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.penny-back-link:hover {
+  text-decoration: underline;
 }
 
 .penny-status {

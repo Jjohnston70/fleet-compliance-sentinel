@@ -36,7 +36,7 @@
 
 ### Medium Findings (fix before first paying client)
 
-1. **Hardcoded integration URLs in runtime code** — Google Apps Script URL in `assetcommand/page.tsx:8`, Railway fallback URLs in two scripts, and metadata base URL in `layout.tsx:30`. These will drift across environments. **Recommended fix**: Extract to environment variables. The FMCSA and Resend API base URLs are acceptable as constants.
+1. **Hardcoded integration URLs in runtime code** — Google Apps Script URL in `Fleet-Compliance Sentinel/page.tsx:8`, Railway fallback URLs in two scripts, and metadata base URL in `layout.tsx:30`. These will drift across environments. **Recommended fix**: Extract to environment variables. The FMCSA and Resend API base URLs are acceptable as constants.
 
 2. **Dead code still in repository** — `LocalRecordsPanel.tsx` (unused component), `chief-demo-data.ts` (referenced only in comments), `chief-knowledge-timeline.ts` (exports never imported), and root-level `PennyChat.tsx` (duplicate of `src/app/penny/PennyChat.tsx`). **Recommended fix**: Delete all four files. Confirm with `next build` that no imports break.
 

@@ -1,10 +1,14 @@
 import Link from 'next/link';
 import { auth } from '@clerk/nextjs/server';
 import { redirect } from 'next/navigation';
+import type { Metadata } from 'next';
 import { isClerkEnabled } from '@/lib/clerk';
 import AlertSettingsForm from '@/components/fleet-compliance/forms/AlertSettingsForm';
 
 export const dynamic = 'force-dynamic';
+export const metadata: Metadata = {
+  title: 'Alert Settings',
+};
 
 export default async function AlertSettingsPage() {
   if (!isClerkEnabled()) return null;
@@ -48,4 +52,3 @@ export default async function AlertSettingsPage() {
     </main>
   );
 }
-
