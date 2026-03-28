@@ -6,7 +6,7 @@
 **Product:** Fleet-Compliance Sentinel + Pipeline Penny
 **Production URL:** https://www.pipelinepunks.com
 **SOC 2 Type I Readiness:** Operational task batch complete (observation window active since 2026-03-24)
-**Last Updated:** 2026-03-27
+**Last Updated:** 2026-03-28
 
 ---
 
@@ -206,7 +206,7 @@ The platform consists of two integrated modules:
 | Technology | Purpose |
 |-----------|---------|
 | Clerk | Organization-scoped authentication, RBAC, MFA support |
-| @clerk/nextjs 6.38.2 | Next.js middleware integration |
+| @clerk/nextjs 6.39.1 | Next.js middleware integration |
 | JWT verification | Session validation on every protected request |
 
 ### Document Processing
@@ -670,7 +670,7 @@ OPEN SUSPENSE ITEMS (L items):
 | **Storage** | Vercel + Railway environment variable stores (not in code) |
 | **Rotation schedule** | 18 secrets with 90/180-day rotation cycles documented |
 | **Categories** | 4 critical (Clerk, DB, Penny API key, cron secret) + 14 standard |
-| **Execution evidence** | 2026-03-27 batch completed with 9 rotations recorded in SOC2 evidence |
+| **Execution evidence** | 2026-03-27 batch completed with 9 rotations recorded in SOC2 evidence; 2026-03-28 telematics production stabilization completed |
 | **Runbook** | `docs/ROTATION_RUNBOOK.md` is the canonical rotation procedure |
 | **Validation** | `scripts/check-env.ts` runs at startup; CRITICAL vars exit process if missing |
 | **Env reference** | Canonical matrix maintained in `soc2-evidence/system-description/ENV_EXAMPLE.md` |
@@ -681,7 +681,7 @@ OPEN SUSPENSE ITEMS (L items):
 
 ### Program Overview
 
-**Readiness Status:** Operational SOC 2 task batch complete (2026-03-27)
+**Readiness Status:** Operational SOC 2 task batch complete (2026-03-27) and telematics production pipeline validated (2026-03-28)
 **SOC 2 Clock Started:** 2026-03-24 (Phase 3 Datadog drain deployed)
 **90-Day Observation Window Ends:** 2026-06-22
 **Type I Earliest Engagement:** 2026-06-22
@@ -915,7 +915,7 @@ Trial (30 days) → Active (Stripe subscription) → Past Due → Canceled → O
 |---------|---------------|
 | **PR-only merges** | All changes via pull request (branch protection) |
 | **CODEOWNERS** | Security-sensitive files require Security Officer review |
-| **PR verification evidence** | 5 PRs (#1-#5) merged after branch protection enforcement check |
+| **PR verification evidence** | 13 PRs (#1-#13) merged through branch-protection workflow |
 | **Workflow runbook** | `docs/GIT_WORKFLOW.md` documents branch, PR, and merge process |
 | **Automated checks** | Legal regression + operational gap checks in CI |
 | **Emergency procedure** | Documented in Change Management Policy (hotfix branch → expedited review) |

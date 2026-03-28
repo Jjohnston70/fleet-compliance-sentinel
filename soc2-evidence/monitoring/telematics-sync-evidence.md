@@ -17,6 +17,21 @@
 
 ---
 
+## 2026-03-28 Production Stabilization Addendum
+
+Post-initial sync, production routing and deployment controls were validated and remediated:
+
+1. Clerk middleware exclusion added for self-auth cron routes (`/api/fleet-compliance/telematics-sync`, `/api/fleet-compliance/alerts/run`), preventing Clerk session interception of bearer-token cron calls.
+2. Railway build context corrected so `/app/scripts/reveal_sync_neon.py` is present in production image.
+3. Telematics risk API updated to resolve data scope with fallback to `REVEAL_ORG_ID` when the Clerk org has no telematics rows, eliminating zero-count dashboard snapshots.
+4. Production deployment validated after PR #13 merge.
+
+Result: end-to-end chain is operational in production:
+
+`Vercel cron -> /api/fleet-compliance/telematics-sync -> Railway /telematics/sync -> Neon telematics tables -> /api/fleet-compliance/telematics-risk -> /fleet-compliance/telematics`.
+
+---
+
 ## Sync Results
 
 ### Record Counts

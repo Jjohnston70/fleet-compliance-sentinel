@@ -1,12 +1,12 @@
 # Fleet-Compliance Sentinel — Status
 
-Last Updated: 2026-03-27 (SOC 2 operational batch complete)
+Last Updated: 2026-03-28 (SOC 2 operational batch complete + telematics production stabilization complete)
 Current Phase: All phases complete; operational controls in live state
 Overall Completion: 100% for current SOC 2 action plan
 Open Findings: 0 blockers; remaining items are accepted non-blocking hardening items
 SOC 2 Observation Window Start: 2026-03-24
 SOC 2 Type I Earliest Eligibility: 2026-06-22
-Days Until Type I Eligible: 87
+Days Until Type I Eligible: 86
 
 ## 2026-03-27 Session Outcome
 
@@ -18,6 +18,16 @@ Days Until Type I Eligible: 87
 | Sentry production integration (CC7.1) | Complete — full `@sentry/nextjs` SDK deployment + PII hardening |
 | ZAP baseline scan (CC7.1) | Complete — 59 PASS, 8 WARN, 0 FAIL |
 | Clerk test org cleanup (CC6.1) | Complete — only one intentional telematics test org retained |
+
+## 2026-03-28 Stabilization Outcome
+
+| Workstream | Result |
+|-----------|--------|
+| Sentry client initialization | Fixed — duplicate client `Sentry.init()` path removed; single initialization path enforced |
+| Clerk middleware for cron routes | Fixed — `/api/fleet-compliance/telematics-sync` and `/api/fleet-compliance/alerts/run` bypass Clerk and use bearer-token auth |
+| Railway telematics sync packaging | Fixed — `reveal_sync_neon.py` included in Railway image; `/telematics/sync` now executes script successfully |
+| Telematics dashboard data scope | Fixed — risk API resolves telematics data org and falls back to `REVEAL_ORG_ID` when Clerk org has no rows |
+| Production rollout | Complete — PRs #6 through #13 merged, Vercel production deploy verified, dashboard no longer zeroed |
 
 ## Phase Completion Log
 
@@ -63,6 +73,14 @@ Days Until Type I Eligible: 87
 | #3 | `ops(soc2): secret rotation, Sentry SDK integration, evidence updates` | Merged |
 | #4 | `ops(soc2): ZAP scan, DNS verification, Sentry post-deploy, Clerk cleanup docs` | Merged |
 | #5 | `ops(soc2): final evidence updates - Clerk cleanup and Sentry IP storage` | Merged |
+| #6 | `chore(repo): complete SOC2 audit cleanup and documentation refresh` | Merged |
+| #7 | `fix(sentry): remove duplicate client init and hardcoded DSN` | Merged |
+| #8 | `fix(auth): update @clerk/nextjs to latest v6 for needs_client_trust support` | Merged |
+| #9 | `fix(telematics): use SITE_URL for API fetch` | Merged |
+| #10 | `fix(telematics): add sync script to Railway build` | Merged |
+| #11 | `fix(middleware): bypass Clerk for telematics/alerts cron auth` | Merged |
+| #12 | `fix(railway): include telematics sync script in deployed image` | Merged |
+| #13 | `fix(telematics): align dashboard risk query with synced org data` | Merged |
 
 ## Remaining External Actions
 

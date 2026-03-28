@@ -1,6 +1,6 @@
 # Fleet-Compliance Sentinel — Repo Index
 
-Last updated: 2026-03-27 (full audit cleanup)
+Last updated: 2026-03-28 (post-telematics stabilization + branch audit)
 
 ## Root Files
 
@@ -92,3 +92,10 @@ Total evidence files: **73**
 - Removed from active tree: `src/app/sentry-example-page/page.tsx`
 - Removed from active tree: `src/app/api/sentry-example-api/route.ts`
 - Relocated to archive: superseded SOC2 prompt docs, root `SECURITY_ROTATION.md`, root `CODEOWNERS`
+
+## GitHub Branch Audit (2026-03-28)
+
+- `origin/main` is current production baseline at PR #13 merge commit.
+- Open pull requests: none.
+- Merged PR range under branch protection: #1 through #13.
+- Remote topic branches from prior sessions remain for audit trail; they are behind `origin/main` and no longer required for active deployment.

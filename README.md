@@ -14,13 +14,14 @@
 
 Fleet-Compliance Sentinel is a multi-tenant SaaS built by True North Data Strategies LLC for fleet compliance operations, telematics risk monitoring, and DOT/CFR guidance via Pipeline Penny.
 
-## Current State (2026-03-27)
+## Current State (2026-03-28)
 
 - SOC 2 operational task batch: complete
 - Observation window: 2026-03-24 to 2026-06-22
 - Branch protection: active on `main` (PR workflow enforced)
-- Merged under branch protection: PRs #1 through #5
+- Merged under branch protection: PRs #1 through #13
 - Status page: live at `https://status.pipelinepunks.com`
+- Telematics production pipeline: validated end-to-end (`/api/fleet-compliance/telematics-sync` -> Railway `/telematics/sync` -> Neon -> `/fleet-compliance/telematics`)
 
 ## Modules
 
@@ -38,7 +39,7 @@ Fleet-Compliance Sentinel is a multi-tenant SaaS built by True North Data Strate
 | Layer | Technology | Host | Notes |
 |-------|-----------|------|------|
 | Frontend + API | Next.js `^15.5.14` | Vercel | App Router, 27 API endpoints |
-| Auth | Clerk `^6.38.2` | Clerk | Org-scoped auth and RBAC |
+| Auth | Clerk `^6.39.1` | Clerk | Org-scoped auth and RBAC |
 | Database | Neon Postgres | Neon | Multi-tenant data + audit events |
 | AI Backend | FastAPI | Railway | Penny retrieval + Verizon Reveal adapter |
 | Error Monitoring | Sentry `^10.46.0` | Sentry | Full SDK: errors, replay, logs, tunnel route, source maps |
