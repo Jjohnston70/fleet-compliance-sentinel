@@ -21,7 +21,7 @@
     "eval:penny": "node scripts/run-penny-evals.mjs"
   },
   "dependencies": {
-    "@clerk/nextjs": "^6.38.2",
+    "@clerk/nextjs": "^6.39.1",
     "@neondatabase/serverless": "^1.0.2",
     "@sentry/nextjs": "^10.46.0",
     "@tnds/ingest-core": "*",
