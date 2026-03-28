@@ -102,9 +102,8 @@ function formatHosStatus(status: string | null): string {
 }
 
 async function loadTelematicsRiskData(): Promise<{ data: TelematicsRiskApiResponse | null; error: string | null }> {
-  const baseUrl = process.env.VERCEL_URL
-    ? `https://${process.env.VERCEL_URL}`
-    : 'http://localhost:3000';
+  const baseUrl = process.env.SITE_URL
+    || (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : 'http://localhost:3000');
 
   try {
     const cookieHeader = (await cookies()).toString();
