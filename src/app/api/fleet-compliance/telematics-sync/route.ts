@@ -43,12 +43,12 @@ function parseBackendPayload(payload: TelematicsSyncBackendResponse) {
 
 export async function GET(request: Request) {
   const jobName = 'telematics-sync';
-  const cronSecret = process.env.TELEMATICS_CRON_SECRET;
   const authHeader = request.headers.get('authorization') ?? '';
   const provided = authHeader.replace(/^Bearer\s+/i, '').trim();
-  const isCronInvocation = Boolean(cronSecret)
-    && provided.length > 0
-    && isTimingSafeTokenMatch(provided, cronSecret!);
+  const acceptedCronSecrets = [process.env.TELEMATICS_CRON_SECRET, process.env.CRON_SECRET]
+    .filter((value): value is string => Boolean(value && value.trim().length > 0));
+  const isCronInvocation = provided.length > 0
+    && acceptedCronSecrets.some((secret) => isTimingSafeTokenMatch(provided, secret));
 
   if (!isCronInvocation) {
     return Response.json({ error: 'Unauthorized' }, { status: 401 });

@@ -24,12 +24,12 @@ export async function POST(request: Request) {
   let userId = 'system';
   let orgId: string | null = null;
 
-  const cronSecret = process.env.FLEET_COMPLIANCE_CRON_SECRET;
   const authHeader = request.headers.get('authorization') ?? '';
   const provided = authHeader.replace(/^Bearer\s+/i, '').trim();
-  const isCronInvocation = Boolean(cronSecret)
-    && provided.length > 0
-    && isTimingSafeTokenMatch(provided, cronSecret!);
+  const acceptedCronSecrets = [process.env.FLEET_COMPLIANCE_CRON_SECRET, process.env.CRON_SECRET]
+    .filter((value): value is string => Boolean(value && value.trim().length > 0));
+  const isCronInvocation = provided.length > 0
+    && acceptedCronSecrets.some((secret) => isTimingSafeTokenMatch(provided, secret));
 
   try {
     await ensureCronLogTable();
