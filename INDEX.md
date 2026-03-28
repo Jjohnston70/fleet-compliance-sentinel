@@ -75,6 +75,7 @@ Total evidence files: **73**
 | `docs/ROTATION_RUNBOOK.md` | Secret rotation runbook |
 | `docs/GIT_WORKFLOW.md` | PR workflow under branch protection |
 | `docs/UPTIME_SETUP.md` | UptimeRobot Solo baseline (3 monitors + status page) |
+| `docs/VERIZON_REVEAL_TODO.md` | Verizon Reveal scope matrix and execution plan (live vs planned) |
 | `docs/RAILWAY_CONFIG.md` | Railway variable and deployment notes |
 | `docs/NEON_MIGRATION.md` | Neon migration notes |
 | `docs/PENNY_EVALS.md` | Penny eval approach and baseline info |
