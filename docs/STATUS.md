@@ -27,7 +27,7 @@ Days Until Type I Eligible: 86
 | Clerk middleware for cron routes | Fixed — `/api/fleet-compliance/telematics-sync` and `/api/fleet-compliance/alerts/run` bypass Clerk and use bearer-token auth |
 | Railway telematics sync packaging | Fixed — `reveal_sync_neon.py` included in Railway image; `/telematics/sync` now executes script successfully |
 | Telematics dashboard data scope | Fixed — risk API resolves telematics data org and falls back to `REVEAL_ORG_ID` when Clerk org has no rows |
-| Production rollout | Complete — PRs #6 through #13 merged, Vercel production deploy verified, dashboard no longer zeroed |
+| Production rollout | Complete — PRs #6 through #14 merged, Vercel production deploy verified, dashboard no longer zeroed |
 
 ## Phase Completion Log
 
@@ -81,6 +81,7 @@ Days Until Type I Eligible: 86
 | #11 | `fix(middleware): bypass Clerk for telematics/alerts cron auth` | Merged |
 | #12 | `fix(railway): include telematics sync script in deployed image` | Merged |
 | #13 | `fix(telematics): align dashboard risk query with synced org data` | Merged |
+| #14 | `docs(status): sync docs with telematics stabilization and branch audit` | Merged |
 
 ## Remaining External Actions
 

@@ -915,7 +915,7 @@ Trial (30 days) → Active (Stripe subscription) → Past Due → Canceled → O
 |---------|---------------|
 | **PR-only merges** | All changes via pull request (branch protection) |
 | **CODEOWNERS** | Security-sensitive files require Security Officer review |
-| **PR verification evidence** | 13 PRs (#1-#13) merged through branch-protection workflow |
+| **PR verification evidence** | 14 PRs (#1-#14) merged through branch-protection workflow |
 | **Workflow runbook** | `docs/GIT_WORKFLOW.md` documents branch, PR, and merge process |
 | **Automated checks** | Legal regression + operational gap checks in CI |
 | **Emergency procedure** | Documented in Change Management Policy (hotfix branch → expedited review) |

@@ -19,7 +19,7 @@ Fleet-Compliance Sentinel is a multi-tenant SaaS built by True North Data Strate
 - SOC 2 operational task batch: complete
 - Observation window: 2026-03-24 to 2026-06-22
 - Branch protection: active on `main` (PR workflow enforced)
-- Merged under branch protection: PRs #1 through #13
+- Merged under branch protection: PRs #1 through #14
 - Status page: live at `https://status.pipelinepunks.com`
 - Telematics production pipeline: validated end-to-end (`/api/fleet-compliance/telematics-sync` -> Railway `/telematics/sync` -> Neon -> `/fleet-compliance/telematics`)
 

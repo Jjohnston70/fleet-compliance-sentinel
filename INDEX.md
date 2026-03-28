@@ -95,7 +95,7 @@ Total evidence files: **73**
 
 ## GitHub Branch Audit (2026-03-28)
 
-- `origin/main` is current production baseline at PR #13 merge commit.
+- `origin/main` is current production baseline at PR #14 merge commit.
 - Open pull requests: none.
-- Merged PR range under branch protection: #1 through #13.
+- Merged PR range under branch protection: #1 through #14.
 - Remote topic branches from prior sessions remain for audit trail; they are behind `origin/main` and no longer required for active deployment.
