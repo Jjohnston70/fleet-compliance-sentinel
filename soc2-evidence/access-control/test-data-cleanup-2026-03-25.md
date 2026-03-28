@@ -34,3 +34,16 @@ Operator: Codex
 
 - Attempted Clerk org cleanup for matching org IDs via MCP tool, but operation returned `Unauthorized` from Clerk API in this environment.
 - Clerk-side deletion must be completed from an authorized admin session if those org IDs still exist in Clerk.
+
+## Update 2026-03-27 (Coworker)
+
+Clerk test org cleanup still required. Jacob to complete:
+
+1. Log into https://dashboard.clerk.com
+2. Go to Organizations
+3. Find and delete any test organizations (e.g., orgs created during development)
+4. Confirm no test users remain with production-level access
+5. Record cleanup date below
+
+Clerk Cleanup Date: Pending
+Clerk Cleanup By: Pending

@@ -16,3 +16,16 @@ Interpretation:
 
 Next Action Owner: Jacob Johnston
 Target Completion: 2026-03-29
+
+## Update 2026-03-27 (Coworker)
+
+Task remains outstanding. Requires Docker Desktop running locally.
+
+Steps for Jacob:
+```
+docker pull ghcr.io/zaproxy/zaproxy:stable
+docker run --rm ghcr.io/zaproxy/zaproxy:stable zap-baseline.py \
+  -t https://www.pipelinepunks.com \
+  -r zap-report.html
+```
+Save report to: `soc2-evidence/penetration-testing/zap-report-2026-03-29.html`

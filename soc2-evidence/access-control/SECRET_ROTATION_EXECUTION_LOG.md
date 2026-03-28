@@ -5,10 +5,10 @@ Owner: Jacob Johnston
 
 | Secret | Service | Rotated At | Rotated By | Verification | Evidence Link |
 |---|---|---|---|---|---|
-| CLERK_SECRET_KEY | Clerk | Pending | Pending | Pending | Pending |
-| DATABASE_URL | Neon | Pending | Pending | Pending | Pending |
-| PENNY_API_KEY | Vercel/Railway | Pending | Pending | Pending | Pending |
-| FLEET_COMPLIANCE_CRON_SECRET | Vercel | Pending | Pending | Pending | Pending |
+| CLERK_SECRET_KEY | Clerk | 2026-03-27 ~21:00 UTC | Jacob Johnston | New key generated in Clerk dashboard, updated in Vercel, redeployed | — |
+| DATABASE_URL | Neon | 2026-03-27 ~21:15 UTC | Jacob Johnston | Password reset in Neon console (2x — final reset after credential exposure), Vercel integration auto-synced, redeployed | — |
+| PENNY_API_KEY | Vercel/Railway | 2026-03-27 20:05 UTC | Coworker (Claude) | Health endpoints confirmed 200 (Railway /health + Vercel /api/penny/health) | — |
+| FLEET_COMPLIANCE_CRON_SECRET | Vercel | 2026-03-27 20:08 UTC | Coworker (Claude) | Created new — All Environments. Vercel redeployed. | — |
 | REVEAL_USERNAME | Railway | 2026-03-27 | Jacob Johnston | Set in Railway dashboard | telematics-credential-security.md |
 | REVEAL_PASSWORD | Railway | 2026-03-27 | Jacob Johnston | Set in Railway dashboard | telematics-credential-security.md |
 | REVEAL_APP_ID | Railway | 2026-03-27 | Jacob Johnston | Set in Railway dashboard | telematics-credential-security.md |

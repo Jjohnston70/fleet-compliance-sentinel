@@ -5,16 +5,16 @@ Source: `soc2-evidence/system-description/ENV_EXAMPLE.md`
 
 | Secret | Service | Rotation Dashboard URL | Frequency | Last Rotated |
 |---|---|---|---|---|
-| `CLERK_SECRET_KEY` | Clerk | https://dashboard.clerk.com/last-active?path=api-keys | Every 90 days | Not recorded |
+| `CLERK_SECRET_KEY` | Clerk | https://dashboard.clerk.com/last-active?path=api-keys | Every 90 days | 2026-03-27 |
 | `NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY` | Clerk | https://dashboard.clerk.com/last-active?path=api-keys | Every 180 days | Not recorded |
-| `DATABASE_URL` | Neon Postgres | https://console.neon.tech/app/projects | Every 90 days | Not recorded |
-| `PENNY_API_KEY` | Vercel + Railway shared secret | https://vercel.com/<team>/<project>/settings/environment-variables and https://railway.com/project/<project>/variables | Every 90 days | Not recorded |
+| `DATABASE_URL` | Neon Postgres | https://console.neon.tech/app/projects | Every 90 days | 2026-03-27 |
+| `PENNY_API_KEY` | Vercel + Railway shared secret | https://vercel.com/<team>/<project>/settings/environment-variables and https://railway.com/project/<project>/variables | Every 90 days | 2026-03-27 |
 | `RESEND_API_KEY` | Resend | https://resend.com/api-keys | Every 90 days | Not recorded |
-| `FLEET_COMPLIANCE_CRON_SECRET` | Vercel Cron auth | https://vercel.com/<team>/<project>/settings/environment-variables | Every 90 days | Not recorded |
+| `FLEET_COMPLIANCE_CRON_SECRET` | Vercel Cron auth | https://vercel.com/<team>/<project>/settings/environment-variables | Every 90 days | 2026-03-27 |
 | `FMCSA_API_KEY` | FMCSA Query Central | https://ai.fmcsa.dot.gov/SMS/Tools/Downloads.aspx | Every 180 days | Not recorded |
 | `SENTRY_DSN` | Sentry | https://sentry.io/settings/projects/<project>/client-keys/ | Every 180 days | Not recorded |
 | `NEXT_PUBLIC_SENTRY_DSN` | Sentry | https://sentry.io/settings/projects/<project>/client-keys/ | Every 180 days | Not recorded |
-| `SENTRY_AUTH_TOKEN` | Sentry | https://sentry.io/settings/account/api/auth-tokens/ | Every 90 days | Not recorded |
+| `SENTRY_AUTH_TOKEN` | Sentry | https://sentry.io/settings/account/api/auth-tokens/ | Every 90 days | 2026-03-27 |
 | `DATADOG_API_KEY` | Datadog | https://app.datadoghq.com/organization-settings/api-keys | Every 90 days | Not recorded |
 | `GOOGLE_SHEET_WEBHOOK_URL` | Google Apps Script | https://script.google.com/home | Every 180 days | Not recorded |
 | `STRIPE_WEBHOOK_SECRET` | Stripe | https://dashboard.stripe.com/webhooks | Every 90 days | Not recorded |

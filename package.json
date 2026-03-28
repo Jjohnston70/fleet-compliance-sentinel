@@ -23,7 +23,7 @@
   "dependencies": {
     "@clerk/nextjs": "^6.38.2",
     "@neondatabase/serverless": "^1.0.2",
-    "@sentry/nextjs": "^10.45.0",
+    "@sentry/nextjs": "^10.46.0",
     "@tnds/ingest-core": "*",
     "@tnds/memory-core": "*",
     "@tnds/retrieval-core": "*",
