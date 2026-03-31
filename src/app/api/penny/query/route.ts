@@ -280,9 +280,9 @@ export async function POST(request: NextRequest) {
 
     // Forward to Railway — use grounded prompt if CFR retrieval succeeded,
     // otherwise fall back to Railway's own knowledge store as before.
-    const queryPayload = groundedContext
-      ? { question: groundedContext, query: groundedContext }
-      : { question: effectiveQuery, query: effectiveQuery };
+    // NOTE: Only send fields that Railway's QueryRequest Pydantic model accepts.
+    // Sending extra fields (e.g. "question", "chat_history") causes a 422 with Pydantic v2.
+    const railwayQuery = groundedContext || effectiveQuery;
 
     const res = await fetch(`${PENNY_API_URL}/query`, {
       method: 'POST',
@@ -294,8 +294,7 @@ export async function POST(request: NextRequest) {
         ...(PENNY_API_KEY ? { 'X-Penny-Api-Key': PENNY_API_KEY } : {}),
       },
       body: JSON.stringify({
-        ...queryPayload,
-        chat_history: Array.isArray(chatHistory) ? chatHistory : [],
+        query: railwayQuery,
         ...(typeof skillMode === 'string' ? { skill_mode: skillMode } : {}),
         ...(typeof llmProvider === 'string' && llmProvider.trim().length > 0
           ? { llm_provider: llmProvider.trim().toLowerCase().slice(0, 32) } : {}),
