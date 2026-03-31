@@ -815,6 +815,27 @@ body {
   background: #f8fafc;
 }
 
+.modules-section .section-intro {
+  color: var(--text-secondary);
+}
+
+.modules-section h2 {
+  color: var(--navy);
+}
+
+.landing-main .who h2 {
+  text-align: center;
+}
+
+.landing-main .who-grid {
+  align-items: center;
+}
+
+.landing-main .who-item {
+  justify-content: center;
+  text-align: center;
+}
+
 /* ===== USER MANUAL MODAL ===== */
 .manual-overlay {
   position: fixed;

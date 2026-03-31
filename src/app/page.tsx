@@ -281,10 +281,10 @@ export default function HomePage() {
       <section className="features modules-section">
         <div style={{ textAlign: 'center', marginBottom: '1.5rem' }}>
           <Image
-            src="/PipelineX-penny.png"
-            alt="Pipeline Penny"
-            width={120}
-            height={120}
+            src="/TNDS Commander Center logo design.png"
+            alt="TNDS Command Center"
+            width={140}
+            height={140}
           />
         </div>
         <h2>Available Modules</h2>
