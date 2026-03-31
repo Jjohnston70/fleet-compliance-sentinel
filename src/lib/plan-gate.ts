@@ -1,4 +1,5 @@
 import { ensureOrgScopingTables, getSQL } from '@/lib/fleet-compliance-db';
+import { disableModule, enableModule, getModuleCatalog, getModulesByPlan, normalizePlanTier } from '@/lib/modules';
 import { recordTrialStateIfChanged } from '@/lib/org-audit';
 
 export async function getOrgPlan(orgId: string): Promise<{
@@ -78,5 +79,55 @@ export async function getOrgPlan(orgId: string): Promise<{
       : null,
     accessState,
     isActive,
+  };
+}
+
+export async function syncModulesForPlanChange(input: {
+  orgId: string;
+  previousPlan: string;
+  nextPlan: string;
+  changedByUserId?: string | null;
+}): Promise<{
+  previousTier: 'trial' | 'starter' | 'pro' | 'enterprise';
+  nextTier: 'trial' | 'starter' | 'pro' | 'enterprise';
+  enabled: string[];
+  disabled: string[];
+}> {
+  const previousTier = normalizePlanTier(input.previousPlan);
+  const nextTier = normalizePlanTier(input.nextPlan);
+
+  if (previousTier === nextTier) {
+    return {
+      previousTier,
+      nextTier,
+      enabled: [],
+      disabled: [],
+    };
+  }
+
+  const previousDefaults = new Set(getModulesByPlan(previousTier));
+  const nextDefaults = new Set(getModulesByPlan(nextTier));
+  const catalog = await getModuleCatalog();
+  const coreModules = new Set(catalog.filter((item) => item.isCore).map((item) => item.id));
+
+  const enabled: string[] = [];
+  const disabled: string[] = [];
+
+  for (const moduleId of [...nextDefaults].filter((moduleId) => !previousDefaults.has(moduleId))) {
+    const didEnable = await enableModule(input.orgId, moduleId, input.changedByUserId ?? null);
+    if (didEnable) enabled.push(moduleId);
+  }
+
+  for (const moduleId of [...previousDefaults].filter((moduleId) => !nextDefaults.has(moduleId))) {
+    if (coreModules.has(moduleId)) continue;
+    const didDisable = await disableModule(input.orgId, moduleId);
+    if (didDisable) disabled.push(moduleId);
+  }
+
+  return {
+    previousTier,
+    nextTier,
+    enabled,
+    disabled,
   };
 }

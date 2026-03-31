@@ -232,22 +232,22 @@ export default function HomePage() {
           <article className="step">
             <div className="step-num">1</div>
             <div className="step-content">
-              <h3>Built for 13 CFR Knowledge</h3>
-              <p>Pipeline Penny is grounded in 13 CFR parts 040-397 and returns regulation-aware guidance.</p>
+              <h3>Built on 13 FMCSA/DOT Regulation Chapters</h3>
+              <p>Pipeline Penny is grounded in 13 sections of the FMCSA DOT regulatory manual (49 CFR Parts 040-397) and returns regulation-aware guidance.</p>
             </div>
           </article>
           <article className="step">
             <div className="step-num">2</div>
             <div className="step-content">
               <h3>Answers With Your Fleet Context</h3>
-              <p>Questions are answered with your actual fleet data, permit records, and compliance timelines.</p>
+              <p>Questions are answered with your actual fleet data, permit records, maintenance records, and compliance timelines.</p>
             </div>
           </article>
           <article className="step">
             <div className="step-num">3</div>
             <div className="step-content">
               <h3>Source-Cited, No Guessing</h3>
-              <p>Penny does not make things up - responses are grounded in your data and federal source references.</p>
+              <p>Pipeline Penny does not make things up - responses are grounded in your data and federal source references.</p>
             </div>
           </article>
         </div>
