@@ -122,12 +122,13 @@ const mlModules = [
   },
 ];
 
+/* NotebookLM links preserved for internal reference - not exposed on landing page
 const notebookLmLinks = [
   { name: 'CFR 49 DOT Regulations', url: 'https://notebooklm.google.com/notebook/daebb7db-4533-4055-9dec-fc96db40634a' },
   { name: 'Real Estate Chat', url: 'https://notebooklm.google.com/notebook/026926b8-16a7-40ea-a866-2fcc23313dac' },
   { name: 'HubSpot API Reference Guide', url: 'https://notebooklm.google.com/notebook/2cb7a8f1-e465-4d40-9f60-a82d4d8a3678' },
   { name: 'ML Signal Stack', url: 'https://notebooklm.google.com/notebook/d6920450-691e-4222-875c-cdcece5c784f' },
-];
+]; */
 
 const pricingTiers = [
   {
@@ -339,24 +340,28 @@ export default function HomePage() {
       </section>
 
       <section className="features">
-        <h2>Learning Resources</h2>
+        <h2>What Pipeline Penny Knows</h2>
         <p className="section-intro">
-          Deep-dive into compliance topics, business strategy, and platform documentation through our Google NotebookLM collections.
-          A Google account is required to view these notebooks.
+          Pipeline Penny is trained on curated knowledge bases covering federal regulations, business operations, and market intelligence.
+          All of this knowledge is available through your Penny AI assistant when you sign up.
         </p>
         <div className="module-grid">
-          {notebookLmLinks.map((nb) => (
-            <a
-              key={nb.name}
-              href={nb.url}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="module-card notebook-link"
-            >
-              <h3>{nb.name}</h3>
-              <p>Open in NotebookLM</p>
-            </a>
-          ))}
+          <article className="module-card">
+            <h3>CFR 49 DOT Regulations</h3>
+            <p>13 sections of FMCSA/DOT regulatory guidance (Parts 040-397) for fleet compliance.</p>
+          </article>
+          <article className="module-card">
+            <h3>Real Estate Operations</h3>
+            <p>Lead scoring, property management, deal pipelines, and commission tracking knowledge.</p>
+          </article>
+          <article className="module-card">
+            <h3>HubSpot API Integration</h3>
+            <p>CRM operations, contact management, deal pipelines, and marketing automation.</p>
+          </article>
+          <article className="module-card">
+            <h3>ML Forecasting Models</h3>
+            <p>SARIMA time-series analysis, sales forecasting, and energy market intelligence.</p>
+          </article>
         </div>
       </section>
 
