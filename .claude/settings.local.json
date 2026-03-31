@@ -19,7 +19,13 @@
       "Bash(mv ARCHITECTURE.md archive/2026-03-21-pre-phase3-cleanup/legacy-docs/)",
       "Bash(mv AUDIT_REPORT.md archive/2026-03-21-pre-phase3-cleanup/legacy-docs/)",
       "Bash(mv ENV_EXAMPLE.md archive/2026-03-21-pre-phase3-cleanup/legacy-docs/)",
-      "Bash(grep -E \"\\\\.ts$\")"
+      "Bash(grep -E \"\\\\.ts$\")",
+      "Read(//c/Users/truenorth/Desktop/00 PIPLINE PUNKS GIT/00-ELECTRON-PIPELINE-X/railway-backend/**)",
+      "Read(//c/Users/truenorth/Desktop/00 PIPLINE PUNKS GIT/00-ELECTRON-PIPELINE-X/railway-backend/data/**)"
     ]
-  }
+  },
+  "enabledMcpjsonServers": [
+    "sentry"
+  ],
+  "enableAllProjectMcpServers": true
 }

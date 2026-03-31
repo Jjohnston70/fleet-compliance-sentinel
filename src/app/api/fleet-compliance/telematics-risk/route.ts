@@ -112,6 +112,65 @@ async function resolveTelematicsDataOrgId(requestOrgId: string): Promise<string>
   return hasFallbackData ? fallbackOrgId : requestOrgId;
 }
 
+// ===== DEMO MODE =====
+// Set TELEMATICS_DEMO_MODE=true in .env to show demo data instead of live Verizon data.
+// Set TELEMATICS_DEMO_MODE=false (or remove it) to restore live Verizon Reveal connection.
+// Demo data uses fake personnel names, truck identifiers, and GPS events.
+
+function isDemoMode(): boolean {
+  return (process.env.TELEMATICS_DEMO_MODE ?? '').toLowerCase() === 'true';
+}
+
+function generateDemoData(orgId: string) {
+  const now = new Date();
+  const daysAgo = (days: number) => new Date(now.getTime() - days * DAY_MS).toISOString();
+
+  const demoVehicles: VehicleRiskRow[] = [
+    { vehicleNumber: 'GT-1001', make: 'Freightliner', model: 'Cascadia', year: 2022, riskScore: 15, riskLevel: 'LOW', lastSeenAt: daysAgo(0), gpsEventsLast7Days: 42, flags: [] },
+    { vehicleNumber: 'GT-1002', make: 'Peterbilt', model: '579', year: 2021, riskScore: 25, riskLevel: 'LOW', lastSeenAt: daysAgo(1), gpsEventsLast7Days: 38, flags: ['vehicle.last_seen_gt_1d'] },
+    { vehicleNumber: 'GT-1003', make: 'Kenworth', model: 'T680', year: 2020, riskScore: 45, riskLevel: 'MEDIUM', lastSeenAt: daysAgo(4), gpsEventsLast7Days: 12, flags: ['vehicle.last_seen_gt_3d'] },
+    { vehicleNumber: 'GT-1004', make: 'Volvo', model: 'VNL 860', year: 2023, riskScore: 10, riskLevel: 'LOW', lastSeenAt: daysAgo(0), gpsEventsLast7Days: 55, flags: [] },
+    { vehicleNumber: 'GT-1005', make: 'International', model: 'LT', year: 2019, riskScore: 35, riskLevel: 'MEDIUM', lastSeenAt: daysAgo(2), gpsEventsLast7Days: 8, flags: ['vehicle.gps_events_7d_low'] },
+    { vehicleNumber: 'GT-1006', make: 'Mack', model: 'Anthem', year: 2018, riskScore: 60, riskLevel: 'HIGH', lastSeenAt: daysAgo(8), gpsEventsLast7Days: 0, flags: ['vehicle.last_seen_gt_7d', 'vehicle.gps_events_7d_none'] },
+    { vehicleNumber: 'GT-1007', make: 'Freightliner', model: 'M2 106', year: 2021, riskScore: 20, riskLevel: 'LOW', lastSeenAt: daysAgo(0), gpsEventsLast7Days: 31, flags: [] },
+    { vehicleNumber: 'GT-1008', make: 'Peterbilt', model: '389', year: 2017, riskScore: 50, riskLevel: 'MEDIUM', lastSeenAt: daysAgo(5), gpsEventsLast7Days: 3, flags: ['vehicle.last_seen_gt_3d', 'vehicle.gps_events_7d_low'] },
+    { vehicleNumber: 'GT-2001', make: 'Ford', model: 'F-350', year: 2024, riskScore: 5, riskLevel: 'LOW', lastSeenAt: daysAgo(0), gpsEventsLast7Days: 67, flags: [] },
+    { vehicleNumber: 'GT-2002', make: 'RAM', model: '3500', year: 2022, riskScore: 30, riskLevel: 'MEDIUM', lastSeenAt: daysAgo(3), gpsEventsLast7Days: 15, flags: ['vehicle.last_seen_gt_3d'] },
+  ];
+
+  const demoDrivers: DriverRiskRow[] = [
+    { driverName: 'Marcus Rivera', riskScore: 10, riskLevel: 'LOW', hosStatus: 'ELD: On Duty', flags: [] },
+    { driverName: 'Sarah Chen', riskScore: 5, riskLevel: 'LOW', hosStatus: 'ELD: Driving', flags: [] },
+    { driverName: 'James Patterson', riskScore: 35, riskLevel: 'MEDIUM', hosStatus: 'ELD: Off Duty', flags: ['driver.gps_events_7d_none'] },
+    { driverName: 'Lisa Morales', riskScore: 15, riskLevel: 'LOW', hosStatus: 'ELD: Sleeper', flags: [] },
+    { driverName: 'David Kim', riskScore: 65, riskLevel: 'HIGH', hosStatus: 'ELD: On Duty', flags: ['driver.eld_org_gps_stale', 'driver.gps_events_7d_none'] },
+    { driverName: 'Rachel Thompson', riskScore: 20, riskLevel: 'LOW', hosStatus: 'ELD: Driving', flags: [] },
+    { driverName: 'Carlos Mendez', riskScore: 40, riskLevel: 'MEDIUM', hosStatus: 'UNKNOWN', flags: ['driver.gps_events_7d_none'] },
+    { driverName: 'Nicole Wright', riskScore: 10, riskLevel: 'LOW', hosStatus: 'ELD: On Duty', flags: [] },
+  ];
+
+  const levels = [...demoVehicles, ...demoDrivers].map((r) => r.riskLevel);
+
+  return {
+    orgId,
+    dataOrgId: orgId,
+    generatedAt: now.toISOString(),
+    vehicles: demoVehicles,
+    drivers: demoDrivers,
+    summary: {
+      totalVehicles: demoVehicles.length,
+      totalDrivers: demoDrivers.length,
+      highRisk: levels.filter((l) => l === 'HIGH').length,
+      mediumRisk: levels.filter((l) => l === 'MEDIUM').length,
+      lowRisk: levels.filter((l) => l === 'LOW').length,
+      topFlags: summarizeTopFlags([
+        ...demoVehicles.flatMap((v) => v.flags),
+        ...demoDrivers.flatMap((d) => d.flags),
+      ]),
+    },
+  };
+}
+
 export async function GET(request: Request) {
   let userId: string;
   let orgId: string;
@@ -121,6 +180,20 @@ export async function GET(request: Request) {
     const authResponse = fleetComplianceAuthErrorResponse(error);
     if (authResponse) return authResponse;
     return Response.json({ error: 'Unauthorized' }, { status: 401 });
+  }
+
+  // Demo mode: return fake data without hitting Verizon/DB
+  if (isDemoMode()) {
+    const demoResponse = generateDemoData(orgId);
+    auditLog({
+      action: 'data.read',
+      userId,
+      orgId,
+      resourceType: 'fleet-compliance.telematics-risk',
+      metadata: { collection: 'telematics_risk', demoMode: true },
+      severity: 'info',
+    });
+    return Response.json(demoResponse, { status: 200 });
   }
 
   try {

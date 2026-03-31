@@ -1,6 +1,7 @@
 import crypto from 'crypto';
 import { NextResponse } from 'next/server';
 import { ensureOrgScopingTables, getSQL } from '@/lib/fleet-compliance-db';
+import { syncModulesForPlanChange } from '@/lib/plan-gate';
 import { recordOrgAuditEvent } from '@/lib/org-audit';
 
 export const runtime = 'nodejs';
@@ -215,6 +216,7 @@ async function handleSubscriptionEvent(sql: ReturnType<typeof getSQL>, event: St
     LIMIT 1
   `;
   const previous = prevRows[0] as Record<string, unknown> | undefined;
+  const previousPlan = typeof previous?.plan === 'string' ? previous.plan : 'trial';
 
   await sql`
     INSERT INTO subscriptions (
@@ -232,6 +234,23 @@ async function handleSubscriptionEvent(sql: ReturnType<typeof getSQL>, event: St
     )
   `;
   await syncOrganizationLifecycleFromSubscription(sql, orgId, nextPlan, nextStatus);
+
+  let moduleSyncResult: {
+    previousTier: 'trial' | 'starter' | 'pro' | 'enterprise';
+    nextTier: 'trial' | 'starter' | 'pro' | 'enterprise';
+    enabled: string[];
+    disabled: string[];
+  } | null = null;
+  try {
+    moduleSyncResult = await syncModulesForPlanChange({
+      orgId,
+      previousPlan,
+      nextPlan,
+      changedByUserId: 'stripe_webhook',
+    });
+  } catch {
+    moduleSyncResult = null;
+  }
 
   await recordOrgAuditEvent({
     orgId,
@@ -261,8 +280,16 @@ async function handleSubscriptionEvent(sql: ReturnType<typeof getSQL>, event: St
         eventType: 'org.plan.changed',
         actorType: 'stripe',
         metadata: {
-          previousPlan: String(previous.plan ?? ''),
+          previousPlan,
           nextPlan,
+          moduleSync: moduleSyncResult
+            ? {
+                previousTier: moduleSyncResult.previousTier,
+                nextTier: moduleSyncResult.nextTier,
+                enabledCount: moduleSyncResult.enabled.length,
+                disabledCount: moduleSyncResult.disabled.length,
+              }
+            : null,
         },
       });
     }
