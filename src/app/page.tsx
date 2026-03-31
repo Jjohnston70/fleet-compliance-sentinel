@@ -452,3 +452,14 @@ export default function HomePage() {
             </a>
           </div>
         </div>
+        <div className="footer-links">
+          <Link href="/privacy">Privacy Policy</Link>
+          <Link href="/terms">Terms of Service</Link>
+          <Link href="/accessibility">Accessibility</Link>
+          <Link href="https://www.truenorthstrategyops.com">truenorthstrategyops.com</Link>
+        </div>
+        <p className="footer-copy">&copy; 2026 True North Data Strategies LLC. All rights reserved.</p>
+      </footer>
+    </main>
+  );
+}
