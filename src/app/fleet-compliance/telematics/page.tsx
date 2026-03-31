@@ -186,8 +186,10 @@ export default async function FleetComplianceTelematicsPage() {
               ? `Last sync ${lastSyncLabel}.`
               : 'Last sync unavailable while the telematics risk API recovers.'}
           </p>
-          <div className="fleet-compliance-action-row">
-            <Link href="/fleet-compliance" className="btn-secondary">Back to Fleet-Compliance</Link>
+          <div className="fleet-compliance-breadcrumbs">
+            <Link href="/fleet-compliance">Fleet-Compliance</Link>
+            <span>/</span>
+            <span>Telematics</span>
           </div>
         </section>
 

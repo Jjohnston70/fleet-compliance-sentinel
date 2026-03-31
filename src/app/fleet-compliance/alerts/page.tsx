@@ -41,8 +41,12 @@ export default async function FleetComplianceAlertsPage() {
           <div>
             <p className="fleet-compliance-eyebrow">Alerts</p>
             <h1>Suspense email alerts</h1>
+            <div className="fleet-compliance-breadcrumbs">
+              <Link href="/fleet-compliance">Fleet-Compliance</Link>
+              <span>/</span>
+              <span>Alerts</span>
+            </div>
           </div>
-          <Link href="/fleet-compliance" className="btn-secondary">Back to Fleet-Compliance</Link>
         </div>
         <p className="fleet-compliance-subcopy">
           The alert engine sweeps all open suspense items, groups them by owner, and sends

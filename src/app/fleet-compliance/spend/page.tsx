@@ -31,7 +31,6 @@ export default async function FleetComplianceSpendPage() {
               <p className="fleet-compliance-eyebrow">Finance</p>
               <h1>Spend Dashboard</h1>
             </div>
-            <Link href="/fleet-compliance" className="btn-secondary">Back to Fleet-Compliance</Link>
           </div>
           <p className="fleet-compliance-subcopy">
             Monthly spend rollup from imported invoices, invoice imports, and maintenance costs.

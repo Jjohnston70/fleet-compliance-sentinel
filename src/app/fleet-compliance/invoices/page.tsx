@@ -30,8 +30,12 @@ export default async function FleetComplianceInvoicesPage() {
             <h1>Vendor invoices</h1>
           </div>
           <div className="fleet-compliance-action-row">
-            <Link href="/fleet-compliance" className="btn-secondary">Back to Fleet-Compliance</Link>
             <Link href="/fleet-compliance/invoices/new" className="btn-primary">Add Invoice</Link>
+          </div>
+          <div className="fleet-compliance-breadcrumbs">
+            <Link href="/fleet-compliance">Fleet-Compliance</Link>
+            <span>/</span>
+            <span>Invoices</span>
           </div>
         </div>
         <p className="fleet-compliance-subcopy">

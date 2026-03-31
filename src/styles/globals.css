@@ -253,6 +253,90 @@ body {
   flex-wrap: wrap;
 }
 
+.hero-trust {
+  margin-top: 2rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.hero-trust-badges {
+  display: flex;
+  gap: 0.75rem;
+  align-items: center;
+}
+
+.hero-trust-text {
+  font-size: 0.82rem;
+  color: var(--text-muted);
+  letter-spacing: 0.03em;
+}
+
+.hero-screenshot {
+  margin-top: 2.5rem;
+  max-width: 800px;
+  margin-left: auto;
+  margin-right: auto;
+  border-radius: 10px;
+  overflow: hidden;
+  border: 1px solid rgba(148, 163, 184, 0.3);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.25);
+}
+
+.browser-frame {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.55rem 0.85rem;
+  background: #1e293b;
+  border-bottom: 1px solid rgba(148, 163, 184, 0.2);
+}
+
+.browser-dots {
+  display: flex;
+  gap: 5px;
+}
+
+.browser-dots span {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: #475569;
+}
+
+.browser-dots span:first-child { background: #ef4444; }
+.browser-dots span:nth-child(2) { background: #f59e0b; }
+.browser-dots span:nth-child(3) { background: #22c55e; }
+
+.browser-bar {
+  flex: 1;
+  background: rgba(255, 255, 255, 0.06);
+  border-radius: 4px;
+  padding: 0.3rem 0.65rem;
+  font-size: 0.75rem;
+  color: #94a3b8;
+  font-family: var(--font-mono);
+}
+
+.screenshot-placeholder {
+  padding: 3.5rem 2rem;
+  background: linear-gradient(135deg, #0f1729 0%, #162035 100%);
+  text-align: center;
+}
+
+.screenshot-placeholder p {
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: #e2e8f0;
+  margin-bottom: 0.5rem;
+}
+
+.screenshot-placeholder span {
+  font-size: 0.85rem;
+  color: #64748b;
+}
+
 /* ===== BUTTONS ===== */
 .btn-primary {
   display: inline-flex;
@@ -325,12 +409,15 @@ body {
 }
 
 .feature-icon {
-  font-family: var(--font-mono);
-  font-size: 0.8rem;
-  font-weight: 500;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 10px;
+  background: rgba(61, 142, 185, 0.1);
   color: var(--teal);
   margin-bottom: 1rem;
-  letter-spacing: 0.05em;
 }
 
 .feature-card h3 {
@@ -548,6 +635,23 @@ body {
 .pricing-card.featured {
   border-color: var(--teal);
   box-shadow: 0 0 0 2px rgba(61, 142, 185, 0.25);
+  position: relative;
+}
+
+.pricing-badge {
+  position: absolute;
+  top: -12px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--teal);
+  color: #fff;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  padding: 0.25rem 0.85rem;
+  border-radius: 999px;
+  text-transform: uppercase;
+  white-space: nowrap;
 }
 
 .pricing-tier {
@@ -1680,6 +1784,8 @@ a.penny-source-pill:hover {
   border-radius: 4px;
   margin-bottom: 0.25rem;
   font-size: 0.9rem;
+  border-left: 3px solid transparent;
+  transition: background 0.2s, border-color 0.2s;
 }
 
 .fc-sidebar-link:hover {
@@ -1690,6 +1796,8 @@ a.penny-source-pill:hover {
   background: rgba(255, 255, 255, 0.12);
   color: #fff;
   font-weight: 600;
+  border-left: 3px solid var(--teal);
+  padding-left: calc(0.75rem - 3px);
 }
 
 .fc-main {
@@ -1758,13 +1866,17 @@ a.penny-source-pill:hover {
 
 .fleet-compliance-trial-banner {
   max-width: 1100px;
-  margin: 1rem auto 0;
+  margin: 0 auto;
   padding: 0.8rem 1rem;
-  border-radius: 10px;
+  border-radius: 0 0 10px 10px;
   border: 1px solid #bfdff1;
+  border-top: none;
   background: #eaf6fd;
   color: #0f2439;
   font-size: 0.9rem;
+  position: sticky;
+  top: 0;
+  z-index: 50;
 }
 
 .fleet-compliance-trial-banner a {
@@ -1826,6 +1938,24 @@ a.penny-source-pill:hover {
   margin-top: 0.45rem;
   color: var(--text-secondary);
   font-size: 0.88rem;
+}
+
+.fleet-compliance-stat-card.stat-warning {
+  border-left: 4px solid #d97706;
+}
+
+.fleet-compliance-stat-card.stat-warning .fleet-compliance-stat-note {
+  color: #d97706;
+  font-weight: 600;
+}
+
+.fleet-compliance-stat-card.stat-danger {
+  border-left: 4px solid #dc2626;
+}
+
+.fleet-compliance-stat-card.stat-danger .fleet-compliance-stat-note {
+  color: #dc2626;
+  font-weight: 600;
 }
 
 .fleet-compliance-section-head {

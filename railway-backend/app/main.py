@@ -131,7 +131,11 @@ class KnowledgeDoc(BaseModel):
 
 
 class QueryRequest(BaseModel):
+    model_config = {"extra": "ignore"}
+
     query: str = Field(..., min_length=2, max_length=MAX_QUERY_CHARS)
+    question: Optional[str] = None  # alias sent by Vercel route; ignored if present
+    chat_history: Optional[List[dict]] = None  # conversation history from frontend
     llm_provider: Optional[str] = None
     llm_model: Optional[str] = None
     skill_mode: Optional[str] = None

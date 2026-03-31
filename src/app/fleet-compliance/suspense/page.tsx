@@ -61,9 +61,11 @@ export default async function FleetComplianceSuspensePage({ searchParams }: { se
             <Link href="/api/fleet-compliance/bulk-template" className="btn-secondary">
               Download Bulk Template
             </Link>
-            <Link href="/fleet-compliance" className="btn-secondary">
-              Back to Fleet-Compliance
-            </Link>
+          </div>
+          <div className="fleet-compliance-breadcrumbs">
+            <Link href="/fleet-compliance">Fleet-Compliance</Link>
+            <span>/</span>
+            <span>Suspense</span>
           </div>
         </div>
         <p className="fleet-compliance-subcopy">

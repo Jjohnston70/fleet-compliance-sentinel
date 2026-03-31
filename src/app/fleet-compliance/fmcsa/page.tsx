@@ -230,8 +230,12 @@ export default async function FleetComplianceFmcsaPage({ searchParams }: { searc
           <div>
             <p className="fleet-compliance-eyebrow">FMCSA Lookup</p>
             <h1>Carrier safety data</h1>
+            <div className="fleet-compliance-breadcrumbs">
+              <Link href="/fleet-compliance">Fleet-Compliance</Link>
+              <span>/</span>
+              <span>FMCSA Lookup</span>
+            </div>
           </div>
-          <Link href="/fleet-compliance" className="btn-secondary">Back to Fleet-Compliance</Link>
         </div>
         <p className="fleet-compliance-subcopy">
           Look up any carrier by USDOT number. Returns carrier profile, BASIC safety scores,

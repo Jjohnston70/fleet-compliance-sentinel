@@ -237,7 +237,11 @@ export default function PennyChat({ userName, userRole }: PennyChatProps) {
       <div className="penny-shell">
         <section className="penny-main">
           <div className="penny-header">
-            <p><Link href="/fleet-compliance" className="penny-back-link">Back to Fleet-Compliance</Link></p>
+            <div className="fleet-compliance-breadcrumbs">
+              <Link href="/fleet-compliance">Fleet-Compliance</Link>
+              <span>/</span>
+              <span>Penny AI</span>
+            </div>
             <h1>Pipeline Penny</h1>
             <p>Ask questions about the current CFR and DOT compliance knowledge base</p>
             <div className="penny-status">

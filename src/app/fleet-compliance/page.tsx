@@ -120,10 +120,10 @@ export default async function FleetCompliancePage() {
   const importStats = await getImportStats(orgId);
 
   const quickStats = [
-    { label: 'Tracked Assets', value: String(data.assets.length), note: 'Vehicles, equipment, tanks, and trailers' },
-    { label: 'Driver Records', value: String(data.drivers.length), note: 'CDL and compliance profiles' },
-    { label: 'Open Suspense', value: String(suspenseStats.totalOpen), note: `${suspenseStats.overdue} currently overdue` },
-    { label: 'Permit Records', value: String(data.permits.length), note: 'Renewals and filing cadence' },
+    { label: 'Tracked Assets', value: String(data.assets.length), note: 'Vehicles, equipment, tanks, and trailers', status: '' },
+    { label: 'Driver Records', value: String(data.drivers.length), note: 'CDL and compliance profiles', status: '' },
+    { label: 'Open Suspense', value: String(suspenseStats.totalOpen), note: `${suspenseStats.overdue} currently overdue`, status: suspenseStats.overdue > 5 ? 'stat-danger' : suspenseStats.overdue > 0 ? 'stat-warning' : '' },
+    { label: 'Permit Records', value: String(data.permits.length), note: 'Renewals and filing cadence', status: '' },
   ];
 
   return (
@@ -139,7 +139,7 @@ export default async function FleetCompliancePage() {
 
       <section className="fleet-compliance-stats">
         {quickStats.map((item) => (
-          <article key={item.label} className="fleet-compliance-stat-card">
+          <article key={item.label} className={`fleet-compliance-stat-card ${item.status}`.trim()}>
             <p className="fleet-compliance-stat-label">{item.label}</p>
             <p className="fleet-compliance-stat-value">{item.value}</p>
             <p className="fleet-compliance-stat-note">{item.note}</p>

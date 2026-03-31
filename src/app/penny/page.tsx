@@ -21,7 +21,11 @@ export default async function PennyPage() {
     return (
       <div className="penny-container">
         <div className="penny-header">
-          <p><a href="/fleet-compliance" className="penny-back-link">Back to Fleet-Compliance</a></p>
+          <div className="fleet-compliance-breadcrumbs">
+            <a href="/fleet-compliance">Fleet-Compliance</a>
+            <span>/</span>
+            <span>Penny AI</span>
+          </div>
           <h1>Pipeline Penny</h1>
           <p>Configure Clerk environment variables to enable protected Penny access.</p>
         </div>
@@ -44,7 +48,11 @@ export default async function PennyPage() {
     return (
       <div className="penny-container">
         <div className="penny-header">
-          <p><a href="/fleet-compliance" className="penny-back-link">Back to Fleet-Compliance</a></p>
+          <div className="fleet-compliance-breadcrumbs">
+            <a href="/fleet-compliance">Fleet-Compliance</a>
+            <span>/</span>
+            <span>Penny AI</span>
+          </div>
           <h1>Pipeline Penny</h1>
           <p>Access pending. Your account hasn't been approved for Penny yet.</p>
           <p style={{ marginTop: '1rem', fontSize: '0.9rem', color: 'var(--text-muted)' }}>
