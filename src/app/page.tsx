@@ -256,29 +256,37 @@ export default function HomePage() {
       <section className="features">
         <h2>Telematics and Fleet Monitoring</h2>
         <p className="section-intro">
-          Monitor your fleet in real time. Track vehicles, drivers, HOS/ELD compliance, GPS events, and risk scores
-          through direct integrations with leading telematics providers.
+          Connect your existing telematics provider to Fleet-Compliance Sentinel. We pull vehicle, driver,
+          HOS/ELD, GPS, and risk score data directly from your account - you keep your hardware and provider relationship.
         </p>
         <div className="telematics-providers">
           <div className="provider-card">
             <h3>Geotab</h3>
-            <p>Full vehicle tracking, driver behavior analysis, and HOS monitoring.</p>
+            <p>Connect your Geotab account for vehicle tracking, driver behavior analysis, and HOS monitoring.</p>
           </div>
           <div className="provider-card">
             <h3>Samsara</h3>
-            <p>Real-time GPS, dash cam integration, and fleet safety scoring.</p>
+            <p>Connect your Samsara account for real-time GPS, ELD compliance, and fleet safety scoring.</p>
           </div>
           <div className="provider-card">
             <h3>Verizon Reveal Connect</h3>
-            <p>Vehicle diagnostics, route optimization, and driver performance.</p>
+            <p>Connect your Verizon Reveal account for vehicle diagnostics, route optimization, and driver performance.</p>
           </div>
         </div>
         <p className="section-note">
-          Need a different provider? We add integrations on request. Contact us to discuss your setup.
+          We integrate with your existing telematics provider - no new hardware required. Need a different provider? We add integrations on request.
         </p>
       </section>
 
       <section className="features modules-section">
+        <div style={{ textAlign: 'center', marginBottom: '1.5rem' }}>
+          <Image
+            src="/PipelineX-penny.png"
+            alt="Pipeline Penny"
+            width={120}
+            height={120}
+          />
+        </div>
         <h2>Available Modules</h2>
         <p className="section-intro">
           Fleet-Compliance Sentinel is built on a modular architecture. Each module handles a specific operational
@@ -334,7 +342,7 @@ export default function HomePage() {
         <h2>Learning Resources</h2>
         <p className="section-intro">
           Deep-dive into compliance topics, business strategy, and platform documentation through our Google NotebookLM collections.
-          Available to all Google Workspace users.
+          A Google account is required to view these notebooks.
         </p>
         <div className="module-grid">
           {notebookLmLinks.map((nb) => (

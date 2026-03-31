@@ -72,6 +72,19 @@ body {
   color: #f8fafc;
 }
 
+.landing-main .section-intro {
+  color: rgba(226, 232, 240, 0.86);
+}
+
+.landing-main .section-note {
+  color: rgba(226, 232, 240, 0.6);
+}
+
+.landing-main .features h2,
+.landing-main .how h2 {
+  text-align: center;
+}
+
 .landing-main .feature-card h3,
 .landing-main .feature-card p {
   color: #ffffff;
