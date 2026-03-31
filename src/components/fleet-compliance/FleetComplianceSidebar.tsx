@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useEffect, useMemo, useState } from 'react';
+import UserManualModal from '@/components/fleet-compliance/UserManualModal';
 
 const NAV_ITEMS = [
   { label: 'Dashboard', href: '/fleet-compliance' },
@@ -73,6 +74,8 @@ export default function FleetComplianceSidebar() {
               {item.label}
             </Link>
           ))}
+          <hr style={{ border: 'none', borderTop: '1px solid rgba(255,255,255,0.1)', margin: '0.5rem 0' }} />
+          <UserManualModal />
         </nav>
       </aside>
     </>

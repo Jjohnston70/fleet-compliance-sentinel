@@ -32,6 +32,101 @@ const fleetComplianceFeatures = [
     title: 'Bulk Data Import',
     description: 'Upload fleet records from Excel across 12 validated collection types.',
   },
+  {
+    icon: '07',
+    title: 'Fleet Telematics Monitoring',
+    description: 'Monitor vehicles, drivers, and HOS/ELD status via Geotab, Samsara, and Verizon Reveal Connect - with more integrations available on request.',
+  },
+  {
+    icon: '08',
+    title: 'AI Invoice Extraction',
+    description: 'Automated PDF invoice parsing for 12 fleet maintenance vendors with SOC 2 compliant audit logging.',
+  },
+];
+
+const availableModules = [
+  {
+    name: 'Command Center',
+    description: 'Unified integration hub for all modules. Tool discovery, routing, health checks, and a master registry.',
+  },
+  {
+    name: 'Compliance Command',
+    description: 'Automated compliance document generation. Single intake produces 7 compliance packages: security, privacy, government, and more.',
+  },
+  {
+    name: 'Contract Command',
+    description: 'Contract lifecycle management with party tracking, milestone management, amendments, and renewal automation.',
+  },
+  {
+    name: 'Dispatch Command',
+    description: 'Emergency dispatch operations with zone management, truck capacity tracking, driver rotation, and SLA monitoring.',
+  },
+  {
+    name: 'Email Command',
+    description: 'Email analytics and anomaly detection with statistical analysis, action item extraction, and executive digest generation.',
+  },
+  {
+    name: 'Financial Command',
+    description: 'Personal and business finance tracking with automatic categorization, tax calculations, and budget variance analysis.',
+  },
+  {
+    name: 'GovCon Command',
+    description: 'Federal government contracting operations with opportunity management, weighted bid/no-bid scoring, and pipeline dashboards.',
+  },
+  {
+    name: 'Invoice Module',
+    description: 'Portable invoice extraction for fleet maintenance PDFs. Supports 12 vendors with automatic detection and SOC 2 audit logging.',
+  },
+  {
+    name: 'Onboard Command',
+    description: 'Google Workspace provisioning and employee onboarding with automated user creation, license assignment, and rollback recovery.',
+  },
+  {
+    name: 'Proposal Command',
+    description: 'Enterprise proposal generation from 5 built-in templates with DOCX output, email delivery, and conversion metrics.',
+  },
+  {
+    name: 'Readiness Command',
+    description: 'AI readiness assessment module. Identifies and prioritizes AI/automation opportunities with weighted scoring and recommendations.',
+  },
+  {
+    name: 'Realty Command',
+    description: 'Real estate operations with lead scoring, property listing management, deal pipeline tracking, and commission forecasting.',
+  },
+  {
+    name: 'Sales Command',
+    description: 'Sales analytics and revenue forecasting with KPI calculations, trend analysis, and moving average projections.',
+  },
+  {
+    name: 'Task Command',
+    description: 'Task management with priority tracking, team assignment, workload analysis, and automatic overdue detection.',
+  },
+  {
+    name: 'Training Command',
+    description: 'Training platform backend with course management, enrollment tracking, workshop registration, and certificate generation.',
+  },
+  {
+    name: 'Fleet Compliance Sentinel',
+    description: 'Core compliance data hub housing CFR/DOT documentation, FMCSA imports, and bulk upload mapping for fleet operations.',
+  },
+];
+
+const mlModules = [
+  {
+    name: 'ML Signal Stack',
+    description: 'SARIMA time-series forecasting for 5 business metrics: sales, ops pulse, cash flow, pipeline, and team tempo.',
+  },
+  {
+    name: 'ML Petroleum Intel',
+    description: 'Energy market intelligence with 40+ years of EIA data, price forecasting, spread analysis, and market regime detection.',
+  },
+];
+
+const notebookLmLinks = [
+  { name: 'CFR 49 DOT Regulations', url: 'https://notebooklm.google.com/notebook/daebb7db-4533-4055-9dec-fc96db40634a' },
+  { name: 'Real Estate Chat', url: 'https://notebooklm.google.com/notebook/026926b8-16a7-40ea-a866-2fcc23313dac' },
+  { name: 'HubSpot API Reference Guide', url: 'https://notebooklm.google.com/notebook/2cb7a8f1-e465-4d40-9f60-a82d4d8a3678' },
+  { name: 'ML Signal Stack', url: 'https://notebooklm.google.com/notebook/d6920450-691e-4222-875c-cdcece5c784f' },
 ];
 
 const pricingTiers = [
@@ -47,6 +142,7 @@ const pricingTiers = [
       'Compliance alerts and reminders',
       'Bulk Excel import',
       'FMCSA carrier lookups',
+      'Telematics integration (1 provider)',
       'Email support',
     ],
   },
@@ -60,9 +156,11 @@ const pricingTiers = [
       'Up to 50 vehicles',
       'Up to 25 drivers',
       'Everything in Starter',
-      'Pipeline Penny AI assistant',
+      'Pipeline Penny AI assistant (multi-LLM)',
+      'AI invoice extraction (12 vendors)',
+      'Telematics integration (all providers)',
+      'ML forecasting dashboards',
       'Priority support',
-      'Custom alert configurations',
     ],
   },
   {
@@ -74,9 +172,10 @@ const pricingTiers = [
     features: [
       'Unlimited vehicles and drivers',
       'Everything in Professional',
-      'Dedicated onboarding',
-      'Custom integrations',
-      'SLA guarantee',
+      'Full module suite (16+ modules)',
+      'On-premise deployment option',
+      'Dedicated onboarding and training',
+      'Custom integrations and SLA guarantee',
     ],
   },
 ];
@@ -154,6 +253,105 @@ export default function HomePage() {
         </div>
       </section>
 
+      <section className="features">
+        <h2>Telematics and Fleet Monitoring</h2>
+        <p className="section-intro">
+          Monitor your fleet in real time. Track vehicles, drivers, HOS/ELD compliance, GPS events, and risk scores
+          through direct integrations with leading telematics providers.
+        </p>
+        <div className="telematics-providers">
+          <div className="provider-card">
+            <h3>Geotab</h3>
+            <p>Full vehicle tracking, driver behavior analysis, and HOS monitoring.</p>
+          </div>
+          <div className="provider-card">
+            <h3>Samsara</h3>
+            <p>Real-time GPS, dash cam integration, and fleet safety scoring.</p>
+          </div>
+          <div className="provider-card">
+            <h3>Verizon Reveal Connect</h3>
+            <p>Vehicle diagnostics, route optimization, and driver performance.</p>
+          </div>
+        </div>
+        <p className="section-note">
+          Need a different provider? We add integrations on request. Contact us to discuss your setup.
+        </p>
+      </section>
+
+      <section className="features modules-section">
+        <h2>Available Modules</h2>
+        <p className="section-intro">
+          Fleet-Compliance Sentinel is built on a modular architecture. Each module handles a specific operational
+          domain and integrates through the Command Center hub.
+        </p>
+        <div className="module-grid">
+          {availableModules.map((mod) => (
+            <article className="module-card" key={mod.name}>
+              <h3>{mod.name}</h3>
+              <p>{mod.description}</p>
+            </article>
+          ))}
+        </div>
+      </section>
+
+      <section className="features">
+        <h2>Machine Learning and Forecasting</h2>
+        <p className="section-intro">
+          Go beyond compliance tracking with production-ready ML modules that turn your operational data into forecasts and actionable intelligence.
+        </p>
+        <div className="module-grid">
+          {mlModules.map((mod) => (
+            <article className="module-card" key={mod.name}>
+              <h3>{mod.name}</h3>
+              <p>{mod.description}</p>
+            </article>
+          ))}
+        </div>
+      </section>
+
+      <section className="features">
+        <h2>Deployment Options</h2>
+        <p className="section-intro">
+          Pipeline Penny and Fleet-Compliance Sentinel are designed to meet your infrastructure where it is.
+        </p>
+        <div className="telematics-providers">
+          <div className="provider-card">
+            <h3>Cloud-Hosted (Default)</h3>
+            <p>Deployed on Vercel and Railway with Neon PostgreSQL. SOC 2 audit-ready. Migrating to Google Cloud for enhanced scalability and compliance.</p>
+          </div>
+          <div className="provider-card">
+            <h3>On-Premise / Local</h3>
+            <p>Run Pipeline Penny locally via Electron with your choice of LLM provider: Ollama, Anthropic, OpenAI, Gemini, or ChatGPT. Your data never leaves your network.</p>
+          </div>
+          <div className="provider-card">
+            <h3>Hybrid</h3>
+            <p>Cloud compliance platform with local AI processing. Best of both worlds for organizations with strict data residency requirements.</p>
+          </div>
+        </div>
+      </section>
+
+      <section className="features">
+        <h2>Learning Resources</h2>
+        <p className="section-intro">
+          Deep-dive into compliance topics, business strategy, and platform documentation through our Google NotebookLM collections.
+          Available to all Google Workspace users.
+        </p>
+        <div className="module-grid">
+          {notebookLmLinks.map((nb) => (
+            <a
+              key={nb.name}
+              href={nb.url}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="module-card notebook-link"
+            >
+              <h3>{nb.name}</h3>
+              <p>Open in NotebookLM</p>
+            </a>
+          ))}
+        </div>
+      </section>
+
       <section className="pricing">
         <h2>Pricing</h2>
         <div className="pricing-grid">
@@ -190,35 +388,6 @@ export default function HomePage() {
             <span className="who-marker">-</span>
             <p>Veteran-owned. Built in Colorado.</p>
           </div>
-        </div>
-        <div className="footer-badges trust-badges">
-          <Image
-            src="/Veteran-Owned Certified.png"
-            alt="SBA Certified Veteran-Owned badge"
-            width={64}
-            height={80}
-          />
-          <Image
-            src="/Service-Disabled Veteran-Owned-Certified.png"
-            alt="SBA Certified Service-Disabled Veteran-Owned badge"
-            width={64}
-            height={80}
-          />
-          <a
-            href="https://www.bbb.org/us/co/colorado-springs/profile/consultant/true-north-data-strategies-llc-0785-1000034167#sealclick"
-            target="_blank"
-            rel="noopener noreferrer nofollow"
-            aria-label="View True North Data Strategies LLC BBB Business Review"
-          >
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
-              src="https://seal-southerncolorado.bbb.org/seals/blue-seal-200-42-bbb-1000034167.png"
-              style={{ border: 0 }}
-              alt="True North Data Strategies LLC BBB Business Review"
-              width={200}
-              height={42}
-            />
-          </a>
         </div>
       </section>
 
@@ -258,6 +427,21 @@ export default function HomePage() {
               width={64}
               height={80}
             />
+            <a
+              href="https://www.bbb.org/us/co/colorado-springs/profile/consultant/true-north-data-strategies-llc-0785-1000034167#sealclick"
+              target="_blank"
+              rel="noopener noreferrer nofollow"
+              aria-label="View True North Data Strategies LLC BBB Business Review"
+            >
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src="https://seal-southerncolorado.bbb.org/seals/blue-seal-200-42-bbb-1000034167.png"
+                style={{ border: 0 }}
+                alt="True North Data Strategies LLC BBB Business Review"
+                width={240}
+                height={50}
+              />
+            </a>
           </div>
         </div>
         <div className="footer-links">

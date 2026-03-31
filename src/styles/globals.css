@@ -650,22 +650,24 @@ body {
   padding: 3rem 2rem;
   border-top: 1px solid var(--border);
   text-align: center;
+  background: var(--navy-deep);
+  color: #e5e7eb;
 }
 
 .footer-brand p {
   font-size: 0.9rem;
-  color: var(--text-secondary);
+  color: #d1d5db;
 }
 
 .footer-brand a {
-  color: var(--navy);
+  color: var(--teal);
   text-decoration: none;
   font-weight: 500;
 }
 
 .footer-certs {
   font-size: 0.8rem;
-  color: var(--text-muted);
+  color: #9ca3af;
   margin-top: 0.25rem;
 }
 
@@ -673,11 +675,12 @@ body {
   margin-top: 1rem;
   display: flex;
   justify-content: center;
-  gap: 0.75rem;
+  align-items: center;
+  gap: 1rem;
 }
 
 .footer-badges img {
-  width: 44px;
+  width: 48px;
   height: auto;
 }
 
@@ -690,18 +693,199 @@ body {
 
 .footer-links a {
   font-size: 0.85rem;
-  color: var(--text-muted);
+  color: #9ca3af;
   text-decoration: none;
   transition: color 0.2s;
 }
 
 .footer-links a:hover {
-  color: var(--navy);
+  color: var(--teal);
 }
 
 .footer-copy {
   font-size: 0.8rem;
+  color: #9ca3af;
+}
+
+/* ===== LANDING PAGE NEW SECTIONS ===== */
+.section-intro {
+  max-width: 680px;
+  margin: 0 auto 2rem;
+  text-align: center;
+  color: var(--text-secondary);
+  font-size: 1rem;
+  line-height: 1.6;
+}
+
+.section-note {
+  text-align: center;
   color: var(--text-muted);
+  font-size: 0.9rem;
+  margin-top: 1.5rem;
+  font-style: italic;
+}
+
+.telematics-providers {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 1.5rem;
+  max-width: 960px;
+  margin: 0 auto;
+}
+
+.provider-card {
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 1.5rem;
+  text-align: center;
+}
+
+.provider-card h3 {
+  color: var(--navy);
+  margin-bottom: 0.5rem;
+  font-size: 1.1rem;
+}
+
+.provider-card p {
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+  line-height: 1.5;
+}
+
+.module-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 1rem;
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+.module-card {
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 1.25rem;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.module-card:hover {
+  border-color: var(--teal);
+  box-shadow: 0 2px 8px rgba(61, 142, 185, 0.1);
+}
+
+.module-card h3 {
+  color: var(--navy);
+  font-size: 0.95rem;
+  margin-bottom: 0.35rem;
+}
+
+.module-card p {
+  color: var(--text-secondary);
+  font-size: 0.85rem;
+  line-height: 1.45;
+}
+
+.notebook-link {
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.notebook-link p {
+  color: var(--teal);
+  font-size: 0.8rem;
+  font-weight: 500;
+  margin-top: 0.25rem;
+}
+
+.modules-section {
+  background: #f8fafc;
+}
+
+/* ===== USER MANUAL MODAL ===== */
+.manual-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 2000;
+  background: rgba(15, 36, 57, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+}
+
+.manual-modal {
+  background: var(--white);
+  border-radius: var(--radius);
+  max-width: 720px;
+  width: 100%;
+  max-height: 85vh;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 20px 60px rgba(15, 36, 57, 0.25);
+}
+
+.manual-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1.25rem 1.5rem;
+  border-bottom: 1px solid var(--border);
+}
+
+.manual-header h2 {
+  font-size: 1.1rem;
+  color: var(--navy);
+  margin: 0;
+}
+
+.manual-close {
+  background: none;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  padding: 0.25rem 0.6rem;
+  cursor: pointer;
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  transition: border-color 0.2s;
+}
+
+.manual-close:hover {
+  border-color: var(--navy);
+}
+
+.manual-body {
+  padding: 1.5rem;
+  overflow-y: auto;
+}
+
+.manual-body section {
+  margin-bottom: 1.5rem;
+}
+
+.manual-body section:last-child {
+  margin-bottom: 0;
+}
+
+.manual-body h3 {
+  color: var(--navy);
+  font-size: 1rem;
+  margin-bottom: 0.5rem;
+}
+
+.manual-body p {
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+  line-height: 1.6;
+}
+
+.manual-body a {
+  color: var(--teal);
+  text-decoration: none;
+}
+
+.manual-body a:hover {
+  text-decoration: underline;
 }
 
 .consent-banner {

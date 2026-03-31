@@ -417,7 +417,7 @@ export default function PennyChat({ userName, userRole }: PennyChatProps) {
             </p>
             {knowledgeCategories.length > 0 && (
               <div className="penny-side-chip-row">
-                {knowledgeCategories.slice(0, 8).map((category) => (
+                {knowledgeCategories.map((category) => (
                   <span key={category.name} className="penny-side-chip">
                     {category.name} ({category.count})
                   </span>
@@ -425,7 +425,7 @@ export default function PennyChat({ userName, userRole }: PennyChatProps) {
               </div>
             )}
             <div className="penny-side-list">
-              {knowledgeDocs.slice(0, 18).map((doc, idx) => (
+              {knowledgeDocs.map((doc, idx) => (
                 <button
                   key={`${doc.source || doc.title}-${idx}`}
                   type="button"
