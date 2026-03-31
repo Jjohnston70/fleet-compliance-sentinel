@@ -240,20 +240,63 @@ export default function HomePage() {
           </Link>
         </div>
         <div className="hero-trust">
-          <div className="hero-trust-badges">
-            <Image src="/Veteran-Owned Certified.png" alt="Veteran-Owned Certified" width={48} height={60} />
-            <Image src="/Service-Disabled Veteran-Owned-Certified.png" alt="Service-Disabled Veteran-Owned Certified" width={48} height={60} />
+          <div className="hero-trust-items">
+            <div className="hero-trust-item">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><polyline points="9 12 11 14 15 10"/></svg>
+              <span>SBA-Certified VOSB/SDVOSB</span>
+            </div>
+            <div className="hero-trust-item">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+              <span>SOC 2 Type I Audit-Ready</span>
+            </div>
+            <div className="hero-trust-item">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+              <span>30-Day Free Trial</span>
+            </div>
           </div>
-          <p className="hero-trust-text">SBA-Certified VOSB/SDVOSB &middot; SOC 2 Type I Audit-Ready &middot; 30-Day Free Trial</p>
         </div>
         <div className="hero-screenshot">
           <div className="browser-frame">
             <div className="browser-dots"><span /><span /><span /></div>
             <div className="browser-bar">pipelinepunks.com/fleet-compliance</div>
           </div>
-          <div className="screenshot-placeholder">
-            <p>Fleet-Compliance Dashboard</p>
-            <span>Assets &middot; Compliance &middot; Suspense &middot; Telematics</span>
+          <div className="dashboard-mockup">
+            <div className="mockup-topbar">
+              <span className="mockup-brand">Fleet-Compliance Sentinel</span>
+              <span className="mockup-org">Example Fleet Co</span>
+            </div>
+            <div className="mockup-body">
+              <div className="mockup-sidebar">
+                <div className="mockup-nav-item active">Dashboard</div>
+                <div className="mockup-nav-item">Assets</div>
+                <div className="mockup-nav-item">Compliance</div>
+                <div className="mockup-nav-item">Suspense</div>
+                <div className="mockup-nav-item">Telematics</div>
+                <div className="mockup-nav-item">Employees</div>
+                <div className="mockup-nav-item">Invoices</div>
+                <div className="mockup-nav-item">Penny AI</div>
+              </div>
+              <div className="mockup-content">
+                <div className="mockup-stats">
+                  <div className="mockup-stat"><span className="mockup-stat-val">24</span><span className="mockup-stat-lbl">Assets</span></div>
+                  <div className="mockup-stat"><span className="mockup-stat-val">12</span><span className="mockup-stat-lbl">Drivers</span></div>
+                  <div className="mockup-stat warning"><span className="mockup-stat-val">5</span><span className="mockup-stat-lbl">Overdue</span></div>
+                  <div className="mockup-stat"><span className="mockup-stat-val">18</span><span className="mockup-stat-lbl">Permits</span></div>
+                </div>
+                <div className="mockup-cards">
+                  <div className="mockup-card">
+                    <div className="mockup-card-head">Compliance</div>
+                    <div className="mockup-card-line" />
+                    <div className="mockup-card-line short" />
+                  </div>
+                  <div className="mockup-card">
+                    <div className="mockup-card-head">Suspense</div>
+                    <div className="mockup-card-line" />
+                    <div className="mockup-card-line short" />
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </section>
