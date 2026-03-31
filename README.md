@@ -12,7 +12,7 @@
 
 </div>
 
-Fleet-Compliance Sentinel is a multi-tenant SaaS built by True North Data Strategies LLC for fleet compliance operations, telematics risk monitoring, and DOT/CFR guidance via Pipeline Penny.
+Fleet-Compliance Sentinel is a multi-tenant SaaS built by True North Data Strategies LLC for fleet compliance operations, telematics risk monitoring, and DOT/CFR guidance via Pipeline Penny
 
 ## Current State (2026-03-28)
 
