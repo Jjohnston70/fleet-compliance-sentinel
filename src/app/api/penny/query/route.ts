@@ -278,11 +278,13 @@ export async function POST(request: NextRequest) {
       }
     }
 
-    // Forward to Railway — use grounded prompt if CFR retrieval succeeded,
-    // otherwise fall back to Railway's own knowledge store as before.
-    // NOTE: Only send fields that Railway's QueryRequest Pydantic model accepts.
-    // Sending extra fields (e.g. "question", "chat_history") causes a 422 with Pydantic v2.
-    const railwayQuery = groundedContext || effectiveQuery;
+    // Forward to Railway — send the SHORT user query as `query` (must stay under
+    // Railway's MAX_QUERY_CHARS=2500) and pass CFR grounding through `org_context`
+    // which feeds into the LLM system prompt (ORG_CONTEXT_MAX_CHARS=8000).
+    // NOTE: Only send fields Railway's QueryRequest Pydantic v2 model accepts.
+    const combinedContext = groundedContext
+      ? `${groundedContext}\n\n${orgContext}`.trim()
+      : orgContext;
 
     const res = await fetch(`${PENNY_API_URL}/query`, {
       method: 'POST',
@@ -294,13 +296,13 @@ export async function POST(request: NextRequest) {
         ...(PENNY_API_KEY ? { 'X-Penny-Api-Key': PENNY_API_KEY } : {}),
       },
       body: JSON.stringify({
-        query: railwayQuery,
+        query: effectiveQuery,
         ...(typeof skillMode === 'string' ? { skill_mode: skillMode } : {}),
         ...(typeof llmProvider === 'string' && llmProvider.trim().length > 0
           ? { llm_provider: llmProvider.trim().toLowerCase().slice(0, 32) } : {}),
         ...(typeof llmModel === 'string' && llmModel.trim().length > 0
           ? { llm_model: llmModel.trim().slice(0, 120) } : {}),
-        org_context: orgContext,
+        org_context: combinedContext,
         allow_general_fallback: allowGeneralFallback,
       }),
     });

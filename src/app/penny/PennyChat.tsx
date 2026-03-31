@@ -141,7 +141,10 @@ export default function PennyChat({ userName, userRole }: PennyChatProps) {
       const res = await fetch('/api/penny/catalog?limit=160');
       if (!res.ok) return;
       const data = await res.json();
-      setKnowledgeDocs(Array.isArray(data?.documents) ? data.documents : []);
+      const docs: CatalogDocument[] = Array.isArray(data?.documents) ? data.documents : [];
+      // Sort descending so higher CFR parts (396, 397) appear first, Part 40 at bottom
+      docs.sort((a, b) => b.title.localeCompare(a.title));
+      setKnowledgeDocs(docs);
       setKnowledgeCategories(Array.isArray(data?.categories) ? data.categories : []);
       setKnowledgeDocCount(typeof data?.knowledge_docs === 'number' ? data.knowledge_docs : 0);
     } finally {
