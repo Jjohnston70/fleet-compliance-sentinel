@@ -281,7 +281,7 @@ export default function HomePage() {
       <section className="features modules-section">
         <div style={{ textAlign: 'center', marginBottom: '1.5rem' }}>
           <Image
-            src="/TNDS Commander Center logo design.png"
+            src="/tnds-command-center-logo.png"
             alt="TNDS Command Center"
             width={140}
             height={140}
@@ -452,14 +452,3 @@ export default function HomePage() {
             </a>
           </div>
         </div>
-        <div className="footer-links">
-          <Link href="/privacy">Privacy Policy</Link>
-          <Link href="/terms">Terms of Service</Link>
-          <Link href="/accessibility">Accessibility</Link>
-          <Link href="https://www.truenorthstrategyops.com">truenorthstrategyops.com</Link>
-        </div>
-        <p className="footer-copy">&copy; 2026 True North Data Strategies LLC. All rights reserved.</p>
-      </footer>
-    </main>
-  );
-}
