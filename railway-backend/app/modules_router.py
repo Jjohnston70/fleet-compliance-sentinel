@@ -1,6 +1,7 @@
 import asyncio
 import hmac
 import os
+import re
 import time
 import uuid
 from copy import deepcopy
@@ -488,10 +489,13 @@ def _build_registry() -> dict[str, dict[str, Any]]:
                     **_catalog_action(
                         "report.generate",
                         "Generate SignalStack DOCX report from latest pipeline outputs",
-                        ["python", "generate_report.py", "--source?", "<source>"],
+                        ["python", "generate_report.py", "--source?", "<source>", "--out?", "<out>"],
                         {
                             "type": "object",
-                            "properties": {"source": {"type": "string", "enum": SIGNAL_SOURCE_OPTIONS, "default": "all"}},
+                            "properties": {
+                                "source": {"type": "string", "enum": SIGNAL_SOURCE_OPTIONS, "default": "all"},
+                                "out": {"type": "string"},
+                            },
                         },
                         300_000,
                     ),
@@ -499,18 +503,20 @@ def _build_registry() -> dict[str, dict[str, Any]]:
                         PYTHON_EXECUTABLE,
                         "generate_report.py",
                         *(["--source", str(args["source"])] if str(args.get("source", "all")) != "all" else []),
+                        *(["--out", str(args["out"]).strip()] if isinstance(args.get("out"), str) and str(args["out"]).strip() else []),
                     ],
                 },
                 "package.output": {
                     **_catalog_action(
                         "package.output",
                         "Package SignalStack report artifacts into delivery ZIP",
-                        ["python", "package_output.py", "--source?", "<source>", "--no-code?"],
+                        ["python", "package_output.py", "--source?", "<source>", "--no-code?", "--out-dir?", "<outDir>"],
                         {
                             "type": "object",
                             "properties": {
                                 "source": {"type": "string", "enum": SIGNAL_SOURCE_OPTIONS, "default": "all"},
                                 "noCode": {"type": "boolean", "default": False},
+                                "outDir": {"type": "string"},
                             },
                         },
                         300_000,
@@ -520,6 +526,7 @@ def _build_registry() -> dict[str, dict[str, Any]]:
                         "package_output.py",
                         *(["--source", str(args["source"])] if str(args.get("source", "all")) != "all" else []),
                         *(["--no-code"] if args.get("noCode") else []),
+                        *(["--out-dir", str(args["outDir"]).strip()] if isinstance(args.get("outDir"), str) and str(args["outDir"]).strip() else []),
                     ],
                 },
             },
@@ -790,6 +797,54 @@ def _collect_paperstack_artifacts(run: dict[str, Any]) -> list[dict[str, Any]]:
     return artifacts
 
 
+def _collect_ml_signal_artifacts(run: dict[str, Any], stdout_raw: str) -> list[dict[str, Any]]:
+    if run["moduleId"] != "ML-SIGNAL-STACK-TNCC":
+        return []
+
+    action_id = run["actionId"]
+    match: Optional[re.Match[str]] = None
+    if action_id == "report.generate":
+        match = re.search(r"\[report\]\s+Saved:\s+(.+)", stdout_raw)
+    elif action_id == "package.output":
+        match = re.search(r"\[package\]\s+Delivered:\s+(.+)", stdout_raw)
+    if not match:
+        return []
+
+    raw_path = match.group(1).strip().strip("\"'")
+    if not raw_path:
+        return []
+
+    candidate_path = Path(raw_path)
+    if not candidate_path.is_absolute():
+        candidate_path = (Path(run["cwd"]) / candidate_path).resolve()
+
+    if not candidate_path.exists() or not candidate_path.is_file():
+        return []
+
+    try:
+        relative = candidate_path.relative_to(Path(run["cwd"])).as_posix()
+    except ValueError:
+        relative = str(candidate_path)
+
+    stat = candidate_path.stat()
+    return [
+        {
+            "kind": "file",
+            "path": relative,
+            "sizeBytes": stat.st_size,
+            "modifiedAt": datetime.fromtimestamp(stat.st_mtime, tz=timezone.utc).isoformat(),
+        }
+    ]
+
+
+def _collect_run_artifacts(run: dict[str, Any], stdout_raw: str) -> list[dict[str, Any]]:
+    if run["moduleId"] == "MOD-PAPERSTACK-PP":
+        return _collect_paperstack_artifacts(run)
+    if run["moduleId"] == "ML-SIGNAL-STACK-TNCC":
+        return _collect_ml_signal_artifacts(run, stdout_raw)
+    return []
+
+
 async def _update_run(run_id: str, mutate):
     async with RUNS_LOCK:
         current = RUNS.get(run_id)
@@ -852,7 +907,7 @@ async def _execute_run(run_id: str):
     stderr_preview, stderr_preview_truncated = _preview_output(stderr_capture, stderr_capture_truncated)
     ended = _now_iso()
     duration = int((time.time() - started_epoch) * 1000)
-    artifacts = _collect_paperstack_artifacts(run)
+    artifacts = _collect_run_artifacts(run, stdout_raw)
 
     if timed_out:
         await _update_run(

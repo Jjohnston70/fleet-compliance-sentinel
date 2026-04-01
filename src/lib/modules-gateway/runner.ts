@@ -172,12 +172,46 @@ function getPaperstackArtifactCandidates(run: ModuleRunRecord): string[] {
   return [];
 }
 
-function collectRunArtifacts(run: ModuleRunRecord): ModuleRunArtifact[] {
-  if (run.moduleId !== 'MOD-PAPERSTACK-PP') {
+function getMlSignalArtifactCandidates(run: ModuleRunRecord, stdoutRaw: string): string[] {
+  if (run.moduleId !== 'ML-SIGNAL-STACK-TNCC') {
     return [];
   }
 
-  const candidates = getPaperstackArtifactCandidates(run);
+  const extractPath = (pattern: RegExp): string | null => {
+    const match = stdoutRaw.match(pattern);
+    if (!match || !match[1]) return null;
+    const extracted = match[1].trim().replace(/^["']|["']$/g, '');
+    return extracted.length > 0 ? extracted : null;
+  };
+
+  if (run.actionId === 'report.generate') {
+    const savedPath = extractPath(/\[report\]\s+Saved:\s+(.+)/);
+    return savedPath ? [savedPath] : [];
+  }
+
+  if (run.actionId === 'package.output') {
+    const deliveredPath = extractPath(/\[package\]\s+Delivered:\s+(.+)/);
+    return deliveredPath ? [deliveredPath] : [];
+  }
+
+  return [];
+}
+
+function resolveArtifactAbsolutePath(run: ModuleRunRecord, candidate: string): string {
+  if (path.isAbsolute(candidate)) return candidate;
+  return path.resolve(run.cwd, candidate);
+}
+
+function collectRunArtifacts(run: ModuleRunRecord, stdoutRaw = ''): ModuleRunArtifact[] {
+  let candidates: string[] = [];
+  if (run.moduleId === 'MOD-PAPERSTACK-PP') {
+    candidates = getPaperstackArtifactCandidates(run);
+  } else if (run.moduleId === 'ML-SIGNAL-STACK-TNCC') {
+    candidates = getMlSignalArtifactCandidates(run, stdoutRaw);
+  } else {
+    return [];
+  }
+
   if (candidates.length === 0) {
     return [];
   }
@@ -186,7 +220,7 @@ function collectRunArtifacts(run: ModuleRunRecord): ModuleRunArtifact[] {
   const seen = new Set<string>();
 
   for (const candidate of candidates) {
-    const absolutePath = path.resolve(run.cwd, candidate);
+    const absolutePath = resolveArtifactAbsolutePath(run, candidate);
     if (!existsSync(absolutePath)) continue;
     let stats: Stats;
     try {
@@ -267,7 +301,10 @@ async function executeRun(runId: string): Promise<void> {
       const durationMs = Date.now() - startedAtEpoch;
       const stdoutPreview = previewOutput(bridgeResult.message || '', false);
       const stderrPreview = previewOutput(bridgeResult.stderr || '', false);
-      const artifacts = bridgeResult.artifacts || collectRunArtifacts(run);
+      const artifacts = bridgeResult.artifacts || collectRunArtifacts(
+        run,
+        `${bridgeResult.message || ''}\n${bridgeResult.stderr || ''}`,
+      );
 
       if (bridgeResult.ok) {
         updateRun(runId, (current) => ({
@@ -365,7 +402,7 @@ async function executeRun(runId: string): Promise<void> {
     const durationMs = Date.now() - startedAtEpoch;
     const stdoutPreview = previewOutput(stdout, stdoutCaptureTruncated);
     const stderrPreview = previewOutput(stderr, stderrCaptureTruncated);
-    const artifacts = collectRunArtifacts(run);
+    const artifacts = collectRunArtifacts(run, stdout);
 
     if (timedOut) {
       updateFailedRun(runId, (current) => ({

@@ -507,12 +507,15 @@ const MODULE_REGISTRY: ModuleDefinition[] = [
       pythonAction(
         'report.generate',
         'Generate SignalStack DOCX report from latest pipeline outputs',
-        ['python', 'generate_report.py', '--source?', '<source>'],
+        ['python', 'generate_report.py', '--source?', '<source>', '--out?', '<out>'],
         (args) => {
           const source = typeof args.source === 'string' ? args.source : 'all';
           const commandArgs = ['generate_report.py'];
           if (source !== 'all') {
             commandArgs.push('--source', source);
+          }
+          if (typeof args.out === 'string' && args.out.trim().length > 0) {
+            commandArgs.push('--out', args.out.trim());
           }
           return commandArgs;
         },
@@ -525,6 +528,10 @@ const MODULE_REGISTRY: ModuleDefinition[] = [
               default: 'all',
               description: 'Signal source subset for report generation',
             },
+            out: {
+              type: 'string',
+              description: 'Optional output path for the generated DOCX report',
+            },
           },
         },
         300_000,
@@ -532,7 +539,7 @@ const MODULE_REGISTRY: ModuleDefinition[] = [
       pythonAction(
         'package.output',
         'Package SignalStack report artifacts into delivery ZIP',
-        ['python', 'package_output.py', '--source?', '<source>', '--no-code?'],
+        ['python', 'package_output.py', '--source?', '<source>', '--no-code?', '--out-dir?', '<outDir>'],
         (args) => {
           const source = typeof args.source === 'string' ? args.source : 'all';
           const commandArgs = ['package_output.py'];
@@ -541,6 +548,9 @@ const MODULE_REGISTRY: ModuleDefinition[] = [
           }
           if (Boolean(args.noCode)) {
             commandArgs.push('--no-code');
+          }
+          if (typeof args.outDir === 'string' && args.outDir.trim().length > 0) {
+            commandArgs.push('--out-dir', args.outDir.trim());
           }
           return commandArgs;
         },
@@ -557,6 +567,10 @@ const MODULE_REGISTRY: ModuleDefinition[] = [
               type: 'boolean',
               default: false,
               description: 'Omit code folder from packaged ZIP artifact',
+            },
+            outDir: {
+              type: 'string',
+              description: 'Optional output directory for ZIP artifact',
             },
           },
         },

@@ -36,8 +36,8 @@ cd tooling/ML-SIGNAL-STACK-TNCC && python -m pip install -r requirements.txt
 | `export.csv_source` | Export one workbook source | `source: sales|ops_pulse|cash_flow_compass|pipeline_pulse|team_tempo`, `skipRootFix?: boolean` |
 | `pipeline.source` | Run pipeline for one source or `all` | `source: sales|ops_pulse|cash_flow_compass|pipeline_pulse|team_tempo|all`, `skipSearch?: boolean` |
 | `pipeline.all` | Run pipeline for all sources | `skipSearch?: boolean` |
-| `report.generate` | Build SignalStack DOCX report | `source?: sales|ops_pulse|cash_flow_compass|pipeline_pulse|team_tempo|all` |
-| `package.output` | Build delivery ZIP package | `source?: sales|ops_pulse|cash_flow_compass|pipeline_pulse|team_tempo|all`, `noCode?: boolean` |
+| `report.generate` | Build SignalStack DOCX report | `source?: sales|ops_pulse|cash_flow_compass|pipeline_pulse|team_tempo|all`, `out?: string` |
+| `package.output` | Build delivery ZIP package | `source?: sales|ops_pulse|cash_flow_compass|pipeline_pulse|team_tempo|all`, `noCode?: boolean`, `outDir?: string` |
 
 ## Example API Payloads
 
@@ -98,6 +98,12 @@ curl -X GET "http://localhost:3000/api/modules/status/<run_id>" \
    - Prefer `skipSearch: true` for ML-SIGNAL routine runs.
 5. Validation errors (`VALIDATION_ERROR`):
    - Check action-specific enums in `/api/modules/catalog` and send only allowlisted keys.
+6. Package output fails with Desktop path errors in Linux containers:
+   - `package.output` now defaults to `tooling/ML-SIGNAL-STACK-TNCC/reports/deliveries` when `~/Desktop` is unavailable.
+   - Optionally pass `args.outDir` for an explicit destination.
+7. Report/package files are not visible on your laptop after cloud runs:
+   - Runs triggered from deployed app execute on Railway, not your local machine.
+   - Check run details `Artifacts` list and `Output Preview` path lines for generated file locations.
 
 ## Operational Notes
 

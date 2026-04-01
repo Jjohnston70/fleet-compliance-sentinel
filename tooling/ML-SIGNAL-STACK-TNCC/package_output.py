@@ -1,10 +1,10 @@
 """
-package_output.py — SignalStack: Desktop ZIP + HTML Delivery Package.
-=====================================================================
+package_output.py — SignalStack: ZIP + HTML Delivery Package.
+==============================================================
 After a full pipeline run, run this script once to produce a single ZIP
-file on the Windows Desktop containing everything a reviewer needs, plus
-a standalone HTML report they can open with one click. The Word .docx is
-also included for stakeholder email distribution.
+file containing everything a reviewer needs, plus a standalone HTML report
+they can open with one click. The Word .docx is also included for
+stakeholder email distribution.
 
 Execution order:
     1. python export_to_csv.py
@@ -12,19 +12,26 @@ Execution order:
     3. python generate_report.py
     4. python package_output.py
 
-After step 4 the Desktop ZIP is ready. The reviewer opens the HTML for
-the full briefing or emails the .docx to stakeholders.
+After step 4 the ZIP is ready. By default, output writes to:
+  - Desktop (if available and writable), otherwise
+  - reports/deliveries under this module directory
+
+Override destination with:
+  - --out-dir <path>, or
+  - SIGNALSTACK_DELIVERY_DIR environment variable
 
 Usage:
     python package_output.py                    # packages latest report + all sources
     python package_output.py --source sales     # single source charts only (still full HTML)
     python package_output.py --no-code          # omit the code/ folder from ZIP
+    python package_output.py --out-dir reports/deliveries
 """
 
 import argparse
 import base64
 import datetime
 import io
+import os
 import zipfile
 from pathlib import Path
 
@@ -101,6 +108,29 @@ def find_latest_docx():
         return None
     docs = sorted(reports.glob("*.docx"), key=lambda p: p.stat().st_mtime, reverse=True)
     return docs[0] if docs else None
+
+
+def resolve_output_dir(out_dir_arg=None):
+    """
+    Resolve destination directory for ZIP output.
+    Priority:
+      1) --out-dir argument
+      2) SIGNALSTACK_DELIVERY_DIR env var
+      3) ~/Desktop when available
+      4) <module>/reports/deliveries fallback
+    """
+    configured = out_dir_arg or os.getenv("SIGNALSTACK_DELIVERY_DIR")
+    if configured:
+        candidate = Path(configured).expanduser()
+        if not candidate.is_absolute():
+            candidate = (BASE_DIR / candidate).resolve()
+        return candidate
+
+    desktop = Path.home() / "Desktop"
+    if desktop.exists() and desktop.is_dir():
+        return desktop
+
+    return BASE_DIR / "reports" / "deliveries"
 
 
 def esc(text):
@@ -359,13 +389,14 @@ def build_zip(chart_sources, html_str, include_code=True):
 
 def main():
     parser = argparse.ArgumentParser(
-        description="SignalStack — Package delivery ZIP with HTML report for Desktop.",
+        description="SignalStack — Package delivery ZIP with HTML report.",
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog="""
 Examples:
   python package_output.py
   python package_output.py --source sales
   python package_output.py --no-code
+  python package_output.py --out-dir reports/deliveries
         """,
     )
     parser.add_argument(
@@ -380,6 +411,11 @@ Examples:
         action="store_true",
         help="Omit the code/ folder from the ZIP.",
     )
+    parser.add_argument(
+        "--out-dir",
+        default=None,
+        help="Output directory for delivery ZIP. Defaults to Desktop, then reports/deliveries fallback.",
+    )
     args = parser.parse_args()
 
     print("[package] Building SignalStack delivery package...")
@@ -390,11 +426,12 @@ Examples:
     # ZIP charts filtered by --source
     zip_bytes = build_zip(args.source, html_str, include_code=not args.no_code)
 
-    # Write to Desktop
+    # Write to resolved output directory
     today = datetime.date.today()
     iso_week = today.strftime("%G-W%V")
-    desktop = Path.home() / "Desktop"
-    zip_path = desktop / f"SignalStack_Delivery_{iso_week}.zip"
+    output_dir = resolve_output_dir(args.out_dir)
+    output_dir.mkdir(parents=True, exist_ok=True)
+    zip_path = output_dir / f"SignalStack_Delivery_{iso_week}.zip"
     zip_path.write_bytes(zip_bytes)
 
     # Summary
