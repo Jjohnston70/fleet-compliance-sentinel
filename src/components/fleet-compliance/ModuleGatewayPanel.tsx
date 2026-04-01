@@ -89,6 +89,27 @@ interface QuickRunPreset {
   sourceOptions?: string[];
 }
 
+interface CommandCenterCatalogTool {
+  qualifiedName: string;
+  moduleId: string;
+  toolName: string;
+  description: string | null;
+  parameters: Record<string, unknown>;
+}
+
+interface JsonSchemaProperty {
+  type?: string;
+  description?: string;
+  enum?: unknown[];
+  default?: unknown;
+}
+
+interface JsonSchemaObject {
+  type?: string;
+  properties?: Record<string, JsonSchemaProperty>;
+  required?: string[];
+}
+
 function getErrorMessage(body: ApiFailure | null, fallback: string): string {
   if (!body) return fallback;
   if (typeof body.error === 'string') return body.error;
@@ -195,6 +216,28 @@ async function safeJson<T>(res: Response): Promise<T | null> {
   }
 }
 
+function asJsonSchemaObject(value: unknown): JsonSchemaObject {
+  if (!value || typeof value !== 'object' || Array.isArray(value)) return {};
+  return value as JsonSchemaObject;
+}
+
+function buildCommandCenterFormDefaults(schema: JsonSchemaObject): Record<string, string> {
+  const defaults: Record<string, string> = {};
+  for (const [key, property] of Object.entries(schema.properties || {})) {
+    if (property.default === undefined) continue;
+    if (property.type === 'boolean') {
+      defaults[key] = property.default ? 'true' : 'false';
+      continue;
+    }
+    if (property.type === 'number' || property.type === 'integer' || property.type === 'string') {
+      defaults[key] = String(property.default);
+      continue;
+    }
+    defaults[key] = JSON.stringify(property.default);
+  }
+  return defaults;
+}
+
 export default function ModuleGatewayPanel() {
   const [catalog, setCatalog] = useState<ModuleCatalogEntry[]>([]);
   const [catalogLoading, setCatalogLoading] = useState(true);
@@ -214,6 +257,15 @@ export default function ModuleGatewayPanel() {
   const [quickDryRun, setQuickDryRun] = useState(false);
   const [quickSubmitState, setQuickSubmitState] = useState<'idle' | 'submitting'>('idle');
   const [quickSubmitError, setQuickSubmitError] = useState<string | null>(null);
+  const [commandCenterTools, setCommandCenterTools] = useState<CommandCenterCatalogTool[]>([]);
+  const [commandCenterToolsLoading, setCommandCenterToolsLoading] = useState(false);
+  const [commandCenterToolsError, setCommandCenterToolsError] = useState<string | null>(null);
+  const [commandCenterToolName, setCommandCenterToolName] = useState('');
+  const [commandCenterDryRun, setCommandCenterDryRun] = useState(false);
+  const [commandCenterFormValues, setCommandCenterFormValues] = useState<Record<string, string>>({});
+  const [commandCenterSubmitState, setCommandCenterSubmitState] = useState<'idle' | 'submitting'>('idle');
+  const [commandCenterSubmitError, setCommandCenterSubmitError] = useState<string | null>(null);
+  const [commandCenterRefreshState, setCommandCenterRefreshState] = useState<'idle' | 'refreshing'>('idle');
 
   const selectedModule = useMemo(
     () => catalog.find((entry) => entry.moduleId === moduleId) || null,
@@ -340,6 +392,25 @@ export default function ModuleGatewayPanel() {
     () => quickRunPresets.find((entry) => entry.moduleId === quickModuleId) || quickRunPresets[0] || null,
     [quickRunPresets, quickModuleId],
   );
+  const selectedCommandCenterTool = useMemo(
+    () =>
+      commandCenterTools.find((tool) => tool.qualifiedName === commandCenterToolName)
+      || commandCenterTools[0]
+      || null,
+    [commandCenterTools, commandCenterToolName],
+  );
+  const selectedCommandCenterSchema = useMemo(
+    () => asJsonSchemaObject(selectedCommandCenterTool?.parameters),
+    [selectedCommandCenterTool],
+  );
+  const selectedCommandCenterProperties = useMemo(
+    () => Object.entries(selectedCommandCenterSchema.properties || {}),
+    [selectedCommandCenterSchema],
+  );
+  const selectedCommandCenterRequired = useMemo(
+    () => new Set(selectedCommandCenterSchema.required || []),
+    [selectedCommandCenterSchema],
+  );
 
   const activeRunIds = useMemo(
     () => runs.filter((run) => run.status === 'queued' || run.status === 'running').map((run) => run.id),
@@ -358,6 +429,23 @@ export default function ModuleGatewayPanel() {
       return next.slice(0, 20);
     });
     setSelectedRunId((current) => current || record.id);
+  }
+
+  async function loadCommandCenterTools() {
+    setCommandCenterToolsLoading(true);
+    setCommandCenterToolsError(null);
+    const res = await fetch('/api/modules/command-center/tools', { credentials: 'include' });
+    const body = await safeJson<{ ok?: boolean; tools?: CommandCenterCatalogTool[] } & ApiFailure>(res);
+
+    if (!res.ok || !body?.ok || !Array.isArray(body.tools)) {
+      setCommandCenterToolsError(getErrorMessage(body, `Failed to load command-center tools (HTTP ${res.status})`));
+      setCommandCenterTools([]);
+      setCommandCenterToolsLoading(false);
+      return;
+    }
+
+    setCommandCenterTools(body.tools);
+    setCommandCenterToolsLoading(false);
   }
 
   useEffect(() => {
@@ -400,9 +488,20 @@ export default function ModuleGatewayPanel() {
     if (!selectedModule) return;
     if (!selectedModule.actions.some((entry) => entry.actionId === actionId)) {
       const firstAction = selectedModule.actions[0];
-      setActionId(firstAction?.actionId || '');
+    setActionId(firstAction?.actionId || '');
     }
   }, [selectedModule, actionId]);
+
+  useEffect(() => {
+    if (catalogLoading || catalogError) return;
+    const hasCommandCenter = catalog.some((entry) => entry.moduleId === 'command-center');
+    if (!hasCommandCenter) {
+      setCommandCenterTools([]);
+      setCommandCenterToolsError('command-center is not currently available in the module catalog.');
+      return;
+    }
+    void loadCommandCenterTools();
+  }, [catalogLoading, catalogError, catalog]);
 
   useEffect(() => {
     const defaults = buildDefaultArgs(selectedAction);
@@ -425,6 +524,25 @@ export default function ModuleGatewayPanel() {
     }
     setQuickSource(options.includes('all') ? 'all' : options[0] || 'all');
   }, [selectedQuickPreset]);
+
+  useEffect(() => {
+    if (commandCenterTools.length === 0) {
+      setCommandCenterToolName('');
+      setCommandCenterFormValues({});
+      return;
+    }
+    if (!commandCenterTools.some((tool) => tool.qualifiedName === commandCenterToolName)) {
+      setCommandCenterToolName(commandCenterTools[0].qualifiedName);
+    }
+  }, [commandCenterTools, commandCenterToolName]);
+
+  useEffect(() => {
+    if (!selectedCommandCenterTool) {
+      setCommandCenterFormValues({});
+      return;
+    }
+    setCommandCenterFormValues(buildCommandCenterFormDefaults(selectedCommandCenterSchema));
+  }, [selectedCommandCenterTool, selectedCommandCenterSchema]);
 
   useEffect(() => {
     if (activeRunIds.length === 0) return;
@@ -559,6 +677,126 @@ export default function ModuleGatewayPanel() {
     }
   }
 
+  async function handleCommandCenterRefresh() {
+    setCommandCenterSubmitError(null);
+    setCommandCenterRefreshState('refreshing');
+    try {
+      const res = await fetch('/api/modules/run', {
+        method: 'POST',
+        credentials: 'include',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          moduleId: 'command-center',
+          actionId: 'discover.tools',
+          args: {},
+          dryRun: false,
+          correlationId: `tools-ui-cc-discover-${Date.now()}`,
+        }),
+      });
+
+      const body = await safeJson<{ ok?: boolean; run?: ModuleRunRecord } & ApiFailure>(res);
+      if (!res.ok || !body?.ok || !body.run) {
+        setCommandCenterSubmitError(getErrorMessage(body, `Discovery refresh failed (HTTP ${res.status})`));
+        return;
+      }
+
+      upsertRun(body.run);
+      await loadCommandCenterTools();
+    } finally {
+      setCommandCenterRefreshState('idle');
+    }
+  }
+
+  function setCommandCenterFieldValue(key: string, value: string) {
+    setCommandCenterFormValues((current) => ({ ...current, [key]: value }));
+  }
+
+  async function handleCommandCenterToolRun(event: React.FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    setCommandCenterSubmitError(null);
+
+    if (!selectedCommandCenterTool) {
+      setCommandCenterSubmitError('Choose a discovered command-center tool first.');
+      return;
+    }
+
+    const parameters: Record<string, unknown> = {};
+
+    for (const [propertyName, propertySpec] of selectedCommandCenterProperties) {
+      const rawValue = (commandCenterFormValues[propertyName] || '').trim();
+      const isRequired = selectedCommandCenterRequired.has(propertyName);
+
+      if (!rawValue) {
+        if (isRequired) {
+          setCommandCenterSubmitError(`"${propertyName}" is required.`);
+          return;
+        }
+        continue;
+      }
+
+      const propertyType = propertySpec.type || 'string';
+      if (propertyType === 'number' || propertyType === 'integer') {
+        const parsedNumber = Number(rawValue);
+        if (!Number.isFinite(parsedNumber)) {
+          setCommandCenterSubmitError(`"${propertyName}" must be a valid number.`);
+          return;
+        }
+        parameters[propertyName] = parsedNumber;
+        continue;
+      }
+
+      if (propertyType === 'boolean') {
+        parameters[propertyName] = rawValue === 'true';
+        continue;
+      }
+
+      if (propertyType === 'object' || propertyType === 'array') {
+        try {
+          parameters[propertyName] = JSON.parse(rawValue) as unknown;
+        } catch (error) {
+          setCommandCenterSubmitError(
+            `"${propertyName}" must be valid JSON (${error instanceof Error ? error.message : String(error)}).`,
+          );
+          return;
+        }
+        continue;
+      }
+
+      parameters[propertyName] = rawValue;
+    }
+
+    setCommandCenterSubmitState('submitting');
+    try {
+      const res = await fetch('/api/modules/run', {
+        method: 'POST',
+        credentials: 'include',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          moduleId: 'command-center',
+          actionId: 'route.tool_call',
+          args: {
+            qualifiedName: selectedCommandCenterTool.qualifiedName,
+            parameters,
+          },
+          dryRun: commandCenterDryRun,
+          correlationId: `tools-ui-cc-route-${Date.now()}`,
+        }),
+      });
+
+      const body = await safeJson<{ ok?: boolean; run?: ModuleRunRecord } & ApiFailure>(res);
+      if (!res.ok || !body?.ok || !body.run) {
+        setCommandCenterSubmitError(getErrorMessage(body, `Command-center run failed (HTTP ${res.status})`));
+        return;
+      }
+
+      upsertRun(body.run);
+      setModuleId('command-center');
+      setActionId('route.tool_call');
+    } finally {
+      setCommandCenterSubmitState('idle');
+    }
+  }
+
   return (
     <>
       <section className="fleet-compliance-section">
@@ -584,6 +822,162 @@ export default function ModuleGatewayPanel() {
           </div>
         ) : (
           <>
+            <form className="fleet-compliance-filter-bar" onSubmit={handleCommandCenterToolRun} style={{ marginBottom: '0.9rem' }}>
+              <p className="fleet-compliance-eyebrow">Command Center (No JSON)</p>
+              <h3 style={{ marginTop: '0.2rem' }}>Run discovered tools</h3>
+              <p className="fleet-compliance-table-note" style={{ marginTop: '0.35rem' }}>
+                Select a discovered command-center tool and run it directly with simple inputs.
+              </p>
+              <div className="fleet-compliance-filter-grid fleet-compliance-filter-grid-wide">
+                <label className="fleet-compliance-field-stack">
+                  <span>Tool</span>
+                  <select
+                    value={selectedCommandCenterTool?.qualifiedName || ''}
+                    onChange={(event) => setCommandCenterToolName(event.target.value)}
+                    disabled={commandCenterToolsLoading || commandCenterTools.length === 0}
+                  >
+                    {commandCenterTools.length === 0 ? (
+                      <option value="">
+                        {commandCenterToolsLoading ? 'Loading tools…' : 'No discovered tools yet'}
+                      </option>
+                    ) : (
+                      commandCenterTools.map((tool) => (
+                        <option key={tool.qualifiedName} value={tool.qualifiedName}>
+                          {tool.qualifiedName}
+                        </option>
+                      ))
+                    )}
+                  </select>
+                </label>
+                <label className="fleet-compliance-field-stack">
+                  <span>Mode</span>
+                  <select
+                    value={commandCenterDryRun ? 'dry' : 'live'}
+                    onChange={(event) => setCommandCenterDryRun(event.target.value === 'dry')}
+                  >
+                    <option value="live">Live Run</option>
+                    <option value="dry">Dry Run</option>
+                  </select>
+                </label>
+              </div>
+              {selectedCommandCenterTool && (
+                <p className="fleet-compliance-table-note" style={{ marginTop: '0.35rem' }}>
+                  {selectedCommandCenterTool.description || 'No description provided.'}
+                </p>
+              )}
+
+              {selectedCommandCenterProperties.length > 0 && (
+                <div className="fleet-compliance-filter-grid fleet-compliance-filter-grid-wide" style={{ marginTop: '0.85rem' }}>
+                  {selectedCommandCenterProperties.map(([propertyName, propertySpec]) => {
+                    const propertyType = propertySpec.type || 'string';
+                    const enumValues = Array.isArray(propertySpec.enum) ? propertySpec.enum : [];
+                    const isBoolean = propertyType === 'boolean';
+                    const isNumber = propertyType === 'number' || propertyType === 'integer';
+                    const isStructured = propertyType === 'object' || propertyType === 'array';
+                    const required = selectedCommandCenterRequired.has(propertyName);
+                    const currentValue = commandCenterFormValues[propertyName] || '';
+
+                    if (enumValues.length > 0) {
+                      return (
+                        <label className="fleet-compliance-field-stack" key={propertyName}>
+                          <span>{propertyName}{required ? ' *' : ''}</span>
+                          <select
+                            value={currentValue}
+                            onChange={(event) => setCommandCenterFieldValue(propertyName, event.target.value)}
+                          >
+                            {!required && <option value="">(optional)</option>}
+                            {enumValues.map((enumValue) => {
+                              const value = String(enumValue);
+                              return (
+                                <option key={value} value={value}>
+                                  {value}
+                                </option>
+                              );
+                            })}
+                          </select>
+                        </label>
+                      );
+                    }
+
+                    if (isBoolean) {
+                      return (
+                        <label className="fleet-compliance-field-stack" key={propertyName}>
+                          <span>{propertyName}{required ? ' *' : ''}</span>
+                          <select
+                            value={currentValue}
+                            onChange={(event) => setCommandCenterFieldValue(propertyName, event.target.value)}
+                          >
+                            {!required && <option value="">(optional)</option>}
+                            <option value="true">true</option>
+                            <option value="false">false</option>
+                          </select>
+                        </label>
+                      );
+                    }
+
+                    if (isStructured) {
+                      return (
+                        <label className="fleet-compliance-field-stack" key={propertyName}>
+                          <span>{propertyName}{required ? ' *' : ''}</span>
+                          <textarea
+                            className="fleet-compliance-textarea"
+                            rows={3}
+                            value={currentValue}
+                            onChange={(event) => setCommandCenterFieldValue(propertyName, event.target.value)}
+                            placeholder={propertyType === 'array' ? '[]' : '{}'}
+                            spellCheck={false}
+                          />
+                        </label>
+                      );
+                    }
+
+                    return (
+                      <label className="fleet-compliance-field-stack" key={propertyName}>
+                        <span>{propertyName}{required ? ' *' : ''}</span>
+                        <input
+                          value={currentValue}
+                          onChange={(event) => setCommandCenterFieldValue(propertyName, event.target.value)}
+                          inputMode={isNumber ? 'decimal' : undefined}
+                          placeholder={required ? 'required' : 'optional'}
+                        />
+                        {propertySpec.description && (
+                          <small className="fleet-compliance-table-note">{propertySpec.description}</small>
+                        )}
+                      </label>
+                    );
+                  })}
+                </div>
+              )}
+
+              <div className="fleet-compliance-action-row">
+                <button
+                  className="btn-primary"
+                  type="submit"
+                  disabled={commandCenterSubmitState === 'submitting' || !selectedCommandCenterTool}
+                >
+                  {commandCenterSubmitState === 'submitting' ? 'Submitting…' : 'Run selected tool'}
+                </button>
+                <button
+                  className="btn-secondary"
+                  type="button"
+                  onClick={() => void handleCommandCenterRefresh()}
+                  disabled={commandCenterRefreshState === 'refreshing'}
+                >
+                  {commandCenterRefreshState === 'refreshing' ? 'Refreshing…' : 'Refresh discovered tools'}
+                </button>
+              </div>
+              {commandCenterToolsError && (
+                <p className="fleet-compliance-table-note" style={{ color: '#b91c1c' }}>
+                  {commandCenterToolsError}
+                </p>
+              )}
+              {commandCenterSubmitError && (
+                <div className="fleet-compliance-empty-state" style={{ marginTop: '0.85rem' }}>
+                  <p style={{ color: '#b91c1c' }}>{commandCenterSubmitError}</p>
+                </div>
+              )}
+            </form>
+
             {selectedQuickPreset && (
               <form className="fleet-compliance-filter-bar" onSubmit={handleQuickRun} style={{ marginBottom: '0.9rem' }}>
                 <p className="fleet-compliance-eyebrow">Quick Run (Recommended)</p>
