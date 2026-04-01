@@ -4,6 +4,9 @@ const { withSentryConfig } = require('@sentry/nextjs');
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   outputFileTracingRoot: path.join(__dirname),
+  outputFileTracingIncludes: {
+    '/*': ['./tooling/command-center/dist/**/*'],
+  },
   images: {
     formats: ['image/avif', 'image/webp'],
   },

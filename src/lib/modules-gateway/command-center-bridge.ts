@@ -145,7 +145,7 @@ export async function executeCommandCenterAction(
       return {
         ok: false,
         message: 'command-center bridge runtime is not available',
-        stderr: "Missing tooling/command-center/dist/src/tools.js; run 'npm run build' in tooling/command-center",
+        stderr: `Missing ${toolsPath}; run 'npm run build' in tooling/command-center and ensure deployment includes tooling/command-center/dist`,
       };
     }
 
