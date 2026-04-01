@@ -18,11 +18,11 @@ export interface ModuleRunError {
 }
 
 export interface ModuleActionArgSpec {
-  type: 'string' | 'number' | 'boolean';
+  type: 'string' | 'number' | 'boolean' | 'object';
   description?: string;
   required?: boolean;
   enum?: Array<string | number | boolean>;
-  default?: string | number | boolean;
+  default?: string | number | boolean | Record<string, unknown>;
   min?: number;
   max?: number;
 }
@@ -40,13 +40,23 @@ export interface ResolvedModuleCommand {
   args: string[];
 }
 
+export interface ModuleActionExecutionResult {
+  ok: boolean;
+  message: string;
+  stderr?: string;
+  details?: string[];
+  data?: unknown;
+  artifacts?: ModuleRunArtifact[];
+}
+
 export interface ModuleActionDefinition {
   actionId: string;
   description: string;
   argsSchema?: ModuleActionArgsSchema;
   defaultTimeoutMs?: number;
   commandPreview: string[];
-  buildCommand: (args: ModuleRunArgs) => ResolvedModuleCommand;
+  buildCommand?: (args: ModuleRunArgs) => ResolvedModuleCommand;
+  execute?: (args: ModuleRunArgs) => Promise<ModuleActionExecutionResult> | ModuleActionExecutionResult;
 }
 
 export interface ModuleDefinition {
@@ -110,6 +120,7 @@ export interface ModuleRunRecord {
   stdoutTruncated: boolean;
   stderrTruncated: boolean;
   artifacts: ModuleRunArtifact[];
+  result?: unknown;
   error?: ModuleRunError;
 }
 

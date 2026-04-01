@@ -1,6 +1,8 @@
 import path from 'node:path';
 import { existsSync } from 'node:fs';
+import { executeCommandCenterAction } from '@/lib/modules-gateway/command-center-bridge';
 import type {
+  ModuleActionExecutionResult,
   ModuleActionDefinition,
   ModuleActionArgsSchema,
   ModuleCatalogEntry,
@@ -29,6 +31,14 @@ const SIGNAL_SOURCE_OPTIONS = [...SIGNAL_SOURCES, 'all'];
 const PAPERSTACK_GENERATE_FORMATS = ['pdf', 'docx'];
 const PAPERSTACK_REVERSE_MODES = ['js', 'python', 'pdf', 'python_pdf'];
 const PAPERSTACK_SCAN_DPI_VALUES = [200, 300, 400];
+const COMMAND_CENTER_CLASSIFICATIONS = [
+  'Operations',
+  'Finance',
+  'Intelligence',
+  'Planning',
+  'Infrastructure',
+  'Logistics',
+];
 
 const EMPTY_ARGS_SCHEMA: ModuleActionArgsSchema = {
   type: 'object',
@@ -124,6 +134,22 @@ function nodeAction(
       executable: NPM_EXECUTABLE,
       args: ['run', npmScript],
     }),
+  };
+}
+
+function bridgeAction(
+  actionId: string,
+  description: string,
+  argsSchema: ModuleActionArgsSchema,
+  defaultTimeoutMs = 60_000,
+): ModuleActionDefinition {
+  return {
+    actionId,
+    description,
+    argsSchema,
+    defaultTimeoutMs,
+    commandPreview: ['internal', 'command-center', actionId],
+    execute: async (args): Promise<ModuleActionExecutionResult> => executeCommandCenterAction(actionId, args),
   };
 }
 
@@ -803,6 +829,125 @@ const MODULE_REGISTRY: ModuleDefinition[] = [
     runtime: 'node',
     workingDirectory: toolingPath('command-center'),
     actions: [
+      bridgeAction(
+        'startup.initialize',
+        'Initialize command-center discovery registry from module manifest',
+        EMPTY_ARGS_SCHEMA,
+        120_000,
+      ),
+      bridgeAction(
+        'discover.modules',
+        'Discover and list registered modules with status and metadata',
+        EMPTY_ARGS_SCHEMA,
+      ),
+      bridgeAction(
+        'discover.tools',
+        'List discoverable tools across command-center registered modules',
+        {
+          type: 'object',
+          properties: {
+            moduleId: {
+              type: 'string',
+              description: 'Optional module filter (e.g., realty-command)',
+            },
+            classification: {
+              type: 'string',
+              enum: COMMAND_CENTER_CLASSIFICATIONS,
+              description: 'Optional classification filter',
+            },
+          },
+        },
+      ),
+      bridgeAction(
+        'search.tools',
+        'Search command-center tools by keyword and optional filters',
+        {
+          type: 'object',
+          properties: {
+            query: {
+              type: 'string',
+              description: 'Search keyword for tool name/description',
+            },
+            moduleId: {
+              type: 'string',
+              description: 'Optional module filter',
+            },
+            classification: {
+              type: 'string',
+              enum: COMMAND_CENTER_CLASSIFICATIONS,
+              description: 'Optional classification filter',
+            },
+          },
+          required: ['query'],
+        },
+      ),
+      bridgeAction(
+        'schema.tool',
+        'Get parameter schema/details for a qualified tool name',
+        {
+          type: 'object',
+          properties: {
+            qualifiedName: {
+              type: 'string',
+              description: 'Fully-qualified tool name: module.tool_name',
+            },
+          },
+          required: ['qualifiedName'],
+        },
+      ),
+      bridgeAction(
+        'route.tool_call',
+        'Bridge and route a qualified tool call through command-center',
+        {
+          type: 'object',
+          properties: {
+            qualifiedName: {
+              type: 'string',
+              description: 'Fully-qualified tool name: module.tool_name',
+            },
+            parameters: {
+              type: 'object',
+              description: 'Tool parameters object forwarded to command-center router',
+              default: {},
+            },
+          },
+          required: ['qualifiedName'],
+        },
+      ),
+      bridgeAction(
+        'status.system',
+        'Get system health summary from command-center',
+        EMPTY_ARGS_SCHEMA,
+      ),
+      bridgeAction(
+        'detail.module',
+        'Get module-level detail from command-center registry',
+        {
+          type: 'object',
+          properties: {
+            moduleId: {
+              type: 'string',
+              description: 'Module ID',
+            },
+          },
+          required: ['moduleId'],
+        },
+      ),
+      bridgeAction(
+        'classifications.list',
+        'List command-center module classifications',
+        EMPTY_ARGS_SCHEMA,
+      ),
+      bridgeAction(
+        'dashboard.system',
+        'Get command-center aggregate dashboard metrics',
+        EMPTY_ARGS_SCHEMA,
+      ),
+      bridgeAction(
+        'usage.tools',
+        'Get command-center tool usage statistics',
+        EMPTY_ARGS_SCHEMA,
+      ),
       nodeAction(
         'tests',
         'Run command-center Vitest suite',
@@ -839,6 +984,13 @@ function isPlainObject(value: unknown): value is Record<string, unknown> {
   return Boolean(value) && typeof value === 'object' && !Array.isArray(value);
 }
 
+function cloneDefaultValue(value: string | number | boolean | Record<string, unknown>): unknown {
+  if (isPlainObject(value)) {
+    return { ...value };
+  }
+  return value;
+}
+
 export function validateActionArgs(
   action: ModuleActionDefinition,
   rawArgs: unknown,
@@ -863,7 +1015,7 @@ export function validateActionArgs(
 
     if (value === undefined || value === null) {
       if (spec.default !== undefined) {
-        normalized[key] = spec.default;
+        normalized[key] = cloneDefaultValue(spec.default);
         continue;
       }
       if (required) {
@@ -891,6 +1043,11 @@ export function validateActionArgs(
     } else if (spec.type === 'boolean') {
       if (typeof value !== 'boolean') {
         errors.push(`args.${key} must be a boolean`);
+        continue;
+      }
+    } else if (spec.type === 'object') {
+      if (!isPlainObject(value)) {
+        errors.push(`args.${key} must be an object`);
         continue;
       }
     }
