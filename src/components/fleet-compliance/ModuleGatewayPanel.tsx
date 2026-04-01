@@ -78,6 +78,17 @@ interface ApiFailure {
   } | string;
 }
 
+interface QuickRunPreset {
+  moduleId: string;
+  moduleLabel: string;
+  actionId: string;
+  actionLabel: string;
+  description: string;
+  args: Record<string, unknown>;
+  timeoutMs: number;
+  sourceOptions?: string[];
+}
+
 function getErrorMessage(body: ApiFailure | null, fallback: string): string {
   if (!body) return fallback;
   if (typeof body.error === 'string') return body.error;
@@ -105,6 +116,10 @@ function buildDefaultArgs(action: ModuleCatalogAction | null): Record<string, un
 
 function buildArtifactUrl(runId: string, artifactPath: string): string {
   return `/api/modules/artifact?runId=${encodeURIComponent(runId)}&path=${encodeURIComponent(artifactPath)}`;
+}
+
+function canOpenInline(artifactPath: string): boolean {
+  return /\.(html?|txt|json|log)$/i.test(artifactPath);
 }
 
 function statusClassName(status: ModuleRunStatus): string {
@@ -136,6 +151,7 @@ export default function ModuleGatewayPanel() {
   const [submitError, setSubmitError] = useState<string | null>(null);
   const [runs, setRuns] = useState<ModuleRunRecord[]>([]);
   const [selectedRunId, setSelectedRunId] = useState<string>('');
+  const [quickModuleId, setQuickModuleId] = useState('ML-SIGNAL-STACK-TNCC');
   const [quickSource, setQuickSource] = useState('all');
   const [quickDryRun, setQuickDryRun] = useState(false);
   const [quickSubmitState, setQuickSubmitState] = useState<'idle' | 'submitting'>('idle');
@@ -156,21 +172,73 @@ export default function ModuleGatewayPanel() {
     [runs, selectedRunId],
   );
 
-  const signalModule = useMemo(
-    () => catalog.find((entry) => entry.moduleId === 'ML-SIGNAL-STACK-TNCC') || null,
-    [catalog],
-  );
+  const quickRunPresets = useMemo<QuickRunPreset[]>(() => {
+    const moduleById = new Map(catalog.map((entry) => [entry.moduleId, entry]));
+    const presets: QuickRunPreset[] = [];
 
-  const signalWorkflowAction = useMemo(
-    () => signalModule?.actions.find((entry) => entry.actionId === 'workflow.delivery') || null,
-    [signalModule],
-  );
+    const registerPreset = (
+      moduleId: string,
+      actionId: string,
+      actionLabel: string,
+      description: string,
+      defaults: Record<string, unknown> = {},
+    ) => {
+      const moduleEntry = moduleById.get(moduleId);
+      const action = moduleEntry?.actions.find((entry) => entry.actionId === actionId);
+      if (!moduleEntry || !action) return;
 
-  const signalSourceOptions = useMemo(() => {
-    const values = signalWorkflowAction?.argsSchema?.properties?.source?.enum || [];
-    const normalized = values.filter((value): value is string => typeof value === 'string');
-    return normalized.length > 0 ? normalized : ['all'];
-  }, [signalWorkflowAction]);
+      const args = { ...buildDefaultArgs(action), ...defaults };
+      const sourceSpec = action.argsSchema.properties.source;
+      const sourceOptions = Array.isArray(sourceSpec?.enum)
+        ? sourceSpec.enum.filter((value): value is string => typeof value === 'string')
+        : undefined;
+
+      presets.push({
+        moduleId,
+        moduleLabel: moduleEntry.displayName,
+        actionId,
+        actionLabel,
+        description,
+        args,
+        timeoutMs: action.timeoutMs,
+        sourceOptions: sourceOptions && sourceOptions.length > 0 ? sourceOptions : undefined,
+      });
+    };
+
+    registerPreset(
+      'ML-SIGNAL-STACK-TNCC',
+      'workflow.delivery',
+      'SignalStack full workflow',
+      'Runs export, pipeline, report generation, and packaging in one step.',
+      { source: 'all', skipSearch: true, skipRootFix: false, noCode: false },
+    );
+    registerPreset(
+      'ML-EIA-PETROLEUM-INTEL',
+      'pipeline.all',
+      'EIA pipeline (all products)',
+      'Runs petroleum forecasting pipeline across all default products.',
+      { trainYears: 10 },
+    );
+    registerPreset(
+      'MOD-PAPERSTACK-PP',
+      'generate.pdf',
+      'PaperStack flyer PDF',
+      'Generates the default Pipeline flyer PDF artifact.',
+    );
+    registerPreset(
+      'command-center',
+      'discover.tools',
+      'Command-center tool catalog',
+      'Discovers currently registered command-center tools.',
+    );
+
+    return presets;
+  }, [catalog]);
+
+  const selectedQuickPreset = useMemo(
+    () => quickRunPresets.find((entry) => entry.moduleId === quickModuleId) || quickRunPresets[0] || null,
+    [quickRunPresets, quickModuleId],
+  );
 
   const activeRunIds = useMemo(
     () => runs.filter((run) => run.status === 'queued' || run.status === 'running').map((run) => run.id),
@@ -242,8 +310,20 @@ export default function ModuleGatewayPanel() {
   }, [selectedAction]);
 
   useEffect(() => {
-    setQuickSource(signalSourceOptions.includes('all') ? 'all' : signalSourceOptions[0] || 'all');
-  }, [signalSourceOptions]);
+    if (quickRunPresets.length === 0) return;
+    if (!quickRunPresets.some((preset) => preset.moduleId === quickModuleId)) {
+      setQuickModuleId(quickRunPresets[0].moduleId);
+    }
+  }, [quickRunPresets, quickModuleId]);
+
+  useEffect(() => {
+    const options = selectedQuickPreset?.sourceOptions || [];
+    if (options.length === 0) {
+      setQuickSource('all');
+      return;
+    }
+    setQuickSource(options.includes('all') ? 'all' : options[0] || 'all');
+  }, [selectedQuickPreset]);
 
   useEffect(() => {
     if (activeRunIds.length === 0) return;
@@ -331,16 +411,23 @@ export default function ModuleGatewayPanel() {
     }
   }
 
-  async function handleQuickSignalRun(event: React.FormEvent<HTMLFormElement>) {
+  async function handleQuickRun(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setQuickSubmitError(null);
 
-    if (!signalWorkflowAction) {
-      setQuickSubmitError('SignalStack workflow action is not available in catalog.');
+    if (!selectedQuickPreset) {
+      setQuickSubmitError('No quick-run presets are available from the module catalog.');
       return;
     }
 
-    const source = signalSourceOptions.includes(quickSource) ? quickSource : 'all';
+    const args = { ...selectedQuickPreset.args };
+    if (selectedQuickPreset.sourceOptions && selectedQuickPreset.sourceOptions.length > 0) {
+      const source = selectedQuickPreset.sourceOptions.includes(quickSource)
+        ? quickSource
+        : selectedQuickPreset.sourceOptions[0];
+      args.source = source;
+    }
+
     setQuickSubmitState('submitting');
     try {
       const res = await fetch('/api/modules/run', {
@@ -348,17 +435,12 @@ export default function ModuleGatewayPanel() {
         credentials: 'include',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          moduleId: 'ML-SIGNAL-STACK-TNCC',
-          actionId: 'workflow.delivery',
-          args: {
-            source,
-            skipSearch: true,
-            skipRootFix: false,
-            noCode: false,
-          },
+          moduleId: selectedQuickPreset.moduleId,
+          actionId: selectedQuickPreset.actionId,
+          args,
           dryRun: quickDryRun,
-          timeoutMs: 900000,
-          correlationId: `tools-ui-workflow-${Date.now()}`,
+          timeoutMs: selectedQuickPreset.timeoutMs,
+          correlationId: `tools-ui-quick-${Date.now()}`,
         }),
       });
 
@@ -369,8 +451,8 @@ export default function ModuleGatewayPanel() {
       }
 
       upsertRun(body.run);
-      setModuleId('ML-SIGNAL-STACK-TNCC');
-      setActionId('workflow.delivery');
+      setModuleId(selectedQuickPreset.moduleId);
+      setActionId(selectedQuickPreset.actionId);
     } finally {
       setQuickSubmitState('idle');
     }
@@ -401,28 +483,36 @@ export default function ModuleGatewayPanel() {
           </div>
         ) : (
           <>
-            {signalWorkflowAction && (
-              <form className="fleet-compliance-filter-bar" onSubmit={handleQuickSignalRun} style={{ marginBottom: '0.9rem' }}>
+            {selectedQuickPreset && (
+              <form className="fleet-compliance-filter-bar" onSubmit={handleQuickRun} style={{ marginBottom: '0.9rem' }}>
                 <p className="fleet-compliance-eyebrow">Quick Run (Recommended)</p>
-                <h3 style={{ marginTop: '0.2rem' }}>SignalStack full delivery workflow</h3>
+                <h3 style={{ marginTop: '0.2rem' }}>{selectedQuickPreset.actionLabel}</h3>
                 <p className="fleet-compliance-table-note" style={{ marginTop: '0.35rem' }}>
-                  One click runs CSV export, pipeline, report generation, and packaging for operators.
+                  {selectedQuickPreset.description}
                 </p>
                 <div className="fleet-compliance-filter-grid fleet-compliance-filter-grid-wide">
                   <label className="fleet-compliance-field-stack">
                     <span>Module</span>
-                    <input value="ML-SIGNAL-STACK-TNCC" readOnly />
-                  </label>
-                  <label className="fleet-compliance-field-stack">
-                    <span>Source</span>
-                    <select value={quickSource} onChange={(event) => setQuickSource(event.target.value)}>
-                      {signalSourceOptions.map((sourceOption) => (
-                        <option key={sourceOption} value={sourceOption}>
-                          {sourceOption}
+                    <select value={quickModuleId} onChange={(event) => setQuickModuleId(event.target.value)}>
+                      {quickRunPresets.map((preset) => (
+                        <option key={preset.moduleId} value={preset.moduleId}>
+                          {preset.moduleLabel}
                         </option>
                       ))}
                     </select>
                   </label>
+                  {selectedQuickPreset.sourceOptions && selectedQuickPreset.sourceOptions.length > 0 && (
+                    <label className="fleet-compliance-field-stack">
+                      <span>Source</span>
+                      <select value={quickSource} onChange={(event) => setQuickSource(event.target.value)}>
+                        {selectedQuickPreset.sourceOptions.map((sourceOption) => (
+                          <option key={sourceOption} value={sourceOption}>
+                            {sourceOption}
+                          </option>
+                        ))}
+                      </select>
+                    </label>
+                  )}
                   <label className="fleet-compliance-field-stack">
                     <span>Mode</span>
                     <select
@@ -436,9 +526,12 @@ export default function ModuleGatewayPanel() {
                 </div>
                 <div className="fleet-compliance-action-row">
                   <button className="btn-primary" type="submit" disabled={quickSubmitState === 'submitting'}>
-                    {quickSubmitState === 'submitting' ? 'Submitting…' : 'Run full workflow'}
+                    {quickSubmitState === 'submitting' ? 'Submitting…' : `Run ${selectedQuickPreset.actionId}`}
                   </button>
                 </div>
+                <p className="fleet-compliance-table-note" style={{ marginTop: '0.45rem' }}>
+                  Action: <code>{selectedQuickPreset.actionId}</code>
+                </p>
                 {quickSubmitError && (
                   <div className="fleet-compliance-empty-state" style={{ marginTop: '0.85rem' }}>
                     <p style={{ color: '#b91c1c' }}>{quickSubmitError}</p>
@@ -673,14 +766,18 @@ export default function ModuleGatewayPanel() {
                           <li key={`${artifact.path}-${artifact.modifiedAt}`}>
                             <code>{artifact.path}</code> ({artifact.sizeBytes} bytes, {formatLocalDate(artifact.modifiedAt)})
                             <div className="fleet-compliance-table-note" style={{ marginTop: '0.2rem' }}>
-                              <a
-                                href={buildArtifactUrl(selectedRun.id, artifact.path)}
-                                target="_blank"
-                                rel="noreferrer"
-                              >
-                                Open
-                              </a>
-                              {' · '}
+                              {canOpenInline(artifact.path) ? (
+                                <>
+                                  <a
+                                    href={buildArtifactUrl(selectedRun.id, artifact.path)}
+                                    target="_blank"
+                                    rel="noreferrer"
+                                  >
+                                    Open
+                                  </a>
+                                  {' · '}
+                                </>
+                              ) : null}
                               <a href={buildArtifactUrl(selectedRun.id, artifact.path)} download>
                                 Download
                               </a>
