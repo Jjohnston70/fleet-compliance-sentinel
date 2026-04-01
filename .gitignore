@@ -18,6 +18,7 @@
 .DS_Store
 desktop.ini
 *.pem
+/archive/
 
 # debug
 npm-debug.log*

@@ -6,7 +6,8 @@
 **Product:** Fleet-Compliance Sentinel + Pipeline Penny
 **Production URL:** https://www.pipelinepunks.com
 **SOC 2 Type I Readiness:** Operational task batch complete (observation window active since 2026-03-24)
-**Last Updated:** 2026-03-28
+**Last Updated:** 2026-04-01 (sprint kickoff: Enterprise Hardening + Training-Command)
+**Active Sprint:** April 2-25 — Workstream A (Enterprise Function Calling Hardening) + Workstream B (Training-Command Module Build)
 
 ---
 
@@ -30,6 +31,8 @@
 16. [Deployment & CI/CD](#16-deployment--cicd)
 17. [Evidence Binder Inventory](#17-evidence-binder-inventory)
 18. [Platform Metrics Summary](#18-platform-metrics-summary)
+19. [Command-Center Tool Surface](#19-command-center-tool-surface)
+20. [Active Sprint — April 2-25](#20-active-sprint--april-2-25)
 
 ---
 
@@ -37,12 +40,14 @@
 
 Fleet-Compliance Sentinel is a **production-grade, multi-tenant B2B SaaS platform** purpose-built for DOT/FMCSA fleet compliance management. It serves fleet operators who need to track vehicles, drivers, permits, maintenance, and regulatory deadlines — with an AI-powered compliance assistant that answers questions grounded in federal CFR regulations and the operator's own fleet data.
 
-The platform consists of two integrated modules:
+The platform consists of four integrated modules:
 
 | Module | Purpose |
 |--------|---------|
 | **Fleet-Compliance** | Full-stack fleet management dashboard — assets, drivers, permits, compliance tracking, suspense items, maintenance logs, invoices, FMCSA carrier lookups, and automated compliance alert emails |
 | **Pipeline Penny** | Document-grounded AI assistant for DOT/FMCSA compliance questions, powered by multi-LLM orchestration (Anthropic Claude, OpenAI, Google Gemini, Ollama) with retrieval-augmented generation over 1,100+ CFR document chunks and real-time operator fleet context |
+| **Module Gateway + Command-Center** | Enterprise orchestration layer for ML-EIA, ML-SIGNAL, PaperStack, and command-center modules with operator UI at `/fleet-compliance/tools` — currently undergoing 7-layer enterprise hardening (tool registry, schema validation, execution sandbox, retry manager, token/cost attribution, audit logging, tenant isolation) |
+| **Training-Command (in progress)** | Self-contained compliance training LMS — content authored from existing knowledge base (ERG, CFR, PHMSA), delivered as slide decks with embedded assessments, auto-updates hazmat training compliance records on completion. Starts with hazmat, expands to any compliance topic |
 
 **Key differentiators:**
 - SOC 2 Type I operational batch complete with 70+ evidence artifacts across control domains
@@ -52,6 +57,8 @@ The platform consists of two integrated modules:
 - Verizon Connect Reveal telematics integration with risk scoring dashboard
 - AI security hardened against prompt injection (OWASP LLM Top 10 assessed)
 - Full data lifecycle automation (trial, subscription, offboarding, deletion)
+- Enterprise-grade module orchestration with 7 control layers (in progress)
+- Built-in compliance training LMS with knowledge-base-driven content authoring (in progress)
 
 ---
 
@@ -124,7 +131,68 @@ The platform consists of two integrated modules:
 - Risk scoring endpoint and UI badges (`/api/fleet-compliance/telematics-risk`, `TelematicsRiskBadge`)
 - Scheduled sync route (`/api/fleet-compliance/telematics-sync`) secured by `TELEMATICS_CRON_SECRET`
 
-### 2.2 Pipeline Penny — AI Compliance Assistant
+### 2.2 Module Gateway + Operator UI
+
+#### Gateway Orchestration (Operational)
+- Unified `POST /api/modules/run` execution endpoint for all registered modules
+- `GET /api/modules/catalog` and `GET /api/modules/status/:id` for module discovery and run tracking
+- Admin-role auth gate on all execution endpoints
+- Timeout clamping, action allowlists, stdout/stderr truncation
+- Artifact metadata capture (path, sizeBytes, modifiedAt) for generate/convert/reverse actions
+- In-process command-center bridge for tool discovery, schema, routing, status, and dashboard actions
+
+#### Operator UI (`/fleet-compliance/tools`)
+- Catalog-driven module run form with admin-only access gate
+- Session run history with status polling, timing, stdout/stderr preview, result payload, and artifacts
+- Module Tools integrated into Fleet-Compliance sidebar and dashboard module cards
+- Structured failure logs and optional webhook notifications via `MODULE_GATEWAY_FAILURE_WEBHOOK_URL`
+
+#### Registered Module Surfaces
+| Gateway Module | Actions | Runtime |
+|----------------|---------|---------|
+| ML-EIA-PETROLEUM-INTEL | 9 actions (ingest, pipeline, export) | Python |
+| ML-SIGNAL-STACK-TNCC | 8 actions (export, pipeline, report, package) | Python |
+| MOD-PAPERSTACK-PP | 13 actions (list, check, generate, convert, reverse, inspect, scan) | Python + Node |
+| command-center | 13 bridge/test/build actions | Node (in-process) |
+| **Total** | **43 actions** | |
+
+#### Enterprise Function Calling Hardening (In Progress — Workstream A)
+7 control layers being implemented across the module gateway and command-center:
+
+| Layer | Control | Status |
+|-------|---------|--------|
+| 1 | Context-aware tool registry with capped tool exposure (10-15 per request) | In Progress |
+| 2 | Bidirectional schema validation with coercion + structured correction errors | In Progress |
+| 3 | Execution sandbox with permission checks, rate limits, sanitization, timeout enforcement | In Progress |
+| 4 | Retry manager with cap=3 and escalation | In Progress |
+| 5 | Token/cost attribution with budget alerts | In Progress |
+| 6 | Durable append-only audit logging for all tool calls | In Progress |
+| 7 | Strict tenant/user tool isolation (visibility + execution ACL) | In Progress |
+
+### 2.3 Training-Command Module (In Progress — Workstream B)
+
+Self-contained compliance training LMS inside FCS, starting with hazmat and expanding to any compliance topic.
+
+#### Content Authoring
+- Training content authored from existing knowledge base (ERG 2024, CFR Parts, PHMSA training requirements)
+- Markdown-based slide deck format with embedded assessments
+- 12 required PHMSA modules + 6 NFPA Awareness + 12 NFPA Operations + 1 supplemental (31 total)
+- Content work runs in parallel with gateway code — pure markdown authoring
+
+#### Training Delivery
+- Slide-based presentation UI with progress tracking
+- Multiple-choice and scenario-based assessments per module
+- Pass/fail thresholds with retry capability
+- Completion certificates with date and score
+
+#### Compliance Integration
+- Auto-updates `hazmat_training_records` on course completion
+- Dashboard widget showing training status across employees
+- Alert rules integrated with Suspense system for expiring certifications
+- Email notifications via Resend for upcoming expirations
+- Competitive positioning vs J.J. Keller and Tenstreet training platforms
+
+### 2.4 Pipeline Penny — AI Compliance Assistant
 
 #### Document-Grounded Q&A
 - Retrieval-augmented generation (RAG) over 1,100+ CFR document chunks
@@ -993,6 +1061,245 @@ All SOC 2 evidence is maintained in `/soc2-evidence/` with 73 artifacts across 1
 | Cron jobs | 2 (daily alert sweep + telematics sync) |
 | Production uptime | Active since 2026-03-20 |
 
+### Module Gateway + Orchestration
+| Metric | Value |
+|--------|-------|
+| Command modules (manifest) | 14 (13 implemented + 1 placeholder) |
+| Total intended tools | 109 across 13 modules |
+| Gateway action surfaces | 4 (ML-EIA, ML-SIGNAL-STACK, MOD-PAPERSTACK, command-center) |
+| Gateway total actions | 43 |
+| Enterprise hardening layers | 7 (in progress) |
+| Training modules (hazmat) | 31 (12 PHMSA + 6 NFPA Awareness + 12 NFPA Operations + 1 supplemental) |
+
+---
+
+## 19. Command-Center Tool Surface
+
+### Intended Tool Surface
+
+Each command module exposes tools via its `src/tools.ts`. The following is the full audit of all implemented modules and their tool definitions.
+
+#### compliance-command — 4 tools
+| Tool | Purpose |
+|------|---------|
+| `generate_compliance_package` | Generate a compliance documentation package |
+| `get_company_info` | Retrieve company compliance profile |
+| `check_package_status` | Check status of a compliance package |
+| `list_frameworks` | List available compliance frameworks |
+
+#### contract-command — 8 tools
+| Tool | Purpose |
+|------|---------|
+| `add_contract` | Create a new contract record |
+| `get_expiring_contracts` | List contracts approaching expiration |
+| `get_vendor_analysis` | Analyze vendor contract performance |
+| `create_amendment` | Create a contract amendment |
+| `get_contract_summary` | Get summary of a specific contract |
+| `update_contract_status` | Update the status of a contract |
+| `get_expiration_calendar` | Get calendar view of contract expirations |
+| `add_party` | Add a party to a contract |
+
+#### dispatch-command — 10 tools
+| Tool | Purpose |
+|------|---------|
+| `create_dispatch_request` | Create a new dispatch request |
+| `get_dispatch_status` | Check status of a dispatch |
+| `list_active_dispatches` | List all active dispatches |
+| `assign_driver` | Assign a driver to a dispatch |
+| `get_driver_availability` | Check driver availability |
+| `update_driver_status` | Update a driver's status |
+| `get_dispatch_metrics` | Get dispatch performance metrics |
+| `check_sla_status` | Check SLA compliance status |
+| `find_nearest_driver` | Find nearest available driver |
+| `get_zone_status` | Get status of a dispatch zone |
+
+#### email-command — 8 tools
+| Tool | Purpose |
+|------|---------|
+| `generate_digest` | Generate an email digest |
+| `get_email_metrics` | Get email processing metrics |
+| `extract_action_items` | Extract action items from emails |
+| `detect_anomalies` | Detect anomalies in email patterns |
+| `get_sender_analysis` | Analyze sender patterns |
+| `list_action_items` | List extracted action items |
+| `update_action_item` | Update an action item status |
+| `get_digest_config` | Get digest configuration |
+
+#### financial-command — 9 tools
+| Tool | Purpose |
+|------|---------|
+| `categorize_transaction` | Categorize a financial transaction |
+| `get_tax_summary` | Get tax summary report |
+| `import_bank_csv` | Import bank transactions from CSV |
+| `get_dashboard_data` | Get financial dashboard data |
+| `get_budget_variance` | Get budget variance report |
+| `create_transaction` | Create a manual transaction |
+| `list_transactions` | List transactions with filters |
+| `get_account_balances` | Get current account balances |
+| `process_recurring_payments` | Process recurring payment schedules |
+
+> **Note:** Financial-command handlers are currently placeholder responses.
+
+#### govcon-command — 10 tools
+| Tool | Purpose |
+|------|---------|
+| `search_opportunities` | Search government contract opportunities |
+| `run_bid_decision` | Run bid/no-bid decision analysis |
+| `get_pipeline_status` | Get GovCon pipeline status |
+| `log_outreach_activity` | Log outreach activity |
+| `check_compliance_status` | Check GovCon compliance status |
+| `get_upcoming_deadlines` | Get upcoming GovCon deadlines |
+| `create_opportunity` | Create a new opportunity record |
+| `get_win_loss_report` | Get win/loss analysis report |
+| `list_contacts` | List GovCon contacts |
+| `get_bid_recommendation` | Get AI-assisted bid recommendation |
+
+#### onboard-command — 10 tools
+| Tool | Purpose |
+|------|---------|
+| `start_onboarding` | Start a new onboarding workflow |
+| `check_onboarding_status` | Check onboarding progress |
+| `rollback_onboarding` | Rollback an onboarding process |
+| `get_audit_log` | Get onboarding audit log |
+| `list_onboarding_requests` | List all onboarding requests |
+| `get_queue_status` | Get onboarding queue status |
+| `process_next_queue_item` | Process next item in onboarding queue |
+| `get_department_config` | Get department onboarding configuration |
+| `get_onboarding_status_report` | Get onboarding status report |
+| `get_audit_report` | Get onboarding audit report |
+
+#### proposal-command — 12 tools
+| Tool | Purpose |
+|------|---------|
+| `generate_proposal` | Generate a new proposal |
+| `get_proposal` | Get a specific proposal |
+| `list_proposals` | List proposals with filters |
+| `update_proposal_status` | Update proposal lifecycle status |
+| `update_proposal` | Update proposal content |
+| `mark_proposal_sent` | Mark proposal as sent |
+| `mark_proposal_viewed` | Mark proposal as viewed |
+| `mark_proposal_accepted` | Mark proposal as accepted |
+| `mark_proposal_declined` | Mark proposal as declined |
+| `mark_proposal_expired` | Mark proposal as expired |
+| `get_proposal_activity` | Get proposal activity timeline |
+| `render_proposal_document` | Render proposal to document format |
+
+#### readiness-command — 7 tools
+| Tool | Purpose |
+|------|---------|
+| `start_assessment` | Start a readiness assessment |
+| `submit_response` | Submit assessment response |
+| `get_score` | Get assessment score |
+| `get_recommendations` | Get assessment recommendations |
+| `generate_report` | Generate readiness report |
+| `get_next_questions` | Get next assessment questions |
+| `complete_assessment` | Complete an assessment |
+
+#### realty-command — 5 tools
+| Tool | Purpose |
+|------|---------|
+| `score_lead` | Score a real estate lead |
+| `search_properties` | Search property listings |
+| `update_deal_stage` | Update deal pipeline stage |
+| `get_pipeline_summary` | Get real estate pipeline summary |
+| `calculate_commission` | Calculate commission on a deal |
+
+#### sales-command — 7 tools
+| Tool | Purpose |
+|------|---------|
+| `get_sales_trend` | Get sales trend analysis |
+| `compare_periods` | Compare sales between periods |
+| `forecast_revenue` | Forecast future revenue |
+| `import_csv` | Import sales data from CSV |
+| `get_top_products` | Get top-performing products |
+| `get_kpi_summary` | Get sales KPI summary |
+| `get_channel_breakdown` | Get sales channel breakdown |
+
+#### task-command — 8 tools
+| Tool | Purpose |
+|------|---------|
+| `create_task` | Create a new task |
+| `assign_task` | Assign a task to a user |
+| `update_status` | Update task status |
+| `get_department_tasks` | Get tasks by department |
+| `get_overdue_tasks` | Get overdue tasks |
+| `get_workload_report` | Get team workload report |
+| `get_completion_metrics` | Get task completion metrics |
+| `get_department_summary` | Get department task summary |
+
+#### training-command — 11 tools
+| Tool | Purpose |
+|------|---------|
+| `list_courses` | List available courses |
+| `get_course` | Get course details |
+| `enroll_student` | Enroll a student in a course |
+| `get_student_progress` | Get student progress report |
+| `get_course_recommendations` | Get personalized course recommendations |
+| `book_consultation` | Book a training consultation |
+| `list_workshops` | List available workshops |
+| `register_for_workshop` | Register for a workshop |
+| `get_student_dashboard` | Get student dashboard data |
+| `issue_certificate` | Issue a completion certificate |
+| `get_course_analytics` | Get course analytics |
+
+#### asset-command — 0 tools (placeholder)
+
+> **Note:** `asset-command` is declared in the module manifest but no `tooling/asset-command` directory exists in the current repo snapshot.
+
+### Tool Surface Summary
+
+| Module | Tool Count |
+|--------|-----------|
+| compliance-command | 4 |
+| contract-command | 8 |
+| dispatch-command | 10 |
+| email-command | 8 |
+| financial-command | 9 |
+| govcon-command | 10 |
+| onboard-command | 10 |
+| proposal-command | 12 |
+| readiness-command | 7 |
+| realty-command | 5 |
+| sales-command | 7 |
+| task-command | 8 |
+| training-command | 11 |
+| asset-command | 0 (manifest only) |
+| **Total** | **109** |
+
+### What Command-Center Is Actually Doing Today
+
+| Component | Current Behavior |
+|-----------|-----------------|
+| `discover.modules` | Uses static manifest entries from `module-manifest.ts` |
+| `discover.tools` | Returns one stub tool per module: `discover_<moduleId>` |
+| `route.tool_call` | Validates + logs routing, but does **not** execute downstream business handlers yet |
+
+This means a successful call like `financial-command.discover_financial-command` is expected — it confirms module discovery works — but it is **not yet full financial tool execution**. Downstream handler wiring is the next integration step.
+
+### Gateway Action Surface (Module Tools UI)
+
+The gateway exposes additional action surfaces through the Module Tools interface:
+
+| Gateway Module | Actions |
+|----------------|---------|
+| ML-EIA-PETROLEUM-INTEL | 9 actions |
+| ML-SIGNAL-STACK-TNCC | 8 actions |
+| MOD-PAPERSTACK-PP | 13 actions |
+| command-center | 13 bridge/test/build actions |
+| **Total** | **43** |
+
+> **Note:** PaperStack is integrated in the gateway UI, not as a separate FCS nav application.
+
+### Files Audited
+
+| File | Purpose |
+|------|---------|
+| `tooling/command-center/src/config/module-manifest.ts` | Static module registry (14 entries) |
+| `tooling/command-center/src/services/discovery-service.ts` | Module + tool discovery logic |
+| `tooling/command-center/src/api/handlers.ts` | Route handling and validation |
+| `tooling/command-center/src/tools.ts` | Tool definition exports |
+| `src/lib/modules-gateway/registry.ts` | Gateway module registration |
+
 ---
 
 ## Deployment Architecture Diagram
@@ -1066,6 +1373,67 @@ All SOC 2 evidence is maintained in `/soc2-evidence/` with 73 artifacts across 1
               │  Uptime Monitor │
               └─────────────────┘
 ```
+
+---
+
+## 20. Active Sprint — April 2-25
+
+### Sprint Overview
+
+Two parallel workstreams running through April, complementary and non-competing:
+
+| Workstream | Focus | Goal |
+|-----------|-------|------|
+| **A — Enterprise Function Calling Hardening** | Harden module gateway and command-center to enterprise production standards across 7 control layers | Secure the orchestration foundation before broader rollout and SOC 2 Type I audit (eligible June 22) |
+| **B — Training-Command Module Build** | Build self-contained compliance training LMS inside FCS | Deliver hazmat training with slide decks, assessments, and auto-updated compliance records |
+
+### Workstream A — 7 Control Layers
+
+| Layer | Control | Scope |
+|-------|---------|-------|
+| 1 | Context-aware tool registry | Smart tool selection so model sees only relevant tools per request (cap 10-15); real registry ingestion from module definitions |
+| 2 | Bidirectional schema validation | Input coercion (string->number/bool where safe) + hard validation; output schema verification; structured validation errors for self-correction loops |
+| 3 | Execution sandbox | Permission checks, per-org rate limits, argument sanitization, timeout enforcement |
+| 4 | Retry manager | Cap=3 retries with structured escalation; retryable vs non-retryable error classification |
+| 5 | Token/cost attribution | Per-call token usage tracking, budget alerts, cost rollup by org/user/module |
+| 6 | Durable audit logging | Append-only audit log for every tool call (request, response, timing, cost, outcome) |
+| 7 | Tenant tool isolation | Per-org/per-user tool ACL at both visibility and execution layers; deny-by-default |
+
+### Workstream B — Training-Command Phases
+
+| Phase | Deliverable |
+|-------|------------|
+| B1 | Data model: `hazmat_training_records` + `hazmat_training_modules` tables |
+| B2 | Training module content: 31 hazmat modules in markdown slide format from ERG/CFR/PHMSA sources |
+| B3 | Training delivery UI: slide presentation with progress tracking |
+| B4 | Assessment engine: multiple-choice and scenario-based questions per module |
+| B5 | Completion pipeline: auto-update compliance records, issue certificates |
+| B6 | Dashboard widget: training status across employees |
+| B7 | Alert integration: expiring certifications through Suspense system |
+| B8 | Email notifications: upcoming expirations via Resend |
+| B9 | Gateway integration: route training-command through module gateway |
+
+### Current Baseline (Audit-Locked 2026-04-01)
+
+- Module gateway operational for ML-EIA, ML-SIGNAL, PaperStack, and command-center bridge
+- `discover.tools` uses manifest-stub discovery, not full semantic tool selection
+- `route.tool_call` validates + records routing but does not execute downstream business handlers
+- Full durable call audit + token cost attribution + strict tenant tool ACL: NOT complete
+- `financial-command` tool handlers: placeholders
+- CFR index refreshed: PHMSA training doc indexed (9 chunks)
+- Demo index refreshed: ERG, HubSpot indexed
+- 25,616 chunks in vector store (full rebuild complete)
+- ERG 2024 full text ingested (813KB, 32K lines)
+- PHMSA OTIS training requirements documented (12 required + 19 supplemental modules)
+
+### Cross-Workstream Constraints
+
+- Keep scope additive; avoid broad refactors
+- Keep Penny `/api/penny/query` behavior stable
+- Keep existing module gateway endpoints stable
+- No destructive git commands
+- Keep command execution allowlisted and deterministic
+- One commit per task using `hardening(taskN)` or `training(phaseN)` prefix
 
 ---
 
