@@ -821,14 +821,14 @@ CREATE TABLE training_progress (
 **Estimated Effort**: 2 days
 **Depends On**: B2 (tables), B5 (viewer/assessment ready)
 
-- [ ] Build `TrainingManagement.tsx` (admin/manager view)
+- [x] Build `TrainingManagement.tsx` (admin/manager view)
   - Create/edit training plans
   - Assign plans to individual or bulk employees
   - Set deadlines (specific date or "X days from assignment")
   - Org-wide training dashboard (completion rates, overdue, in progress)
   - Filter by plan, employee, status, date range
 
-- [ ] Build `MyTraining.tsx` (employee/driver self-service view)
+- [x] Build `MyTraining.tsx` (employee/driver self-service view)
   - Shows assigned plans and progress
   - Launch button per module (opens deck viewer -> assessment)
   - Progress bar per plan and module
