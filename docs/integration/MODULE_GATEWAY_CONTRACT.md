@@ -217,3 +217,57 @@ interface ModuleJobRecord {
 1. `scripts/start-module.ps1` behavior is informative but not sufficient as-is for gateway orchestration because mixed-runtime modules (PaperStack) can be misclassified.
 2. Command-center execution path is currently "route and record" rather than full external side-effect execution; gateway adapter should preserve this behavior and normalize output.
 3. This contract is frozen for scaffold implementation in Phase 2; only additive fields are allowed in later phases.
+
+## Phase 2 Endpoint Usage Examples
+
+Note: these routes require a valid Clerk-authenticated org-admin session. For CLI calls, pass a valid `__session` cookie value from an authenticated browser session.
+
+### Catalog
+
+```bash
+curl -X GET "http://localhost:3000/api/modules/catalog" \
+  -H "Cookie: __session=<clerk-session-token>"
+```
+
+### Run (Dry Run Validation)
+
+```bash
+curl -X POST "http://localhost:3000/api/modules/run" \
+  -H "Content-Type: application/json" \
+  -H "Cookie: __session=<clerk-session-token>" \
+  -d '{
+    "moduleId": "ML-EIA-PETROLEUM-INTEL",
+    "actionId": "pipeline.product",
+    "args": { "product": "diesel", "horizon": 30 },
+    "dryRun": true,
+    "correlationId": "phase2-smoke-001"
+  }'
+```
+
+### Run (Execute)
+
+```bash
+curl -X POST "http://localhost:3000/api/modules/run" \
+  -H "Content-Type: application/json" \
+  -H "Cookie: __session=<clerk-session-token>" \
+  -d '{
+    "moduleId": "command-center",
+    "actionId": "tests",
+    "args": {},
+    "timeoutMs": 180000
+  }'
+```
+
+### Status Poll
+
+```bash
+curl -X GET "http://localhost:3000/api/modules/status/<run_id>" \
+  -H "Cookie: __session=<clerk-session-token>"
+```
+
+### Current Scaffold Allowlist (Phase 2)
+
+- `ML-EIA-PETROLEUM-INTEL`: `tests`, `pipeline.product`, `export.skip_docx`
+- `ML-SIGNAL-STACK-TNCC`: `pipeline.source`, `export.csv`
+- `MOD-PAPERSTACK-PP`: `tools.list`, `tools.check`, `generate.pdf`, `generate.docx`
+- `command-center`: `tests`, `build`
