@@ -20,6 +20,7 @@ import type {
 } from '@/lib/modules-gateway/types';
 
 const runs = new Map<string, ModuleRunRecord>();
+const FAILURE_ALERT_WEBHOOK_URL = process.env.MODULE_GATEWAY_FAILURE_WEBHOOK_URL;
 
 function nowIso(): string {
   return new Date().toISOString();
@@ -60,6 +61,62 @@ function updateRun(runId: string, updater: (run: ModuleRunRecord) => ModuleRunRe
   const next = updater(existing);
   runs.set(runId, next);
   return next;
+}
+
+function updateFailedRun(runId: string, updater: (run: ModuleRunRecord) => ModuleRunRecord): void {
+  const failedRun = updateRun(runId, updater);
+  if (failedRun) {
+    void emitModuleRunFailureAlert(failedRun);
+  }
+}
+
+function buildFailureAlertPayload(run: ModuleRunRecord): Record<string, unknown> {
+  return {
+    event: 'module_gateway_run_failed',
+    runId: run.id,
+    moduleId: run.moduleId,
+    actionId: run.actionId,
+    correlationId: run.correlationId || null,
+    requestedBy: run.requestedBy,
+    status: run.status,
+    dryRun: run.dryRun,
+    command: run.command,
+    cwd: run.cwd,
+    timeoutMs: run.timeoutMs,
+    createdAt: run.createdAt,
+    startedAt: run.startedAt,
+    endedAt: run.endedAt,
+    durationMs: run.durationMs,
+    exitCode: run.exitCode,
+    error: run.error || null,
+    stderrPreview: run.stderrPreview,
+    stdoutPreview: run.stdoutPreview,
+  };
+}
+
+async function emitModuleRunFailureAlert(run: ModuleRunRecord): Promise<void> {
+  const payload = buildFailureAlertPayload(run);
+  console.error('[module-gateway] run failed', payload);
+
+  if (!FAILURE_ALERT_WEBHOOK_URL) return;
+
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), 5000);
+  try {
+    await fetch(FAILURE_ALERT_WEBHOOK_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload),
+      signal: controller.signal,
+    });
+  } catch (error) {
+    console.error('[module-gateway] failure webhook error', {
+      runId: run.id,
+      message: error instanceof Error ? error.message : String(error),
+    });
+  } finally {
+    clearTimeout(timeout);
+  }
 }
 
 function toRepoRelativePath(absolutePath: string): string {
@@ -168,7 +225,7 @@ async function executeRun(runId: string): Promise<void> {
   if (!run) return;
   const action = getModuleAction(run.moduleId, run.actionId);
   if (!action) {
-    updateRun(runId, (current) => ({
+    updateFailedRun(runId, (current) => ({
       ...current,
       status: 'fail',
       endedAt: nowIso(),
@@ -182,7 +239,7 @@ async function executeRun(runId: string): Promise<void> {
   }
 
   if (!action.execute && !action.buildCommand) {
-    updateRun(runId, (current) => ({
+    updateFailedRun(runId, (current) => ({
       ...current,
       status: 'fail',
       endedAt: nowIso(),
@@ -225,11 +282,11 @@ async function executeRun(runId: string): Promise<void> {
           stderrTruncated: stderrPreview.wasPreviewTruncated,
           artifacts,
           result: bridgeResult.data,
-        }));
-        return;
-      }
+      }));
+      return;
+    }
 
-      updateRun(runId, (current) => ({
+      updateFailedRun(runId, (current) => ({
         ...current,
         status: 'fail',
         endedAt,
@@ -252,7 +309,7 @@ async function executeRun(runId: string): Promise<void> {
       const endedAt = nowIso();
       const durationMs = Date.now() - startedAtEpoch;
       const unknownError = error instanceof Error ? error.message : 'Unexpected bridge runner failure';
-      updateRun(runId, (current) => ({
+      updateFailedRun(runId, (current) => ({
         ...current,
         status: 'fail',
         endedAt,
@@ -311,7 +368,7 @@ async function executeRun(runId: string): Promise<void> {
     const artifacts = collectRunArtifacts(run);
 
     if (timedOut) {
-      updateRun(runId, (current) => ({
+      updateFailedRun(runId, (current) => ({
         ...current,
         status: 'fail',
         endedAt,
@@ -332,7 +389,7 @@ async function executeRun(runId: string): Promise<void> {
 
     const spawnErrorMessage = result.spawnError?.message;
     if (spawnErrorMessage) {
-      updateRun(runId, (current) => ({
+      updateFailedRun(runId, (current) => ({
         ...current,
         status: 'fail',
         endedAt,
@@ -367,7 +424,7 @@ async function executeRun(runId: string): Promise<void> {
       return;
     }
 
-    updateRun(runId, (current) => ({
+    updateFailedRun(runId, (current) => ({
       ...current,
       status: 'fail',
       endedAt,
@@ -387,7 +444,7 @@ async function executeRun(runId: string): Promise<void> {
     const endedAt = nowIso();
     const durationMs = Date.now() - startedAtEpoch;
     const unknownError = error instanceof Error ? error.message : 'Unexpected runner failure';
-    updateRun(runId, (current) => ({
+    updateFailedRun(runId, (current) => ({
       ...current,
       status: 'fail',
       endedAt,

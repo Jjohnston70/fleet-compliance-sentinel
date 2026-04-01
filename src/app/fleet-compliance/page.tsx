@@ -27,6 +27,12 @@ const modules = [
     status: 'Live',
   },
   {
+    href: '/fleet-compliance/tools',
+    title: 'Module Tools',
+    description: 'Operator panel for module gateway run, status, catalog, and output inspection.',
+    status: 'Live — admin',
+  },
+  {
     href: '/fleet-compliance/assets',
     title: 'Assets',
     description: 'Fleet units, equipment, fuel cubes, skid tanks, and storage assets.',

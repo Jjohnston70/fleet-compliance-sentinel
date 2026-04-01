@@ -2485,6 +2485,24 @@ a.penny-source-pill:hover {
   background: rgba(245, 158, 11, 0.12);
 }
 
+.fleet-compliance-pill-queued {
+  border-color: rgba(59, 130, 246, 0.28);
+  color: #1d4ed8;
+  background: rgba(59, 130, 246, 0.1);
+}
+
+.fleet-compliance-pill-running {
+  border-color: rgba(245, 158, 11, 0.28);
+  color: #92400e;
+  background: rgba(245, 158, 11, 0.12);
+}
+
+.fleet-compliance-pill-fail {
+  border-color: rgba(239, 68, 68, 0.32);
+  color: #b91c1c;
+  background: rgba(239, 68, 68, 0.1);
+}
+
 .fleet-compliance-suspense-list {
   display: flex;
   flex-direction: column;

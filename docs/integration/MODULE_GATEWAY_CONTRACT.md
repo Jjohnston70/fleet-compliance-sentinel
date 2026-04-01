@@ -384,3 +384,11 @@ curl -X GET "http://localhost:3000/api/modules/status/<run_id>" \
    - handler `data` returned as `run.result`
    - bridge message/error surfaced via `stdoutPreview`/`stderrPreview`
 3. `discover.tools` supports optional `moduleId` and `classification` filtering through gateway-side post-filtering.
+
+## Phase 6 Additions
+
+1. Operator UI path added: `/fleet-compliance/tools` (admin-only run controls).
+2. UI flow uses existing module API endpoints (`/api/modules/catalog`, `/api/modules/run`, `/api/modules/status/:id`) without expanding privileged surface area.
+3. Failed run hooks now emit:
+   - structured server log event (`[module-gateway] run failed`)
+   - optional webhook notification when `MODULE_GATEWAY_FAILURE_WEBHOOK_URL` is configured.
