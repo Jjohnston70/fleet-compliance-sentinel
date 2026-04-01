@@ -1,6 +1,3 @@
-import path from 'node:path';
-import { pathToFileURL } from 'node:url';
-import { existsSync } from 'node:fs';
 import type { ModuleActionExecutionResult, ModuleRunArgs } from '@/lib/modules-gateway/types';
 
 type CommandCenterHandler = (params: Record<string, unknown>) => Promise<unknown>;
@@ -26,17 +23,10 @@ const ACTION_TO_TOOL: Record<string, string> = {
 let bridgeModulePromise: Promise<CommandCenterToolsModule> | null = null;
 let initialized = false;
 
-function commandCenterToolsPath(): string {
-  return path.join(process.cwd(), 'tooling', 'command-center', 'dist', 'src', 'tools.js');
-}
-
-function commandCenterToolsUrl(): string {
-  return pathToFileURL(commandCenterToolsPath()).href;
-}
-
 async function loadBridgeModule(): Promise<CommandCenterToolsModule> {
   if (!bridgeModulePromise) {
-    bridgeModulePromise = import(commandCenterToolsUrl()) as Promise<CommandCenterToolsModule>;
+    // Keep this import path static so Next.js bundles command-center runtime with API routes.
+    bridgeModulePromise = import('../../../tooling/command-center/dist/src/tools.js') as Promise<CommandCenterToolsModule>;
   }
   return bridgeModulePromise;
 }
@@ -140,15 +130,6 @@ export async function executeCommandCenterAction(
   args: ModuleRunArgs,
 ): Promise<ModuleActionExecutionResult> {
   try {
-    const toolsPath = commandCenterToolsPath();
-    if (!existsSync(toolsPath)) {
-      return {
-        ok: false,
-        message: 'command-center bridge runtime is not available',
-        stderr: `Missing ${toolsPath}; run 'npm run build' in tooling/command-center and ensure deployment includes tooling/command-center/dist`,
-      };
-    }
-
     const moduleRef = await loadBridgeModule();
 
     if (actionId === 'startup.initialize') {
