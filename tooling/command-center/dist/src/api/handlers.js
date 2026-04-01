@@ -145,6 +145,7 @@ export async function handleRouteToolCall(qualifiedName, params, acl) {
             success: false,
             error: 'Parameter validation failed',
             details: validation.errors,
+            fieldErrors: validation.fieldErrors,
         };
     }
     // Record invocation
@@ -154,7 +155,7 @@ export async function handleRouteToolCall(qualifiedName, params, acl) {
         id: invocationId,
         toolId: `${route.moduleId}.${tool.name}`,
         moduleId: route.moduleId,
-        input: params,
+        input: validation.normalizedParams || params,
         status: 'success',
         durationMs: Date.now() - startTime,
         invokedAt: startTime,

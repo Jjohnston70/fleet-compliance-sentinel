@@ -9,6 +9,20 @@ export interface RouteResult {
     tool?: ToolDefinition;
     error?: string;
 }
+export interface RouterValidationIssue {
+    path: string;
+    code: 'required' | 'type' | 'coercion';
+    message: string;
+    expected?: string;
+    received?: unknown;
+    coerced?: boolean;
+}
+export interface RouterValidationResult {
+    valid: boolean;
+    errors?: string[];
+    fieldErrors?: RouterValidationIssue[];
+    normalizedParams?: Record<string, any>;
+}
 export declare class RouterService {
     /**
      * Route a tool call by fully-qualified name (module.tool_name)
@@ -26,10 +40,7 @@ export declare class RouterService {
     /**
      * Validate tool parameters against schema
      */
-    validateParameters(tool: ToolDefinition, params: Record<string, any>): {
-        valid: boolean;
-        errors?: string[];
-    };
+    validateParameters(tool: ToolDefinition, params: Record<string, any>): RouterValidationResult;
 }
 export declare const routerService: RouterService;
 //# sourceMappingURL=router-service.d.ts.map

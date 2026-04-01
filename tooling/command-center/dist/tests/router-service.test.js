@@ -100,5 +100,19 @@ describe('RouterService', () => {
         validation = router.validateParameters(tool, { count: 42, name: 'test' });
         expect(validation.valid).toBe(true);
     });
+    it('should coerce safe string values for number and boolean params', () => {
+        const tool = {
+            name: 'test',
+            description: 'Test',
+            parameters: {
+                type: 'object',
+                properties: { count: { type: 'number' }, enabled: { type: 'boolean' } },
+            },
+        };
+        const validation = router.validateParameters(tool, { count: '42', enabled: 'true' });
+        expect(validation.valid).toBe(true);
+        expect(validation.normalizedParams?.count).toBe(42);
+        expect(validation.normalizedParams?.enabled).toBe(true);
+    });
 });
 //# sourceMappingURL=router-service.test.js.map

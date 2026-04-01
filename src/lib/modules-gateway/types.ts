@@ -2,6 +2,26 @@ export type ModuleRuntime = 'python' | 'node';
 
 export type ModuleRunStatus = 'queued' | 'running' | 'success' | 'fail';
 
+export type ModuleValidationIssueCode =
+  | 'unknown_field'
+  | 'required'
+  | 'type'
+  | 'enum'
+  | 'min'
+  | 'max'
+  | 'coercion'
+  | 'output_type'
+  | 'output_required';
+
+export interface ModuleValidationIssue {
+  path: string;
+  code: ModuleValidationIssueCode;
+  message: string;
+  expected?: string;
+  received?: unknown;
+  coerced?: boolean;
+}
+
 export type ModuleGatewayAclScopeType = 'module' | 'action' | 'tool';
 
 export type ModuleGatewayAclPermission = 'view' | 'execute';
@@ -76,6 +96,7 @@ export interface ModuleRunError {
   code: ModuleRunErrorCode;
   message: string;
   details?: string[];
+  fieldErrors?: ModuleValidationIssue[];
 }
 
 export interface ModuleActionArgSpec {
@@ -125,6 +146,7 @@ export interface ModuleActionDefinition {
   actionId: string;
   description: string;
   argsSchema?: ModuleActionArgsSchema;
+  outputSchema?: ModuleActionArgsSchema;
   defaultTimeoutMs?: number;
   commandPreview: string[];
   buildCommand?: (args: ModuleRunArgs) => ResolvedModuleCommand;

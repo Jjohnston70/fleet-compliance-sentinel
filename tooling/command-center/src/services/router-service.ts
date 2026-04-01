@@ -13,6 +13,22 @@ export interface RouteResult {
   error?: string;
 }
 
+export interface RouterValidationIssue {
+  path: string;
+  code: 'required' | 'type' | 'coercion';
+  message: string;
+  expected?: string;
+  received?: unknown;
+  coerced?: boolean;
+}
+
+export interface RouterValidationResult {
+  valid: boolean;
+  errors?: string[];
+  fieldErrors?: RouterValidationIssue[];
+  normalizedParams?: Record<string, any>;
+}
+
 export class RouterService {
   /**
    * Route a tool call by fully-qualified name (module.tool_name)
@@ -76,36 +92,151 @@ export class RouterService {
   /**
    * Validate tool parameters against schema
    */
-  validateParameters(tool: ToolDefinition, params: Record<string, any>): { valid: boolean; errors?: string[] } {
-    const errors: string[] = [];
+  validateParameters(tool: ToolDefinition, params: Record<string, any>): RouterValidationResult {
+    const fieldErrors: RouterValidationIssue[] = [];
+    const normalizedParams: Record<string, any> = {};
     const required = tool.parameters.required || [];
+    const sourceParams = params || {};
 
     // Check required fields
     required.forEach((field) => {
-      if (!(field in params)) {
-        errors.push(`Missing required parameter: ${field}`);
+      if (!(field in sourceParams)) {
+        fieldErrors.push({
+          path: `parameters.${field}`,
+          code: 'required',
+          message: `Missing required parameter: ${field}`,
+        });
       }
     });
 
-    // Basic type checking
+    const coerceBoolean = (value: unknown): boolean | undefined => {
+      if (typeof value === 'boolean') return value;
+      if (typeof value !== 'string') return undefined;
+      const canonical = value.trim().toLowerCase();
+      if (['true', '1', 'yes', 'y', 'on'].includes(canonical)) return true;
+      if (['false', '0', 'no', 'n', 'off'].includes(canonical)) return false;
+      return undefined;
+    };
+
+    const coerceNumber = (value: unknown): number | undefined => {
+      if (typeof value === 'number' && !Number.isNaN(value)) return value;
+      if (typeof value !== 'string') return undefined;
+      const trimmed = value.trim();
+      if (!/^-?\d+(\.\d+)?$/.test(trimmed)) return undefined;
+      return Number(trimmed);
+    };
+
+    // Type checking with safe coercion for number/boolean
     Object.entries(tool.parameters.properties).forEach(([key, schema]: [string, any]) => {
-      if (key in params && schema.type) {
-        const paramType = typeof params[key];
-        if (schema.type === 'string' && paramType !== 'string') {
-          errors.push(`Parameter ${key} must be string, got ${paramType}`);
-        } else if (schema.type === 'number' && paramType !== 'number') {
-          errors.push(`Parameter ${key} must be number, got ${paramType}`);
-        } else if (schema.type === 'boolean' && paramType !== 'boolean') {
-          errors.push(`Parameter ${key} must be boolean, got ${paramType}`);
-        } else if (schema.type === 'array' && !Array.isArray(params[key])) {
-          errors.push(`Parameter ${key} must be array, got ${paramType}`);
+      if (key in sourceParams && schema.type) {
+        const rawValue = sourceParams[key];
+        const paramType = typeof rawValue;
+        let resolvedValue = rawValue;
+        let coerced = false;
+
+        if (schema.type === 'number') {
+          const maybe = coerceNumber(rawValue);
+          if (maybe === undefined) {
+            fieldErrors.push({
+              path: `parameters.${key}`,
+              code: 'coercion',
+              message: `Parameter ${key} could not be coerced to number`,
+              expected: 'number',
+              received: rawValue,
+            });
+            return;
+          }
+          resolvedValue = maybe;
+          coerced = paramType !== 'number';
         }
+
+        if (schema.type === 'boolean') {
+          const maybe = coerceBoolean(rawValue);
+          if (maybe === undefined) {
+            fieldErrors.push({
+              path: `parameters.${key}`,
+              code: 'coercion',
+              message: `Parameter ${key} could not be coerced to boolean`,
+              expected: 'boolean',
+              received: rawValue,
+            });
+            return;
+          }
+          resolvedValue = maybe;
+          coerced = paramType !== 'boolean';
+        }
+
+        if (schema.type === 'string' && typeof resolvedValue !== 'string') {
+          fieldErrors.push({
+            path: `parameters.${key}`,
+            code: 'type',
+            message: `Parameter ${key} must be string, got ${typeof resolvedValue}`,
+            expected: 'string',
+            received: resolvedValue,
+          });
+          return;
+        }
+        if (schema.type === 'number' && typeof resolvedValue !== 'number') {
+          fieldErrors.push({
+            path: `parameters.${key}`,
+            code: 'type',
+            message: `Parameter ${key} must be number, got ${typeof resolvedValue}`,
+            expected: 'number',
+            received: resolvedValue,
+          });
+          return;
+        }
+        if (schema.type === 'boolean' && typeof resolvedValue !== 'boolean') {
+          fieldErrors.push({
+            path: `parameters.${key}`,
+            code: 'type',
+            message: `Parameter ${key} must be boolean, got ${typeof resolvedValue}`,
+            expected: 'boolean',
+            received: resolvedValue,
+          });
+          return;
+        }
+        if (schema.type === 'array' && !Array.isArray(resolvedValue)) {
+          fieldErrors.push({
+            path: `parameters.${key}`,
+            code: 'type',
+            message: `Parameter ${key} must be array, got ${typeof resolvedValue}`,
+            expected: 'array',
+            received: resolvedValue,
+          });
+          return;
+        }
+
+        if (coerced) {
+          fieldErrors.push({
+            path: `parameters.${key}`,
+            code: 'coercion',
+            message: `Parameter ${key} coerced to ${schema.type}`,
+            expected: schema.type,
+            received: rawValue,
+            coerced: true,
+          });
+        }
+
+        normalizedParams[key] = resolvedValue;
+      } else if (key in sourceParams) {
+        normalizedParams[key] = sourceParams[key];
       }
     });
+
+    for (const [key, value] of Object.entries(sourceParams)) {
+      if (!(key in normalizedParams)) {
+        normalizedParams[key] = value;
+      }
+    }
 
     return {
-      valid: errors.length === 0,
-      errors: errors.length > 0 ? errors : undefined,
+      valid: fieldErrors.filter((issue) => !issue.coerced).length === 0,
+      errors: fieldErrors
+        .filter((issue) => !issue.coerced)
+        .map((issue) => issue.message),
+      fieldErrors,
+      normalizedParams,
     };
   }
 }

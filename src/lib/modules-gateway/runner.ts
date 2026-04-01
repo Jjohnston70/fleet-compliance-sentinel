@@ -9,6 +9,7 @@ import {
   moduleDirectoryExists,
   moduleGatewayLimits,
   validateActionArgs,
+  validateActionOutput,
 } from '@/lib/modules-gateway/registry';
 import type {
   ModuleCatalogEntry,
@@ -17,6 +18,7 @@ import type {
   ModuleRunRecord,
   ModuleRunRequest,
   ModuleRunStartResult,
+  ModuleValidationIssue,
 } from '@/lib/modules-gateway/types';
 
 const runs = new Map<string, ModuleRunRecord>();
@@ -563,6 +565,30 @@ async function executeRun(runId: string): Promise<void> {
       );
 
       if (bridgeResult.ok) {
+        const outputValidation = validateActionOutput(action, bridgeResult.data);
+        if (!outputValidation.valid) {
+          updateFailedRun(runId, (current) => ({
+            ...current,
+            status: 'fail',
+            endedAt,
+            durationMs,
+            exitCode: 1,
+            stdoutPreview: stdoutPreview.preview,
+            stderrPreview: stderrPreview.preview,
+            stdoutTruncated: stdoutPreview.wasPreviewTruncated,
+            stderrTruncated: stderrPreview.wasPreviewTruncated,
+            artifacts,
+            result: bridgeResult.data,
+            error: {
+              code: 'VALIDATION_ERROR',
+              message: 'Action output validation failed',
+              details: outputValidation.errors,
+              fieldErrors: outputValidation.fieldErrors,
+            },
+          }));
+          return;
+        }
+
         updateRun(runId, (current) => ({
           ...current,
           status: 'success',
@@ -575,9 +601,9 @@ async function executeRun(runId: string): Promise<void> {
           stderrTruncated: stderrPreview.wasPreviewTruncated,
           artifacts,
           result: bridgeResult.data,
-      }));
-      return;
-    }
+        }));
+        return;
+      }
 
       updateFailedRun(runId, (current) => ({
         ...current,
@@ -814,6 +840,7 @@ export function startModuleRun(
         code: 'VALIDATION_ERROR',
         message: 'Action args validation failed',
         details: validation.errors,
+        fieldErrors: validation.fieldErrors,
       },
     };
   }
@@ -850,7 +877,10 @@ export function startModuleRun(
   const createdAt = nowIso();
   const runId = `run_${randomUUID()}`;
   const dryRun = Boolean(input.dryRun);
-  const dryRunMessage = dryRun ? `Dry run validated command: ${command.join(' ')}` : '';
+  const coercionSummary = validation.coercions.length > 0
+    ? `\nCoercions: ${validation.coercions.map((entry) => entry.path).join(', ')}`
+    : '';
+  const dryRunMessage = dryRun ? `Dry run validated command: ${command.join(' ')}${coercionSummary}` : '';
 
   const runRecord: ModuleRunRecord = {
     id: runId,
@@ -940,10 +970,15 @@ export function listModuleCatalog(): ModuleCatalogEntry[] {
   return getCatalog();
 }
 
-export function buildValidationError(message: string, details?: string[]): ModuleRunError {
+export function buildValidationError(
+  message: string,
+  details?: string[],
+  fieldErrors?: ModuleValidationIssue[],
+): ModuleRunError {
   return {
     code: 'VALIDATION_ERROR',
     message,
     details,
+    fieldErrors,
   };
 }

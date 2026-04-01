@@ -67,7 +67,7 @@ These workstreams are complementary, not competing. The hardening secures the or
 ## Definition of Done
 
 - [x] Layer 1: Context-aware tool registry with capped tool exposure
-- [ ] Layer 2: Bidirectional schema validation with coercion + structured correction errors
+- [x] Layer 2: Bidirectional schema validation with coercion + structured correction errors
 - [ ] Layer 3: Execution sandbox with permission checks, rate limits, sanitization, timeout enforcement
 - [ ] Layer 4: Retry manager with cap=3 and escalation
 - [ ] Layer 5: Token/cost attribution with budget alerts
@@ -248,7 +248,7 @@ At task end:
 **Estimated Effort**: 1 day
 **Depends On**: A1
 
-- [ ] Add coercion-first validation and structured model-corrective errors for input/output
+- [x] Add coercion-first validation and structured model-corrective errors for input/output
 
 **File Targets**:
 

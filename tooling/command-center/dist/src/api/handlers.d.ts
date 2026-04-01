@@ -174,11 +174,13 @@ export declare function handleRouteToolCall(qualifiedName: string, params: Recor
     success: boolean;
     error: string | undefined;
     details?: undefined;
+    fieldErrors?: undefined;
     data?: undefined;
 } | {
     success: boolean;
     error: string;
     details: string[] | undefined;
+    fieldErrors: import("../services/router-service.js").RouterValidationIssue[] | undefined;
     data?: undefined;
 } | {
     success: boolean;
@@ -190,6 +192,7 @@ export declare function handleRouteToolCall(qualifiedName: string, params: Recor
     };
     error?: undefined;
     details?: undefined;
+    fieldErrors?: undefined;
 }>;
 /**
  * Get system health

@@ -203,9 +203,15 @@ interface ModuleJobRecord {
 ## Error Codes (Current Implementation)
 
 - `VALIDATION_ERROR`
+- `PERMISSION_DENIED`
 - `MODULE_NOT_FOUND`
 - `ACTION_NOT_ALLOWED`
+- `TENANT_ISOLATION_VIOLATION`
 - `MISSING_ENV`
+- `SANITIZATION_ERROR`
+- `RATE_LIMITED`
+- `RETRY_EXHAUSTED`
+- `BUDGET_EXCEEDED`
 - `EXEC_TIMEOUT`
 - `EXEC_FAILED`
 - `INTERNAL_ERROR`
@@ -402,3 +408,15 @@ curl -X GET "http://localhost:3000/api/modules/status/<run_id>" \
 2. ML-SIGNAL packaging now writes both ZIP and standalone HTML to the output directory and returns both as run artifacts.
 3. New ML-SIGNAL one-click operator action:
    - `workflow.delivery` runs export -> pipeline -> report -> package in a single run.
+
+## Phase 8 Additions
+
+1. Input validation now runs coercion-first for safe cases:
+   - string -> number (strict numeric only)
+   - string -> boolean (`true/false/1/0/yes/no/on/off`)
+2. Validation failures now include structured per-field error metadata in addition to summary strings:
+   - `error.details[]` (string summaries)
+   - `error.fieldErrors[]` (machine-parseable field objects for model correction loops)
+3. Bridge action output validation added for `command-center:route.tool_call`:
+   - required output keys validated: `qualifiedName`, `moduleId`, `invocationId`, `message`
+   - output mismatch fails run with `VALIDATION_ERROR`.

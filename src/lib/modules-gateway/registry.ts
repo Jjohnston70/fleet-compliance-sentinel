@@ -8,6 +8,7 @@ import type {
   ModuleCatalogEntry,
   ModuleDefinition,
   ModuleRunArgs,
+  ModuleValidationIssue,
 } from '@/lib/modules-gateway/types';
 
 const PYTHON_EXECUTABLE = process.env.MODULE_GATEWAY_PYTHON_BIN || 'python';
@@ -143,11 +144,13 @@ function bridgeAction(
   description: string,
   argsSchema: ModuleActionArgsSchema,
   defaultTimeoutMs = 60_000,
+  outputSchema?: ModuleActionArgsSchema,
 ): ModuleActionDefinition {
   return {
     actionId,
     description,
     argsSchema,
+    outputSchema,
     defaultTimeoutMs,
     commandPreview: ['internal', 'command-center', actionId],
     execute: async (args): Promise<ModuleActionExecutionResult> => executeCommandCenterAction(actionId, args),
@@ -1206,6 +1209,17 @@ const MODULE_REGISTRY: ModuleDefinition[] = [
           },
           required: ['qualifiedName'],
         },
+        60_000,
+        {
+          type: 'object',
+          properties: {
+            qualifiedName: { type: 'string' },
+            moduleId: { type: 'string' },
+            invocationId: { type: 'string' },
+            message: { type: 'string' },
+          },
+          required: ['qualifiedName', 'moduleId', 'invocationId', 'message'],
+        },
       ),
       bridgeAction(
         'status.system',
@@ -1284,20 +1298,125 @@ function cloneDefaultValue(value: string | number | boolean | Record<string, unk
   return value;
 }
 
+function isStrictNumericString(value: string): boolean {
+  return /^-?\d+(\.\d+)?$/.test(value.trim());
+}
+
+function tryCoerceBoolean(value: unknown): boolean | undefined {
+  if (typeof value === 'boolean') return value;
+  if (typeof value !== 'string') return undefined;
+
+  const canonical = value.trim().toLowerCase();
+  if (['true', '1', 'yes', 'y', 'on'].includes(canonical)) return true;
+  if (['false', '0', 'no', 'n', 'off'].includes(canonical)) return false;
+  return undefined;
+}
+
+function coerceValueForSpec(
+  key: string,
+  value: unknown,
+  spec: ModuleActionArgsSchema['properties'][string],
+): { value: unknown; coerced: boolean; issue?: ModuleValidationIssue } {
+  if (spec.type === 'number') {
+    if (typeof value === 'number' && !Number.isNaN(value)) {
+      return { value, coerced: false };
+    }
+    if (typeof value === 'string' && isStrictNumericString(value)) {
+      return { value: Number(value.trim()), coerced: true };
+    }
+    return {
+      value,
+      coerced: false,
+      issue: {
+        path: `args.${key}`,
+        code: 'coercion',
+        message: `args.${key} could not be coerced to number`,
+        expected: 'number',
+        received: value,
+      },
+    };
+  }
+
+  if (spec.type === 'boolean') {
+    if (typeof value === 'boolean') {
+      return { value, coerced: false };
+    }
+    const coerced = tryCoerceBoolean(value);
+    if (coerced !== undefined) {
+      return { value: coerced, coerced: true };
+    }
+    return {
+      value,
+      coerced: false,
+      issue: {
+        path: `args.${key}`,
+        code: 'coercion',
+        message: `args.${key} could not be coerced to boolean`,
+        expected: 'boolean',
+        received: value,
+      },
+    };
+  }
+
+  return { value, coerced: false };
+}
+
+function getValueType(value: unknown): string {
+  if (Array.isArray(value)) return 'array';
+  if (value === null) return 'null';
+  return typeof value;
+}
+
+function issueToDetail(issue: ModuleValidationIssue): string {
+  return `[${issue.code}] ${issue.path}: ${issue.message}`;
+}
+
+interface ActionArgsValidationSuccess {
+  valid: true;
+  normalizedArgs: ModuleRunArgs;
+  coercions: ModuleValidationIssue[];
+}
+
+interface ActionArgsValidationFailure {
+  valid: false;
+  errors: string[];
+  fieldErrors: ModuleValidationIssue[];
+}
+
+export type ActionArgsValidationResult = ActionArgsValidationSuccess | ActionArgsValidationFailure;
+
+interface ActionOutputValidationSuccess {
+  valid: true;
+}
+
+interface ActionOutputValidationFailure {
+  valid: false;
+  errors: string[];
+  fieldErrors: ModuleValidationIssue[];
+}
+
+export type ActionOutputValidationResult = ActionOutputValidationSuccess | ActionOutputValidationFailure;
+
 export function validateActionArgs(
   action: ModuleActionDefinition,
   rawArgs: unknown,
-): { valid: true; normalizedArgs: ModuleRunArgs } | { valid: false; errors: string[] } {
+): ActionArgsValidationResult {
   const args = isPlainObject(rawArgs) ? rawArgs : {};
   const schema = action.argsSchema || EMPTY_ARGS_SCHEMA;
   const normalized: ModuleRunArgs = {};
-  const errors: string[] = [];
+  const fieldErrors: ModuleValidationIssue[] = [];
+  const coercions: ModuleValidationIssue[] = [];
   const properties = schema.properties || {};
   const requiredSet = new Set(schema.required || []);
 
   for (const key of Object.keys(args)) {
     if (!properties[key]) {
-      errors.push(`args.${key} is not allowed`);
+      fieldErrors.push({
+        path: `args.${key}`,
+        code: 'unknown_field',
+        message: `args.${key} is not allowed`,
+        received: args[key],
+      });
     }
   }
 
@@ -1312,52 +1431,203 @@ export function validateActionArgs(
         continue;
       }
       if (required) {
-        errors.push(`args.${key} is required`);
+        fieldErrors.push({
+          path: `args.${key}`,
+          code: 'required',
+          message: `args.${key} is required`,
+          expected: spec.type,
+        });
       }
       continue;
+    }
+
+    const coercedValueResult = coerceValueForSpec(key, value, spec);
+    if (coercedValueResult.issue) {
+      fieldErrors.push(coercedValueResult.issue);
+      continue;
+    }
+    const resolvedValue = coercedValueResult.value;
+    if (coercedValueResult.coerced) {
+      coercions.push({
+        path: `args.${key}`,
+        code: 'coercion',
+        message: `args.${key} coerced to ${spec.type}`,
+        expected: spec.type,
+        received: value,
+        coerced: true,
+      });
     }
 
     if (spec.type === 'string') {
-      if (typeof value !== 'string') {
-        errors.push(`args.${key} must be a string`);
+      if (typeof resolvedValue !== 'string') {
+        fieldErrors.push({
+          path: `args.${key}`,
+          code: 'type',
+          message: `args.${key} must be a string`,
+          expected: 'string',
+          received: resolvedValue,
+        });
         continue;
       }
     } else if (spec.type === 'number') {
-      if (typeof value !== 'number' || Number.isNaN(value)) {
-        errors.push(`args.${key} must be a number`);
+      if (typeof resolvedValue !== 'number' || Number.isNaN(resolvedValue)) {
+        fieldErrors.push({
+          path: `args.${key}`,
+          code: 'type',
+          message: `args.${key} must be a number`,
+          expected: 'number',
+          received: resolvedValue,
+        });
         continue;
       }
-      if (spec.min !== undefined && value < spec.min) {
-        errors.push(`args.${key} must be >= ${spec.min}`);
+      if (spec.min !== undefined && resolvedValue < spec.min) {
+        fieldErrors.push({
+          path: `args.${key}`,
+          code: 'min',
+          message: `args.${key} must be >= ${spec.min}`,
+          expected: `>= ${spec.min}`,
+          received: resolvedValue,
+        });
       }
-      if (spec.max !== undefined && value > spec.max) {
-        errors.push(`args.${key} must be <= ${spec.max}`);
+      if (spec.max !== undefined && resolvedValue > spec.max) {
+        fieldErrors.push({
+          path: `args.${key}`,
+          code: 'max',
+          message: `args.${key} must be <= ${spec.max}`,
+          expected: `<= ${spec.max}`,
+          received: resolvedValue,
+        });
       }
     } else if (spec.type === 'boolean') {
-      if (typeof value !== 'boolean') {
-        errors.push(`args.${key} must be a boolean`);
+      if (typeof resolvedValue !== 'boolean') {
+        fieldErrors.push({
+          path: `args.${key}`,
+          code: 'type',
+          message: `args.${key} must be a boolean`,
+          expected: 'boolean',
+          received: resolvedValue,
+        });
         continue;
       }
     } else if (spec.type === 'object') {
-      if (!isPlainObject(value)) {
-        errors.push(`args.${key} must be an object`);
+      if (!isPlainObject(resolvedValue)) {
+        fieldErrors.push({
+          path: `args.${key}`,
+          code: 'type',
+          message: `args.${key} must be an object`,
+          expected: 'object',
+          received: getValueType(resolvedValue),
+        });
         continue;
       }
     }
 
-    if (spec.enum && !spec.enum.includes(value as string | number | boolean)) {
-      errors.push(`args.${key} must be one of: ${spec.enum.join(', ')}`);
+    if (spec.enum && !spec.enum.includes(resolvedValue as string | number | boolean)) {
+      fieldErrors.push({
+        path: `args.${key}`,
+        code: 'enum',
+        message: `args.${key} must be one of: ${spec.enum.join(', ')}`,
+        expected: `oneOf(${spec.enum.join(', ')})`,
+        received: resolvedValue,
+      });
       continue;
     }
 
-    normalized[key] = value;
+    normalized[key] = resolvedValue;
   }
 
-  if (errors.length > 0) {
-    return { valid: false, errors };
+  if (fieldErrors.length > 0) {
+    return {
+      valid: false,
+      errors: fieldErrors.map(issueToDetail),
+      fieldErrors,
+    };
   }
 
-  return { valid: true, normalizedArgs: normalized };
+  return { valid: true, normalizedArgs: normalized, coercions };
+}
+
+export function validateActionOutput(
+  action: ModuleActionDefinition,
+  rawOutput: unknown,
+): ActionOutputValidationResult {
+  const schema = action.outputSchema;
+  if (!schema) return { valid: true };
+
+  if (!isPlainObject(rawOutput)) {
+    const issue: ModuleValidationIssue = {
+      path: 'result',
+      code: 'output_type',
+      message: 'result must be an object',
+      expected: 'object',
+      received: getValueType(rawOutput),
+    };
+    return {
+      valid: false,
+      errors: [issueToDetail(issue)],
+      fieldErrors: [issue],
+    };
+  }
+
+  const fieldErrors: ModuleValidationIssue[] = [];
+  const required = new Set(schema.required || []);
+  for (const key of required) {
+    if (!(key in rawOutput)) {
+      fieldErrors.push({
+        path: `result.${key}`,
+        code: 'output_required',
+        message: `result.${key} is required`,
+      });
+    }
+  }
+
+  for (const [key, spec] of Object.entries(schema.properties || {})) {
+    if (!(key in rawOutput)) continue;
+    const value = rawOutput[key];
+    if (value === null || value === undefined) continue;
+    if (spec.type === 'string' && typeof value !== 'string') {
+      fieldErrors.push({
+        path: `result.${key}`,
+        code: 'output_type',
+        message: `result.${key} must be a string`,
+        expected: 'string',
+        received: getValueType(value),
+      });
+    } else if (spec.type === 'number' && (typeof value !== 'number' || Number.isNaN(value))) {
+      fieldErrors.push({
+        path: `result.${key}`,
+        code: 'output_type',
+        message: `result.${key} must be a number`,
+        expected: 'number',
+        received: getValueType(value),
+      });
+    } else if (spec.type === 'boolean' && typeof value !== 'boolean') {
+      fieldErrors.push({
+        path: `result.${key}`,
+        code: 'output_type',
+        message: `result.${key} must be a boolean`,
+        expected: 'boolean',
+        received: getValueType(value),
+      });
+    } else if (spec.type === 'object' && !isPlainObject(value)) {
+      fieldErrors.push({
+        path: `result.${key}`,
+        code: 'output_type',
+        message: `result.${key} must be an object`,
+        expected: 'object',
+        received: getValueType(value),
+      });
+    }
+  }
+
+  if (fieldErrors.length > 0) {
+    return {
+      valid: false,
+      errors: fieldErrors.map(issueToDetail),
+      fieldErrors,
+    };
+  }
+  return { valid: true };
 }
 
 export function moduleDirectoryExists(moduleDef: ModuleDefinition): boolean {

@@ -40,7 +40,9 @@ function asPlainObject(value: unknown): Record<string, unknown> {
 
 function normalizeDetails(value: unknown): string[] | undefined {
   if (Array.isArray(value)) {
-    return value.map((entry) => String(entry));
+    return value.map((entry) =>
+      typeof entry === 'string' ? entry : JSON.stringify(entry),
+    );
   }
   if (typeof value === 'string' && value.length > 0) {
     return [value];
@@ -53,7 +55,9 @@ function normalizeBridgeResult(toolName: string, raw: unknown): ModuleActionExec
   const success = Boolean(result.success);
   const data = Object.prototype.hasOwnProperty.call(result, 'data') ? result.data : raw;
   const errorValue = result.error;
-  const details = normalizeDetails(result.details);
+  const details = normalizeDetails(
+    result.details || result.fieldErrors,
+  );
 
   if (success) {
     return {

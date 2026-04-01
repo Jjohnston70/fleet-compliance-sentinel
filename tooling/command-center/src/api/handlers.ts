@@ -182,6 +182,7 @@ export async function handleRouteToolCall(
       success: false,
       error: 'Parameter validation failed',
       details: validation.errors,
+      fieldErrors: validation.fieldErrors,
     };
   }
 
@@ -193,7 +194,7 @@ export async function handleRouteToolCall(
     id: invocationId,
     toolId: `${route.moduleId}.${tool.name}`,
     moduleId: route.moduleId!,
-    input: params,
+    input: validation.normalizedParams || params,
     status: 'success',
     durationMs: Date.now() - startTime,
     invokedAt: startTime,

@@ -1,12 +1,23 @@
 # Fleet-Compliance Sentinel — Status
 
-Last Updated: 2026-04-01 (Workstream A tasks A0-A2 complete)
+Last Updated: 2026-04-01 (Workstream A tasks A0-A3 complete)
 Current Phase: April 2-25 sprint active (Workstream A + B)
-Overall Completion: SOC 2 action plan 100%; module integration sprint 6/6 phases complete; hardening sprint A0-A2 complete
+Overall Completion: SOC 2 action plan 100%; module integration sprint 6/6 phases complete; hardening sprint A0-A3 complete
 Open Findings: 0 blockers; remaining items are accepted non-blocking hardening items
 SOC 2 Observation Window Start: 2026-03-24
 SOC 2 Type I Earliest Eligibility: 2026-06-22
 Days Until Type I Eligible: 83
+
+## 2026-04-01 Workstream A - Task A3 Layer 2 Validation Outcome
+
+| Workstream | Result |
+|-----------|--------|
+| Coercion-first input validation | Complete - safe coercions added for string->number and string->boolean at module action schema validation boundary |
+| Structured field-level validation errors | Complete - validation responses now include deterministic `fieldErrors[]` with `path`, `code`, `expected`, and `received` for model correction loops |
+| Command-center parameter coercion | Complete - router validation now normalizes safe typed values and returns structured validation details |
+| Output schema verification | Complete - `command-center:route.tool_call` output now validated against required result schema before run success is finalized |
+| Contract documentation | Updated - `docs/integration/MODULE_GATEWAY_CONTRACT.md` now documents coercion behavior and structured validation metadata |
+| Verification | `npm --prefix tooling/command-center run build` pass; `npm --prefix tooling/command-center run test` pass (33/33); `npx tsc --noEmit` pass; `npm run lint` pass (pre-existing a11y warnings only) |
 
 ## 2026-04-01 Workstream A - Task A2 Layer 7 Tenant Tool Isolation Outcome
 
