@@ -517,6 +517,20 @@ async function executeRun(runId: string): Promise<void> {
   }
 }
 
+async function waitForRunCompletion(runId: string, timeoutMs: number): Promise<ModuleRunRecord | null> {
+  const deadline = Date.now() + timeoutMs;
+  while (Date.now() <= deadline) {
+    const run = runs.get(runId);
+    if (!run) return null;
+    if (run.status === 'success' || run.status === 'fail') {
+      return run;
+    }
+    await new Promise((resolve) => setTimeout(resolve, 100));
+  }
+
+  return runs.get(runId) || null;
+}
+
 export function startModuleRun(input: ModuleRunRequest, requestedBy: string): ModuleRunStartResult {
   const moduleDef = getModuleDefinition(input.moduleId);
   if (!moduleDef) {
@@ -637,6 +651,26 @@ export function startModuleRun(input: ModuleRunRequest, requestedBy: string): Mo
     ok: true,
     run: runRecord,
   };
+}
+
+export async function startModuleRunAndWait(
+  input: ModuleRunRequest,
+  requestedBy: string,
+): Promise<ModuleRunStartResult> {
+  const started = startModuleRun(input, requestedBy);
+  if (!started.ok) return started;
+
+  if (started.run.status === 'queued' || started.run.status === 'running') {
+    const waitBudgetMs = Math.min(started.run.timeoutMs + 2_000, 25_000);
+    const completed = await waitForRunCompletion(started.run.id, waitBudgetMs);
+    if (completed) {
+      return { ok: true, run: completed };
+    }
+  }
+
+  const finalRun = runs.get(started.run.id);
+  if (!finalRun) return started;
+  return { ok: true, run: finalRun };
 }
 
 export function getModuleRun(runId: string): ModuleRunRecord | null {

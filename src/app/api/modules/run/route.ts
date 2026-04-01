@@ -3,7 +3,7 @@ import {
   requireFleetComplianceOrgWithRole,
 } from '@/lib/fleet-compliance-auth';
 import { shouldUseRemoteModuleGateway, startRemoteModuleRun } from '@/lib/modules-gateway/remote';
-import { buildValidationError, startModuleRun } from '@/lib/modules-gateway/runner';
+import { buildValidationError, startModuleRun, startModuleRunAndWait } from '@/lib/modules-gateway/runner';
 import type { ModuleRunRequest } from '@/lib/modules-gateway/types';
 
 export const runtime = 'nodejs';
@@ -95,7 +95,9 @@ export async function POST(request: Request) {
     }
   }
 
-  const result = startModuleRun(parsed.data, userId);
+  const result = shouldExecuteLocally
+    ? await startModuleRunAndWait(parsed.data, userId)
+    : startModuleRun(parsed.data, userId);
   if (!result.ok) {
     return Response.json({ ok: false, error: result.error }, { status: result.httpStatus });
   }
