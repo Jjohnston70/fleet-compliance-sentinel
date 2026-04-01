@@ -1,6 +1,6 @@
 # Fleet-Compliance Sentinel — Status
 
-Last Updated: 2026-04-01 (Workstream A tasks A0-A8 complete)
+Last Updated: 2026-04-01 (Workstream A tasks A0-A8 complete + connected DATABASE_URL validation complete)
 Current Phase: April 2-25 sprint active (Workstream A + B)
 Overall Completion: SOC 2 action plan 100%; module integration sprint 6/6 phases complete; hardening sprint A0-A8 complete
 Open Findings: 0 blockers; remaining items are accepted non-blocking hardening items
@@ -15,7 +15,8 @@ Days Until Type I Eligible: 83
 | Integrated validation execution | Complete - ran build/test/typecheck/lint and cross-layer smoke checks for throttling/sanitization/retry behavior |
 | Formal report publication | Complete - added `docs/integration/ENTERPRISE_HARDENING_TEST_REPORT.md` with go/no-go decision and evidence |
 | Sprint checklist closure | Complete - Workstream A checklist now marks Layer 1-7 and integration report steps complete |
-| Go/No-Go | Conditional Go - codebase is ready; one connected-environment DB-backed verification pass remains recommended for persistence-only checks |
+| Connected DB-backed persistence verification | Complete - with `DATABASE_URL` present, synthetic write/readback checks returned non-zero evidence for ACL, audit, retry escalation, sandbox events, usage costs, and budget alerts, followed by cleanup |
+| Go/No-Go | Go - codebase and connected persistence validation are complete for A8 scope |
 | Verification commands | `npm --prefix tooling/command-center run build`; `npm --prefix tooling/command-center run test`; `npx tsc --noEmit`; `npm run lint` |
 
 ## 2026-04-01 Workstream A - Task A7 Layer 6 Audit Logging Outcome

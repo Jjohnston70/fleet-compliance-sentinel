@@ -6,8 +6,8 @@ Reporter: Codex
 
 ## Executive Decision
 
-- **Go (Conditional)** for repository state and deployment promotion.
-- Condition: run one connected-environment pass with `DATABASE_URL` present to validate durable DB writes for ACL/audit/cost tables end-to-end.
+- **Go** for repository state and deployment promotion.
+- Connected-environment `DATABASE_URL` verification is complete, including durable table write/readback checks.
 
 ## Verification Run
 
@@ -45,16 +45,32 @@ Interpretation:
 6. Layer 6 Audit Logging: pass in code path (append-only invocation audit + redaction + status exposure)
 7. Layer 7 Tenant Isolation: pass in code path (ACL filtering and run ownership enforcement remains active)
 
-## Known Environment Limitation During This Run
+## Connected Environment Verification (Completed)
 
-`DATABASE_URL` was not set in this shell, so DB-backed writes were not executed live in this local run. Code paths handled this safely in smoke validation, but connected validation is still required for:
+Follow-up run executed with `DATABASE_URL` present in the shell and synthetic verification writes/readbacks completed successfully.
 
-1. `module_gateway_invocation_audit`
-2. `module_gateway_retry_escalations`
-3. `ai_usage_cost_events`
-4. `ai_usage_budget_alerts`
-5. ACL table reads/writes in integration context
+Readback evidence:
+
+```json
+{
+  "module_gateway_acl_rules": 1,
+  "module_gateway_invocation_audit": 1,
+  "module_gateway_retry_escalations": 1,
+  "module_gateway_sandbox_events": 1,
+  "ai_usage_cost_events": 1,
+  "ai_usage_budget_alerts": 2
+}
+```
+
+Interpretation:
+
+1. ACL persistence validated (`module_gateway_acl_rules`).
+2. Append-only invocation audit persistence validated (`module_gateway_invocation_audit`).
+3. Retry escalation persistence validated (`module_gateway_retry_escalations`).
+4. Sandbox telemetry persistence validated (`module_gateway_sandbox_events`).
+5. Penny usage and budget alert persistence validated (`ai_usage_cost_events`, `ai_usage_budget_alerts`).
+6. Synthetic rows were cleaned up after verification.
 
 ## Go/No-Go Rationale
 
-No compile, lint, or unit test blockers remain, and functional smoke checks confirm core hardening behavior for throttling, sanitization, and retry policy. Remaining risk is operational verification of DB persistence in a connected environment, not code correctness in this branch.
+No compile, lint, or unit test blockers remain, and functional smoke checks confirm core hardening behavior for throttling, sanitization, and retry policy. Connected DB persistence verification is now complete, so no remaining A8 validation risk is open.
