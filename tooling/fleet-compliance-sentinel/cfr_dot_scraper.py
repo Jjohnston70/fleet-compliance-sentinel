@@ -7,6 +7,7 @@ and saves each as a clean markdown file for Penny / NotebookLM
 
 Parts covered:
   40  - DOT Drug Testing Procedures
+  172 - Hazardous Materials Communications & Emergency Response
   360 - FMCSA Administrative Rules & Fees
   365 - Operating Authority Registration
   367 - Application Fees for Operating Authority
@@ -41,72 +42,91 @@ PARTS = [
         "title": "DOT Drug and Alcohol Testing Procedures",
         "url": "https://www.ecfr.gov/current/title-49/subtitle-A/part-40",
         "filename": "cfr-part-040-drug-alcohol-testing.md",
+        "agency": "FMCSA",
+    },
+    {
+        "part": "172",
+        "title": "Hazardous Materials Table, Special Provisions, Hazardous Materials Communications, Emergency Response Information, and Training Requirements",
+        "url": "https://www.ecfr.gov/current/title-49/subtitle-B/chapter-I/subchapter-C/part-172",
+        "filename": "cfr-part-172-hazardous-materials-communications.md",
+        "agency": "PHMSA",
     },
     {
         "part": "360",
         "title": "FMCSA Fees for Registration-Related Activities",
         "url": "https://www.ecfr.gov/current/title-49/subtitle-B/chapter-III/subchapter-A/part-360",
         "filename": "cfr-part-360-fmcsa-fees.md",
+        "agency": "FMCSA",
     },
     {
         "part": "365",
         "title": "Rules Governing Applications for Operating Authority",
         "url": "https://www.ecfr.gov/current/title-49/subtitle-B/chapter-III/subchapter-A/part-365",
         "filename": "cfr-part-365-operating-authority.md",
+        "agency": "FMCSA",
     },
     {
         "part": "367",
         "title": "Standards for Registration of Foreign Motor Carriers and Brokers",
         "url": "https://www.ecfr.gov/current/title-49/subtitle-B/chapter-III/subchapter-A/part-367",
         "filename": "cfr-part-367-foreign-registration.md",
+        "agency": "FMCSA",
     },
     {
         "part": "382",
         "title": "Controlled Substances and Alcohol Use and Testing",
         "url": "https://www.ecfr.gov/current/title-49/subtitle-B/chapter-III/subchapter-B/part-382",
         "filename": "cfr-part-382-controlled-substances.md",
+        "agency": "FMCSA",
     },
     {
         "part": "383",
         "title": "Commercial Driver's License Standards Requirements and Penalties",
         "url": "https://www.ecfr.gov/current/title-49/subtitle-B/chapter-III/subchapter-B/part-383",
         "filename": "cfr-part-383-cdl-standards.md",
+        "agency": "FMCSA",
     },
     {
         "part": "384",
         "title": "State Compliance with Commercial Driver's License Program",
         "url": "https://www.ecfr.gov/current/title-49/subtitle-B/chapter-III/subchapter-B/part-384",
         "filename": "cfr-part-384-state-cdl-compliance.md",
+        "agency": "FMCSA",
     },
     {
         "part": "387",
         "title": "Minimum Levels of Financial Responsibility for Motor Carriers",
         "url": "https://www.ecfr.gov/current/title-49/subtitle-B/chapter-III/subchapter-B/part-387",
         "filename": "cfr-part-387-financial-responsibility.md",
+        "agency": "FMCSA",
     },
     {
         "part": "391",
         "title": "Qualifications of Drivers and Longer Combination Vehicle Operators",
         "url": "https://www.ecfr.gov/current/title-49/subtitle-B/chapter-III/subchapter-B/part-391",
         "filename": "cfr-part-391-driver-qualifications.md",
+        "agency": "FMCSA",
     },
     {
         "part": "395",
         "title": "Hours of Service of Drivers",
         "url": "https://www.ecfr.gov/current/title-49/subtitle-B/chapter-III/subchapter-B/part-395",
         "filename": "cfr-part-395-hours-of-service.md",
+        "agency": "FMCSA",
     },
     {
         "part": "396",
         "title": "Inspection Repair and Maintenance",
         "url": "https://www.ecfr.gov/current/title-49/subtitle-B/chapter-III/subchapter-B/part-396",
         "filename": "cfr-part-396-inspection-maintenance.md",
+        "agency": "FMCSA",
     },
     {
         "part": "397",
         "title": "Transportation of Hazardous Materials; Driving and Parking Rules",
         "url": "https://www.ecfr.gov/current/title-49/subtitle-B/chapter-III/subchapter-B/part-397",
         "filename": "cfr-part-397-hazardous-materials-driving.md",
+        "agency": "FMCSA",
     },
 ]
 
@@ -198,7 +218,7 @@ def scrape_part(part_info, converter):
 
 **Source:** {part_info['url']}  
 **Title:** 49 — Transportation  
-**Agency:** Federal Motor Carrier Safety Administration (FMCSA)  
+**Agency:** {part_info.get('agency', 'FMCSA')}  
 **Last scraped:** {time.strftime('%Y-%m-%d')}  
 **Purpose:** DOT compliance reference for Fleet-Compliance Sentinel / Pipeline Penny knowledge base
 
@@ -256,12 +276,15 @@ def write_index(results):
         "- **Part 384** — State compliance with the federal CDL program",
         "- **Part 391** — Driver qualification standards including medical requirements",
         "",
-        "### Operations & Safety (40, 387, 395, 396, 397)",
+        "### Hazmat Communications & Emergency Response (172, 397)",
+        "- **Part 172** — Hazmat shipping papers, markings, labels, placards, emergency response info, and hazmat training",
+        "- **Part 397** — Hazardous materials driving and parking rules",
+        "",
+        "### Operations & Safety (40, 387, 395, 396)",
         "- **Part 40**  — DOT drug and alcohol testing procedures (all modes)",
         "- **Part 387** — Minimum financial responsibility / insurance requirements",
         "- **Part 395** — Hours of service, ELD, and fatigue management",
         "- **Part 396** — Vehicle inspection, repair, and maintenance",
-        "- **Part 397** — Hazardous materials driving and parking rules",
         "",
         "---",
         "",
