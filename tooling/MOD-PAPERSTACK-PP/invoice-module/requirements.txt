@@ -1,0 +1,15 @@
+# Invoice Extraction Module - Python Dependencies
+# Install: pip install -r requirements.txt
+# Pinned: 2026-03-26
+
+# Core extraction
+pdfplumber>=0.11.9          # PDF text/table extraction
+openpyxl>=3.1.5             # Excel export
+
+# OCR (optional - only needed for Bruckners and Arnold Machinery)
+pytesseract>=0.3.13         # OCR engine wrapper
+pdf2image>=1.17.0           # PDF page rendering for OCR
+Pillow>=12.1.1              # Image processing
+
+# Testing
+pytest>=9.0.0               # Test framework

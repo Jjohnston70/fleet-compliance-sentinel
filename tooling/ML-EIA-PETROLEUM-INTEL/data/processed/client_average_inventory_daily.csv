@@ -1,0 +1,1735 @@
+date,product,value,source
+2023-05-01,Diesel,3.09,client_average_inventory
+2023-05-01,Dyed Diesel,3.09,client_average_inventory
+2023-05-01,Unleaded,2.55,client_average_inventory
+2023-05-02,Diesel,3.0,client_average_inventory
+2023-05-02,Dyed Diesel,3.0,client_average_inventory
+2023-05-02,Unleaded,2.51,client_average_inventory
+2023-05-03,Diesel,2.91,client_average_inventory
+2023-05-03,Dyed Diesel,2.91,client_average_inventory
+2023-05-03,Unleaded,2.39,client_average_inventory
+2023-05-04,Diesel,2.91,client_average_inventory
+2023-05-04,Dyed Diesel,2.91,client_average_inventory
+2023-05-04,Unleaded,2.38,client_average_inventory
+2023-05-05,Diesel,2.8,client_average_inventory
+2023-05-05,Dyed Diesel,2.8,client_average_inventory
+2023-05-05,Unleaded,2.34,client_average_inventory
+2023-05-08,Diesel,2.76,client_average_inventory
+2023-05-08,Dyed Diesel,2.76,client_average_inventory
+2023-05-08,Unleaded,2.3,client_average_inventory
+2023-05-09,Diesel,2.76,client_average_inventory
+2023-05-09,Dyed Diesel,2.76,client_average_inventory
+2023-05-09,Unleaded,2.31,client_average_inventory
+2023-05-10,Diesel,2.75,client_average_inventory
+2023-05-10,Dyed Diesel,2.75,client_average_inventory
+2023-05-10,Unleaded,2.32,client_average_inventory
+2023-05-11,Diesel,2.87,client_average_inventory
+2023-05-11,Dyed Diesel,2.87,client_average_inventory
+2023-05-11,Unleaded,2.36,client_average_inventory
+2023-05-12,Diesel,2.9,client_average_inventory
+2023-05-12,Dyed Diesel,2.9,client_average_inventory
+2023-05-12,Unleaded,2.39,client_average_inventory
+2023-05-15,Diesel,2.9,client_average_inventory
+2023-05-15,Dyed Diesel,2.9,client_average_inventory
+2023-05-15,Unleaded,2.4,client_average_inventory
+2023-05-16,Diesel,2.88,client_average_inventory
+2023-05-16,Dyed Diesel,2.88,client_average_inventory
+2023-05-16,Unleaded,2.42,client_average_inventory
+2023-05-17,Diesel,2.89,client_average_inventory
+2023-05-17,Dyed Diesel,2.89,client_average_inventory
+2023-05-17,Unleaded,2.43,client_average_inventory
+2023-05-18,Diesel,2.9,client_average_inventory
+2023-05-18,Dyed Diesel,2.9,client_average_inventory
+2023-05-18,Unleaded,2.43,client_average_inventory
+2023-05-19,Diesel,2.93,client_average_inventory
+2023-05-19,Dyed Diesel,2.93,client_average_inventory
+2023-05-19,Unleaded,2.55,client_average_inventory
+2023-05-22,Diesel,2.85,client_average_inventory
+2023-05-22,Dyed Diesel,2.85,client_average_inventory
+2023-05-22,Unleaded,2.55,client_average_inventory
+2023-05-23,Diesel,2.82,client_average_inventory
+2023-05-23,Dyed Diesel,2.82,client_average_inventory
+2023-05-23,Unleaded,2.56,client_average_inventory
+2023-05-24,Diesel,2.83,client_average_inventory
+2023-05-24,Dyed Diesel,2.83,client_average_inventory
+2023-05-24,Unleaded,2.55,client_average_inventory
+2023-05-25,Diesel,2.79,client_average_inventory
+2023-05-25,Dyed Diesel,2.79,client_average_inventory
+2023-05-25,Unleaded,2.65,client_average_inventory
+2023-05-26,Diesel,2.98,client_average_inventory
+2023-05-26,Dyed Diesel,2.98,client_average_inventory
+2023-05-26,Unleaded,2.69,client_average_inventory
+2023-05-30,Diesel,2.88,client_average_inventory
+2023-05-30,Dyed Diesel,2.88,client_average_inventory
+2023-05-30,Unleaded,2.73,client_average_inventory
+2023-05-31,Diesel,2.87,client_average_inventory
+2023-05-31,Dyed Diesel,2.87,client_average_inventory
+2023-05-31,Unleaded,2.74,client_average_inventory
+2023-06-01,Diesel,2.79,client_average_inventory
+2023-06-01,Dyed Diesel,2.79,client_average_inventory
+2023-06-01,Unleaded,2.69,client_average_inventory
+2023-06-02,Diesel,2.78,client_average_inventory
+2023-06-02,Dyed Diesel,2.78,client_average_inventory
+2023-06-02,Unleaded,2.72,client_average_inventory
+2023-06-05,Diesel,2.85,client_average_inventory
+2023-06-05,Dyed Diesel,2.85,client_average_inventory
+2023-06-05,Unleaded,2.7,client_average_inventory
+2023-06-06,Diesel,2.76,client_average_inventory
+2023-06-06,Dyed Diesel,2.76,client_average_inventory
+2023-06-06,Unleaded,2.76,client_average_inventory
+2023-06-07,Diesel,2.75,client_average_inventory
+2023-06-07,Dyed Diesel,2.75,client_average_inventory
+2023-06-07,Unleaded,2.76,client_average_inventory
+2023-06-08,Diesel,2.74,client_average_inventory
+2023-06-08,Dyed Diesel,2.74,client_average_inventory
+2023-06-08,Unleaded,2.71,client_average_inventory
+2023-06-09,Diesel,2.77,client_average_inventory
+2023-06-09,Dyed Diesel,2.77,client_average_inventory
+2023-06-09,Unleaded,2.74,client_average_inventory
+2023-06-12,Diesel,2.87,client_average_inventory
+2023-06-12,Dyed Diesel,2.87,client_average_inventory
+2023-06-12,Unleaded,2.76,client_average_inventory
+2023-06-13,Diesel,2.88,client_average_inventory
+2023-06-13,Dyed Diesel,2.88,client_average_inventory
+2023-06-13,Unleaded,2.77,client_average_inventory
+2023-06-14,Diesel,2.85,client_average_inventory
+2023-06-14,Dyed Diesel,2.85,client_average_inventory
+2023-06-14,Unleaded,2.66,client_average_inventory
+2023-06-15,Diesel,2.74,client_average_inventory
+2023-06-15,Dyed Diesel,2.87,client_average_inventory
+2023-06-15,Unleaded,2.66,client_average_inventory
+2023-06-16,Diesel,2.74,client_average_inventory
+2023-06-16,Dyed Diesel,2.82,client_average_inventory
+2023-06-16,Unleaded,2.66,client_average_inventory
+2023-06-19,Diesel,2.79,client_average_inventory
+2023-06-19,Dyed Diesel,2.81,client_average_inventory
+2023-06-19,Unleaded,2.67,client_average_inventory
+2023-06-20,Diesel,2.8,client_average_inventory
+2023-06-20,Dyed Diesel,2.81,client_average_inventory
+2023-06-20,Unleaded,2.63,client_average_inventory
+2023-06-21,Diesel,2.8,client_average_inventory
+2023-06-21,Dyed Diesel,2.81,client_average_inventory
+2023-06-21,Unleaded,2.6,client_average_inventory
+2023-06-22,Diesel,2.8,client_average_inventory
+2023-06-22,Dyed Diesel,2.82,client_average_inventory
+2023-06-22,Unleaded,2.63,client_average_inventory
+2023-06-23,Diesel,2.82,client_average_inventory
+2023-06-23,Dyed Diesel,2.84,client_average_inventory
+2023-06-23,Unleaded,2.77,client_average_inventory
+2023-06-26,Diesel,2.8,client_average_inventory
+2023-06-26,Dyed Diesel,2.73,client_average_inventory
+2023-06-26,Unleaded,2.68,client_average_inventory
+2023-06-27,Diesel,2.8,client_average_inventory
+2023-06-27,Dyed Diesel,2.75,client_average_inventory
+2023-06-27,Unleaded,2.68,client_average_inventory
+2023-06-28,Diesel,2.8,client_average_inventory
+2023-06-28,Dyed Diesel,2.83,client_average_inventory
+2023-06-28,Unleaded,2.71,client_average_inventory
+2023-06-29,Diesel,2.78,client_average_inventory
+2023-06-29,Dyed Diesel,2.77,client_average_inventory
+2023-06-29,Unleaded,2.8,client_average_inventory
+2023-06-30,Diesel,2.78,client_average_inventory
+2023-06-30,Dyed Diesel,2.78,client_average_inventory
+2023-06-30,Unleaded,2.77,client_average_inventory
+2023-07-03,Diesel,2.79,client_average_inventory
+2023-07-03,Dyed Diesel,2.78,client_average_inventory
+2023-07-03,Unleaded,2.77,client_average_inventory
+2023-07-04,Diesel,2.79,client_average_inventory
+2023-07-04,Dyed Diesel,2.78,client_average_inventory
+2023-07-04,Unleaded,2.77,client_average_inventory
+2023-07-05,Diesel,2.77,client_average_inventory
+2023-07-05,Dyed Diesel,2.76,client_average_inventory
+2023-07-05,Unleaded,2.94,client_average_inventory
+2023-07-06,Diesel,2.78,client_average_inventory
+2023-07-06,Dyed Diesel,2.75,client_average_inventory
+2023-07-06,Unleaded,2.94,client_average_inventory
+2023-07-07,Diesel,2.77,client_average_inventory
+2023-07-07,Dyed Diesel,2.82,client_average_inventory
+2023-07-07,Unleaded,2.81,client_average_inventory
+2023-07-10,Diesel,2.78,client_average_inventory
+2023-07-10,Dyed Diesel,2.78,client_average_inventory
+2023-07-10,Unleaded,2.75,client_average_inventory
+2023-07-11,Diesel,2.77,client_average_inventory
+2023-07-11,Dyed Diesel,2.76,client_average_inventory
+2023-07-11,Unleaded,2.8,client_average_inventory
+2023-07-12,Diesel,2.77,client_average_inventory
+2023-07-12,Dyed Diesel,2.75,client_average_inventory
+2023-07-12,Unleaded,2.79,client_average_inventory
+2023-07-13,Diesel,2.77,client_average_inventory
+2023-07-13,Dyed Diesel,2.79,client_average_inventory
+2023-07-13,Unleaded,2.8,client_average_inventory
+2023-07-14,Diesel,2.8,client_average_inventory
+2023-07-14,Dyed Diesel,2.88,client_average_inventory
+2023-07-14,Unleaded,2.73,client_average_inventory
+2023-07-17,Diesel,2.81,client_average_inventory
+2023-07-17,Dyed Diesel,2.94,client_average_inventory
+2023-07-17,Unleaded,2.73,client_average_inventory
+2023-07-18,Diesel,2.83,client_average_inventory
+2023-07-18,Dyed Diesel,2.87,client_average_inventory
+2023-07-18,Unleaded,2.73,client_average_inventory
+2023-07-19,Diesel,2.84,client_average_inventory
+2023-07-19,Dyed Diesel,2.88,client_average_inventory
+2023-07-19,Unleaded,2.92,client_average_inventory
+2023-07-20,Diesel,2.87,client_average_inventory
+2023-07-20,Dyed Diesel,2.91,client_average_inventory
+2023-07-20,Unleaded,2.8,client_average_inventory
+2023-07-21,Diesel,2.88,client_average_inventory
+2023-07-21,Dyed Diesel,2.92,client_average_inventory
+2023-07-21,Unleaded,2.87,client_average_inventory
+2023-07-24,Diesel,2.92,client_average_inventory
+2023-07-24,Dyed Diesel,2.95,client_average_inventory
+2023-07-24,Unleaded,3.03,client_average_inventory
+2023-07-25,Diesel,2.94,client_average_inventory
+2023-07-25,Dyed Diesel,2.96,client_average_inventory
+2023-07-25,Unleaded,2.94,client_average_inventory
+2023-07-26,Diesel,3.0,client_average_inventory
+2023-07-26,Dyed Diesel,2.96,client_average_inventory
+2023-07-26,Unleaded,3.08,client_average_inventory
+2023-07-27,Diesel,3.0,client_average_inventory
+2023-07-27,Dyed Diesel,3.01,client_average_inventory
+2023-07-27,Unleaded,3.17,client_average_inventory
+2023-07-28,Diesel,3.04,client_average_inventory
+2023-07-28,Dyed Diesel,3.03,client_average_inventory
+2023-07-28,Unleaded,3.18,client_average_inventory
+2023-07-31,Diesel,3.12,client_average_inventory
+2023-07-31,Dyed Diesel,3.16,client_average_inventory
+2023-07-31,Unleaded,3.11,client_average_inventory
+2023-08-01,Diesel,3.12,client_average_inventory
+2023-08-01,Dyed Diesel,3.16,client_average_inventory
+2023-08-01,Unleaded,3.14,client_average_inventory
+2023-08-02,Diesel,3.15,client_average_inventory
+2023-08-02,Dyed Diesel,3.19,client_average_inventory
+2023-08-02,Unleaded,3.14,client_average_inventory
+2023-08-03,Diesel,3.19,client_average_inventory
+2023-08-03,Dyed Diesel,3.22,client_average_inventory
+2023-08-03,Unleaded,3.1,client_average_inventory
+2023-08-04,Diesel,3.19,client_average_inventory
+2023-08-04,Dyed Diesel,3.21,client_average_inventory
+2023-08-04,Unleaded,3.1,client_average_inventory
+2023-08-07,Diesel,3.21,client_average_inventory
+2023-08-07,Dyed Diesel,3.26,client_average_inventory
+2023-08-07,Unleaded,3.09,client_average_inventory
+2023-08-08,Diesel,3.21,client_average_inventory
+2023-08-08,Dyed Diesel,3.27,client_average_inventory
+2023-08-08,Unleaded,3.15,client_average_inventory
+2023-08-09,Diesel,3.22,client_average_inventory
+2023-08-09,Dyed Diesel,3.24,client_average_inventory
+2023-08-09,Unleaded,3.22,client_average_inventory
+2023-08-10,Diesel,3.12,client_average_inventory
+2023-08-10,Dyed Diesel,3.29,client_average_inventory
+2023-08-10,Unleaded,3.23,client_average_inventory
+2023-08-11,Diesel,3.19,client_average_inventory
+2023-08-11,Dyed Diesel,3.24,client_average_inventory
+2023-08-11,Unleaded,3.15,client_average_inventory
+2023-08-14,Diesel,3.27,client_average_inventory
+2023-08-14,Dyed Diesel,3.3,client_average_inventory
+2023-08-14,Unleaded,3.15,client_average_inventory
+2023-08-15,Diesel,3.3,client_average_inventory
+2023-08-15,Dyed Diesel,3.36,client_average_inventory
+2023-08-15,Unleaded,3.11,client_average_inventory
+2023-08-16,Diesel,3.25,client_average_inventory
+2023-08-16,Dyed Diesel,3.26,client_average_inventory
+2023-08-16,Unleaded,3.08,client_average_inventory
+2023-08-17,Diesel,3.24,client_average_inventory
+2023-08-17,Dyed Diesel,3.27,client_average_inventory
+2023-08-17,Unleaded,3.03,client_average_inventory
+2023-08-18,Diesel,3.24,client_average_inventory
+2023-08-18,Dyed Diesel,3.27,client_average_inventory
+2023-08-18,Unleaded,2.98,client_average_inventory
+2023-08-21,Diesel,3.29,client_average_inventory
+2023-08-21,Dyed Diesel,3.33,client_average_inventory
+2023-08-21,Unleaded,2.9,client_average_inventory
+2023-08-22,Diesel,3.31,client_average_inventory
+2023-08-22,Dyed Diesel,3.27,client_average_inventory
+2023-08-22,Unleaded,2.89,client_average_inventory
+2023-08-23,Diesel,3.28,client_average_inventory
+2023-08-23,Dyed Diesel,3.35,client_average_inventory
+2023-08-23,Unleaded,2.89,client_average_inventory
+2023-08-24,Diesel,3.32,client_average_inventory
+2023-08-24,Dyed Diesel,3.38,client_average_inventory
+2023-08-24,Unleaded,2.89,client_average_inventory
+2023-08-25,Diesel,3.39,client_average_inventory
+2023-08-25,Dyed Diesel,3.43,client_average_inventory
+2023-08-25,Unleaded,2.82,client_average_inventory
+2023-08-28,Diesel,3.31,client_average_inventory
+2023-08-28,Dyed Diesel,3.42,client_average_inventory
+2023-08-28,Unleaded,2.88,client_average_inventory
+2023-08-29,Diesel,3.39,client_average_inventory
+2023-08-29,Dyed Diesel,3.43,client_average_inventory
+2023-08-29,Unleaded,2.91,client_average_inventory
+2023-08-30,Diesel,3.4,client_average_inventory
+2023-08-30,Dyed Diesel,3.42,client_average_inventory
+2023-08-30,Unleaded,2.89,client_average_inventory
+2023-08-31,Diesel,3.41,client_average_inventory
+2023-08-31,Dyed Diesel,3.42,client_average_inventory
+2023-08-31,Unleaded,2.88,client_average_inventory
+2023-09-01,Diesel,3.4,client_average_inventory
+2023-09-01,Dyed Diesel,3.39,client_average_inventory
+2023-09-01,Unleaded,2.87,client_average_inventory
+2023-09-05,Diesel,3.4,client_average_inventory
+2023-09-05,Dyed Diesel,3.41,client_average_inventory
+2023-09-05,Unleaded,2.91,client_average_inventory
+2023-09-06,Diesel,3.39,client_average_inventory
+2023-09-06,Dyed Diesel,3.39,client_average_inventory
+2023-09-06,Unleaded,2.86,client_average_inventory
+2023-09-07,Diesel,3.4,client_average_inventory
+2023-09-07,Dyed Diesel,3.41,client_average_inventory
+2023-09-07,Unleaded,2.96,client_average_inventory
+2023-09-08,Diesel,3.42,client_average_inventory
+2023-09-08,Dyed Diesel,3.43,client_average_inventory
+2023-09-08,Unleaded,3.03,client_average_inventory
+2023-09-11,Diesel,3.45,client_average_inventory
+2023-09-11,Dyed Diesel,3.45,client_average_inventory
+2023-09-11,Unleaded,3.07,client_average_inventory
+2023-09-12,Diesel,3.45,client_average_inventory
+2023-09-12,Dyed Diesel,3.52,client_average_inventory
+2023-09-12,Unleaded,3.22,client_average_inventory
+2023-09-13,Diesel,3.47,client_average_inventory
+2023-09-13,Dyed Diesel,3.56,client_average_inventory
+2023-09-13,Unleaded,3.15,client_average_inventory
+2023-09-14,Diesel,3.48,client_average_inventory
+2023-09-14,Dyed Diesel,3.54,client_average_inventory
+2023-09-14,Unleaded,3.14,client_average_inventory
+2023-09-15,Diesel,3.53,client_average_inventory
+2023-09-15,Dyed Diesel,3.6,client_average_inventory
+2023-09-15,Unleaded,3.14,client_average_inventory
+2023-09-18,Diesel,3.57,client_average_inventory
+2023-09-18,Dyed Diesel,3.62,client_average_inventory
+2023-09-18,Unleaded,3.02,client_average_inventory
+2023-09-19,Diesel,3.58,client_average_inventory
+2023-09-19,Dyed Diesel,3.6,client_average_inventory
+2023-09-19,Unleaded,3.01,client_average_inventory
+2023-09-20,Diesel,3.56,client_average_inventory
+2023-09-20,Dyed Diesel,3.56,client_average_inventory
+2023-09-20,Unleaded,2.91,client_average_inventory
+2023-09-21,Diesel,3.57,client_average_inventory
+2023-09-21,Dyed Diesel,3.56,client_average_inventory
+2023-09-21,Unleaded,3.07,client_average_inventory
+2023-09-22,Diesel,3.56,client_average_inventory
+2023-09-22,Dyed Diesel,3.55,client_average_inventory
+2023-09-22,Unleaded,2.99,client_average_inventory
+2023-09-25,Diesel,3.55,client_average_inventory
+2023-09-25,Dyed Diesel,3.55,client_average_inventory
+2023-09-25,Unleaded,2.77,client_average_inventory
+2023-09-26,Diesel,3.54,client_average_inventory
+2023-09-26,Dyed Diesel,3.54,client_average_inventory
+2023-09-26,Unleaded,2.74,client_average_inventory
+2023-09-27,Diesel,3.51,client_average_inventory
+2023-09-27,Dyed Diesel,3.5,client_average_inventory
+2023-09-27,Unleaded,2.72,client_average_inventory
+2023-09-28,Diesel,3.48,client_average_inventory
+2023-09-28,Dyed Diesel,3.47,client_average_inventory
+2023-09-28,Unleaded,2.72,client_average_inventory
+2023-09-29,Diesel,3.49,client_average_inventory
+2023-09-29,Dyed Diesel,3.49,client_average_inventory
+2023-09-29,Unleaded,2.72,client_average_inventory
+2023-10-02,Diesel,3.51,client_average_inventory
+2023-10-02,Dyed Diesel,3.51,client_average_inventory
+2023-10-02,Unleaded,2.68,client_average_inventory
+2023-10-03,Diesel,3.51,client_average_inventory
+2023-10-03,Dyed Diesel,3.52,client_average_inventory
+2023-10-03,Unleaded,2.67,client_average_inventory
+2023-10-04,Diesel,3.52,client_average_inventory
+2023-10-04,Dyed Diesel,3.49,client_average_inventory
+2023-10-04,Unleaded,2.6,client_average_inventory
+2023-10-05,Diesel,3.44,client_average_inventory
+2023-10-05,Dyed Diesel,3.44,client_average_inventory
+2023-10-05,Unleaded,2.63,client_average_inventory
+2023-10-06,Diesel,3.35,client_average_inventory
+2023-10-06,Dyed Diesel,3.26,client_average_inventory
+2023-10-06,Unleaded,2.5,client_average_inventory
+2023-10-09,Diesel,3.28,client_average_inventory
+2023-10-09,Dyed Diesel,3.21,client_average_inventory
+2023-10-09,Unleaded,2.49,client_average_inventory
+2023-10-10,Diesel,3.2,client_average_inventory
+2023-10-10,Dyed Diesel,3.24,client_average_inventory
+2023-10-10,Unleaded,2.5,client_average_inventory
+2023-10-11,Diesel,3.24,client_average_inventory
+2023-10-11,Dyed Diesel,3.22,client_average_inventory
+2023-10-11,Unleaded,2.52,client_average_inventory
+2023-10-12,Diesel,3.25,client_average_inventory
+2023-10-12,Dyed Diesel,3.23,client_average_inventory
+2023-10-12,Unleaded,2.5,client_average_inventory
+2023-10-13,Diesel,3.24,client_average_inventory
+2023-10-13,Dyed Diesel,3.24,client_average_inventory
+2023-10-13,Unleaded,2.5,client_average_inventory
+2023-10-16,Diesel,3.24,client_average_inventory
+2023-10-16,Dyed Diesel,3.25,client_average_inventory
+2023-10-16,Unleaded,2.47,client_average_inventory
+2023-10-17,Diesel,3.36,client_average_inventory
+2023-10-17,Dyed Diesel,3.32,client_average_inventory
+2023-10-17,Unleaded,2.45,client_average_inventory
+2023-10-18,Diesel,3.4,client_average_inventory
+2023-10-18,Dyed Diesel,3.49,client_average_inventory
+2023-10-18,Unleaded,2.49,client_average_inventory
+2023-10-19,Diesel,3.49,client_average_inventory
+2023-10-19,Dyed Diesel,3.63,client_average_inventory
+2023-10-19,Unleaded,2.54,client_average_inventory
+2023-10-20,Diesel,3.68,client_average_inventory
+2023-10-20,Dyed Diesel,3.8,client_average_inventory
+2023-10-20,Unleaded,2.55,client_average_inventory
+2023-10-23,Diesel,3.89,client_average_inventory
+2023-10-23,Dyed Diesel,3.98,client_average_inventory
+2023-10-23,Unleaded,2.56,client_average_inventory
+2023-10-24,Diesel,3.91,client_average_inventory
+2023-10-24,Dyed Diesel,3.94,client_average_inventory
+2023-10-24,Unleaded,2.44,client_average_inventory
+2023-10-25,Diesel,3.78,client_average_inventory
+2023-10-25,Dyed Diesel,3.6,client_average_inventory
+2023-10-25,Unleaded,2.28,client_average_inventory
+2023-10-26,Diesel,3.45,client_average_inventory
+2023-10-26,Dyed Diesel,3.29,client_average_inventory
+2023-10-26,Unleaded,2.25,client_average_inventory
+2023-10-27,Diesel,3.38,client_average_inventory
+2023-10-27,Dyed Diesel,3.25,client_average_inventory
+2023-10-27,Unleaded,2.28,client_average_inventory
+2023-10-30,Diesel,3.32,client_average_inventory
+2023-10-30,Dyed Diesel,3.22,client_average_inventory
+2023-10-30,Unleaded,2.25,client_average_inventory
+2023-10-31,Diesel,3.28,client_average_inventory
+2023-10-31,Dyed Diesel,3.16,client_average_inventory
+2023-10-31,Unleaded,2.2,client_average_inventory
+2023-11-01,Diesel,3.18,client_average_inventory
+2023-11-01,Dyed Diesel,3.14,client_average_inventory
+2023-11-01,Unleaded,2.15,client_average_inventory
+2023-11-02,Diesel,3.15,client_average_inventory
+2023-11-02,Dyed Diesel,3.09,client_average_inventory
+2023-11-02,Unleaded,2.12,client_average_inventory
+2023-11-03,Diesel,3.13,client_average_inventory
+2023-11-03,Dyed Diesel,3.07,client_average_inventory
+2023-11-03,Unleaded,2.12,client_average_inventory
+2023-11-06,Diesel,3.05,client_average_inventory
+2023-11-06,Dyed Diesel,3.02,client_average_inventory
+2023-11-06,Unleaded,2.12,client_average_inventory
+2023-11-07,Diesel,2.93,client_average_inventory
+2023-11-07,Dyed Diesel,2.85,client_average_inventory
+2023-11-07,Unleaded,2.12,client_average_inventory
+2023-11-08,Diesel,3.03,client_average_inventory
+2023-11-08,Dyed Diesel,3.01,client_average_inventory
+2023-11-08,Unleaded,2.13,client_average_inventory
+2023-11-09,Diesel,2.95,client_average_inventory
+2023-11-09,Dyed Diesel,2.95,client_average_inventory
+2023-11-09,Unleaded,2.14,client_average_inventory
+2023-11-10,Diesel,2.92,client_average_inventory
+2023-11-10,Dyed Diesel,2.89,client_average_inventory
+2023-11-10,Unleaded,2.14,client_average_inventory
+2023-11-13,Diesel,2.89,client_average_inventory
+2023-11-13,Dyed Diesel,2.87,client_average_inventory
+2023-11-13,Unleaded,2.14,client_average_inventory
+2023-11-14,Diesel,2.87,client_average_inventory
+2023-11-14,Dyed Diesel,2.86,client_average_inventory
+2023-11-14,Unleaded,2.13,client_average_inventory
+2023-11-15,Diesel,2.91,client_average_inventory
+2023-11-15,Dyed Diesel,2.91,client_average_inventory
+2023-11-15,Unleaded,2.16,client_average_inventory
+2023-11-16,Diesel,2.88,client_average_inventory
+2023-11-16,Dyed Diesel,2.9,client_average_inventory
+2023-11-16,Unleaded,2.16,client_average_inventory
+2023-11-17,Diesel,2.97,client_average_inventory
+2023-11-17,Dyed Diesel,3.11,client_average_inventory
+2023-11-17,Unleaded,2.12,client_average_inventory
+2023-11-20,Diesel,2.98,client_average_inventory
+2023-11-20,Dyed Diesel,3.07,client_average_inventory
+2023-11-20,Unleaded,2.11,client_average_inventory
+2023-11-21,Diesel,2.93,client_average_inventory
+2023-11-21,Dyed Diesel,3.02,client_average_inventory
+2023-11-21,Unleaded,2.1,client_average_inventory
+2023-11-22,Diesel,3.03,client_average_inventory
+2023-11-22,Dyed Diesel,3.13,client_average_inventory
+2023-11-22,Unleaded,2.35,client_average_inventory
+2023-11-23,Diesel,3.03,client_average_inventory
+2023-11-23,Dyed Diesel,3.13,client_average_inventory
+2023-11-23,Unleaded,2.35,client_average_inventory
+2023-11-24,Diesel,3.03,client_average_inventory
+2023-11-24,Dyed Diesel,3.13,client_average_inventory
+2023-11-24,Unleaded,2.35,client_average_inventory
+2023-11-27,Diesel,3.06,client_average_inventory
+2023-11-27,Dyed Diesel,2.98,client_average_inventory
+2023-11-27,Unleaded,2.32,client_average_inventory
+2023-11-28,Diesel,3.04,client_average_inventory
+2023-11-28,Dyed Diesel,3.02,client_average_inventory
+2023-11-28,Unleaded,2.18,client_average_inventory
+2023-11-29,Diesel,3.07,client_average_inventory
+2023-11-29,Dyed Diesel,2.97,client_average_inventory
+2023-11-29,Unleaded,2.13,client_average_inventory
+2023-11-30,Diesel,2.99,client_average_inventory
+2023-11-30,Dyed Diesel,2.9,client_average_inventory
+2023-11-30,Unleaded,2.12,client_average_inventory
+2023-12-01,Diesel,2.92,client_average_inventory
+2023-12-01,Dyed Diesel,2.83,client_average_inventory
+2023-12-01,Unleaded,2.1,client_average_inventory
+2023-12-04,Diesel,2.79,client_average_inventory
+2023-12-04,Dyed Diesel,2.75,client_average_inventory
+2023-12-04,Unleaded,2.09,client_average_inventory
+2023-12-05,Diesel,2.73,client_average_inventory
+2023-12-05,Dyed Diesel,2.71,client_average_inventory
+2023-12-05,Unleaded,2.05,client_average_inventory
+2023-12-06,Diesel,2.71,client_average_inventory
+2023-12-06,Dyed Diesel,2.67,client_average_inventory
+2023-12-06,Unleaded,2.03,client_average_inventory
+2023-12-07,Diesel,2.64,client_average_inventory
+2023-12-07,Dyed Diesel,2.64,client_average_inventory
+2023-12-07,Unleaded,1.91,client_average_inventory
+2023-12-08,Diesel,2.54,client_average_inventory
+2023-12-08,Dyed Diesel,2.5,client_average_inventory
+2023-12-08,Unleaded,1.83,client_average_inventory
+2023-12-11,Diesel,2.5,client_average_inventory
+2023-12-11,Dyed Diesel,2.49,client_average_inventory
+2023-12-11,Unleaded,1.82,client_average_inventory
+2023-12-12,Diesel,2.49,client_average_inventory
+2023-12-12,Dyed Diesel,2.48,client_average_inventory
+2023-12-12,Unleaded,1.81,client_average_inventory
+2023-12-13,Diesel,2.49,client_average_inventory
+2023-12-13,Dyed Diesel,2.47,client_average_inventory
+2023-12-13,Unleaded,1.8,client_average_inventory
+2023-12-14,Diesel,2.48,client_average_inventory
+2023-12-14,Dyed Diesel,2.47,client_average_inventory
+2023-12-14,Unleaded,1.75,client_average_inventory
+2023-12-15,Diesel,2.48,client_average_inventory
+2023-12-15,Dyed Diesel,2.49,client_average_inventory
+2023-12-15,Unleaded,1.75,client_average_inventory
+2023-12-18,Diesel,2.49,client_average_inventory
+2023-12-18,Dyed Diesel,2.49,client_average_inventory
+2023-12-18,Unleaded,1.74,client_average_inventory
+2023-12-19,Diesel,2.5,client_average_inventory
+2023-12-19,Dyed Diesel,2.54,client_average_inventory
+2023-12-19,Unleaded,1.75,client_average_inventory
+2023-12-20,Diesel,2.53,client_average_inventory
+2023-12-20,Dyed Diesel,2.57,client_average_inventory
+2023-12-20,Unleaded,1.77,client_average_inventory
+2023-12-21,Diesel,2.64,client_average_inventory
+2023-12-21,Dyed Diesel,2.69,client_average_inventory
+2023-12-21,Unleaded,1.81,client_average_inventory
+2023-12-22,Diesel,2.63,client_average_inventory
+2023-12-22,Dyed Diesel,2.65,client_average_inventory
+2023-12-22,Unleaded,1.81,client_average_inventory
+2023-12-25,Diesel,2.63,client_average_inventory
+2023-12-25,Dyed Diesel,2.65,client_average_inventory
+2023-12-25,Unleaded,1.81,client_average_inventory
+2023-12-26,Diesel,2.61,client_average_inventory
+2023-12-26,Dyed Diesel,2.63,client_average_inventory
+2023-12-26,Unleaded,1.86,client_average_inventory
+2023-12-27,Diesel,2.6,client_average_inventory
+2023-12-27,Dyed Diesel,2.61,client_average_inventory
+2023-12-27,Unleaded,2.07,client_average_inventory
+2023-12-28,Diesel,2.56,client_average_inventory
+2023-12-28,Dyed Diesel,2.59,client_average_inventory
+2023-12-28,Unleaded,2.15,client_average_inventory
+2023-12-29,Diesel,2.55,client_average_inventory
+2023-12-29,Dyed Diesel,2.57,client_average_inventory
+2023-12-29,Unleaded,2.15,client_average_inventory
+2024-01-02,Diesel,2.51,client_average_inventory
+2024-01-02,Dyed Diesel,2.51,client_average_inventory
+2024-01-02,Unleaded,2.04,client_average_inventory
+2024-01-03,Diesel,2.47,client_average_inventory
+2024-01-03,Dyed Diesel,2.5,client_average_inventory
+2024-01-03,Unleaded,2.02,client_average_inventory
+2024-01-04,Diesel,2.52,client_average_inventory
+2024-01-04,Dyed Diesel,2.49,client_average_inventory
+2024-01-04,Unleaded,1.99,client_average_inventory
+2024-01-05,Diesel,2.51,client_average_inventory
+2024-01-05,Dyed Diesel,2.5,client_average_inventory
+2024-01-05,Unleaded,1.86,client_average_inventory
+2024-01-08,Diesel,2.49,client_average_inventory
+2024-01-08,Dyed Diesel,2.48,client_average_inventory
+2024-01-08,Unleaded,1.85,client_average_inventory
+2024-01-09,Diesel,2.5,client_average_inventory
+2024-01-09,Dyed Diesel,2.49,client_average_inventory
+2024-01-09,Unleaded,1.85,client_average_inventory
+2024-01-10,Diesel,2.5,client_average_inventory
+2024-01-10,Dyed Diesel,2.47,client_average_inventory
+2024-01-10,Unleaded,1.77,client_average_inventory
+2024-01-11,Diesel,2.52,client_average_inventory
+2024-01-11,Dyed Diesel,2.51,client_average_inventory
+2024-01-11,Unleaded,1.77,client_average_inventory
+2024-01-12,Diesel,2.53,client_average_inventory
+2024-01-12,Dyed Diesel,2.52,client_average_inventory
+2024-01-12,Unleaded,1.77,client_average_inventory
+2024-01-15,Diesel,2.52,client_average_inventory
+2024-01-15,Dyed Diesel,2.51,client_average_inventory
+2024-01-15,Unleaded,1.77,client_average_inventory
+2024-01-16,Diesel,2.52,client_average_inventory
+2024-01-16,Dyed Diesel,2.51,client_average_inventory
+2024-01-16,Unleaded,1.77,client_average_inventory
+2024-01-17,Diesel,2.51,client_average_inventory
+2024-01-17,Dyed Diesel,2.51,client_average_inventory
+2024-01-17,Unleaded,1.76,client_average_inventory
+2024-01-18,Diesel,2.46,client_average_inventory
+2024-01-18,Dyed Diesel,2.44,client_average_inventory
+2024-01-18,Unleaded,1.76,client_average_inventory
+2024-01-19,Diesel,2.45,client_average_inventory
+2024-01-19,Dyed Diesel,2.42,client_average_inventory
+2024-01-19,Unleaded,1.78,client_average_inventory
+2024-01-22,Diesel,2.43,client_average_inventory
+2024-01-22,Dyed Diesel,2.43,client_average_inventory
+2024-01-22,Unleaded,1.77,client_average_inventory
+2024-01-23,Diesel,2.43,client_average_inventory
+2024-01-23,Dyed Diesel,2.42,client_average_inventory
+2024-01-23,Unleaded,1.77,client_average_inventory
+2024-01-24,Diesel,2.42,client_average_inventory
+2024-01-24,Dyed Diesel,2.42,client_average_inventory
+2024-01-24,Unleaded,1.8,client_average_inventory
+2024-01-25,Diesel,2.39,client_average_inventory
+2024-01-25,Dyed Diesel,2.4,client_average_inventory
+2024-01-25,Unleaded,1.83,client_average_inventory
+2024-01-26,Diesel,2.39,client_average_inventory
+2024-01-26,Dyed Diesel,2.38,client_average_inventory
+2024-01-26,Unleaded,1.83,client_average_inventory
+2024-01-29,Diesel,2.4,client_average_inventory
+2024-01-29,Dyed Diesel,2.4,client_average_inventory
+2024-01-29,Unleaded,1.92,client_average_inventory
+2024-01-30,Diesel,2.42,client_average_inventory
+2024-01-30,Dyed Diesel,2.43,client_average_inventory
+2024-01-30,Unleaded,1.95,client_average_inventory
+2024-01-31,Diesel,2.41,client_average_inventory
+2024-01-31,Dyed Diesel,2.43,client_average_inventory
+2024-01-31,Unleaded,1.97,client_average_inventory
+2024-02-01,Diesel,2.42,client_average_inventory
+2024-02-01,Dyed Diesel,2.44,client_average_inventory
+2024-02-01,Unleaded,1.95,client_average_inventory
+2024-02-02,Diesel,2.42,client_average_inventory
+2024-02-02,Dyed Diesel,2.44,client_average_inventory
+2024-02-02,Unleaded,1.89,client_average_inventory
+2024-02-05,Diesel,2.4,client_average_inventory
+2024-02-05,Dyed Diesel,2.41,client_average_inventory
+2024-02-05,Unleaded,1.88,client_average_inventory
+2024-02-06,Diesel,2.44,client_average_inventory
+2024-02-06,Dyed Diesel,2.43,client_average_inventory
+2024-02-06,Unleaded,1.87,client_average_inventory
+2024-02-07,Diesel,2.48,client_average_inventory
+2024-02-07,Dyed Diesel,2.47,client_average_inventory
+2024-02-07,Unleaded,1.91,client_average_inventory
+2024-02-08,Diesel,2.54,client_average_inventory
+2024-02-08,Dyed Diesel,2.62,client_average_inventory
+2024-02-08,Unleaded,1.89,client_average_inventory
+2024-02-09,Diesel,2.65,client_average_inventory
+2024-02-09,Dyed Diesel,2.69,client_average_inventory
+2024-02-09,Unleaded,1.89,client_average_inventory
+2024-02-12,Diesel,2.69,client_average_inventory
+2024-02-12,Dyed Diesel,2.7,client_average_inventory
+2024-02-12,Unleaded,2.01,client_average_inventory
+2024-02-13,Diesel,2.72,client_average_inventory
+2024-02-13,Dyed Diesel,2.73,client_average_inventory
+2024-02-13,Unleaded,2.01,client_average_inventory
+2024-02-14,Diesel,2.79,client_average_inventory
+2024-02-14,Dyed Diesel,2.78,client_average_inventory
+2024-02-14,Unleaded,2.1,client_average_inventory
+2024-02-15,Diesel,2.79,client_average_inventory
+2024-02-15,Dyed Diesel,2.79,client_average_inventory
+2024-02-15,Unleaded,2.1,client_average_inventory
+2024-02-16,Diesel,2.82,client_average_inventory
+2024-02-16,Dyed Diesel,2.82,client_average_inventory
+2024-02-16,Unleaded,2.12,client_average_inventory
+2024-02-19,Diesel,2.83,client_average_inventory
+2024-02-19,Dyed Diesel,2.85,client_average_inventory
+2024-02-19,Unleaded,2.14,client_average_inventory
+2024-02-20,Diesel,2.82,client_average_inventory
+2024-02-20,Dyed Diesel,2.83,client_average_inventory
+2024-02-20,Unleaded,2.14,client_average_inventory
+2024-02-21,Diesel,2.81,client_average_inventory
+2024-02-21,Dyed Diesel,2.82,client_average_inventory
+2024-02-21,Unleaded,2.13,client_average_inventory
+2024-02-22,Diesel,2.77,client_average_inventory
+2024-02-22,Dyed Diesel,2.75,client_average_inventory
+2024-02-22,Unleaded,2.12,client_average_inventory
+2024-02-23,Diesel,2.75,client_average_inventory
+2024-02-23,Dyed Diesel,2.76,client_average_inventory
+2024-02-23,Unleaded,2.12,client_average_inventory
+2024-02-26,Diesel,2.75,client_average_inventory
+2024-02-26,Dyed Diesel,2.79,client_average_inventory
+2024-02-26,Unleaded,2.13,client_average_inventory
+2024-02-27,Diesel,2.71,client_average_inventory
+2024-02-27,Dyed Diesel,2.71,client_average_inventory
+2024-02-27,Unleaded,2.15,client_average_inventory
+2024-02-28,Diesel,2.7,client_average_inventory
+2024-02-28,Dyed Diesel,2.74,client_average_inventory
+2024-02-28,Unleaded,2.15,client_average_inventory
+2024-02-29,Diesel,2.69,client_average_inventory
+2024-02-29,Dyed Diesel,2.71,client_average_inventory
+2024-02-29,Unleaded,2.15,client_average_inventory
+2024-03-01,Diesel,2.67,client_average_inventory
+2024-03-01,Dyed Diesel,2.68,client_average_inventory
+2024-03-01,Unleaded,2.22,client_average_inventory
+2024-03-04,Diesel,2.73,client_average_inventory
+2024-03-04,Dyed Diesel,2.73,client_average_inventory
+2024-03-04,Unleaded,2.25,client_average_inventory
+2024-03-05,Diesel,2.73,client_average_inventory
+2024-03-05,Dyed Diesel,2.77,client_average_inventory
+2024-03-05,Unleaded,2.27,client_average_inventory
+2024-03-06,Diesel,2.73,client_average_inventory
+2024-03-06,Dyed Diesel,2.75,client_average_inventory
+2024-03-06,Unleaded,2.27,client_average_inventory
+2024-03-07,Diesel,2.75,client_average_inventory
+2024-03-07,Dyed Diesel,2.79,client_average_inventory
+2024-03-07,Unleaded,2.27,client_average_inventory
+2024-03-08,Diesel,2.71,client_average_inventory
+2024-03-08,Dyed Diesel,2.78,client_average_inventory
+2024-03-08,Unleaded,2.27,client_average_inventory
+2024-03-11,Diesel,2.79,client_average_inventory
+2024-03-11,Dyed Diesel,2.81,client_average_inventory
+2024-03-11,Unleaded,2.27,client_average_inventory
+2024-03-12,Diesel,2.79,client_average_inventory
+2024-03-12,Dyed Diesel,2.81,client_average_inventory
+2024-03-12,Unleaded,2.27,client_average_inventory
+2024-03-13,Diesel,2.8,client_average_inventory
+2024-03-13,Dyed Diesel,2.8,client_average_inventory
+2024-03-13,Unleaded,2.34,client_average_inventory
+2024-03-14,Diesel,2.79,client_average_inventory
+2024-03-14,Dyed Diesel,2.81,client_average_inventory
+2024-03-14,Unleaded,2.27,client_average_inventory
+2024-03-15,Diesel,2.79,client_average_inventory
+2024-03-15,Dyed Diesel,2.81,client_average_inventory
+2024-03-15,Unleaded,2.27,client_average_inventory
+2024-03-18,Diesel,2.83,client_average_inventory
+2024-03-18,Dyed Diesel,2.83,client_average_inventory
+2024-03-18,Unleaded,2.41,client_average_inventory
+2024-03-19,Diesel,2.87,client_average_inventory
+2024-03-19,Dyed Diesel,2.88,client_average_inventory
+2024-03-19,Unleaded,2.4,client_average_inventory
+2024-03-20,Diesel,2.87,client_average_inventory
+2024-03-20,Dyed Diesel,2.87,client_average_inventory
+2024-03-20,Unleaded,2.42,client_average_inventory
+2024-03-21,Diesel,2.85,client_average_inventory
+2024-03-21,Dyed Diesel,2.86,client_average_inventory
+2024-03-21,Unleaded,2.41,client_average_inventory
+2024-03-22,Diesel,2.85,client_average_inventory
+2024-03-22,Dyed Diesel,2.83,client_average_inventory
+2024-03-22,Unleaded,2.39,client_average_inventory
+2024-03-25,Diesel,2.82,client_average_inventory
+2024-03-25,Dyed Diesel,2.8,client_average_inventory
+2024-03-25,Unleaded,2.37,client_average_inventory
+2024-03-26,Diesel,2.8,client_average_inventory
+2024-03-26,Dyed Diesel,2.77,client_average_inventory
+2024-03-26,Unleaded,2.37,client_average_inventory
+2024-03-27,Diesel,2.8,client_average_inventory
+2024-03-27,Dyed Diesel,2.76,client_average_inventory
+2024-03-27,Unleaded,2.37,client_average_inventory
+2024-03-28,Diesel,2.75,client_average_inventory
+2024-03-28,Dyed Diesel,2.67,client_average_inventory
+2024-03-28,Unleaded,2.36,client_average_inventory
+2024-03-29,Diesel,2.64,client_average_inventory
+2024-03-29,Dyed Diesel,2.47,client_average_inventory
+2024-03-29,Unleaded,2.32,client_average_inventory
+2024-04-01,Diesel,2.6,client_average_inventory
+2024-04-01,Dyed Diesel,2.46,client_average_inventory
+2024-04-01,Unleaded,2.31,client_average_inventory
+2024-04-02,Diesel,2.59,client_average_inventory
+2024-04-02,Dyed Diesel,2.53,client_average_inventory
+2024-04-02,Unleaded,2.34,client_average_inventory
+2024-04-03,Diesel,2.58,client_average_inventory
+2024-04-03,Dyed Diesel,2.56,client_average_inventory
+2024-04-03,Unleaded,2.33,client_average_inventory
+2024-04-04,Diesel,2.59,client_average_inventory
+2024-04-04,Dyed Diesel,2.59,client_average_inventory
+2024-04-04,Unleaded,2.31,client_average_inventory
+2024-04-05,Diesel,2.61,client_average_inventory
+2024-04-05,Dyed Diesel,2.58,client_average_inventory
+2024-04-05,Unleaded,2.31,client_average_inventory
+2024-04-08,Diesel,2.63,client_average_inventory
+2024-04-08,Dyed Diesel,2.63,client_average_inventory
+2024-04-08,Unleaded,2.31,client_average_inventory
+2024-04-09,Diesel,2.63,client_average_inventory
+2024-04-09,Dyed Diesel,2.63,client_average_inventory
+2024-04-09,Unleaded,2.31,client_average_inventory
+2024-04-10,Diesel,2.57,client_average_inventory
+2024-04-10,Dyed Diesel,2.57,client_average_inventory
+2024-04-10,Unleaded,2.24,client_average_inventory
+2024-04-11,Diesel,2.56,client_average_inventory
+2024-04-11,Dyed Diesel,2.57,client_average_inventory
+2024-04-11,Unleaded,2.25,client_average_inventory
+2024-04-12,Diesel,2.56,client_average_inventory
+2024-04-12,Dyed Diesel,2.55,client_average_inventory
+2024-04-12,Unleaded,2.25,client_average_inventory
+2024-04-15,Diesel,2.54,client_average_inventory
+2024-04-15,Dyed Diesel,2.54,client_average_inventory
+2024-04-15,Unleaded,2.27,client_average_inventory
+2024-04-16,Diesel,2.54,client_average_inventory
+2024-04-16,Dyed Diesel,2.54,client_average_inventory
+2024-04-16,Unleaded,2.27,client_average_inventory
+2024-04-17,Diesel,2.56,client_average_inventory
+2024-04-17,Dyed Diesel,2.55,client_average_inventory
+2024-04-17,Unleaded,2.29,client_average_inventory
+2024-04-18,Diesel,2.55,client_average_inventory
+2024-04-18,Dyed Diesel,2.54,client_average_inventory
+2024-04-18,Unleaded,2.29,client_average_inventory
+2024-04-19,Diesel,2.52,client_average_inventory
+2024-04-19,Dyed Diesel,2.47,client_average_inventory
+2024-04-19,Unleaded,2.29,client_average_inventory
+2024-04-20,Diesel,2.48,client_average_inventory
+2024-04-20,Dyed Diesel,2.46,client_average_inventory
+2024-04-20,Unleaded,2.35,client_average_inventory
+2024-04-22,Diesel,2.49,client_average_inventory
+2024-04-22,Dyed Diesel,2.45,client_average_inventory
+2024-04-22,Unleaded,2.27,client_average_inventory
+2024-04-23,Diesel,2.49,client_average_inventory
+2024-04-23,Dyed Diesel,2.45,client_average_inventory
+2024-04-23,Unleaded,2.27,client_average_inventory
+2024-04-24,Diesel,2.47,client_average_inventory
+2024-04-24,Dyed Diesel,2.44,client_average_inventory
+2024-04-24,Unleaded,2.28,client_average_inventory
+2024-04-25,Diesel,2.44,client_average_inventory
+2024-04-25,Dyed Diesel,2.41,client_average_inventory
+2024-04-25,Unleaded,2.33,client_average_inventory
+2024-04-26,Diesel,2.46,client_average_inventory
+2024-04-26,Dyed Diesel,2.44,client_average_inventory
+2024-04-26,Unleaded,2.33,client_average_inventory
+2024-04-29,Diesel,2.47,client_average_inventory
+2024-04-29,Dyed Diesel,2.5,client_average_inventory
+2024-04-29,Unleaded,2.4,client_average_inventory
+2024-04-30,Diesel,2.46,client_average_inventory
+2024-04-30,Dyed Diesel,2.48,client_average_inventory
+2024-04-30,Unleaded,2.36,client_average_inventory
+2024-05-01,Diesel,2.46,client_average_inventory
+2024-05-01,Dyed Diesel,2.48,client_average_inventory
+2024-05-01,Unleaded,2.36,client_average_inventory
+2024-05-02,Diesel,2.47,client_average_inventory
+2024-05-02,Dyed Diesel,2.52,client_average_inventory
+2024-05-02,Unleaded,2.41,client_average_inventory
+2024-05-03,Diesel,2.48,client_average_inventory
+2024-05-03,Dyed Diesel,2.49,client_average_inventory
+2024-05-03,Unleaded,2.46,client_average_inventory
+2024-05-06,Diesel,2.48,client_average_inventory
+2024-05-06,Dyed Diesel,2.49,client_average_inventory
+2024-05-06,Unleaded,2.46,client_average_inventory
+2024-05-07,Diesel,2.49,client_average_inventory
+2024-05-07,Dyed Diesel,2.49,client_average_inventory
+2024-05-07,Unleaded,2.45,client_average_inventory
+2024-05-08,Diesel,2.53,client_average_inventory
+2024-05-08,Dyed Diesel,2.55,client_average_inventory
+2024-05-08,Unleaded,2.45,client_average_inventory
+2024-05-09,Diesel,2.54,client_average_inventory
+2024-05-09,Dyed Diesel,2.54,client_average_inventory
+2024-05-09,Unleaded,2.48,client_average_inventory
+2024-05-10,Diesel,2.53,client_average_inventory
+2024-05-10,Dyed Diesel,2.53,client_average_inventory
+2024-05-10,Unleaded,2.47,client_average_inventory
+2024-05-13,Diesel,2.55,client_average_inventory
+2024-05-13,Dyed Diesel,2.56,client_average_inventory
+2024-05-13,Unleaded,2.51,client_average_inventory
+2024-05-14,Diesel,2.52,client_average_inventory
+2024-05-14,Dyed Diesel,2.5,client_average_inventory
+2024-05-14,Unleaded,2.51,client_average_inventory
+2024-05-15,Diesel,2.48,client_average_inventory
+2024-05-15,Dyed Diesel,2.46,client_average_inventory
+2024-05-15,Unleaded,2.44,client_average_inventory
+2024-05-16,Diesel,2.46,client_average_inventory
+2024-05-16,Dyed Diesel,2.46,client_average_inventory
+2024-05-16,Unleaded,2.44,client_average_inventory
+2024-05-17,Diesel,2.46,client_average_inventory
+2024-05-17,Dyed Diesel,2.45,client_average_inventory
+2024-05-17,Unleaded,2.44,client_average_inventory
+2024-05-20,Diesel,2.44,client_average_inventory
+2024-05-20,Dyed Diesel,2.45,client_average_inventory
+2024-05-20,Unleaded,2.47,client_average_inventory
+2024-05-21,Diesel,2.44,client_average_inventory
+2024-05-21,Dyed Diesel,2.46,client_average_inventory
+2024-05-21,Unleaded,2.49,client_average_inventory
+2024-05-22,Diesel,2.43,client_average_inventory
+2024-05-22,Dyed Diesel,2.44,client_average_inventory
+2024-05-22,Unleaded,2.49,client_average_inventory
+2024-05-23,Diesel,2.43,client_average_inventory
+2024-05-23,Dyed Diesel,2.44,client_average_inventory
+2024-05-23,Unleaded,2.48,client_average_inventory
+2024-05-24,Diesel,2.43,client_average_inventory
+2024-05-24,Dyed Diesel,2.43,client_average_inventory
+2024-05-24,Unleaded,2.5,client_average_inventory
+2024-05-28,Diesel,2.42,client_average_inventory
+2024-05-28,Dyed Diesel,2.43,client_average_inventory
+2024-05-28,Unleaded,2.41,client_average_inventory
+2024-05-29,Diesel,2.45,client_average_inventory
+2024-05-29,Dyed Diesel,2.45,client_average_inventory
+2024-05-29,Unleaded,2.41,client_average_inventory
+2024-05-30,Diesel,2.46,client_average_inventory
+2024-05-30,Dyed Diesel,2.47,client_average_inventory
+2024-05-30,Unleaded,2.4,client_average_inventory
+2024-05-31,Diesel,2.43,client_average_inventory
+2024-05-31,Dyed Diesel,2.44,client_average_inventory
+2024-05-31,Unleaded,2.39,client_average_inventory
+2024-06-03,Diesel,2.41,client_average_inventory
+2024-06-03,Dyed Diesel,2.42,client_average_inventory
+2024-06-03,Unleaded,2.4,client_average_inventory
+2024-06-04,Diesel,2.39,client_average_inventory
+2024-06-04,Dyed Diesel,2.41,client_average_inventory
+2024-06-04,Unleaded,2.4,client_average_inventory
+2024-06-05,Diesel,2.34,client_average_inventory
+2024-06-05,Dyed Diesel,2.36,client_average_inventory
+2024-06-05,Unleaded,2.35,client_average_inventory
+2024-06-06,Diesel,2.37,client_average_inventory
+2024-06-06,Dyed Diesel,2.37,client_average_inventory
+2024-06-06,Unleaded,2.35,client_average_inventory
+2024-06-07,Diesel,2.38,client_average_inventory
+2024-06-07,Dyed Diesel,2.39,client_average_inventory
+2024-06-07,Unleaded,2.32,client_average_inventory
+2024-06-10,Diesel,2.37,client_average_inventory
+2024-06-10,Dyed Diesel,2.35,client_average_inventory
+2024-06-10,Unleaded,2.33,client_average_inventory
+2024-06-11,Diesel,2.37,client_average_inventory
+2024-06-11,Dyed Diesel,2.48,client_average_inventory
+2024-06-11,Unleaded,2.33,client_average_inventory
+2024-06-12,Diesel,2.43,client_average_inventory
+2024-06-12,Dyed Diesel,2.43,client_average_inventory
+2024-06-12,Unleaded,2.33,client_average_inventory
+2024-06-13,Diesel,2.39,client_average_inventory
+2024-06-13,Dyed Diesel,2.4,client_average_inventory
+2024-06-13,Unleaded,2.33,client_average_inventory
+2024-06-14,Diesel,2.39,client_average_inventory
+2024-06-14,Dyed Diesel,2.44,client_average_inventory
+2024-06-14,Unleaded,2.31,client_average_inventory
+2024-06-17,Diesel,2.45,client_average_inventory
+2024-06-17,Dyed Diesel,2.46,client_average_inventory
+2024-06-17,Unleaded,2.32,client_average_inventory
+2024-06-18,Diesel,2.43,client_average_inventory
+2024-06-18,Dyed Diesel,2.45,client_average_inventory
+2024-06-18,Unleaded,2.31,client_average_inventory
+2024-06-19,Diesel,2.36,client_average_inventory
+2024-06-19,Dyed Diesel,2.45,client_average_inventory
+2024-06-19,Unleaded,2.3,client_average_inventory
+2024-06-20,Diesel,2.38,client_average_inventory
+2024-06-20,Dyed Diesel,2.49,client_average_inventory
+2024-06-20,Unleaded,2.28,client_average_inventory
+2024-06-21,Diesel,2.51,client_average_inventory
+2024-06-21,Dyed Diesel,2.51,client_average_inventory
+2024-06-21,Unleaded,2.27,client_average_inventory
+2024-06-24,Diesel,2.5,client_average_inventory
+2024-06-24,Dyed Diesel,2.5,client_average_inventory
+2024-06-24,Unleaded,2.28,client_average_inventory
+2024-06-25,Diesel,2.49,client_average_inventory
+2024-06-25,Dyed Diesel,2.5,client_average_inventory
+2024-06-25,Unleaded,2.28,client_average_inventory
+2024-06-26,Diesel,2.53,client_average_inventory
+2024-06-26,Dyed Diesel,2.54,client_average_inventory
+2024-06-26,Unleaded,2.39,client_average_inventory
+2024-06-27,Diesel,2.54,client_average_inventory
+2024-06-27,Dyed Diesel,2.54,client_average_inventory
+2024-06-27,Unleaded,2.37,client_average_inventory
+2024-06-28,Diesel,2.56,client_average_inventory
+2024-06-28,Dyed Diesel,2.69,client_average_inventory
+2024-06-28,Unleaded,2.37,client_average_inventory
+2024-07-01,Diesel,2.55,client_average_inventory
+2024-07-01,Dyed Diesel,2.55,client_average_inventory
+2024-07-01,Unleaded,2.37,client_average_inventory
+2024-07-02,Diesel,2.51,client_average_inventory
+2024-07-02,Dyed Diesel,2.53,client_average_inventory
+2024-07-02,Unleaded,2.37,client_average_inventory
+2024-07-03,Diesel,2.53,client_average_inventory
+2024-07-03,Dyed Diesel,2.56,client_average_inventory
+2024-07-03,Unleaded,2.39,client_average_inventory
+2024-07-04,Diesel,2.53,client_average_inventory
+2024-07-04,Dyed Diesel,2.56,client_average_inventory
+2024-07-04,Unleaded,2.39,client_average_inventory
+2024-07-05,Diesel,2.58,client_average_inventory
+2024-07-05,Dyed Diesel,2.58,client_average_inventory
+2024-07-05,Unleaded,2.42,client_average_inventory
+2024-07-08,Diesel,2.57,client_average_inventory
+2024-07-08,Dyed Diesel,2.57,client_average_inventory
+2024-07-08,Unleaded,2.43,client_average_inventory
+2024-07-09,Diesel,2.52,client_average_inventory
+2024-07-09,Dyed Diesel,2.54,client_average_inventory
+2024-07-09,Unleaded,2.42,client_average_inventory
+2024-07-10,Diesel,2.5,client_average_inventory
+2024-07-10,Dyed Diesel,2.5,client_average_inventory
+2024-07-10,Unleaded,2.42,client_average_inventory
+2024-07-11,Diesel,2.47,client_average_inventory
+2024-07-11,Dyed Diesel,2.48,client_average_inventory
+2024-07-11,Unleaded,2.43,client_average_inventory
+2024-07-12,Diesel,2.45,client_average_inventory
+2024-07-12,Dyed Diesel,2.47,client_average_inventory
+2024-07-12,Unleaded,2.43,client_average_inventory
+2024-07-15,Diesel,2.45,client_average_inventory
+2024-07-15,Dyed Diesel,2.45,client_average_inventory
+2024-07-15,Unleaded,2.41,client_average_inventory
+2024-07-16,Diesel,2.44,client_average_inventory
+2024-07-16,Dyed Diesel,2.44,client_average_inventory
+2024-07-16,Unleaded,2.41,client_average_inventory
+2024-07-17,Diesel,2.46,client_average_inventory
+2024-07-17,Dyed Diesel,2.45,client_average_inventory
+2024-07-17,Unleaded,2.42,client_average_inventory
+2024-07-18,Diesel,2.45,client_average_inventory
+2024-07-18,Dyed Diesel,2.43,client_average_inventory
+2024-07-18,Unleaded,2.42,client_average_inventory
+2024-07-19,Diesel,2.49,client_average_inventory
+2024-07-19,Dyed Diesel,2.49,client_average_inventory
+2024-07-19,Unleaded,2.43,client_average_inventory
+2024-07-22,Diesel,2.48,client_average_inventory
+2024-07-22,Dyed Diesel,2.49,client_average_inventory
+2024-07-22,Unleaded,2.43,client_average_inventory
+2024-07-23,Diesel,2.46,client_average_inventory
+2024-07-23,Dyed Diesel,2.46,client_average_inventory
+2024-07-23,Unleaded,2.41,client_average_inventory
+2024-07-24,Diesel,2.45,client_average_inventory
+2024-07-24,Dyed Diesel,2.46,client_average_inventory
+2024-07-24,Unleaded,2.42,client_average_inventory
+2024-07-25,Diesel,2.46,client_average_inventory
+2024-07-25,Dyed Diesel,2.46,client_average_inventory
+2024-07-25,Unleaded,2.42,client_average_inventory
+2024-07-26,Diesel,2.47,client_average_inventory
+2024-07-26,Dyed Diesel,2.48,client_average_inventory
+2024-07-26,Unleaded,2.42,client_average_inventory
+2024-07-29,Diesel,2.45,client_average_inventory
+2024-07-29,Dyed Diesel,2.47,client_average_inventory
+2024-07-29,Unleaded,2.44,client_average_inventory
+2024-07-30,Diesel,2.42,client_average_inventory
+2024-07-30,Dyed Diesel,2.44,client_average_inventory
+2024-07-30,Unleaded,2.43,client_average_inventory
+2024-07-31,Diesel,2.38,client_average_inventory
+2024-07-31,Dyed Diesel,2.42,client_average_inventory
+2024-07-31,Unleaded,2.43,client_average_inventory
+2024-08-01,Diesel,2.37,client_average_inventory
+2024-08-01,Dyed Diesel,2.4,client_average_inventory
+2024-08-01,Unleaded,2.43,client_average_inventory
+2024-08-02,Diesel,2.38,client_average_inventory
+2024-08-02,Dyed Diesel,2.4,client_average_inventory
+2024-08-02,Unleaded,2.45,client_average_inventory
+2024-08-05,Diesel,2.35,client_average_inventory
+2024-08-05,Dyed Diesel,2.39,client_average_inventory
+2024-08-05,Unleaded,2.5,client_average_inventory
+2024-08-06,Diesel,2.36,client_average_inventory
+2024-08-06,Dyed Diesel,2.39,client_average_inventory
+2024-08-06,Unleaded,2.5,client_average_inventory
+2024-08-07,Diesel,2.35,client_average_inventory
+2024-08-07,Dyed Diesel,2.39,client_average_inventory
+2024-08-07,Unleaded,2.47,client_average_inventory
+2024-08-08,Diesel,2.39,client_average_inventory
+2024-08-08,Dyed Diesel,2.39,client_average_inventory
+2024-08-08,Unleaded,2.53,client_average_inventory
+2024-08-09,Diesel,2.41,client_average_inventory
+2024-08-09,Dyed Diesel,2.41,client_average_inventory
+2024-08-09,Unleaded,2.55,client_average_inventory
+2024-08-12,Diesel,2.47,client_average_inventory
+2024-08-12,Dyed Diesel,2.44,client_average_inventory
+2024-08-12,Unleaded,2.56,client_average_inventory
+2024-08-13,Diesel,2.48,client_average_inventory
+2024-08-13,Dyed Diesel,2.46,client_average_inventory
+2024-08-13,Unleaded,2.56,client_average_inventory
+2024-08-14,Diesel,2.48,client_average_inventory
+2024-08-14,Dyed Diesel,2.47,client_average_inventory
+2024-08-14,Unleaded,2.55,client_average_inventory
+2024-08-15,Diesel,2.45,client_average_inventory
+2024-08-15,Dyed Diesel,2.46,client_average_inventory
+2024-08-15,Unleaded,2.49,client_average_inventory
+2024-08-16,Diesel,2.45,client_average_inventory
+2024-08-16,Dyed Diesel,2.47,client_average_inventory
+2024-08-16,Unleaded,2.44,client_average_inventory
+2024-08-19,Diesel,2.47,client_average_inventory
+2024-08-19,Dyed Diesel,2.48,client_average_inventory
+2024-08-19,Unleaded,2.44,client_average_inventory
+2024-08-20,Diesel,2.46,client_average_inventory
+2024-08-20,Dyed Diesel,2.47,client_average_inventory
+2024-08-20,Unleaded,2.43,client_average_inventory
+2024-08-21,Diesel,2.43,client_average_inventory
+2024-08-21,Dyed Diesel,2.44,client_average_inventory
+2024-08-21,Unleaded,2.41,client_average_inventory
+2024-08-22,Diesel,2.44,client_average_inventory
+2024-08-22,Dyed Diesel,2.45,client_average_inventory
+2024-08-22,Unleaded,2.51,client_average_inventory
+2024-08-23,Diesel,2.44,client_average_inventory
+2024-08-23,Dyed Diesel,2.44,client_average_inventory
+2024-08-23,Unleaded,2.48,client_average_inventory
+2024-08-26,Diesel,2.51,client_average_inventory
+2024-08-26,Dyed Diesel,2.48,client_average_inventory
+2024-08-26,Unleaded,2.41,client_average_inventory
+2024-08-27,Diesel,2.51,client_average_inventory
+2024-08-27,Dyed Diesel,2.48,client_average_inventory
+2024-08-27,Unleaded,2.43,client_average_inventory
+2024-08-28,Diesel,2.52,client_average_inventory
+2024-08-28,Dyed Diesel,2.51,client_average_inventory
+2024-08-28,Unleaded,2.43,client_average_inventory
+2024-08-29,Diesel,2.5,client_average_inventory
+2024-08-29,Dyed Diesel,2.52,client_average_inventory
+2024-08-29,Unleaded,2.46,client_average_inventory
+2024-08-30,Diesel,2.5,client_average_inventory
+2024-08-30,Dyed Diesel,2.5,client_average_inventory
+2024-08-30,Unleaded,2.41,client_average_inventory
+2024-09-03,Diesel,2.56,client_average_inventory
+2024-09-03,Dyed Diesel,2.53,client_average_inventory
+2024-09-03,Unleaded,2.42,client_average_inventory
+2024-09-04,Diesel,2.54,client_average_inventory
+2024-09-04,Dyed Diesel,2.54,client_average_inventory
+2024-09-04,Unleaded,2.41,client_average_inventory
+2024-09-05,Diesel,2.49,client_average_inventory
+2024-09-05,Dyed Diesel,2.49,client_average_inventory
+2024-09-05,Unleaded,2.41,client_average_inventory
+2024-09-06,Diesel,2.46,client_average_inventory
+2024-09-06,Dyed Diesel,2.45,client_average_inventory
+2024-09-06,Unleaded,2.35,client_average_inventory
+2024-09-09,Diesel,2.45,client_average_inventory
+2024-09-09,Dyed Diesel,2.45,client_average_inventory
+2024-09-09,Unleaded,2.38,client_average_inventory
+2024-09-10,Diesel,2.45,client_average_inventory
+2024-09-10,Dyed Diesel,2.45,client_average_inventory
+2024-09-10,Unleaded,2.39,client_average_inventory
+2024-09-11,Diesel,2.43,client_average_inventory
+2024-09-11,Dyed Diesel,2.44,client_average_inventory
+2024-09-11,Unleaded,2.32,client_average_inventory
+2024-09-12,Diesel,2.42,client_average_inventory
+2024-09-12,Dyed Diesel,2.43,client_average_inventory
+2024-09-12,Unleaded,2.32,client_average_inventory
+2024-09-13,Diesel,2.53,client_average_inventory
+2024-09-13,Dyed Diesel,2.43,client_average_inventory
+2024-09-13,Unleaded,2.29,client_average_inventory
+2024-09-16,Diesel,2.52,client_average_inventory
+2024-09-16,Dyed Diesel,2.48,client_average_inventory
+2024-09-16,Unleaded,2.33,client_average_inventory
+2024-09-17,Diesel,2.47,client_average_inventory
+2024-09-17,Dyed Diesel,2.45,client_average_inventory
+2024-09-17,Unleaded,2.32,client_average_inventory
+2024-09-18,Diesel,2.42,client_average_inventory
+2024-09-18,Dyed Diesel,2.42,client_average_inventory
+2024-09-18,Unleaded,2.34,client_average_inventory
+2024-09-19,Diesel,2.45,client_average_inventory
+2024-09-19,Dyed Diesel,2.5,client_average_inventory
+2024-09-19,Unleaded,2.34,client_average_inventory
+2024-09-20,Diesel,2.39,client_average_inventory
+2024-09-20,Dyed Diesel,2.5,client_average_inventory
+2024-09-20,Unleaded,2.56,client_average_inventory
+2024-09-23,Diesel,2.41,client_average_inventory
+2024-09-23,Dyed Diesel,2.44,client_average_inventory
+2024-09-23,Unleaded,2.55,client_average_inventory
+2024-09-24,Diesel,2.48,client_average_inventory
+2024-09-24,Dyed Diesel,2.48,client_average_inventory
+2024-09-24,Unleaded,2.58,client_average_inventory
+2024-09-25,Diesel,2.42,client_average_inventory
+2024-09-25,Dyed Diesel,2.41,client_average_inventory
+2024-09-25,Unleaded,2.57,client_average_inventory
+2024-09-26,Diesel,2.35,client_average_inventory
+2024-09-26,Dyed Diesel,2.39,client_average_inventory
+2024-09-26,Unleaded,2.5,client_average_inventory
+2024-09-27,Diesel,2.47,client_average_inventory
+2024-09-27,Dyed Diesel,2.42,client_average_inventory
+2024-09-27,Unleaded,2.44,client_average_inventory
+2024-09-30,Diesel,2.5,client_average_inventory
+2024-09-30,Dyed Diesel,2.74,client_average_inventory
+2024-09-30,Unleaded,2.39,client_average_inventory
+2024-10-01,Diesel,2.46,client_average_inventory
+2024-10-01,Dyed Diesel,2.65,client_average_inventory
+2024-10-01,Unleaded,2.37,client_average_inventory
+2024-10-02,Diesel,2.44,client_average_inventory
+2024-10-02,Dyed Diesel,2.45,client_average_inventory
+2024-10-02,Unleaded,2.37,client_average_inventory
+2024-10-03,Diesel,2.48,client_average_inventory
+2024-10-03,Dyed Diesel,2.48,client_average_inventory
+2024-10-03,Unleaded,2.37,client_average_inventory
+2024-10-04,Diesel,2.5,client_average_inventory
+2024-10-04,Dyed Diesel,2.5,client_average_inventory
+2024-10-04,Unleaded,2.32,client_average_inventory
+2024-10-07,Diesel,2.41,client_average_inventory
+2024-10-07,Dyed Diesel,2.43,client_average_inventory
+2024-10-07,Unleaded,2.32,client_average_inventory
+2024-10-08,Diesel,2.58,client_average_inventory
+2024-10-08,Dyed Diesel,2.56,client_average_inventory
+2024-10-08,Unleaded,2.31,client_average_inventory
+2024-10-09,Diesel,2.55,client_average_inventory
+2024-10-09,Dyed Diesel,2.56,client_average_inventory
+2024-10-09,Unleaded,2.35,client_average_inventory
+2024-10-10,Diesel,2.56,client_average_inventory
+2024-10-10,Dyed Diesel,2.57,client_average_inventory
+2024-10-10,Unleaded,2.29,client_average_inventory
+2024-10-11,Diesel,2.58,client_average_inventory
+2024-10-11,Dyed Diesel,2.58,client_average_inventory
+2024-10-11,Unleaded,2.27,client_average_inventory
+2024-10-14,Diesel,2.59,client_average_inventory
+2024-10-14,Dyed Diesel,2.6,client_average_inventory
+2024-10-14,Unleaded,2.25,client_average_inventory
+2024-10-15,Diesel,2.53,client_average_inventory
+2024-10-15,Dyed Diesel,2.54,client_average_inventory
+2024-10-15,Unleaded,2.26,client_average_inventory
+2024-10-16,Diesel,2.52,client_average_inventory
+2024-10-16,Dyed Diesel,2.54,client_average_inventory
+2024-10-16,Unleaded,2.28,client_average_inventory
+2024-10-17,Diesel,2.51,client_average_inventory
+2024-10-17,Dyed Diesel,2.54,client_average_inventory
+2024-10-17,Unleaded,2.3,client_average_inventory
+2024-10-18,Diesel,2.44,client_average_inventory
+2024-10-18,Dyed Diesel,2.48,client_average_inventory
+2024-10-18,Unleaded,2.25,client_average_inventory
+2024-10-21,Diesel,2.44,client_average_inventory
+2024-10-21,Dyed Diesel,2.47,client_average_inventory
+2024-10-21,Unleaded,2.25,client_average_inventory
+2024-10-22,Diesel,2.36,client_average_inventory
+2024-10-22,Dyed Diesel,2.43,client_average_inventory
+2024-10-22,Unleaded,2.28,client_average_inventory
+2024-10-23,Diesel,2.38,client_average_inventory
+2024-10-23,Dyed Diesel,2.42,client_average_inventory
+2024-10-23,Unleaded,2.29,client_average_inventory
+2024-10-24,Diesel,2.36,client_average_inventory
+2024-10-24,Dyed Diesel,2.35,client_average_inventory
+2024-10-24,Unleaded,2.25,client_average_inventory
+2024-10-25,Diesel,2.44,client_average_inventory
+2024-10-25,Dyed Diesel,2.52,client_average_inventory
+2024-10-25,Unleaded,2.27,client_average_inventory
+2024-10-28,Diesel,2.46,client_average_inventory
+2024-10-28,Dyed Diesel,2.5,client_average_inventory
+2024-10-28,Unleaded,2.28,client_average_inventory
+2024-10-29,Diesel,2.42,client_average_inventory
+2024-10-29,Dyed Diesel,2.44,client_average_inventory
+2024-10-29,Unleaded,2.28,client_average_inventory
+2024-10-30,Diesel,2.53,client_average_inventory
+2024-10-30,Dyed Diesel,2.45,client_average_inventory
+2024-10-30,Unleaded,2.18,client_average_inventory
+2024-10-31,Diesel,2.52,client_average_inventory
+2024-10-31,Dyed Diesel,2.57,client_average_inventory
+2024-10-31,Unleaded,2.19,client_average_inventory
+2024-11-01,Diesel,2.46,client_average_inventory
+2024-11-01,Dyed Diesel,2.47,client_average_inventory
+2024-11-01,Unleaded,2.19,client_average_inventory
+2024-11-04,Diesel,2.4,client_average_inventory
+2024-11-04,Dyed Diesel,2.42,client_average_inventory
+2024-11-04,Unleaded,2.16,client_average_inventory
+2024-11-05,Diesel,2.4,client_average_inventory
+2024-11-05,Dyed Diesel,2.4,client_average_inventory
+2024-11-05,Unleaded,2.14,client_average_inventory
+2024-11-06,Diesel,2.43,client_average_inventory
+2024-11-06,Dyed Diesel,2.48,client_average_inventory
+2024-11-06,Unleaded,2.12,client_average_inventory
+2024-11-07,Diesel,2.44,client_average_inventory
+2024-11-07,Dyed Diesel,2.47,client_average_inventory
+2024-11-07,Unleaded,2.11,client_average_inventory
+2024-11-08,Diesel,2.46,client_average_inventory
+2024-11-08,Dyed Diesel,2.46,client_average_inventory
+2024-11-08,Unleaded,2.1,client_average_inventory
+2024-11-11,Diesel,2.42,client_average_inventory
+2024-11-11,Dyed Diesel,2.45,client_average_inventory
+2024-11-11,Unleaded,2.2,client_average_inventory
+2024-11-12,Diesel,2.42,client_average_inventory
+2024-11-12,Dyed Diesel,2.44,client_average_inventory
+2024-11-12,Unleaded,2.07,client_average_inventory
+2024-11-13,Diesel,2.38,client_average_inventory
+2024-11-13,Dyed Diesel,2.38,client_average_inventory
+2024-11-13,Unleaded,2.06,client_average_inventory
+2024-11-14,Diesel,2.34,client_average_inventory
+2024-11-14,Dyed Diesel,2.36,client_average_inventory
+2024-11-14,Unleaded,2.06,client_average_inventory
+2024-11-15,Diesel,2.36,client_average_inventory
+2024-11-15,Dyed Diesel,2.37,client_average_inventory
+2024-11-15,Unleaded,2.05,client_average_inventory
+2024-11-18,Diesel,2.36,client_average_inventory
+2024-11-18,Dyed Diesel,2.39,client_average_inventory
+2024-11-18,Unleaded,2.02,client_average_inventory
+2024-11-19,Diesel,2.29,client_average_inventory
+2024-11-19,Dyed Diesel,2.13,client_average_inventory
+2024-11-19,Unleaded,2.02,client_average_inventory
+2024-11-20,Diesel,2.25,client_average_inventory
+2024-11-20,Dyed Diesel,2.26,client_average_inventory
+2024-11-20,Unleaded,2.02,client_average_inventory
+2024-11-21,Diesel,2.21,client_average_inventory
+2024-11-21,Dyed Diesel,2.22,client_average_inventory
+2024-11-21,Unleaded,2.07,client_average_inventory
+2024-11-22,Diesel,2.3,client_average_inventory
+2024-11-22,Dyed Diesel,2.44,client_average_inventory
+2024-11-22,Unleaded,2.09,client_average_inventory
+2024-11-25,Diesel,2.31,client_average_inventory
+2024-11-25,Dyed Diesel,2.38,client_average_inventory
+2024-11-25,Unleaded,2.05,client_average_inventory
+2024-11-26,Diesel,2.32,client_average_inventory
+2024-11-26,Dyed Diesel,2.31,client_average_inventory
+2024-11-26,Unleaded,1.99,client_average_inventory
+2024-11-27,Diesel,2.3,client_average_inventory
+2024-11-27,Dyed Diesel,2.27,client_average_inventory
+2024-11-27,Unleaded,2.0,client_average_inventory
+2024-11-29,Diesel,2.3,client_average_inventory
+2024-11-29,Dyed Diesel,2.27,client_average_inventory
+2024-11-29,Unleaded,2.0,client_average_inventory
+2024-12-02,Diesel,2.3,client_average_inventory
+2024-12-02,Dyed Diesel,2.29,client_average_inventory
+2024-12-02,Unleaded,1.93,client_average_inventory
+2024-12-03,Diesel,2.28,client_average_inventory
+2024-12-03,Dyed Diesel,2.26,client_average_inventory
+2024-12-03,Unleaded,1.9,client_average_inventory
+2024-12-04,Diesel,2.19,client_average_inventory
+2024-12-04,Dyed Diesel,2.14,client_average_inventory
+2024-12-04,Unleaded,1.91,client_average_inventory
+2024-12-05,Diesel,2.18,client_average_inventory
+2024-12-05,Dyed Diesel,2.1,client_average_inventory
+2024-12-05,Unleaded,1.91,client_average_inventory
+2024-12-06,Diesel,2.18,client_average_inventory
+2024-12-06,Dyed Diesel,2.15,client_average_inventory
+2024-12-06,Unleaded,1.85,client_average_inventory
+2024-12-09,Diesel,2.15,client_average_inventory
+2024-12-09,Dyed Diesel,2.16,client_average_inventory
+2024-12-09,Unleaded,1.84,client_average_inventory
+2024-12-10,Diesel,2.11,client_average_inventory
+2024-12-10,Dyed Diesel,2.14,client_average_inventory
+2024-12-10,Unleaded,1.84,client_average_inventory
+2024-12-11,Diesel,2.11,client_average_inventory
+2024-12-11,Dyed Diesel,2.13,client_average_inventory
+2024-12-11,Unleaded,1.84,client_average_inventory
+2024-12-12,Diesel,2.09,client_average_inventory
+2024-12-12,Dyed Diesel,2.12,client_average_inventory
+2024-12-12,Unleaded,1.76,client_average_inventory
+2024-12-13,Diesel,2.1,client_average_inventory
+2024-12-13,Dyed Diesel,2.13,client_average_inventory
+2024-12-13,Unleaded,1.76,client_average_inventory
+2024-12-16,Diesel,2.11,client_average_inventory
+2024-12-16,Dyed Diesel,2.17,client_average_inventory
+2024-12-16,Unleaded,1.81,client_average_inventory
+2024-12-17,Diesel,2.14,client_average_inventory
+2024-12-17,Dyed Diesel,2.2,client_average_inventory
+2024-12-17,Unleaded,1.84,client_average_inventory
+2024-12-18,Diesel,2.13,client_average_inventory
+2024-12-18,Dyed Diesel,2.18,client_average_inventory
+2024-12-18,Unleaded,1.84,client_average_inventory
+2024-12-19,Diesel,2.13,client_average_inventory
+2024-12-19,Dyed Diesel,2.18,client_average_inventory
+2024-12-19,Unleaded,2.01,client_average_inventory
+2024-12-20,Diesel,2.13,client_average_inventory
+2024-12-20,Dyed Diesel,2.18,client_average_inventory
+2024-12-20,Unleaded,2.01,client_average_inventory
+2024-12-23,Diesel,2.18,client_average_inventory
+2024-12-23,Dyed Diesel,2.2,client_average_inventory
+2024-12-23,Unleaded,1.95,client_average_inventory
+2024-12-24,Diesel,2.17,client_average_inventory
+2024-12-24,Dyed Diesel,2.21,client_average_inventory
+2024-12-24,Unleaded,1.9,client_average_inventory
+2024-12-25,Diesel,2.2,client_average_inventory
+2024-12-25,Dyed Diesel,2.21,client_average_inventory
+2024-12-25,Unleaded,1.93,client_average_inventory
+2024-12-26,Diesel,2.2,client_average_inventory
+2024-12-26,Dyed Diesel,2.21,client_average_inventory
+2024-12-26,Unleaded,1.93,client_average_inventory
+2024-12-27,Diesel,2.19,client_average_inventory
+2024-12-27,Dyed Diesel,2.19,client_average_inventory
+2024-12-27,Unleaded,1.94,client_average_inventory
+2024-12-30,Diesel,2.22,client_average_inventory
+2024-12-30,Dyed Diesel,2.19,client_average_inventory
+2024-12-30,Unleaded,1.94,client_average_inventory
+2024-12-31,Diesel,2.22,client_average_inventory
+2024-12-31,Dyed Diesel,2.21,client_average_inventory
+2024-12-31,Unleaded,1.94,client_average_inventory
+2025-01-02,Diesel,2.23,client_average_inventory
+2025-01-02,Dyed Diesel,2.24,client_average_inventory
+2025-01-02,Unleaded,1.9,client_average_inventory
+2025-01-03,Diesel,2.26,client_average_inventory
+2025-01-03,Dyed Diesel,2.25,client_average_inventory
+2025-01-03,Unleaded,1.9,client_average_inventory
+2025-01-06,Diesel,2.28,client_average_inventory
+2025-01-06,Dyed Diesel,2.3,client_average_inventory
+2025-01-06,Unleaded,1.92,client_average_inventory
+2025-01-07,Diesel,2.28,client_average_inventory
+2025-01-07,Dyed Diesel,2.29,client_average_inventory
+2025-01-07,Unleaded,1.96,client_average_inventory
+2025-01-08,Diesel,2.22,client_average_inventory
+2025-01-08,Dyed Diesel,2.27,client_average_inventory
+2025-01-08,Unleaded,1.94,client_average_inventory
+2025-01-09,Diesel,2.21,client_average_inventory
+2025-01-09,Dyed Diesel,2.25,client_average_inventory
+2025-01-09,Unleaded,1.94,client_average_inventory
+2025-01-10,Diesel,2.23,client_average_inventory
+2025-01-10,Dyed Diesel,2.24,client_average_inventory
+2025-01-10,Unleaded,1.92,client_average_inventory
+2025-01-13,Diesel,2.29,client_average_inventory
+2025-01-13,Dyed Diesel,2.31,client_average_inventory
+2025-01-13,Unleaded,1.95,client_average_inventory
+2025-01-14,Diesel,2.32,client_average_inventory
+2025-01-14,Dyed Diesel,2.35,client_average_inventory
+2025-01-14,Unleaded,1.94,client_average_inventory
+2025-01-15,Diesel,2.32,client_average_inventory
+2025-01-15,Dyed Diesel,2.34,client_average_inventory
+2025-01-15,Unleaded,1.95,client_average_inventory
+2025-01-16,Diesel,2.3,client_average_inventory
+2025-01-16,Dyed Diesel,2.35,client_average_inventory
+2025-01-16,Unleaded,1.96,client_average_inventory
+2025-01-17,Diesel,2.3,client_average_inventory
+2025-01-17,Dyed Diesel,2.4,client_average_inventory
+2025-01-17,Unleaded,2.03,client_average_inventory
+2025-01-20,Diesel,2.36,client_average_inventory
+2025-01-20,Dyed Diesel,2.45,client_average_inventory
+2025-01-20,Unleaded,2.11,client_average_inventory
+2025-01-21,Diesel,2.39,client_average_inventory
+2025-01-21,Dyed Diesel,2.46,client_average_inventory
+2025-01-21,Unleaded,2.12,client_average_inventory
+2025-01-22,Diesel,2.39,client_average_inventory
+2025-01-22,Dyed Diesel,2.47,client_average_inventory
+2025-01-22,Unleaded,2.12,client_average_inventory
+2025-01-23,Diesel,2.4,client_average_inventory
+2025-01-23,Dyed Diesel,2.47,client_average_inventory
+2025-01-23,Unleaded,2.13,client_average_inventory
+2025-01-24,Diesel,2.41,client_average_inventory
+2025-01-24,Dyed Diesel,2.45,client_average_inventory
+2025-01-24,Unleaded,2.12,client_average_inventory
+2025-01-27,Diesel,2.43,client_average_inventory
+2025-01-27,Dyed Diesel,2.46,client_average_inventory
+2025-01-27,Unleaded,2.12,client_average_inventory
+2025-01-28,Diesel,2.42,client_average_inventory
+2025-01-28,Dyed Diesel,2.42,client_average_inventory
+2025-01-28,Unleaded,2.25,client_average_inventory
+2025-01-29,Diesel,2.41,client_average_inventory
+2025-01-29,Dyed Diesel,2.4,client_average_inventory
+2025-01-29,Unleaded,2.24,client_average_inventory
+2025-01-30,Diesel,2.38,client_average_inventory
+2025-01-30,Dyed Diesel,2.37,client_average_inventory
+2025-01-30,Unleaded,2.23,client_average_inventory
+2025-01-31,Diesel,2.38,client_average_inventory
+2025-01-31,Dyed Diesel,2.36,client_average_inventory
+2025-01-31,Unleaded,2.21,client_average_inventory
+2025-02-03,Diesel,2.37,client_average_inventory
+2025-02-03,Dyed Diesel,2.36,client_average_inventory
+2025-02-03,Unleaded,2.18,client_average_inventory
+2025-02-04,Diesel,2.39,client_average_inventory
+2025-02-04,Dyed Diesel,2.37,client_average_inventory
+2025-02-04,Unleaded,2.17,client_average_inventory
+2025-02-05,Diesel,2.41,client_average_inventory
+2025-02-05,Dyed Diesel,2.4,client_average_inventory
+2025-02-05,Unleaded,2.2,client_average_inventory
+2025-02-06,Diesel,2.39,client_average_inventory
+2025-02-06,Dyed Diesel,2.39,client_average_inventory
+2025-02-06,Unleaded,2.21,client_average_inventory
+2025-02-07,Diesel,2.37,client_average_inventory
+2025-02-07,Dyed Diesel,2.38,client_average_inventory
+2025-02-07,Unleaded,2.222,client_average_inventory
+2025-02-10,Diesel,2.35,client_average_inventory
+2025-02-10,Dyed Diesel,2.35,client_average_inventory
+2025-02-10,Unleaded,2.21,client_average_inventory
+2025-02-11,Diesel,2.35,client_average_inventory
+2025-02-11,Dyed Diesel,2.34,client_average_inventory
+2025-02-11,Unleaded,2.21,client_average_inventory
+2025-02-12,Diesel,2.37,client_average_inventory
+2025-02-12,Dyed Diesel,2.34,client_average_inventory
+2025-02-12,Unleaded,2.22,client_average_inventory
+2025-02-13,Diesel,2.4,client_average_inventory
+2025-02-13,Dyed Diesel,2.39,client_average_inventory
+2025-02-13,Unleaded,2.22,client_average_inventory
+2025-02-14,Diesel,2.38,client_average_inventory
+2025-02-14,Dyed Diesel,2.38,client_average_inventory
+2025-02-14,Unleaded,2.21,client_average_inventory
+2025-02-17,Diesel,2.38,client_average_inventory
+2025-02-17,Dyed Diesel,2.38,client_average_inventory
+2025-02-17,Unleaded,2.21,client_average_inventory
+2025-02-18,Diesel,2.4,client_average_inventory
+2025-02-18,Dyed Diesel,2.41,client_average_inventory
+2025-02-18,Unleaded,2.2,client_average_inventory
+2025-02-19,Diesel,2.4,client_average_inventory
+2025-02-19,Dyed Diesel,2.41,client_average_inventory
+2025-02-19,Unleaded,2.19,client_average_inventory
+2025-02-20,Diesel,2.38,client_average_inventory
+2025-02-20,Dyed Diesel,2.47,client_average_inventory
+2025-02-20,Unleaded,2.18,client_average_inventory
+2025-02-21,Diesel,2.375,client_average_inventory
+2025-02-21,Dyed Diesel,2.46,client_average_inventory
+2025-02-21,Unleaded,2.177,client_average_inventory
+2025-02-24,Diesel,2.45,client_average_inventory
+2025-02-24,Dyed Diesel,2.519,client_average_inventory
+2025-02-24,Unleaded,2.188,client_average_inventory
+2025-02-25,Diesel,2.49,client_average_inventory
+2025-02-25,Dyed Diesel,2.55,client_average_inventory
+2025-02-25,Unleaded,2.16,client_average_inventory
+2025-02-26,Diesel,2.42,client_average_inventory
+2025-02-26,Dyed Diesel,2.45,client_average_inventory
+2025-02-26,Unleaded,2.16,client_average_inventory
+2025-02-27,Diesel,2.42,client_average_inventory
+2025-02-27,Dyed Diesel,2.39,client_average_inventory
+2025-02-27,Unleaded,2.14,client_average_inventory
+2025-02-28,Diesel,2.37,client_average_inventory
+2025-02-28,Dyed Diesel,2.39,client_average_inventory
+2025-02-28,Unleaded,2.15,client_average_inventory
+2025-03-03,Diesel,2.38,client_average_inventory
+2025-03-03,Dyed Diesel,2.4,client_average_inventory
+2025-03-03,Unleaded,2.14,client_average_inventory
+2025-03-04,Diesel,2.37,client_average_inventory
+2025-03-04,Dyed Diesel,2.38,client_average_inventory
+2025-03-04,Unleaded,2.14,client_average_inventory
+2025-03-05,Diesel,2.35,client_average_inventory
+2025-03-05,Dyed Diesel,2.36,client_average_inventory
+2025-03-05,Unleaded,2.14,client_average_inventory
+2025-03-06,Diesel,2.35,client_average_inventory
+2025-03-06,Dyed Diesel,2.36,client_average_inventory
+2025-03-06,Unleaded,2.13,client_average_inventory
+2025-03-07,Diesel,2.35,client_average_inventory
+2025-03-07,Dyed Diesel,2.36,client_average_inventory
+2025-03-07,Unleaded,2.11,client_average_inventory
+2025-03-10,Diesel,2.34,client_average_inventory
+2025-03-10,Dyed Diesel,2.35,client_average_inventory
+2025-03-10,Unleaded,2.09,client_average_inventory
+2025-03-11,Diesel,2.34,client_average_inventory
+2025-03-11,Dyed Diesel,2.35,client_average_inventory
+2025-03-11,Unleaded,2.08,client_average_inventory
+2025-03-12,Diesel,2.33,client_average_inventory
+2025-03-12,Dyed Diesel,2.36,client_average_inventory
+2025-03-12,Unleaded,2.07,client_average_inventory
+2025-03-13,Diesel,2.34,client_average_inventory
+2025-03-13,Dyed Diesel,2.35,client_average_inventory
+2025-03-13,Unleaded,2.08,client_average_inventory
+2025-03-14,Diesel,2.34,client_average_inventory
+2025-03-14,Dyed Diesel,2.36,client_average_inventory
+2025-03-14,Unleaded,2.08,client_average_inventory
+2025-03-17,Diesel,2.35,client_average_inventory
+2025-03-17,Dyed Diesel,2.36,client_average_inventory
+2025-03-17,Unleaded,2.08,client_average_inventory
+2025-03-18,Diesel,2.36,client_average_inventory
+2025-03-18,Dyed Diesel,2.37,client_average_inventory
+2025-03-18,Unleaded,2.08,client_average_inventory
+2025-03-19,Diesel,2.37,client_average_inventory
+2025-03-19,Dyed Diesel,2.38,client_average_inventory
+2025-03-19,Unleaded,2.08,client_average_inventory
+2025-03-20,Diesel,2.37,client_average_inventory
+2025-03-20,Dyed Diesel,2.38,client_average_inventory
+2025-03-20,Unleaded,2.08,client_average_inventory
+2025-03-21,Diesel,2.4,client_average_inventory
+2025-03-21,Dyed Diesel,2.43,client_average_inventory
+2025-03-21,Unleaded,2.09,client_average_inventory
+2025-03-24,Diesel,2.42,client_average_inventory
+2025-03-24,Dyed Diesel,2.43,client_average_inventory
+2025-03-24,Unleaded,2.12,client_average_inventory
+2025-03-25,Diesel,2.43,client_average_inventory
+2025-03-25,Dyed Diesel,2.44,client_average_inventory
+2025-03-25,Unleaded,2.14,client_average_inventory
+2025-03-26,Diesel,2.45,client_average_inventory
+2025-03-26,Dyed Diesel,2.47,client_average_inventory
+2025-03-26,Unleaded,2.16,client_average_inventory
+2025-03-27,Diesel,2.46,client_average_inventory
+2025-03-27,Dyed Diesel,2.47,client_average_inventory
+2025-03-27,Unleaded,2.18,client_average_inventory
+2025-03-28,Diesel,2.48,client_average_inventory
+2025-03-28,Dyed Diesel,2.5,client_average_inventory
+2025-03-28,Unleaded,2.18,client_average_inventory
+2025-03-31,Diesel,2.51,client_average_inventory
+2025-03-31,Dyed Diesel,2.5,client_average_inventory
+2025-03-31,Unleaded,2.22,client_average_inventory
+2025-04-01,Diesel,2.49,client_average_inventory
+2025-04-01,Dyed Diesel,2.49,client_average_inventory
+2025-04-01,Unleaded,2.22,client_average_inventory
+2025-04-02,Diesel,2.47,client_average_inventory
+2025-04-02,Dyed Diesel,2.47,client_average_inventory
+2025-04-02,Unleaded,2.25,client_average_inventory
+2025-04-03,Diesel,2.47,client_average_inventory
+2025-04-03,Dyed Diesel,2.45,client_average_inventory
+2025-04-03,Unleaded,2.25,client_average_inventory
+2025-04-04,Diesel,2.47,client_average_inventory
+2025-04-04,Dyed Diesel,2.47,client_average_inventory
+2025-04-04,Unleaded,2.23,client_average_inventory
+2025-04-07,Diesel,2.44,client_average_inventory
+2025-04-07,Dyed Diesel,2.45,client_average_inventory
+2025-04-07,Unleaded,2.23,client_average_inventory
+2025-04-08,Diesel,2.43,client_average_inventory
+2025-04-08,Dyed Diesel,2.44,client_average_inventory
+2025-04-08,Unleaded,2.23,client_average_inventory
+2025-04-09,Diesel,2.28,client_average_inventory
+2025-04-09,Dyed Diesel,2.37,client_average_inventory
+2025-04-09,Unleaded,2.21,client_average_inventory
+2025-04-10,Diesel,2.36,client_average_inventory
+2025-04-10,Dyed Diesel,2.37,client_average_inventory
+2025-04-10,Unleaded,2.2,client_average_inventory
+2025-04-11,Diesel,2.38,client_average_inventory
+2025-04-11,Dyed Diesel,2.38,client_average_inventory
+2025-04-11,Unleaded,2.2,client_average_inventory
+2025-04-14,Diesel,2.39,client_average_inventory
+2025-04-14,Dyed Diesel,2.36,client_average_inventory
+2025-04-14,Unleaded,2.12,client_average_inventory
+2025-04-15,Diesel,2.38,client_average_inventory
+2025-04-15,Dyed Diesel,2.36,client_average_inventory
+2025-04-15,Unleaded,2.11,client_average_inventory
+2025-04-16,Diesel,2.35,client_average_inventory
+2025-04-16,Dyed Diesel,2.37,client_average_inventory
+2025-04-16,Unleaded,2.13,client_average_inventory
+2025-04-17,Diesel,2.35,client_average_inventory
+2025-04-17,Dyed Diesel,2.37,client_average_inventory
+2025-04-17,Unleaded,2.13,client_average_inventory
+2025-04-18,Diesel,2.38,client_average_inventory
+2025-04-18,Dyed Diesel,2.4,client_average_inventory
+2025-04-18,Unleaded,2.18,client_average_inventory
+2025-04-21,Diesel,2.38,client_average_inventory
+2025-04-21,Dyed Diesel,2.38,client_average_inventory
+2025-04-21,Unleaded,2.17,client_average_inventory
+2025-04-22,Diesel,2.37,client_average_inventory
+2025-04-22,Dyed Diesel,2.38,client_average_inventory
+2025-04-22,Unleaded,2.18,client_average_inventory
+2025-04-23,Diesel,2.35,client_average_inventory
+2025-04-23,Dyed Diesel,2.38,client_average_inventory
+2025-04-23,Unleaded,2.22,client_average_inventory
+2025-04-24,Diesel,2.38,client_average_inventory
+2025-04-24,Dyed Diesel,2.4,client_average_inventory
+2025-04-24,Unleaded,2.22,client_average_inventory
+2025-04-25,Diesel,2.34,client_average_inventory
+2025-04-25,Dyed Diesel,2.37,client_average_inventory
+2025-04-25,Unleaded,2.26,client_average_inventory
+2025-04-28,Diesel,2.42,client_average_inventory
+2025-04-28,Dyed Diesel,2.4,client_average_inventory
+2025-04-28,Unleaded,2.29,client_average_inventory
+2025-04-29,Diesel,2.45,client_average_inventory
+2025-04-29,Dyed Diesel,2.42,client_average_inventory
+2025-04-29,Unleaded,2.29,client_average_inventory
+2025-04-30,Diesel,2.39,client_average_inventory
+2025-04-30,Dyed Diesel,2.41,client_average_inventory
+2025-04-30,Unleaded,2.28,client_average_inventory
+2025-05-01,Diesel,2.32,client_average_inventory
+2025-05-01,Dyed Diesel,2.4,client_average_inventory
+2025-05-01,Unleaded,2.25,client_average_inventory
+2025-05-02,Diesel,2.29,client_average_inventory
+2025-05-02,Dyed Diesel,2.36,client_average_inventory
+2025-05-02,Unleaded,2.24,client_average_inventory
+2025-05-05,Diesel,2.3,client_average_inventory
+2025-05-05,Dyed Diesel,2.39,client_average_inventory
+2025-05-05,Unleaded,2.17,client_average_inventory
+2025-05-06,Diesel,2.25,client_average_inventory
+2025-05-06,Dyed Diesel,2.38,client_average_inventory
+2025-05-06,Unleaded,2.16,client_average_inventory
+2025-05-07,Diesel,2.28,client_average_inventory
+2025-05-07,Dyed Diesel,2.35,client_average_inventory
+2025-05-07,Unleaded,2.17,client_average_inventory
+2025-05-08,Diesel,2.26,client_average_inventory
+2025-05-08,Dyed Diesel,2.27,client_average_inventory
+2025-05-08,Unleaded,2.29,client_average_inventory
+2025-05-09,Diesel,2.27,client_average_inventory
+2025-05-09,Dyed Diesel,2.28,client_average_inventory
+2025-05-09,Unleaded,2.29,client_average_inventory
+2025-05-12,Diesel,2.33,client_average_inventory
+2025-05-12,Dyed Diesel,2.33,client_average_inventory
+2025-05-12,Unleaded,2.22,client_average_inventory
+2025-05-13,Diesel,2.35,client_average_inventory
+2025-05-13,Dyed Diesel,2.35,client_average_inventory
+2025-05-13,Unleaded,2.21,client_average_inventory
+2025-05-14,Diesel,2.38,client_average_inventory
+2025-05-14,Dyed Diesel,2.39,client_average_inventory
+2025-05-14,Unleaded,2.23,client_average_inventory
+2025-05-15,Diesel,2.38,client_average_inventory
+2025-05-15,Dyed Diesel,2.38,client_average_inventory
+2025-05-15,Unleaded,2.24,client_average_inventory
+2025-05-16,Diesel,2.42,client_average_inventory
+2025-05-16,Dyed Diesel,2.44,client_average_inventory
+2025-05-16,Unleaded,2.28,client_average_inventory
+2025-05-19,Diesel,2.38,client_average_inventory
+2025-05-19,Dyed Diesel,2.4,client_average_inventory
+2025-05-19,Unleaded,2.28,client_average_inventory
+2025-05-20,Diesel,2.36,client_average_inventory
+2025-05-20,Dyed Diesel,2.39,client_average_inventory
+2025-05-20,Unleaded,2.25,client_average_inventory
+2025-05-21,Diesel,2.39,client_average_inventory
+2025-05-21,Dyed Diesel,2.39,client_average_inventory
+2025-05-21,Unleaded,2.25,client_average_inventory
+2025-05-22,Diesel,2.37,client_average_inventory
+2025-05-22,Dyed Diesel,2.4,client_average_inventory
+2025-05-22,Unleaded,2.25,client_average_inventory
+2025-05-23,Diesel,2.37,client_average_inventory
+2025-05-23,Dyed Diesel,2.39,client_average_inventory
+2025-05-23,Unleaded,2.27,client_average_inventory
+2025-05-27,Diesel,2.35,client_average_inventory
+2025-05-27,Dyed Diesel,2.38,client_average_inventory
+2025-05-27,Unleaded,2.27,client_average_inventory
+2025-05-28,Diesel,2.39,client_average_inventory
+2025-05-28,Dyed Diesel,2.41,client_average_inventory
+2025-05-28,Unleaded,2.26,client_average_inventory
+2025-05-29,Diesel,2.35,client_average_inventory
+2025-05-29,Dyed Diesel,2.29,client_average_inventory
+2025-05-29,Unleaded,2.26,client_average_inventory
+2025-05-30,Diesel,2.3,client_average_inventory
+2025-05-30,Dyed Diesel,2.32,client_average_inventory
+2025-05-30,Unleaded,2.19,client_average_inventory
+2025-06-02,Diesel,2.31,client_average_inventory
+2025-06-02,Dyed Diesel,2.32,client_average_inventory
+2025-06-02,Unleaded,2.18,client_average_inventory
+2025-06-03,Diesel,2.25,client_average_inventory
+2025-06-03,Dyed Diesel,2.25,client_average_inventory
+2025-06-03,Unleaded,2.19,client_average_inventory
+2025-06-04,Diesel,2.26,client_average_inventory
+2025-06-04,Dyed Diesel,2.27,client_average_inventory
+2025-06-04,Unleaded,2.17,client_average_inventory
+2025-06-05,Diesel,2.27,client_average_inventory
+2025-06-05,Dyed Diesel,2.28,client_average_inventory
+2025-06-05,Unleaded,2.17,client_average_inventory
+2025-06-06,Diesel,2.28,client_average_inventory
+2025-06-06,Dyed Diesel,2.29,client_average_inventory
+2025-06-06,Unleaded,2.17,client_average_inventory
+2025-06-09,Diesel,2.28,client_average_inventory
+2025-06-09,Dyed Diesel,2.29,client_average_inventory
+2025-06-09,Unleaded,2.14,client_average_inventory
+2025-06-10,Diesel,2.29,client_average_inventory
+2025-06-10,Dyed Diesel,2.33,client_average_inventory
+2025-06-10,Unleaded,2.14,client_average_inventory
+2025-06-11,Diesel,2.3,client_average_inventory
+2025-06-11,Dyed Diesel,2.32,client_average_inventory
+2025-06-11,Unleaded,2.14,client_average_inventory
+2025-06-12,Diesel,2.32,client_average_inventory
+2025-06-12,Dyed Diesel,2.34,client_average_inventory
+2025-06-12,Unleaded,2.17,client_average_inventory
+2025-06-13,Diesel,2.33,client_average_inventory
+2025-06-13,Dyed Diesel,2.35,client_average_inventory
+2025-06-13,Unleaded,2.17,client_average_inventory
+2025-06-16,Diesel,2.32,client_average_inventory
+2025-06-16,Dyed Diesel,2.34,client_average_inventory
+2025-06-16,Unleaded,2.17,client_average_inventory
+2025-06-17,Diesel,2.38,client_average_inventory
+2025-06-17,Dyed Diesel,2.4,client_average_inventory
+2025-06-17,Unleaded,2.23,client_average_inventory
+2025-06-18,Diesel,2.48,client_average_inventory
+2025-06-18,Dyed Diesel,2.43,client_average_inventory
+2025-06-18,Unleaded,2.22,client_average_inventory
+2025-06-19,Diesel,2.13,client_average_inventory
+2025-06-19,Dyed Diesel,2.46,client_average_inventory
+2025-06-19,Unleaded,2.23,client_average_inventory
+2025-06-20,Diesel,2.51,client_average_inventory
+2025-06-20,Dyed Diesel,2.5,client_average_inventory
+2025-06-20,Unleaded,2.28,client_average_inventory
+2025-06-23,Diesel,2.51,client_average_inventory
+2025-06-23,Dyed Diesel,2.51,client_average_inventory
+2025-06-23,Unleaded,2.29,client_average_inventory
+2025-06-24,Diesel,2.48,client_average_inventory
+2025-06-24,Dyed Diesel,2.49,client_average_inventory
+2025-06-24,Unleaded,2.25,client_average_inventory
+2025-06-25,Diesel,2.41,client_average_inventory
+2025-06-25,Dyed Diesel,2.44,client_average_inventory
+2025-06-25,Unleaded,2.23,client_average_inventory
+2025-06-26,Diesel,2.34,client_average_inventory
+2025-06-26,Dyed Diesel,2.37,client_average_inventory
+2025-06-26,Unleaded,2.11,client_average_inventory
+2025-06-27,Diesel,2.34,client_average_inventory
+2025-06-27,Dyed Diesel,2.34,client_average_inventory
+2025-06-27,Unleaded,2.06,client_average_inventory
+2025-06-30,Diesel,2.32,client_average_inventory
+2025-06-30,Dyed Diesel,2.37,client_average_inventory
+2025-06-30,Unleaded,2.0,client_average_inventory
+2025-07-01,Diesel,2.31,client_average_inventory
+2025-07-01,Dyed Diesel,2.32,client_average_inventory
+2025-07-01,Unleaded,2.0,client_average_inventory
+2025-07-02,Diesel,2.29,client_average_inventory
+2025-07-02,Dyed Diesel,2.3,client_average_inventory
+2025-07-02,Unleaded,1.96,client_average_inventory
+2025-07-03,Diesel,2.31,client_average_inventory
+2025-07-03,Dyed Diesel,2.31,client_average_inventory
+2025-07-03,Unleaded,1.95,client_average_inventory
+2025-07-04,Diesel,2.31,client_average_inventory
+2025-07-04,Dyed Diesel,2.31,client_average_inventory
+2025-07-04,Unleaded,1.95,client_average_inventory
+2025-07-07,Diesel,2.32,client_average_inventory
+2025-07-07,Dyed Diesel,2.31,client_average_inventory
+2025-07-07,Unleaded,1.96,client_average_inventory
+2025-07-08,Diesel,2.35,client_average_inventory
+2025-07-08,Dyed Diesel,2.35,client_average_inventory
+2025-07-08,Unleaded,1.99,client_average_inventory
+2025-07-09,Diesel,2.34,client_average_inventory
+2025-07-09,Dyed Diesel,2.35,client_average_inventory
+2025-07-09,Unleaded,2.0,client_average_inventory
+2025-07-10,Diesel,2.29,client_average_inventory
+2025-07-10,Dyed Diesel,2.32,client_average_inventory
+2025-07-10,Unleaded,2.03,client_average_inventory
+2025-07-11,Diesel,2.28,client_average_inventory
+2025-07-11,Dyed Diesel,2.35,client_average_inventory
+2025-07-11,Unleaded,2.04,client_average_inventory
+2025-07-14,Diesel,2.25,client_average_inventory
+2025-07-14,Dyed Diesel,2.32,client_average_inventory
+2025-07-14,Unleaded,2.04,client_average_inventory
+2025-07-15,Diesel,2.29,client_average_inventory
+2025-07-15,Dyed Diesel,2.31,client_average_inventory
+2025-07-15,Unleaded,2.05,client_average_inventory
+2025-07-16,Diesel,2.38,client_average_inventory
+2025-07-16,Dyed Diesel,2.37,client_average_inventory
+2025-07-16,Unleaded,2.05,client_average_inventory
+2025-07-17,Diesel,2.38,client_average_inventory
+2025-07-17,Dyed Diesel,2.39,client_average_inventory
+2025-07-17,Unleaded,2.05,client_average_inventory
+2025-07-18,Diesel,2.3,client_average_inventory
+2025-07-18,Dyed Diesel,2.28,client_average_inventory
+2025-07-18,Unleaded,2.04,client_average_inventory
+2025-07-21,Diesel,2.38,client_average_inventory
+2025-07-21,Dyed Diesel,2.44,client_average_inventory
+2025-07-21,Unleaded,2.06,client_average_inventory
+2025-07-22,Diesel,2.43,client_average_inventory
+2025-07-22,Dyed Diesel,2.49,client_average_inventory
+2025-07-22,Unleaded,2.08,client_average_inventory
+2025-07-23,Diesel,2.43,client_average_inventory
+2025-07-23,Dyed Diesel,2.46,client_average_inventory
+2025-07-23,Unleaded,2.12,client_average_inventory
+2025-07-24,Diesel,2.49,client_average_inventory
+2025-07-24,Dyed Diesel,2.52,client_average_inventory
+2025-07-24,Unleaded,2.09,client_average_inventory
+2025-07-25,Diesel,2.48,client_average_inventory
+2025-07-25,Dyed Diesel,2.51,client_average_inventory
+2025-07-25,Unleaded,2.07,client_average_inventory

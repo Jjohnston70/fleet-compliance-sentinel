@@ -2,6 +2,7 @@ import {
   fleetComplianceAuthErrorResponse,
   requireFleetComplianceOrgWithRole,
 } from '@/lib/fleet-compliance-auth';
+import { fetchRemoteModuleRun, shouldUseRemoteModuleGateway } from '@/lib/modules-gateway/remote';
 import { getModuleRun } from '@/lib/modules-gateway/runner';
 
 export const runtime = 'nodejs';
@@ -22,6 +23,24 @@ export async function GET(request: Request, context: { params: Promise<{ id: str
       { ok: false, error: { code: 'VALIDATION_ERROR', message: 'Run id is required' } },
       { status: 400 },
     );
+  }
+
+  if (shouldUseRemoteModuleGateway()) {
+    try {
+      const { res, body } = await fetchRemoteModuleRun(runId);
+      return Response.json(body, { status: res.status });
+    } catch (error: unknown) {
+      return Response.json(
+        {
+          ok: false,
+          error: {
+            code: 'INTERNAL_ERROR',
+            message: error instanceof Error ? error.message : 'Remote module gateway unavailable',
+          },
+        },
+        { status: 502 },
+      );
+    }
   }
 
   const run = getModuleRun(runId);

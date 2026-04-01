@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PaperStack</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <header>
+    <div>
+      <h1>PaperStack</h1>
+      <p>True North Data Strategies LLC</p>
+    </div>
+    <div class="header-actions">
+      <button id="stop-all" class="ghost">Stop Servers</button>
+      <div class="status" id="status">Ready</div>
+    </div>
+  </header>
+
+  <main>
+    <section class="card">
+      <h2>Quick Actions</h2>
+      <div class="actions">
+        <button data-action="generate-pdf">Generate PDF</button>
+        <button data-action="generate-docx">Generate DOCX</button>
+        <button data-action="check">Check Dependencies</button>
+      </div>
+    </section>
+
+    <section class="card">
+      <h2>Convert Markdown to HTML</h2>
+      <div class="form-row">
+        <input type="text" id="md-file" placeholder="Select a .md file" />
+        <button id="pick-md">Browse</button>
+      </div>
+      <div class="form-row">
+        <label><input type="checkbox" id="md-dark" /> Dark theme</label>
+        <label><input type="checkbox" id="md-open" /> Open after convert</label>
+      </div>
+      <button id="run-md">Convert</button>
+    </section>
+
+    <section class="card">
+      <h2>Reverse Engineer DOCX</h2>
+      <div class="form-row">
+        <input type="text" id="rev-file" placeholder="Select a .docx file" />
+        <button id="pick-rev">Browse</button>
+      </div>
+      <div class="form-row">
+        <label><input type="radio" name="rev-mode" value="js" checked /> Node.js (docx)</label>
+        <label><input type="radio" name="rev-mode" value="python" /> Python</label>
+        <label><input type="radio" name="rev-mode" value="pdf" /> PDF (reportlab)</label>
+      </div>
+      <button id="run-rev">Reverse</button>
+    </section>
+
+    <section class="card">
+      <h2>Inspect PDF (text)</h2>
+      <div class="form-row">
+        <input type="text" id="inspect-file" placeholder="Select a PDF" />
+        <button id="pick-inspect">Browse</button>
+      </div>
+      <div class="form-row">
+        <label>Port <input type="number" id="inspect-port" value="5001" /></label>
+      </div>
+      <button id="run-inspect">Launch Inspector</button>
+    </section>
+
+    <section class="card">
+      <h2>Scan PDF (OCR)</h2>
+      <div class="form-row">
+        <input type="text" id="scan-file" placeholder="Select a PDF" />
+        <button id="pick-scan">Browse</button>
+      </div>
+      <div class="form-row">
+        <label>Port <input type="number" id="scan-port" value="5002" /></label>
+        <label>DPI <input type="number" id="scan-dpi" value="300" /></label>
+        <label><input type="checkbox" id="scan-force" /> Force OCR</label>
+      </div>
+      <button id="run-scan">Launch Scan Inspector</button>
+    </section>
+
+    <section class="card output-card">
+      <h2>Output</h2>
+      <pre id="log"></pre>
+    </section>
+  </main>
+
+  <script src="renderer.js"></script>
+</body>
+</html>
