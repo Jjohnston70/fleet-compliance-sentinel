@@ -1,0 +1,485 @@
+{
+  "module_code": "TNDS-HZ-002",
+  "title": "Shipping Papers",
+  "category": "hazmat",
+  "cfr_reference": "49 CFR 172.200-205",
+  "phmsa_equivalent": "Module 2.0",
+  "estimated_duration_minutes": 35,
+  "passing_score": 80,
+  "version": "1.0",
+  "created": "2026-04-02",
+  "theme": {
+    "id": "tnds-training",
+    "name": "TNDS Training",
+    "colors": {
+      "primary": "#0F2B46",
+      "secondary": "#1A7A7A",
+      "accent": "#F59E0B",
+      "background": "#FFFFFF",
+      "surface": "#F8FAFC",
+      "text": "#1E293B",
+      "text_secondary": "#64748B",
+      "success": "#10B981",
+      "error": "#EF4444"
+    },
+    "slide_types": {
+      "title": {
+        "bg": "#0F2B46",
+        "text": "#FFFFFF"
+      },
+      "objectives": {
+        "bg": "#1A7A7A",
+        "text": "#FFFFFF"
+      },
+      "content": {
+        "bg": "#FFFFFF",
+        "text": "#1E293B"
+      },
+      "section_divider": {
+        "bg": "#0F2B46",
+        "text": "#F59E0B"
+      },
+      "key_takeaways": {
+        "bg": "#1A7A7A",
+        "text": "#FFFFFF"
+      },
+      "assessment_intro": {
+        "bg": "#0F2B46",
+        "text": "#FFFFFF"
+      }
+    }
+  },
+  "slide_count": 47,
+  "slides": [
+    {
+      "slide_number": 1,
+      "slide_type": "title",
+      "title": "Shipping Papers",
+      "content": "",
+      "notes": "PHMSA Equivalent: Module 2.0 | CFR Reference: 49 CFR 172.200-205 | Estimated Duration: 35 minutes",
+      "bullet_points": [
+        "Module 2.0",
+        "49 CFR 172.200-205",
+        "Duration: 35 min",
+        "Passing Score: 80%"
+      ]
+    },
+    {
+      "slide_number": 2,
+      "slide_type": "objectives",
+      "title": "Learning Objectives",
+      "content": "- Explain the purpose of hazmat shipping papers and why they are critical for safety\n- List all required information elements on a hazmat shipping paper\n- Describe the correct format and sequence for hazmat descriptions\n- Explain where shipping papers must be kept in the cab at all times\n- Identify the requirements for emergency response telephone numbers\n- Understand the shipper's certification and when it is required\n- Describe shipping paper retention requirements for shippers and carriers\n- Recognize common shipping paper violations",
+      "notes": "",
+      "bullet_points": [
+        "Explain the purpose of hazmat shipping papers and why they are critical for safety",
+        "List all required information elements on a hazmat shipping paper",
+        "Describe the correct format and sequence for hazmat descriptions",
+        "Explain where shipping papers must be kept in the cab at all times",
+        "Identify the requirements for emergency response telephone numbers",
+        "Understand the shipper's certification and when it is required",
+        "Describe shipping paper retention requirements for shippers and carriers",
+        "Recognize common shipping paper violations"
+      ]
+    },
+    {
+      "slide_number": 3,
+      "slide_type": "section_divider",
+      "title": "Section 1: What Are Shipping Papers?",
+      "content": "",
+      "notes": "",
+      "bullet_points": []
+    },
+    {
+      "slide_number": 4,
+      "slide_type": "content",
+      "title": "Section 1: What Are Shipping Papers?",
+      "content": "Shipping papers are the written documents that must accompany every shipment of hazardous materials during transportation. They serve two critical purposes: regulatory compliance and emergency response.\n\nFor regulatory compliance, shipping papers provide a verifiable record that the hazardous material was properly classified, described, and packaged before being offered for transport. They connect the shipper, the carrier, and the consignee in a documented chain of accountability. If an inspector pulls your truck over and asks what you are hauling, the shipping papers are the official answer.\n\nFor emergency response, shipping papers may be the first \u2014 and sometimes the only \u2014 source of information available to firefighters, hazmat teams, and law enforcement when they arrive at an accident scene involving hazmat. If a driver is incapacitated after a rollover and cannot communicate, responders will look for the shipping papers to identify what materials are involved, how dangerous they are, and whom to call for expert guidance. The information on those papers can determine whether responders approach the scene in standard gear or full chemical suits, whether they evacuate a quarter-mile or a half-mile, and whether they use water or a specialized agent to address a spill or fire.",
+      "notes": "",
+      "bullet_points": []
+    },
+    {
+      "slide_number": 5,
+      "slide_type": "content",
+      "title": "Section 1: What Are Shipping Papers? (cont.)",
+      "content": "This is why the location of shipping papers in the cab is strictly regulated. When the driver is at the controls of the vehicle, the shipping papers must be **within the driver's reach while the seat belt is fastened** \u2014 typically in a door pocket, a pouch mounted on the door, or clipped to the visor. When the driver is away from the vehicle, the shipping papers must be placed **on the driver's seat** or in a holder mounted on the inside of the driver's door, where they are visible and immediately accessible to anyone who opens the door.\n\n**Why this matters in real life**: A state trooper arrives at a jackknifed tractor-trailer on the highway at 2 AM. There is liquid leaking from the trailer. The driver was taken to the hospital by ambulance. The trooper opens the driver's door and needs to find the shipping papers instantly \u2014 not rummage through a messy cab, not dig through a briefcase, not search behind the seats. If the papers are on the driver's seat as required, the trooper can identify the material, call CHEMTREC, and direct the hazmat response team within minutes. If the papers cannot be found, the entire scene becomes exponentially more dangerous and response time increases dramatically.",
+      "notes": "",
+      "bullet_points": []
+    },
+    {
+      "slide_number": 6,
+      "slide_type": "section_divider",
+      "title": "Section 2: Required Information",
+      "content": "",
+      "notes": "",
+      "bullet_points": []
+    },
+    {
+      "slide_number": 7,
+      "slide_type": "content",
+      "title": "Section 2: Required Information",
+      "content": "Every hazmat shipping paper must include the following information for each hazardous material in the shipment. Missing any of these elements is a violation.\n\n### The Basic Description (The \"Big Four\")\n\nThe basic description of a hazardous material must include these four elements in a specific sequence:",
+      "notes": "",
+      "bullet_points": []
+    },
+    {
+      "slide_number": 8,
+      "slide_type": "content",
+      "title": "Section 2: Required Information (cont.)",
+      "content": "1. **UN/NA Identification Number**: The four-digit ID number preceded by \"UN\" or \"NA\" (e.g., UN1203 for gasoline).\n\n2. **Proper Shipping Name**: The exact name from the Hazardous Materials Table, Column 2 (e.g., \"Gasoline\"). No trade names, abbreviations, or slang.\n\n3. **Hazard Class or Division Number**: The numeric hazard class from the Hazmat Table, Column 3 (e.g., \"3\" for flammable liquid).",
+      "notes": "",
+      "bullet_points": []
+    },
+    {
+      "slide_number": 9,
+      "slide_type": "content",
+      "title": "Section 2: Required Information (cont.)",
+      "content": "4. **Packing Group**: Shown in Roman numerals \u2014 I, II, or III (e.g., \"II\" for gasoline). Not all materials have packing groups.\n\nThe required sequence for these four elements is: **ID number, proper shipping name, hazard class, packing group**. For example:\n\n> UN1203, Gasoline, 3, PG II",
+      "notes": "",
+      "bullet_points": []
+    },
+    {
+      "slide_number": 10,
+      "slide_type": "content",
+      "title": "Section 2: Required Information (cont.)",
+      "content": "### Additional Required Information\n\nBeyond the basic description, the following must also appear on the shipping paper:\n\n5. **Total Quantity**: The total amount of hazardous material, by weight or volume, including the unit of measurement (e.g., \"2,000 gallons\" or \"500 lbs\"). The number and type of packages must also be stated (e.g., \"10 drums\" or \"1 cargo tank\").",
+      "notes": "",
+      "bullet_points": []
+    },
+    {
+      "slide_number": 11,
+      "slide_type": "content",
+      "title": "Section 2: Required Information (cont.)",
+      "content": "6. **Number and Type of Packages**: The count and description of packages (e.g., \"4 cylinders,\" \"20 pails,\" \"1 portable tank\").\n\n7. **Emergency Response Telephone Number**: A telephone number where someone knowledgeable about the specific material can be reached 24 hours a day, 7 days a week. This is covered in detail in Section 4.\n\n8. **Shipper's Certification**: A signed statement certifying that the shipment has been properly classified, described, packaged, marked, labeled, and is in proper condition for transportation. This is covered in Section 5.",
+      "notes": "",
+      "bullet_points": []
+    },
+    {
+      "slide_number": 12,
+      "slide_type": "content",
+      "title": "Section 2: Required Information (cont.)",
+      "content": "### Optional but Common Additional Information\n\n- **Technical name**: Required when the proper shipping name is generic (has a \"G\" symbol in the Hazmat Table). Must appear in parentheses immediately after the proper shipping name.\n- **Subsidiary hazard class**: If the material has more than one hazard, subsidiary hazards must be listed in parentheses after the primary hazard class.\n- **Reportable Quantity (RQ)**: If the material is listed as a hazardous substance under CERCLA and the quantity in a single package meets or exceeds the reportable quantity, \"RQ\" must appear before or after the basic description.\n- **\"HOT\"**: Required for elevated temperature materials transported at or above 212 degrees Fahrenheit (100 degrees Celsius) for liquids.\n- **\"Marine Pollutant\"**: Required if the material meets the marine pollutant criteria.\n\n### Putting It All Together: Example Shipping Paper Entry",
+      "notes": "",
+      "bullet_points": [
+        "**Technical name**: Required when the proper shipping name is generic (has a \"G\" symbol in the Hazmat Table). Must appear in parentheses immediately after the proper shipping name.",
+        "**Subsidiary hazard class**: If the material has more than one hazard, subsidiary hazards must be listed in parentheses after the primary hazard class.",
+        "**Reportable Quantity (RQ)**: If the material is listed as a hazardous substance under CERCLA and the quantity in a single package meets or exceeds the reportable quantity, \"RQ\" must appear before or after the basic description.",
+        "**\"HOT\"**: Required for elevated temperature materials transported at or above 212 degrees Fahrenheit (100 degrees Celsius) for liquids.",
+        "**\"Marine Pollutant\"**: Required if the material meets the marine pollutant criteria."
+      ]
+    },
+    {
+      "slide_number": 13,
+      "slide_type": "content",
+      "title": "Section 2: Required Information (cont.)",
+      "content": "Here is what a complete hazmat entry looks like on a shipping paper:\n\n> **HM** | **Description** | **Quantity**\n> X | UN1203, Gasoline, 3, PG II | 5,000 gallons, 1 cargo tank\n\nWith emergency response phone number at the top or bottom of the document:\n> Emergency Contact: CHEMTREC 1-800-424-9300, Contract #12345",
+      "notes": "",
+      "bullet_points": []
+    },
+    {
+      "slide_number": 14,
+      "slide_type": "content",
+      "title": "Section 2: Required Information (cont.)",
+      "content": "And a signed shipper's certification at the bottom.",
+      "notes": "",
+      "bullet_points": []
+    },
+    {
+      "slide_number": 15,
+      "slide_type": "section_divider",
+      "title": "Section 3: Format and Order Rules",
+      "content": "",
+      "notes": "",
+      "bullet_points": []
+    },
+    {
+      "slide_number": 16,
+      "slide_type": "content",
+      "title": "Section 3: Format and Order Rules",
+      "content": "The HMR imposes strict formatting requirements to ensure that hazmat entries are immediately identifiable on a shipping paper \u2014 especially when the paper also lists non-hazardous materials.\n\n### Identifying Hazmat Entries\n\nWhen a shipping paper lists both hazardous and non-hazardous materials, the hazmat entries must be made clearly distinguishable by one of these three methods:",
+      "notes": "",
+      "bullet_points": []
+    },
+    {
+      "slide_number": 17,
+      "slide_type": "content",
+      "title": "Section 3: Format and Order Rules (cont.)",
+      "content": "1. **Listed first**: The hazmat entries appear before any non-hazmat entries on the paper. This is the simplest approach.\n\n2. **Highlighted**: The hazmat entries are highlighted in a contrasting color or with a visible border. The highlighting must be something that would be obvious on a photocopy \u2014 do not use a highlighter color that disappears when the paper is copied.\n\n3. **Marked with an \"X\"**: An \"X\" is placed in a column designated as \"HM\" (Hazardous Material) next to each hazmat entry. This column must be clearly labeled so the reader knows what the \"X\" means.",
+      "notes": "",
+      "bullet_points": []
+    },
+    {
+      "slide_number": 18,
+      "slide_type": "content",
+      "title": "Section 3: Format and Order Rules (cont.)",
+      "content": "Many carriers and shippers use a combination of these methods for extra clarity. The goal is simple: anyone looking at the shipping paper should be able to immediately see which entries are hazmat without reading every line.\n\n### Basic Description Sequence\n\nThe four elements of the basic description must appear in this order:",
+      "notes": "",
+      "bullet_points": []
+    },
+    {
+      "slide_number": 19,
+      "slide_type": "content",
+      "title": "Section 3: Format and Order Rules (cont.)",
+      "content": "1. Identification number\n2. Proper shipping name\n3. Hazard class or division\n4. Packing group\n\nAdditional information (total quantity, technical name, subsidiary hazard) may be placed before the basic description, after it, or in separate columns, but the four elements of the basic description must maintain their prescribed sequence.\n\n**Correct**: UN1203, Gasoline, 3, PG II\n**Incorrect**: Gasoline, 3, UN1203, PG II (proper shipping name and class cannot precede the ID number)",
+      "notes": "",
+      "bullet_points": []
+    },
+    {
+      "slide_number": 20,
+      "slide_type": "content",
+      "title": "Section 3: Format and Order Rules (cont.)",
+      "content": "### Consistency\n\nAll hazmat entries on a single shipping paper must use the same format. If you use an HM column with an \"X\" for one hazmat entry, use it for all of them. If you list hazmat entries first, all hazmat entries must come before all non-hazmat entries \u2014 you cannot scatter them throughout the document.",
+      "notes": "",
+      "bullet_points": []
+    },
+    {
+      "slide_number": 21,
+      "slide_type": "section_divider",
+      "title": "Section 4: Emergency Response Telephone Number",
+      "content": "",
+      "notes": "",
+      "bullet_points": []
+    },
+    {
+      "slide_number": 22,
+      "slide_type": "content",
+      "title": "Section 4: Emergency Response Telephone Number",
+      "content": "Under 49 CFR 172.604, every hazmat shipping paper must include a telephone number where someone knowledgeable about the hazardous material being shipped can provide immediate emergency response information 24 hours a day, 7 days a week.\n\n### Requirements for the Phone Number\n\nThe phone number must meet all of these criteria:",
+      "notes": "",
+      "bullet_points": []
+    },
+    {
+      "slide_number": 23,
+      "slide_type": "content",
+      "title": "Section 4: Emergency Response Telephone Number (cont.)",
+      "content": "- **Monitored at all times**: The number must be answered 24/7/365. A number that goes to voicemail after business hours does not comply. An automated system that requires a caller to navigate a menu or leave a message does not comply.\n\n- **Knowledgeable person**: The person answering must be able to provide detailed information about the hazardous material, or must have immediate access to someone who can. \"I don't know, our hazmat manager comes in at 8 AM\" is not acceptable when a firefighter calls at 3 AM.\n\n- **Specific to the material**: The person must be able to provide information about the specific material in the shipment \u2014 not just generic hazmat information.",
+      "notes": "",
+      "bullet_points": [
+        "**Monitored at all times**: The number must be answered 24/7/365. A number that goes to voicemail after business hours does not comply. An automated system that requires a caller to navigate a menu or leave a message does not comply.",
+        "**Knowledgeable person**: The person answering must be able to provide detailed information about the hazardous material, or must have immediate access to someone who can. \"I don't know, our hazmat manager comes in at 8 AM\" is not acceptable when a firefighter calls at 3 AM.",
+        "**Specific to the material**: The person must be able to provide information about the specific material in the shipment \u2014 not just generic hazmat information."
+      ]
+    },
+    {
+      "slide_number": 24,
+      "slide_type": "content",
+      "title": "Section 4: Emergency Response Telephone Number (cont.)",
+      "content": "### CHEMTREC\n\nMany shippers and carriers use **CHEMTREC** (Chemical Transportation Emergency Center) to meet this requirement. CHEMTREC is operated by the American Chemistry Council and provides 24/7 emergency response information for hazardous material incidents.\n\n- **CHEMTREC phone number**: 1-800-424-9300\n- CHEMTREC requires a contract or registration. The shipper's CHEMTREC contract number should appear on the shipping paper next to the phone number.",
+      "notes": "",
+      "bullet_points": [
+        "**CHEMTREC phone number**: 1-800-424-9300",
+        "CHEMTREC requires a contract or registration. The shipper's CHEMTREC contract number should appear on the shipping paper next to the phone number."
+      ]
+    },
+    {
+      "slide_number": 25,
+      "slide_type": "content",
+      "title": "Section 4: Emergency Response Telephone Number (cont.)",
+      "content": "Using CHEMTREC is not required \u2014 a shipper can use its own 24/7 number if it meets all the regulatory criteria. But for many small and mid-size shippers, CHEMTREC is the most practical way to comply because maintaining a staffed 24/7 phone line is expensive and operationally challenging.\n\n### Where the Phone Number Appears\n\nThe emergency response telephone number can appear:",
+      "notes": "",
+      "bullet_points": []
+    },
+    {
+      "slide_number": 26,
+      "slide_type": "content",
+      "title": "Section 4: Emergency Response Telephone Number (cont.)",
+      "content": "- Next to each hazmat entry on the shipping paper\n- At the top or bottom of the shipping paper in a clearly identified location (acceptable if it applies to all hazmat entries on the paper)\n- On a separate document that is attached to and accompanies the shipping paper\n\nThe number must be clearly associated with the hazmat shipment so that a first responder or inspector does not have to guess which phone number to call.\n\n### Common Phone Number Violations",
+      "notes": "",
+      "bullet_points": [
+        "Next to each hazmat entry on the shipping paper",
+        "At the top or bottom of the shipping paper in a clearly identified location (acceptable if it applies to all hazmat entries on the paper)",
+        "On a separate document that is attached to and accompanies the shipping paper"
+      ]
+    },
+    {
+      "slide_number": 27,
+      "slide_type": "content",
+      "title": "Section 4: Emergency Response Telephone Number (cont.)",
+      "content": "- **General company number**: A main office line that is not staffed after hours or on weekends.\n- **Cell phone of the shipper's contact**: Acceptable only if that person is truly available 24/7 and knowledgeable about the material. In practice, individual cell phones often go unanswered.\n- **No number at all**: A surprisingly common violation, especially on shipments prepared by infrequent hazmat shippers.\n- **Disconnected or wrong number**: The number must actually work. Inspectors and auditors do test them.",
+      "notes": "",
+      "bullet_points": [
+        "**General company number**: A main office line that is not staffed after hours or on weekends.",
+        "**Cell phone of the shipper's contact**: Acceptable only if that person is truly available 24/7 and knowledgeable about the material. In practice, individual cell phones often go unanswered.",
+        "**No number at all**: A surprisingly common violation, especially on shipments prepared by infrequent hazmat shippers.",
+        "**Disconnected or wrong number**: The number must actually work. Inspectors and auditors do test them."
+      ]
+    },
+    {
+      "slide_number": 28,
+      "slide_type": "section_divider",
+      "title": "Section 5: Shipper's Certification",
+      "content": "",
+      "notes": "",
+      "bullet_points": []
+    },
+    {
+      "slide_number": 29,
+      "slide_type": "content",
+      "title": "Section 5: Shipper's Certification",
+      "content": "The shipper's certification is a signed statement on the shipping paper that certifies the hazardous material has been properly prepared for transportation. Under 49 CFR 172.204, the certification must read substantially as follows:\n\n> \"This is to certify that the above-named materials are properly classified, described, packaged, marked, and labeled, and are in proper condition for transportation according to the applicable regulations of the Department of Transportation.\"\n\nAlternatively, the shortened form is acceptable:",
+      "notes": "",
+      "bullet_points": []
+    },
+    {
+      "slide_number": 30,
+      "slide_type": "content",
+      "title": "Section 5: Shipper's Certification (cont.)",
+      "content": "> \"I hereby declare that the contents of this consignment are fully and accurately described above by the proper shipping name, and are classified, packaged, marked and labeled/placarded, and are in all respects in proper condition for transport according to applicable international and national governmental regulations.\"\n\n### Who Signs\n\nThe shipper (or their authorized agent) must sign the certification. The signature can be manual (handwritten) or digital, and must include the signer's name and date.",
+      "notes": "",
+      "bullet_points": []
+    },
+    {
+      "slide_number": 31,
+      "slide_type": "content",
+      "title": "Section 5: Shipper's Certification (cont.)",
+      "content": "### When It Is Required\n\nThe shipper's certification is required on virtually all hazmat shipping papers. There are limited exceptions \u2014 for example, a shipper who is also the carrier does not need to certify to themselves, and certain movements of empty hazmat packagings may be exempt.\n\n### Why It Matters",
+      "notes": "",
+      "bullet_points": []
+    },
+    {
+      "slide_number": 32,
+      "slide_type": "content",
+      "title": "Section 5: Shipper's Certification (cont.)",
+      "content": "By signing the certification, the shipper is accepting legal responsibility for the accuracy of everything on the shipping paper and the compliance of the physical shipment. If the material is misclassified, the packaging is wrong, or the labels are missing, the person who signed that certification can be held personally liable \u2014 not just the company.\n\n**Practical Tip for Drivers**: Before you pull out of a shipper's facility, check that the shipper's certification is signed. An unsigned certification is a violation that will be attributed to both the shipper and the carrier. It takes two seconds to check and can save thousands in penalties.",
+      "notes": "",
+      "bullet_points": []
+    },
+    {
+      "slide_number": 33,
+      "slide_type": "section_divider",
+      "title": "Section 6: Hazardous Waste Manifest",
+      "content": "",
+      "notes": "",
+      "bullet_points": []
+    },
+    {
+      "slide_number": 34,
+      "slide_type": "content",
+      "title": "Section 6: Hazardous Waste Manifest",
+      "content": "When hazardous materials are also regulated as hazardous waste under EPA rules, a Uniform Hazardous Waste Manifest (EPA Form 8700-22) is used in place of \u2014 or in addition to \u2014 standard shipping papers.\n\n### Key Differences from Standard Shipping Papers\n\n- **Manifest Tracking Number**: Every hazardous waste manifest has a unique 12-digit tracking number issued by the receiving state. This number follows the waste from the point of generation through transportation to its final treatment, storage, or disposal facility.",
+      "notes": "",
+      "bullet_points": [
+        "**Manifest Tracking Number**: Every hazardous waste manifest has a unique 12-digit tracking number issued by the receiving state. This number follows the waste from the point of generation through transportation to its final treatment, storage, or disposal facility."
+      ]
+    },
+    {
+      "slide_number": 35,
+      "slide_type": "content",
+      "title": "Section 6: Hazardous Waste Manifest (cont.)",
+      "content": "- **EPA ID Numbers**: The generator (shipper), each transporter, and the designated receiving facility must have EPA identification numbers. These numbers appear on the manifest.\n\n- **Cradle-to-Grave Tracking**: The manifest creates a chain of custody. The generator prepares the manifest, the transporter signs for receipt, and the receiving facility signs upon delivery and sends a copy back to the generator. If the generator does not receive a signed copy from the receiving facility within 35 days, they must file an Exception Report with the EPA.\n\n- **Multiple Copies**: The manifest is a multi-copy form. Each party in the chain retains copies for their records.",
+      "notes": "",
+      "bullet_points": [
+        "**EPA ID Numbers**: The generator (shipper), each transporter, and the designated receiving facility must have EPA identification numbers. These numbers appear on the manifest.",
+        "**Cradle-to-Grave Tracking**: The manifest creates a chain of custody. The generator prepares the manifest, the transporter signs for receipt, and the receiving facility signs upon delivery and sends a copy back to the generator. If the generator does not receive a signed copy from the receiving facility within 35 days, they must file an Exception Report with the EPA.",
+        "**Multiple Copies**: The manifest is a multi-copy form. Each party in the chain retains copies for their records."
+      ]
+    },
+    {
+      "slide_number": 36,
+      "slide_type": "content",
+      "title": "Section 6: Hazardous Waste Manifest (cont.)",
+      "content": "### What Drivers Need to Know\n\nIf you are hauling hazardous waste, you must have the hazardous waste manifest in the cab, signed by both the generator and you (the transporter). You must deliver the waste only to the facility designated on the manifest. If you cannot deliver to the designated facility, you must contact the generator for revised instructions \u2014 you cannot simply take it to a different facility.\n\nHazardous waste manifests must be retained by the carrier for at least **3 years** from the date the waste was accepted for transport. This is longer than the standard shipping paper retention period.",
+      "notes": "",
+      "bullet_points": []
+    },
+    {
+      "slide_number": 37,
+      "slide_type": "section_divider",
+      "title": "Section 7: Retention Requirements",
+      "content": "",
+      "notes": "",
+      "bullet_points": []
+    },
+    {
+      "slide_number": 38,
+      "slide_type": "content",
+      "title": "Section 7: Retention Requirements",
+      "content": "The HMR requires both shippers and carriers to retain copies of hazmat shipping papers after the shipment is complete.\n\n### Shipper Retention\n\nUnder 49 CFR 172.201(e), the shipper must retain a copy of the hazmat shipping paper (or an electronic image of it) for a minimum of **2 years** after the material is accepted by the initial carrier. The retained copy must include the date of acceptance by the carrier.",
+      "notes": "",
+      "bullet_points": []
+    },
+    {
+      "slide_number": 39,
+      "slide_type": "content",
+      "title": "Section 7: Retention Requirements (cont.)",
+      "content": "### Carrier Retention\n\nUnder 49 CFR 177.817(f), the carrier must retain a copy of the hazmat shipping paper for a minimum of **1 year** after the material is accepted. The retained copy must include the date of acceptance.\n\n### Hazardous Waste Manifests",
+      "notes": "",
+      "bullet_points": []
+    },
+    {
+      "slide_number": 40,
+      "slide_type": "content",
+      "title": "Section 7: Retention Requirements (cont.)",
+      "content": "As noted above, hazardous waste manifests must be retained for **3 years** from the date the waste was accepted for transport.\n\n### Why Retention Matters\n\nRetained shipping papers serve as evidence of compliance during audits and investigations. If an incident occurs months after a shipment was made \u2014 a contamination event, a latent health effect, a delayed complaint \u2014 the shipping papers are the primary record of what was shipped, how it was described, and who was responsible. Without retained records, a carrier or shipper has no defense against allegations of non-compliance.",
+      "notes": "",
+      "bullet_points": []
+    },
+    {
+      "slide_number": 41,
+      "slide_type": "content",
+      "title": "Section 7: Retention Requirements (cont.)",
+      "content": "**Practical Tip**: Set up a systematic filing process \u2014 by date, by customer, or by material \u2014 so that you can retrieve shipping papers quickly when an inspector or auditor requests them. A box of unsorted papers in a back room does not meet the spirit of the regulation, even if technically the papers exist.",
+      "notes": "",
+      "bullet_points": []
+    },
+    {
+      "slide_number": 42,
+      "slide_type": "section_divider",
+      "title": "Section 8: Common Violations",
+      "content": "",
+      "notes": "",
+      "bullet_points": []
+    },
+    {
+      "slide_number": 43,
+      "slide_type": "content",
+      "title": "Section 8: Common Violations",
+      "content": "Shipping paper violations are among the most frequently cited hazmat infractions during roadside inspections and facility audits. Here are the mistakes that get companies in trouble.\n\n### Violation 1: Missing Emergency Response Phone Number\nThis is the single most common shipping paper violation. The phone number is missing entirely, or the number listed goes to voicemail, an automated menu, or a person who has no knowledge of the material. Inspectors routinely call the number to verify it works \u2014 and they do it during off-hours to test 24/7 availability.\n\n### Violation 2: Wrong Description Sequence\nThe basic description must follow the prescribed order: ID number, proper shipping name, hazard class, packing group. Rearranging these elements \u2014 even if all the correct information is present \u2014 is a violation. This trips up shippers who design their own bill of lading forms with columns in the wrong order.",
+      "notes": "",
+      "bullet_points": []
+    },
+    {
+      "slide_number": 44,
+      "slide_type": "content",
+      "title": "Section 8: Common Violations (cont.)",
+      "content": "### Violation 3: Unsigned Shipper's Certification\nThe shipper's certification must be signed. A printed certification without a signature is incomplete. This is an easy violation to catch and an easy one to prevent \u2014 just check before the truck leaves.\n\n### Violation 4: Hazmat Entries Not Distinguished\nWhen a shipping paper lists both hazmat and non-hazmat items, the hazmat entries must be highlighted, listed first, or marked with an \"X\" in an HM column. If hazmat entries are buried in the middle of a long list of non-hazmat items with no visual distinction, that is a violation.\n\n### Violation 5: Missing or Wrong Information\nCommon errors include: wrong UN/NA number, wrong hazard class, missing packing group, incorrect proper shipping name (using a trade name), missing quantity, or missing technical name when required for a generic (n.o.s.) entry.",
+      "notes": "",
+      "bullet_points": []
+    },
+    {
+      "slide_number": 45,
+      "slide_type": "content",
+      "title": "Section 8: Common Violations (cont.)",
+      "content": "### Violation 6: Papers Not Accessible in the Cab\nThe shipping papers must be within the driver's reach while belted or on the driver's seat when the driver is away from the vehicle. Papers stuffed in the glove compartment, behind the seat, or in a backpack on the sleeper berth do not comply.\n\n### Violation 7: Outdated or Retained Papers for Previous Loads\nKeeping old shipping papers from previous hazmat loads in the cab creates confusion. If an inspector or first responder finds shipping papers for materials that are no longer on the vehicle, they may respond to the wrong hazard. Remove shipping papers from the cab promptly when a hazmat load is delivered. Filed copies belong in the office, not in the truck.\n\n---",
+      "notes": "",
+      "bullet_points": []
+    },
+    {
+      "slide_number": 46,
+      "slide_type": "key_takeaways",
+      "title": "Key Takeaways",
+      "content": "- Shipping papers must accompany every hazmat shipment and be immediately accessible in the cab\n- The basic description sequence is: ID number, proper shipping name, hazard class, packing group\n- The emergency response phone number must connect to a knowledgeable person 24/7\n- The shipper's certification must be signed before the vehicle leaves the facility\n- Shippers retain shipping papers for 2 years; carriers retain them for 1 year\n- Hazmat entries must be visually distinguished from non-hazmat entries on the shipping paper\n- Shipping papers on the driver's seat when the driver is away \u2014 within arm's reach when the driver is belted in",
+      "notes": "",
+      "bullet_points": [
+        "Shipping papers must accompany every hazmat shipment and be immediately accessible in the cab",
+        "The basic description sequence is: ID number, proper shipping name, hazard class, packing group",
+        "The emergency response phone number must connect to a knowledgeable person 24/7",
+        "The shipper's certification must be signed before the vehicle leaves the facility",
+        "Shippers retain shipping papers for 2 years; carriers retain them for 1 year",
+        "Hazmat entries must be visually distinguished from non-hazmat entries on the shipping paper",
+        "Shipping papers on the driver's seat when the driver is away \u2014 within arm's reach when the driver is belted in"
+      ]
+    },
+    {
+      "slide_number": 47,
+      "slide_type": "assessment_intro",
+      "title": "Assessment",
+      "content": "You have completed the training content for Shipping Papers. You will now take a short assessment to verify your understanding. A score of 80% or higher is required to pass.",
+      "notes": "",
+      "bullet_points": [
+        "Passing score: 80%",
+        "Questions are drawn from the material covered in this module",
+        "You may retake the assessment if needed"
+      ]
+    }
+  ]
+}

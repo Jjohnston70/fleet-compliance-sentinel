@@ -1,0 +1,593 @@
+{
+  "module_code": "TNDS-HZ-008",
+  "title": "Security Requirements",
+  "category": "hazmat",
+  "cfr_reference": "49 CFR 172.800-804",
+  "phmsa_equivalent": "Module 8.0",
+  "estimated_duration_minutes": 35,
+  "passing_score": 80,
+  "version": "1.0",
+  "created": "2026-04-02",
+  "theme": {
+    "id": "tnds-training",
+    "name": "TNDS Training",
+    "colors": {
+      "primary": "#0F2B46",
+      "secondary": "#1A7A7A",
+      "accent": "#F59E0B",
+      "background": "#FFFFFF",
+      "surface": "#F8FAFC",
+      "text": "#1E293B",
+      "text_secondary": "#64748B",
+      "success": "#10B981",
+      "error": "#EF4444"
+    },
+    "slide_types": {
+      "title": {
+        "bg": "#0F2B46",
+        "text": "#FFFFFF"
+      },
+      "objectives": {
+        "bg": "#1A7A7A",
+        "text": "#FFFFFF"
+      },
+      "content": {
+        "bg": "#FFFFFF",
+        "text": "#1E293B"
+      },
+      "section_divider": {
+        "bg": "#0F2B46",
+        "text": "#F59E0B"
+      },
+      "key_takeaways": {
+        "bg": "#1A7A7A",
+        "text": "#FFFFFF"
+      },
+      "assessment_intro": {
+        "bg": "#0F2B46",
+        "text": "#FFFFFF"
+      }
+    }
+  },
+  "slide_count": 53,
+  "slides": [
+    {
+      "slide_number": 1,
+      "slide_type": "title",
+      "title": "Security Requirements",
+      "content": "",
+      "notes": "PHMSA Equivalent: Module 8.0 | CFR Reference: 49 CFR 172.800-804 | Estimated Duration: 35 minutes",
+      "bullet_points": [
+        "Module 8.0",
+        "49 CFR 172.800-804",
+        "Duration: 35 min",
+        "Passing Score: 80%"
+      ]
+    },
+    {
+      "slide_number": 2,
+      "slide_type": "objectives",
+      "title": "Learning Objectives",
+      "content": "- Explain why security requirements were added to the Hazardous Materials Regulations\n- Determine which operations require a written security plan under 49 CFR 172.800\n- Describe the three required components of a hazmat security plan\n- Distinguish between security awareness training and in-depth security training\n- Apply practical security measures during hazmat transport\n- Know when and how to report suspicious activity\n- Maintain compliant security plan records",
+      "notes": "",
+      "bullet_points": [
+        "Explain why security requirements were added to the Hazardous Materials Regulations",
+        "Determine which operations require a written security plan under 49 CFR 172.800",
+        "Describe the three required components of a hazmat security plan",
+        "Distinguish between security awareness training and in-depth security training",
+        "Apply practical security measures during hazmat transport",
+        "Know when and how to report suspicious activity",
+        "Maintain compliant security plan records"
+      ]
+    },
+    {
+      "slide_number": 3,
+      "slide_type": "section_divider",
+      "title": "Section 1: Why Security Matters for Hazmat",
+      "content": "",
+      "notes": "",
+      "bullet_points": []
+    },
+    {
+      "slide_number": 4,
+      "slide_type": "content",
+      "title": "Section 1: Why Security Matters for Hazmat",
+      "content": "Before September 11, 2001, the Hazardous Materials Regulations were almost entirely focused on safety \u2014 preventing accidental releases, fires, and exposures during normal transportation operations. The attacks on that date demonstrated that hazardous materials in transportation could be deliberately weaponized, and the regulatory framework had a gap: it addressed accidents but not intentional acts.\n\nThe threat is real and specific. Consider what moves by highway every day:\n\n- **Chlorine gas** (Division 2.3, Toxic Inhalation Hazard) \u2014 Used for water treatment, transported in bulk quantities. A deliberate release in a populated area could injure or kill thousands. The 2005 Graniteville, SC rail incident (an accident) killed 9 people and injured 554 from a single tank car. An intentional release of the same material in a subway tunnel, highway tunnel, or arena district would be far worse.",
+      "notes": "",
+      "bullet_points": [
+        "**Chlorine gas** (Division 2.3, Toxic Inhalation Hazard) \u2014 Used for water treatment, transported in bulk quantities. A deliberate release in a populated area could injure or kill thousands. The 2005 Graniteville, SC rail incident (an accident) killed 9 people and injured 554 from a single tank car. An intentional release of the same material in a subway tunnel, highway tunnel, or arena district would be far worse."
+      ]
+    },
+    {
+      "slide_number": 5,
+      "slide_type": "content",
+      "title": "Section 1: Why Security Matters for Hazmat (cont.)",
+      "content": "- **Anhydrous ammonia** (Division 2.2/2.3) \u2014 Used in agriculture and refrigeration. Highly toxic when inhaled, and transported in enormous quantities.\n\n- **Gasoline and other flammable liquids** (Class 3) \u2014 Every fuel tanker on the highway is a rolling incendiary device if intentionally misused. A 9,000-gallon gasoline tanker detonated in a crowded area would cause mass casualties.\n\n- **Explosives** (Division 1.1-1.6) \u2014 Commercial explosives for mining and construction move by highway daily. Theft or diversion of these materials is a direct national security concern.",
+      "notes": "",
+      "bullet_points": [
+        "**Anhydrous ammonia** (Division 2.2/2.3) \u2014 Used in agriculture and refrigeration. Highly toxic when inhaled, and transported in enormous quantities.",
+        "**Gasoline and other flammable liquids** (Class 3) \u2014 Every fuel tanker on the highway is a rolling incendiary device if intentionally misused. A 9,000-gallon gasoline tanker detonated in a crowded area would cause mass casualties.",
+        "**Explosives** (Division 1.1-1.6) \u2014 Commercial explosives for mining and construction move by highway daily. Theft or diversion of these materials is a direct national security concern."
+      ]
+    },
+    {
+      "slide_number": 6,
+      "slide_type": "content",
+      "title": "Section 1: Why Security Matters for Hazmat (cont.)",
+      "content": "- **Radioactive materials** (Class 7) \u2014 Medical and industrial radioactive sources are transported by highway. A stolen radioactive source used in a \"dirty bomb\" (radiological dispersal device) would cause widespread contamination and panic, even if the immediate casualty count were low.\n\nThe regulatory response was 49 CFR 172.800 through 172.804, which require security plans for certain hazmat operations and security training for all hazmat employees. These rules are not bureaucratic exercises \u2014 they are the government's attempt to close the gap between safety regulations and security threats.\n\n### The Ongoing Threat",
+      "notes": "",
+      "bullet_points": [
+        "**Radioactive materials** (Class 7) \u2014 Medical and industrial radioactive sources are transported by highway. A stolen radioactive source used in a \"dirty bomb\" (radiological dispersal device) would cause widespread contamination and panic, even if the immediate casualty count were low."
+      ]
+    },
+    {
+      "slide_number": 7,
+      "slide_type": "content",
+      "title": "Section 1: Why Security Matters for Hazmat (cont.)",
+      "content": "The threat has not diminished since 2001. In the years since, law enforcement has interdicted plots involving hazardous materials, and theft of chemicals from transport vehicles has occurred. The regulatory posture is that prevention is far more effective than response \u2014 it is better to prevent a chemical tanker from being hijacked than to respond to a mass casualty event after the fact.",
+      "notes": "",
+      "bullet_points": []
+    },
+    {
+      "slide_number": 8,
+      "slide_type": "section_divider",
+      "title": "Section 2: Who Needs a Security Plan (172.800)",
+      "content": "",
+      "notes": "",
+      "bullet_points": []
+    },
+    {
+      "slide_number": 9,
+      "slide_type": "content",
+      "title": "Section 2: Who Needs a Security Plan (172.800)",
+      "content": "Not every hazmat operation requires a written security plan, but the threshold for needing one is lower than many operators realize. Under 49 CFR 172.800, a security plan is required for any person who **offers for transportation or transports** any of the following:\n\n### Materials Requiring a Security Plan\n\n1. **Any quantity of a highway route-controlled quantity of Class 7 (radioactive) material.** Highway route-controlled quantities are the highest activity radioactive shipments \u2014 they require specific routing and advance coordination.",
+      "notes": "",
+      "bullet_points": []
+    },
+    {
+      "slide_number": 10,
+      "slide_type": "content",
+      "title": "Section 2: Who Needs a Security Plan (172.800) (cont.)",
+      "content": "2. **More than 25 kg (55 lbs) of a Division 1.1, 1.2, or 1.3 material.** These are the highest-hazard explosives: Division 1.1 presents a mass explosion hazard, Division 1.2 a projection hazard, and Division 1.3 a fire hazard. Even 55 pounds of these materials triggers the security plan requirement.\n\n3. **Any quantity of a material that requires placarding of Division 2.1 (flammable gas) or Division 2.3 (toxic gas).** If your truck carries enough flammable gas or toxic gas to require a placard \u2014 and placarding thresholds are as low as any quantity for some materials \u2014 you need a security plan. This catches propane deliveries, chlorine shipments, anhydrous ammonia hauls, and many other common operations.\n\n4. **A highway route-controlled quantity of Class 7 (radioactive) material.** (Restated for emphasis \u2014 any quantity of these high-activity shipments.)",
+      "notes": "",
+      "bullet_points": []
+    },
+    {
+      "slide_number": 11,
+      "slide_type": "content",
+      "title": "Section 2: Who Needs a Security Plan (172.800) (cont.)",
+      "content": "5. **A select agent or toxin regulated by the Centers for Disease Control and Prevention (CDC) or the U.S. Department of Agriculture (USDA).** These are biological agents with potential for misuse, including certain pathogens and toxins regulated under 42 CFR Part 73.\n\n6. **Any quantity of a material identified in the security plan section as a security-sensitive material.** The list of security-sensitive materials includes large bulk quantities of certain Classes 3 (flammable liquid) and 8 (corrosive) materials transported in quantities requiring placarding in bulk packaging, portable tanks, or cargo tanks.\n\n### Who This Covers in Practice",
+      "notes": "",
+      "bullet_points": []
+    },
+    {
+      "slide_number": 12,
+      "slide_type": "content",
+      "title": "Section 2: Who Needs a Security Plan (172.800) (cont.)",
+      "content": "If your fleet does any of the following, you almost certainly need a security plan:\n\n- Delivers propane (Division 2.1) in bulk \u2014 even a single bobtail propane truck triggers the requirement\n- Hauls chlorine (Division 2.3) in any placarded quantity\n- Transports gasoline, diesel, or other flammable liquids in cargo tanks (placarded quantities)\n- Carries anhydrous ammonia for agricultural customers\n- Moves commercial explosives for mining or construction customers\n- Transports radioactive materials for medical, industrial, or waste disposal purposes\n\n**Real-World Scenario**: A small fleet operates three bobtail propane trucks delivering to rural residential customers. The fleet manager assumes that because the operation is small and local, they do not need a security plan. This is wrong. Propane is Division 2.1 (flammable gas), the trucks carry placarded quantities, and 49 CFR 172.800(b)(4) requires a security plan for any quantity of placarded Division 2.1 material. The fleet must develop, implement, and maintain a security plan \u2014 and train all hazmat employees on it.",
+      "notes": "",
+      "bullet_points": [
+        "Delivers propane (Division 2.1) in bulk \u2014 even a single bobtail propane truck triggers the requirement",
+        "Hauls chlorine (Division 2.3) in any placarded quantity",
+        "Transports gasoline, diesel, or other flammable liquids in cargo tanks (placarded quantities)",
+        "Carries anhydrous ammonia for agricultural customers",
+        "Moves commercial explosives for mining or construction customers",
+        "Transports radioactive materials for medical, industrial, or waste disposal purposes"
+      ]
+    },
+    {
+      "slide_number": 13,
+      "slide_type": "section_divider",
+      "title": "Section 3: Security Plan Components (172.802)",
+      "content": "",
+      "notes": "",
+      "bullet_points": []
+    },
+    {
+      "slide_number": 14,
+      "slide_type": "content",
+      "title": "Section 3: Security Plan Components (172.802)",
+      "content": "A hazmat security plan is not a generic document downloaded from the internet and filed in a drawer. It must address three specific elements that are tailored to your actual operation. DOT inspectors will check not only that you have a plan, but that the plan reflects how your company actually handles hazmat.\n\n### Component 1: Personnel Security\n\nThe personnel security element of the plan must address how the company ensures that persons with access to hazardous materials are trustworthy and authorized.",
+      "notes": "",
+      "bullet_points": []
+    },
+    {
+      "slide_number": 15,
+      "slide_type": "content",
+      "title": "Section 3: Security Plan Components (172.802) (cont.)",
+      "content": "**What this means in practice:**\n\n- **Background checks**: The plan must describe the procedures for verifying the background of employees who have access to hazmat. For CDL holders with a hazmat endorsement, TSA already conducts a security threat assessment (STA) as part of the endorsement process. But your plan should address how you verify that the STA is current and what additional checks you perform for non-CDL employees who handle hazmat (warehouse workers, shipping clerks, dock loaders).\n\n- **Employment verification**: Confirm previous employment history and check references. A person who claims to have worked at a specific chemical company for five years should have that claim verified.",
+      "notes": "",
+      "bullet_points": [
+        "**Background checks**: The plan must describe the procedures for verifying the background of employees who have access to hazmat. For CDL holders with a hazmat endorsement, TSA already conducts a security threat assessment (STA) as part of the endorsement process. But your plan should address how you verify that the STA is current and what additional checks you perform for non-CDL employees who handle hazmat (warehouse workers, shipping clerks, dock loaders).",
+        "**Employment verification**: Confirm previous employment history and check references. A person who claims to have worked at a specific chemical company for five years should have that claim verified."
+      ]
+    },
+    {
+      "slide_number": 16,
+      "slide_type": "content",
+      "title": "Section 3: Security Plan Components (172.802) (cont.)",
+      "content": "- **Identification protocols**: How do you verify that the person who shows up to pick up a load of hazmat is actually the person authorized to do so? This includes driver identification verification at pickup and delivery points.\n\n- **Addressing unauthorized access by personnel**: What happens when an employee is terminated, resigns, or has their hazmat endorsement revoked? The plan must describe how you revoke access to hazmat, vehicles, and facilities. This includes recovering keys, badges, access cards, and any electronic access credentials.\n\n**Real-World Scenario**: A driver with a hazmat endorsement is terminated for cause. Your security plan should require that the company immediately recover the truck keys, fuel cards, and facility access badges. The plan should also require notification to the dispatcher and terminal security that the former driver is no longer authorized to enter the premises or access any hazmat vehicle or cargo. A terminated employee who retains a key to a propane truck or a gate code to the yard is a security gap.",
+      "notes": "",
+      "bullet_points": [
+        "**Identification protocols**: How do you verify that the person who shows up to pick up a load of hazmat is actually the person authorized to do so? This includes driver identification verification at pickup and delivery points.",
+        "**Addressing unauthorized access by personnel**: What happens when an employee is terminated, resigns, or has their hazmat endorsement revoked? The plan must describe how you revoke access to hazmat, vehicles, and facilities. This includes recovering keys, badges, access cards, and any electronic access credentials."
+      ]
+    },
+    {
+      "slide_number": 17,
+      "slide_type": "content",
+      "title": "Section 3: Security Plan Components (172.802) (cont.)",
+      "content": "### Component 2: Unauthorized Access Prevention\n\nThis element covers physical security measures to prevent unauthorized persons from gaining access to hazmat, vehicles, and facilities.\n\n**What this means in practice:**",
+      "notes": "",
+      "bullet_points": []
+    },
+    {
+      "slide_number": 18,
+      "slide_type": "content",
+      "title": "Section 3: Security Plan Components (172.802) (cont.)",
+      "content": "- **Vehicle security**: Trucks carrying hazmat must be locked when unattended. Cargo compartments, valves, and tank openings must be secured. King pin locks, glad-hand locks, and air brake valve locks can prevent unauthorized persons from moving the vehicle. Engine kill switches or GPS-based anti-theft systems add additional layers.\n\n- **Facility security**: The terminal, warehouse, or yard where hazmat is stored or handled must have controlled access. This means fencing, locked gates, lighting, and surveillance cameras at a minimum. The plan should describe who has access to the facility after hours and how that access is controlled.\n\n- **Cargo security during loading and unloading**: Hazmat cargo should not be left unattended on a dock or in a yard where unauthorized persons can access it. If your operation involves leaving loaded hazmat trailers in a drop yard overnight, the plan must address how those trailers are secured \u2014 locked, within a fenced area, and monitored.",
+      "notes": "",
+      "bullet_points": [
+        "**Vehicle security**: Trucks carrying hazmat must be locked when unattended. Cargo compartments, valves, and tank openings must be secured. King pin locks, glad-hand locks, and air brake valve locks can prevent unauthorized persons from moving the vehicle. Engine kill switches or GPS-based anti-theft systems add additional layers.",
+        "**Facility security**: The terminal, warehouse, or yard where hazmat is stored or handled must have controlled access. This means fencing, locked gates, lighting, and surveillance cameras at a minimum. The plan should describe who has access to the facility after hours and how that access is controlled.",
+        "**Cargo security during loading and unloading**: Hazmat cargo should not be left unattended on a dock or in a yard where unauthorized persons can access it. If your operation involves leaving loaded hazmat trailers in a drop yard overnight, the plan must address how those trailers are secured \u2014 locked, within a fenced area, and monitored."
+      ]
+    },
+    {
+      "slide_number": 19,
+      "slide_type": "content",
+      "title": "Section 3: Security Plan Components (172.802) (cont.)",
+      "content": "- **Lock protocols**: The plan should specify what gets locked, when, and by whom. The minimum standard: every time a driver leaves the cab, the truck is locked. Every time a loaded trailer is dropped, the trailer doors are locked and sealed. Valve caps on cargo tanks are locked when not actively loading or unloading.\n\n**Real-World Scenario**: A fleet parks six loaded hazmat trailers in an unfenced lot adjacent to the warehouse over the weekend. The lot is on a public street, there are no security cameras, and the trailer doors have no locks \u2014 just standard latches. On Monday morning, a driver discovers that one trailer's rear doors are ajar and several drums are missing. This is a reportable security incident and a violation of the security plan requirements. The missing drums may contain hazardous materials that are now in the hands of an unknown party. A proper security plan would have required the trailers to be parked inside the fenced yard, with door locks applied and camera surveillance recording.\n\n### Component 3: En Route Security",
+      "notes": "",
+      "bullet_points": [
+        "**Lock protocols**: The plan should specify what gets locked, when, and by whom. The minimum standard: every time a driver leaves the cab, the truck is locked. Every time a loaded trailer is dropped, the trailer doors are locked and sealed. Valve caps on cargo tanks are locked when not actively loading or unloading."
+      ]
+    },
+    {
+      "slide_number": 20,
+      "slide_type": "content",
+      "title": "Section 3: Security Plan Components (172.802) (cont.)",
+      "content": "This element addresses security risks that arise while hazmat is in transit \u2014 on the road between origin and destination.\n\n**What this means in practice:**\n\n- **Route adherence**: Drivers should follow designated routes and not deviate without authorization and a legitimate reason. Some hazmat routes are federally mandated (such as highway-route-controlled quantities of radioactive materials), but your plan should establish standard routes for your most common hazmat shipments and require drivers to notify dispatch of any deviations.",
+      "notes": "",
+      "bullet_points": [
+        "**Route adherence**: Drivers should follow designated routes and not deviate without authorization and a legitimate reason. Some hazmat routes are federally mandated (such as highway-route-controlled quantities of radioactive materials), but your plan should establish standard routes for your most common hazmat shipments and require drivers to notify dispatch of any deviations."
+      ]
+    },
+    {
+      "slide_number": 21,
+      "slide_type": "content",
+      "title": "Section 3: Security Plan Components (172.802) (cont.)",
+      "content": "- **Communication protocols**: Drivers must be able to contact dispatch at all times during a hazmat trip. The plan should specify how frequently the driver must check in (e.g., at each stop, every 2 hours, upon arrival at destination) and what information is communicated (current location, ETA, any unusual observations).\n\n- **Rest stop and fueling procedures**: The plan should address where drivers are allowed to stop and what precautions they must take. Drivers should fuel at well-lit, populated truck stops rather than remote, unattended fuel points. When stopped for rest, the truck must be locked, and the driver should park in a visible, well-lit area.\n\n- **Delivery verification**: Before unloading hazmat at a delivery point, the driver should verify that the receiving party is legitimate. Does the delivery address match the shipping papers? Is the contact person who signed for the load actually an employee of the consignee? For sensitive materials, the plan may require advance confirmation of the delivery appointment and identification verification of the receiver.",
+      "notes": "",
+      "bullet_points": [
+        "**Communication protocols**: Drivers must be able to contact dispatch at all times during a hazmat trip. The plan should specify how frequently the driver must check in (e.g., at each stop, every 2 hours, upon arrival at destination) and what information is communicated (current location, ETA, any unusual observations).",
+        "**Rest stop and fueling procedures**: The plan should address where drivers are allowed to stop and what precautions they must take. Drivers should fuel at well-lit, populated truck stops rather than remote, unattended fuel points. When stopped for rest, the truck must be locked, and the driver should park in a visible, well-lit area.",
+        "**Delivery verification**: Before unloading hazmat at a delivery point, the driver should verify that the receiving party is legitimate. Does the delivery address match the shipping papers? Is the contact person who signed for the load actually an employee of the consignee? For sensitive materials, the plan may require advance confirmation of the delivery appointment and identification verification of the receiver."
+      ]
+    },
+    {
+      "slide_number": 22,
+      "slide_type": "content",
+      "title": "Section 3: Security Plan Components (172.802) (cont.)",
+      "content": "- **Deviation and incident reporting**: If a driver observes anything unusual \u2014 a vehicle following the truck, someone attempting to flag down the truck on a remote road, a suspicious package left on the truck during a stop \u2014 the plan must specify who to call and what information to report.\n\n**Real-World Scenario**: A driver hauling a tanker of anhydrous ammonia stops at a rest area on an interstate at 2 AM. While walking back from the restroom, the driver notices a person examining the tanker's valves and fittings. The driver returns to the cab, locks the doors, and calls dispatch, who calls 911. The police arrive and find that the person was simply curious, not malicious. This is still the correct response. The security plan should train drivers to never confront suspicious persons themselves, always call for help, and document the incident. An overreaction costs nothing; an underreaction could cost lives.",
+      "notes": "",
+      "bullet_points": [
+        "**Deviation and incident reporting**: If a driver observes anything unusual \u2014 a vehicle following the truck, someone attempting to flag down the truck on a remote road, a suspicious package left on the truck during a stop \u2014 the plan must specify who to call and what information to report."
+      ]
+    },
+    {
+      "slide_number": 23,
+      "slide_type": "section_divider",
+      "title": "Section 4: Security Awareness Training (172.704(a)(4))",
+      "content": "",
+      "notes": "",
+      "bullet_points": []
+    },
+    {
+      "slide_number": 24,
+      "slide_type": "content",
+      "title": "Section 4: Security Awareness Training (172.704(a)(4))",
+      "content": "Security awareness training is required for **every hazmat employee** \u2014 regardless of whether their employer is required to have a security plan. This is a critical distinction. Even if your company handles hazmat quantities below the security plan threshold, every hazmat employee must still receive security awareness training.\n\n### What Security Awareness Training Covers\n\nSecurity awareness training must provide employees with an understanding of:",
+      "notes": "",
+      "bullet_points": []
+    },
+    {
+      "slide_number": 25,
+      "slide_type": "content",
+      "title": "Section 4: Security Awareness Training (172.704(a)(4)) (cont.)",
+      "content": "1. **Security risks associated with hazmat transportation.** Employees must understand that the materials they handle could be targeted for theft, sabotage, or misuse. This is not about creating paranoia \u2014 it is about creating awareness that hazmat has a dual-use potential.\n\n2. **Methods designed to enhance transportation security.** Practical measures that employees can take in their daily work to improve security: locking trucks, securing cargo, following routes, verifying deliveries, and controlling access.\n\n3. **How to recognize and respond to possible security threats.** What does suspicious activity look like in the context of hazmat transportation? It might be a person asking unusual questions about a load's contents, timing, or route. It might be an unauthorized person in a restricted area. It might be a vehicle following a hazmat truck for an unusually long distance. Employees must know what to look for and what to do about it.",
+      "notes": "",
+      "bullet_points": []
+    },
+    {
+      "slide_number": 26,
+      "slide_type": "content",
+      "title": "Section 4: Security Awareness Training (172.704(a)(4)) (cont.)",
+      "content": "### When Security Awareness Training Is Required\n\n- At initial hire (within the 90-day training window for new hazmat employees)\n- At least every 3 years as part of recurrent training\n- Whenever the employer's security posture changes or new threats emerge\n\n### Documentation",
+      "notes": "",
+      "bullet_points": [
+        "At initial hire (within the 90-day training window for new hazmat employees)",
+        "At least every 3 years as part of recurrent training",
+        "Whenever the employer's security posture changes or new threats emerge"
+      ]
+    },
+    {
+      "slide_number": 27,
+      "slide_type": "content",
+      "title": "Section 4: Security Awareness Training (172.704(a)(4)) (cont.)",
+      "content": "Security awareness training must be documented in the employee's training record, just like general awareness, function-specific, and safety training. The record must include the date of training, a description of the training content, and a certification that the employee was trained and tested.",
+      "notes": "",
+      "bullet_points": []
+    },
+    {
+      "slide_number": 28,
+      "slide_type": "section_divider",
+      "title": "Section 5: In-Depth Security Training (172.704(a)(5))",
+      "content": "",
+      "notes": "",
+      "bullet_points": []
+    },
+    {
+      "slide_number": 29,
+      "slide_type": "content",
+      "title": "Section 5: In-Depth Security Training (172.704(a)(5))",
+      "content": "In-depth security training goes beyond awareness and is required only for employees of companies that must have a security plan under 172.800. If your company needs a security plan, your hazmat employees need in-depth security training \u2014 in addition to security awareness training.\n\n### What In-Depth Security Training Covers\n\nIn-depth security training must cover:",
+      "notes": "",
+      "bullet_points": []
+    },
+    {
+      "slide_number": 30,
+      "slide_type": "content",
+      "title": "Section 5: In-Depth Security Training (172.704(a)(5)) (cont.)",
+      "content": "1. **The company's specific security plan.** Employees must know what the plan says, where it is located, and how it applies to their particular job. A driver's in-depth training focuses on en route security, vehicle locking protocols, communication check-ins, and delivery verification. A warehouse worker's training focuses on facility access control, cargo security during handling, and recognizing unauthorized persons in the area.\n\n2. **The employee's specific role in implementing the plan.** Generic training is not enough. Each employee must understand their individual responsibilities under the plan. The driver's role is different from the dispatcher's role, which is different from the terminal manager's role. Training must be specific to each function.\n\n3. **Company-specific procedures.** How does your company handle a security breach? Who is the designated security coordinator? What is the phone number to call? What information must be provided when reporting an incident? These are company-specific details that must be part of in-depth training.",
+      "notes": "",
+      "bullet_points": []
+    },
+    {
+      "slide_number": 31,
+      "slide_type": "content",
+      "title": "Section 5: In-Depth Security Training (172.704(a)(5)) (cont.)",
+      "content": "### The Difference Between Awareness and In-Depth Training\n\n| Aspect | Security Awareness | In-Depth Security |\n|--------|-------------------|-------------------|\n| Who needs it | ALL hazmat employees | Only employees of companies with a required security plan |\n| Content | General awareness of threats, methods, and reporting | Company-specific plan, individual roles, detailed procedures |\n| Depth | Overview level | Detailed, role-specific |\n| Triggers | Any hazmat employee function | Company meets the threshold in 172.800 |\n\n**Real-World Scenario**: A fleet operates 20 fuel tankers delivering gasoline and diesel (Class 3, flammable liquid, placarded quantities in cargo tanks). The fleet is required to have a security plan under 172.800. The fleet's drivers receive security awareness training (general threats, general measures, general reporting) plus in-depth security training (the company's specific security plan, the driver's specific responsibilities under that plan, the company's specific communication protocols and incident reporting procedures). A new dispatcher who also prepares hazmat shipping papers receives the same security awareness training but different in-depth training \u2014 focused on verifying delivery appointments, monitoring driver check-ins, and coordinating with law enforcement if a driver reports a security concern.",
+      "notes": "",
+      "bullet_points": []
+    },
+    {
+      "slide_number": 32,
+      "slide_type": "section_divider",
+      "title": "Section 6: Practical Security Measures for Drivers",
+      "content": "",
+      "notes": "",
+      "bullet_points": []
+    },
+    {
+      "slide_number": 33,
+      "slide_type": "content",
+      "title": "Section 6: Practical Security Measures for Drivers",
+      "content": "The security plan creates the framework. The driver implements it on the road every day. Here are the practical security measures that every hazmat driver should follow:\n\n### Vehicle Security\n\n- **Lock your truck every time you leave the cab.** This is the single most important security measure. It does not matter if you are going inside a gas station for five minutes or walking 50 feet to check a tire. Lock the cab. A hazmat vehicle left running and unlocked is an invitation for theft or hijacking.",
+      "notes": "",
+      "bullet_points": [
+        "**Lock your truck every time you leave the cab.** This is the single most important security measure. It does not matter if you are going inside a gas station for five minutes or walking 50 feet to check a tire. Lock the cab. A hazmat vehicle left running and unlocked is an invitation for theft or hijacking."
+      ]
+    },
+    {
+      "slide_number": 34,
+      "slide_type": "content",
+      "title": "Section 6: Practical Security Measures for Drivers (cont.)",
+      "content": "- **Do not leave the keys in the ignition.** This seems obvious, but it happens \u2014 especially during loading and unloading when the driver steps away \"for just a second.\" Remove the keys and take them with you.\n\n- **Use all available anti-theft devices.** King pin locks on trailers, glad-hand locks on air brake connections, steering wheel locks, engine kill switches, GPS tracking with geofencing \u2014 use what your company provides.\n\n- **Park in well-lit, visible locations.** When stopping for fuel, food, or rest, choose locations with lighting, cameras, and other vehicles. Avoid isolated rest areas, dead-end industrial roads, and unlit parking areas.",
+      "notes": "",
+      "bullet_points": [
+        "**Do not leave the keys in the ignition.** This seems obvious, but it happens \u2014 especially during loading and unloading when the driver steps away \"for just a second.\" Remove the keys and take them with you.",
+        "**Use all available anti-theft devices.** King pin locks on trailers, glad-hand locks on air brake connections, steering wheel locks, engine kill switches, GPS tracking with geofencing \u2014 use what your company provides.",
+        "**Park in well-lit, visible locations.** When stopping for fuel, food, or rest, choose locations with lighting, cameras, and other vehicles. Avoid isolated rest areas, dead-end industrial roads, and unlit parking areas."
+      ]
+    },
+    {
+      "slide_number": 35,
+      "slide_type": "content",
+      "title": "Section 6: Practical Security Measures for Drivers (cont.)",
+      "content": "### Cargo Security\n\n- **Seal all cargo openings.** Trailer doors, tank hatches, valve covers, and any other access points to the cargo must be closed and secured when not actively loading or unloading. Use numbered seals where required and record the seal numbers on your shipping papers.\n\n- **Do not discuss your cargo with strangers.** If someone at a truck stop asks what you are hauling, you are not obligated to tell them. A polite \"just freight\" or no answer at all is appropriate. The proper shipping name, hazard class, and quantity of your cargo is information that belongs on your shipping papers and in your dispatch system \u2014 not in a casual conversation.",
+      "notes": "",
+      "bullet_points": [
+        "**Seal all cargo openings.** Trailer doors, tank hatches, valve covers, and any other access points to the cargo must be closed and secured when not actively loading or unloading. Use numbered seals where required and record the seal numbers on your shipping papers.",
+        "**Do not discuss your cargo with strangers.** If someone at a truck stop asks what you are hauling, you are not obligated to tell them. A polite \"just freight\" or no answer at all is appropriate. The proper shipping name, hazard class, and quantity of your cargo is information that belongs on your shipping papers and in your dispatch system \u2014 not in a casual conversation."
+      ]
+    },
+    {
+      "slide_number": 36,
+      "slide_type": "content",
+      "title": "Section 6: Practical Security Measures for Drivers (cont.)",
+      "content": "- **Verify pickup and delivery contacts.** Before accepting a load, confirm the pickup appointment with your dispatch. Before delivering, confirm the delivery appointment and verify the identity of the person signing for the cargo. If something feels wrong \u2014 the address does not match, the contact person is not who was expected, the facility looks abandoned \u2014 call dispatch before unloading.\n\n### Route Discipline\n\n- **Follow designated routes.** If your company has established routes for hazmat shipments, follow them. Deviations should only occur for legitimate reasons (road closures, accidents, weather) and should be communicated to dispatch immediately.",
+      "notes": "",
+      "bullet_points": [
+        "**Verify pickup and delivery contacts.** Before accepting a load, confirm the pickup appointment with your dispatch. Before delivering, confirm the delivery appointment and verify the identity of the person signing for the cargo. If something feels wrong \u2014 the address does not match, the contact person is not who was expected, the facility looks abandoned \u2014 call dispatch before unloading.",
+        "**Follow designated routes.** If your company has established routes for hazmat shipments, follow them. Deviations should only occur for legitimate reasons (road closures, accidents, weather) and should be communicated to dispatch immediately."
+      ]
+    },
+    {
+      "slide_number": 37,
+      "slide_type": "content",
+      "title": "Section 6: Practical Security Measures for Drivers (cont.)",
+      "content": "- **Monitor your surroundings.** Be aware of vehicles that appear to be following you, especially on less-traveled roads. If you suspect you are being followed, do not stop in an isolated area \u2014 continue to a well-populated location (truck stop, police station, fire station) and call 911.\n\n- **Comply with hazmat routing restrictions.** Certain materials are prohibited from specific routes (tunnels, bridges, densely populated areas). Follow posted hazmat route signs and any route restrictions in your company's security plan.",
+      "notes": "",
+      "bullet_points": [
+        "**Monitor your surroundings.** Be aware of vehicles that appear to be following you, especially on less-traveled roads. If you suspect you are being followed, do not stop in an isolated area \u2014 continue to a well-populated location (truck stop, police station, fire station) and call 911.",
+        "**Comply with hazmat routing restrictions.** Certain materials are prohibited from specific routes (tunnels, bridges, densely populated areas). Follow posted hazmat route signs and any route restrictions in your company's security plan."
+      ]
+    },
+    {
+      "slide_number": 38,
+      "slide_type": "section_divider",
+      "title": "Section 7: Reporting Suspicious Activity",
+      "content": "",
+      "notes": "",
+      "bullet_points": []
+    },
+    {
+      "slide_number": 39,
+      "slide_type": "content",
+      "title": "Section 7: Reporting Suspicious Activity",
+      "content": "The security framework only works if people on the front lines \u2014 drivers, dock workers, dispatchers \u2014 report what they see. A security plan sitting in a filing cabinet does nothing. A trained employee who calls in a suspicious observation can prevent an incident.\n\n### What to Report\n\nReport any activity that seems unusual in the context of hazmat transportation:",
+      "notes": "",
+      "bullet_points": []
+    },
+    {
+      "slide_number": 40,
+      "slide_type": "content",
+      "title": "Section 7: Reporting Suspicious Activity (cont.)",
+      "content": "- An unauthorized person in a restricted area (your yard, your dock, around your truck)\n- Someone asking detailed questions about your cargo, route, schedule, or security measures\n- A vehicle following your hazmat truck for an extended distance\n- An attempt to stop or divert your vehicle by someone who is not law enforcement\n- Signs that your cargo has been tampered with (broken seals, valve covers removed, marks or labels altered)\n- A package, device, or substance left on or near your vehicle that was not there before\n- Any attempt to bribe, threaten, or coerce you into deviating from your normal procedures\n- A delivery location that does not match what was described or a receiving party that cannot be verified\n\n### Who to Call\n\n**Immediate physical threat or crime in progress**: Call **911**. Do not call your company first if someone is actively threatening you or attempting to take your vehicle. Get law enforcement involved immediately.",
+      "notes": "",
+      "bullet_points": [
+        "An unauthorized person in a restricted area (your yard, your dock, around your truck)",
+        "Someone asking detailed questions about your cargo, route, schedule, or security measures",
+        "A vehicle following your hazmat truck for an extended distance",
+        "An attempt to stop or divert your vehicle by someone who is not law enforcement",
+        "Signs that your cargo has been tampered with (broken seals, valve covers removed, marks or labels altered)",
+        "A package, device, or substance left on or near your vehicle that was not there before",
+        "Any attempt to bribe, threaten, or coerce you into deviating from your normal procedures",
+        "A delivery location that does not match what was described or a receiving party that cannot be verified"
+      ]
+    },
+    {
+      "slide_number": 41,
+      "slide_type": "content",
+      "title": "Section 7: Reporting Suspicious Activity (cont.)",
+      "content": "**Suspicious activity that is not an immediate emergency**: Call your **company dispatch or security coordinator** first. They can assess the situation, contact law enforcement if appropriate, and document the report. Your company's security plan should include the name and phone number of the designated security coordinator.\n\n**TSA tip line**: The Transportation Security Administration operates a tip line for suspicious activity related to transportation: **1-866-289-9673** (TSA Tip Line). This is for reporting concerns that may be related to terrorism or organized threats.\n\n**See Something, Say Something**: The Department of Homeland Security's \"If You See Something, Say Something\" campaign applies directly to hazmat transportation. The threshold for reporting should be low \u2014 it is far better to report something that turns out to be innocent than to ignore something that turns out to be a precursor to an attack.",
+      "notes": "",
+      "bullet_points": []
+    },
+    {
+      "slide_number": 42,
+      "slide_type": "content",
+      "title": "Section 7: Reporting Suspicious Activity (cont.)",
+      "content": "### What Information to Provide\n\nWhen reporting suspicious activity, provide as much of the following as you can:\n\n- Your name and location (be specific \u2014 mile marker, intersection, facility name)\n- What you observed (description of the activity, person, or vehicle)\n- When you observed it (date and time)\n- Physical descriptions (height, weight, clothing, vehicle type, color, license plate)\n- Direction of travel (if a person or vehicle left the area)\n- What, if any, cargo or material is involved\n- Whether you feel immediately threatened",
+      "notes": "",
+      "bullet_points": [
+        "Your name and location (be specific \u2014 mile marker, intersection, facility name)",
+        "What you observed (description of the activity, person, or vehicle)",
+        "When you observed it (date and time)",
+        "Physical descriptions (height, weight, clothing, vehicle type, color, license plate)",
+        "Direction of travel (if a person or vehicle left the area)",
+        "What, if any, cargo or material is involved",
+        "Whether you feel immediately threatened"
+      ]
+    },
+    {
+      "slide_number": 43,
+      "slide_type": "content",
+      "title": "Section 7: Reporting Suspicious Activity (cont.)",
+      "content": "### The Difference Between a Security Incident and a Safety Incident\n\nA **safety incident** is an unintentional event \u2014 a leak, a spill, an accident, an equipment failure. Safety incidents are reported to the National Response Center (1-800-424-8802) and through your company's safety reporting system.\n\nA **security incident** is an intentional or potentially intentional act \u2014 theft, tampering, unauthorized access, threats, surveillance, or diversion. Security incidents are reported to law enforcement (911 or local police), your company's security coordinator, and potentially TSA.",
+      "notes": "",
+      "bullet_points": []
+    },
+    {
+      "slide_number": 44,
+      "slide_type": "content",
+      "title": "Section 7: Reporting Suspicious Activity (cont.)",
+      "content": "Some events may be both. A cargo seal that is broken could be a safety issue (it failed due to wear) or a security issue (someone cut it). When in doubt, report it as both and let the investigators sort it out.",
+      "notes": "",
+      "bullet_points": []
+    },
+    {
+      "slide_number": 45,
+      "slide_type": "section_divider",
+      "title": "Section 8: Record Keeping",
+      "content": "",
+      "notes": "",
+      "bullet_points": []
+    },
+    {
+      "slide_number": 46,
+      "slide_type": "content",
+      "title": "Section 8: Record Keeping",
+      "content": "A security plan is a living document, not a one-time paperwork exercise. The regulations require ongoing maintenance, review, and documentation.\n\n### Annual Review\n\n49 CFR 172.802(b) requires that the security plan be reviewed and updated **at least annually**. The review should assess:",
+      "notes": "",
+      "bullet_points": []
+    },
+    {
+      "slide_number": 47,
+      "slide_type": "content",
+      "title": "Section 8: Record Keeping (cont.)",
+      "content": "- Whether the materials and quantities handled by the company have changed (which might change the plan's scope)\n- Whether new threats or vulnerabilities have been identified\n- Whether the company's operations have changed (new routes, new facilities, new personnel)\n- Whether any security incidents occurred during the year and what lessons were learned\n- Whether the plan's procedures are being followed in practice or whether adjustments are needed\n\nThe annual review should be documented \u2014 who conducted it, when, and what changes (if any) were made.\n\n### Training Records",
+      "notes": "",
+      "bullet_points": [
+        "Whether the materials and quantities handled by the company have changed (which might change the plan's scope)",
+        "Whether new threats or vulnerabilities have been identified",
+        "Whether the company's operations have changed (new routes, new facilities, new personnel)",
+        "Whether any security incidents occurred during the year and what lessons were learned",
+        "Whether the plan's procedures are being followed in practice or whether adjustments are needed"
+      ]
+    },
+    {
+      "slide_number": 48,
+      "slide_type": "content",
+      "title": "Section 8: Record Keeping (cont.)",
+      "content": "Training records for security awareness and in-depth security training follow the same requirements as all other hazmat training records under 49 CFR 172.704(d):\n\n- Employee name\n- Date of most recent training\n- Description or copy of training materials\n- Name and address of the training provider\n- Certification that the employee was trained and tested\n\nRecords must be retained for as long as the employee performs hazmat functions, plus **90 days** after the employee leaves that position.",
+      "notes": "",
+      "bullet_points": [
+        "Employee name",
+        "Date of most recent training",
+        "Description or copy of training materials",
+        "Name and address of the training provider",
+        "Certification that the employee was trained and tested"
+      ]
+    },
+    {
+      "slide_number": 49,
+      "slide_type": "content",
+      "title": "Section 8: Record Keeping (cont.)",
+      "content": "### Availability for Inspection\n\nThe security plan must be available for review by DOT inspectors upon request. The plan does not need to be carried in every truck \u2014 it can be maintained at the company's principal place of business. However, you must be able to produce it promptly (within a reasonable timeframe during a facility audit).\n\nThe plan is **security-sensitive information** \u2014 you should not post it publicly or share it with persons who do not need to see it. The plan describes your vulnerabilities and countermeasures, and making it widely available would defeat its purpose. However, DOT inspectors and auditors have the authority to review it, and you must comply with their requests.",
+      "notes": "",
+      "bullet_points": []
+    },
+    {
+      "slide_number": 50,
+      "slide_type": "content",
+      "title": "Section 8: Record Keeping (cont.)",
+      "content": "### Common Audit Findings\n\nWhen DOT auditors review security plans, the most common deficiencies they find include:\n\n- **No plan at all.** The company meets the threshold in 172.800 but never developed a security plan. This is a serious violation.\n- **Plan exists but is generic.** The plan was downloaded from a template and never customized to the company's actual operations. It describes procedures that the company does not actually follow.\n- **No annual review.** The plan was written three years ago and has never been reviewed or updated. The company has changed routes, added materials, and hired new employees, but the plan still reflects the original operations.\n- **Training records incomplete or missing.** Employees received security awareness training but there is no documentation. Or in-depth security training was never provided to employees who require it.\n- **Employees cannot describe the plan.** During an audit, the inspector asks a driver about the company's security plan, and the driver has never heard of it. This indicates that training was either not provided or was ineffective.",
+      "notes": "",
+      "bullet_points": [
+        "**No plan at all.** The company meets the threshold in 172.800 but never developed a security plan. This is a serious violation.",
+        "**Plan exists but is generic.** The plan was downloaded from a template and never customized to the company's actual operations. It describes procedures that the company does not actually follow.",
+        "**No annual review.** The plan was written three years ago and has never been reviewed or updated. The company has changed routes, added materials, and hired new employees, but the plan still reflects the original operations.",
+        "**Training records incomplete or missing.** Employees received security awareness training but there is no documentation. Or in-depth security training was never provided to employees who require it.",
+        "**Employees cannot describe the plan.** During an audit, the inspector asks a driver about the company's security plan, and the driver has never heard of it. This indicates that training was either not provided or was ineffective."
+      ]
+    },
+    {
+      "slide_number": 51,
+      "slide_type": "content",
+      "title": "Section 8: Record Keeping (cont.)",
+      "content": "**Real-World Scenario**: A DOT auditor visits a fleet operation that transports placarded quantities of propane and chlorine. The auditor asks to see the security plan. The terminal manager produces a 3-page document that was last updated in 2022. The auditor asks the manager when the last annual review was conducted \u2014 the manager cannot recall one. The auditor interviews two drivers, neither of whom received in-depth security training. One driver received security awareness training two years ago; the other has no security training record at all. The auditor documents four violations: outdated plan, no annual review, missing in-depth security training, and missing security awareness training. Each violation carries a potential civil penalty. The total exposure for this audit could reach hundreds of thousands of dollars.\n\n---",
+      "notes": "",
+      "bullet_points": []
+    },
+    {
+      "slide_number": 52,
+      "slide_type": "key_takeaways",
+      "title": "Key Takeaways",
+      "content": "- Security requirements were added to the HMR after 9/11 to address intentional threats to hazmat in transportation\n- A security plan is required if you offer or transport placarded quantities of Division 2.1 or 2.3 materials, more than 25 kg of Division 1.1/1.2/1.3 explosives, highway route-controlled quantities of radioactive materials, select agents, or security-sensitive materials\n- Security plans must address three elements: personnel security, unauthorized access prevention, and en route security\n- ALL hazmat employees need security awareness training; employees of companies with security plans also need in-depth security training\n- Practical driver security starts with locking the truck, not discussing cargo, verifying deliveries, and following designated routes\n- Report suspicious activity immediately \u2014 call 911 for emergencies, company dispatch for non-emergencies\n- Security plans must be reviewed and updated at least annually, and training records must be maintained",
+      "notes": "",
+      "bullet_points": [
+        "Security requirements were added to the HMR after 9/11 to address intentional threats to hazmat in transportation",
+        "A security plan is required if you offer or transport placarded quantities of Division 2.1 or 2.3 materials, more than 25 kg of Division 1.1/1.2/1.3 explosives, highway route-controlled quantities of radioactive materials, select agents, or security-sensitive materials",
+        "Security plans must address three elements: personnel security, unauthorized access prevention, and en route security",
+        "ALL hazmat employees need security awareness training; employees of companies with security plans also need in-depth security training",
+        "Practical driver security starts with locking the truck, not discussing cargo, verifying deliveries, and following designated routes",
+        "Report suspicious activity immediately \u2014 call 911 for emergencies, company dispatch for non-emergencies",
+        "Security plans must be reviewed and updated at least annually, and training records must be maintained"
+      ]
+    },
+    {
+      "slide_number": 53,
+      "slide_type": "assessment_intro",
+      "title": "Assessment",
+      "content": "You have completed the training content for Security Requirements. You will now take a short assessment to verify your understanding. A score of 80% or higher is required to pass.",
+      "notes": "",
+      "bullet_points": [
+        "Passing score: 80%",
+        "Questions are drawn from the material covered in this module",
+        "You may retake the assessment if needed"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,481 @@
+{
+  "module_code": "TNDS-HZ-004",
+  "title": "Marking Requirements",
+  "category": "hazmat",
+  "cfr_reference": "49 CFR 172.300-338",
+  "phmsa_equivalent": "Module 4.0",
+  "estimated_duration_minutes": 30,
+  "passing_score": 80,
+  "version": "1.0",
+  "created": "2026-04-02",
+  "theme": {
+    "id": "tnds-training",
+    "name": "TNDS Training",
+    "colors": {
+      "primary": "#0F2B46",
+      "secondary": "#1A7A7A",
+      "accent": "#F59E0B",
+      "background": "#FFFFFF",
+      "surface": "#F8FAFC",
+      "text": "#1E293B",
+      "text_secondary": "#64748B",
+      "success": "#10B981",
+      "error": "#EF4444"
+    },
+    "slide_types": {
+      "title": {
+        "bg": "#0F2B46",
+        "text": "#FFFFFF"
+      },
+      "objectives": {
+        "bg": "#1A7A7A",
+        "text": "#FFFFFF"
+      },
+      "content": {
+        "bg": "#FFFFFF",
+        "text": "#1E293B"
+      },
+      "section_divider": {
+        "bg": "#0F2B46",
+        "text": "#F59E0B"
+      },
+      "key_takeaways": {
+        "bg": "#1A7A7A",
+        "text": "#FFFFFF"
+      },
+      "assessment_intro": {
+        "bg": "#0F2B46",
+        "text": "#FFFFFF"
+      }
+    }
+  },
+  "slide_count": 45,
+  "slides": [
+    {
+      "slide_number": 1,
+      "slide_type": "title",
+      "title": "Marking Requirements",
+      "content": "",
+      "notes": "PHMSA Equivalent: Module 4.0 | CFR Reference: 49 CFR 172.300-338 | Estimated Duration: 30 minutes",
+      "bullet_points": [
+        "Module 4.0",
+        "49 CFR 172.300-338",
+        "Duration: 30 min",
+        "Passing Score: 80%"
+      ]
+    },
+    {
+      "slide_number": 2,
+      "slide_type": "objectives",
+      "title": "Learning Objectives",
+      "content": "After completing this module, you will be able to:\n\n- Distinguish between markings, labels, and placards and explain their different roles\n- Identify the required markings on non-bulk and bulk hazmat packages\n- Apply correct marking size requirements for different packaging types\n- Recognize special markings and when they apply\n- Identify prohibited markings that must be removed before transport\n- Correctly mark packages in real-world shipping scenarios\n\n---",
+      "notes": "",
+      "bullet_points": [
+        "Distinguish between markings, labels, and placards and explain their different roles",
+        "Identify the required markings on non-bulk and bulk hazmat packages",
+        "Apply correct marking size requirements for different packaging types",
+        "Recognize special markings and when they apply",
+        "Identify prohibited markings that must be removed before transport",
+        "Correctly mark packages in real-world shipping scenarios"
+      ]
+    },
+    {
+      "slide_number": 3,
+      "slide_type": "section_divider",
+      "title": "Section 1: What Is Marking?",
+      "content": "",
+      "notes": "",
+      "bullet_points": []
+    },
+    {
+      "slide_number": 4,
+      "slide_type": "content",
+      "title": "Section 1: What Is Marking?",
+      "content": "Hazmat communication uses three visual systems, and confusing them is one of the most common mistakes in the field. Let's get them straight.\n\n### The Three Pillars of Hazmat Visual Communication\n\n| System | What It Is | Where It Goes | What It Communicates |\n|--------|-----------|---------------|---------------------|\n| **Marking** | Printed text, numbers, and symbols | On the package surface | Identity of the material (name, UN number, shipper/consignee) |\n| **Label** | Diamond-shaped hazard indicator (100mm / 3.9 inches per side) | On the package surface | The hazard class of the material (flammable, corrosive, etc.) |\n| **Placard** | Diamond-shaped hazard indicator (273mm / 10.75 inches per side) | On the transport vehicle | The hazard class(es) being transported |",
+      "notes": "",
+      "bullet_points": []
+    },
+    {
+      "slide_number": 5,
+      "slide_type": "content",
+      "title": "Section 1: What Is Marking? (cont.)",
+      "content": "**Think of it this way:**\n- Markings tell you **what** is in the package.\n- Labels tell you **what kind of danger** the package poses.\n- Placards tell emergency responders **what kind of danger** the vehicle carries.\n\n### Why Marking Matters for Fleet Operations\n\nWhen your driver arrives at a shipper's dock and starts loading packages, markings are the first thing to check. Before you even look at labels, you confirm: Does every package have a proper shipping name and UN number displayed? Do the markings match the shipping papers? Are the markings legible and durable?",
+      "notes": "",
+      "bullet_points": [
+        "Markings tell you **what** is in the package.",
+        "Labels tell you **what kind of danger** the package poses.",
+        "Placards tell emergency responders **what kind of danger** the vehicle carries."
+      ]
+    },
+    {
+      "slide_number": 6,
+      "slide_type": "content",
+      "title": "Section 1: What Is Marking? (cont.)",
+      "content": "If a package's markings don't match the shipping papers, that's a red flag. Either the paperwork is wrong or the package is wrong -- either way, the shipment does not move until the discrepancy is resolved.\n\n### Regulatory Authority\n\nMarking requirements are found in 49 CFR Subpart D (172.300 through 172.338). PHMSA enforces these requirements, and violations are among the most frequently cited during roadside inspections and facility audits.",
+      "notes": "",
+      "bullet_points": []
+    },
+    {
+      "slide_number": 7,
+      "slide_type": "content",
+      "title": "Section 1: What Is Marking? (cont.)",
+      "content": "---",
+      "notes": "",
+      "bullet_points": []
+    },
+    {
+      "slide_number": 8,
+      "slide_type": "section_divider",
+      "title": "Section 2: Required Markings on Non-Bulk Packages (172.301)",
+      "content": "",
+      "notes": "",
+      "bullet_points": []
+    },
+    {
+      "slide_number": 9,
+      "slide_type": "content",
+      "title": "Section 2: Required Markings on Non-Bulk Packages (172.301)",
+      "content": "Non-bulk packages (drums, boxes, jerricans, cylinders -- anything at or below 450 liters for liquids or 400 kg for solids) must display the following markings.\n\n### Required Marking Elements\n\n**1. Proper Shipping Name**",
+      "notes": "",
+      "bullet_points": []
+    },
+    {
+      "slide_number": 10,
+      "slide_type": "content",
+      "title": "Section 2: Required Markings on Non-Bulk Packages (172.301) (cont.)",
+      "content": "This is the standardized name from Column 2 of the Hazmat Table (49 CFR 172.101). Not the trade name, not the chemical formula, not the brand name -- the exact proper shipping name.\n\nExamples:\n- Correct: \"ACETONE\" (not \"Nail Polish Remover\" or \"Dimethyl Ketone\")\n- Correct: \"PAINT, including paint, lacquer, enamel, stain, shellac solutions, varnish, polish, liquid filler, and liquid lacquer base\" (yes, some proper shipping names are long)\n- Correct: \"CORROSIVE LIQUID, N.O.S. (contains hydrochloric acid)\" -- the technical name in parentheses is required for N.O.S. entries\n\n**2. UN or NA Identification Number**",
+      "notes": "",
+      "bullet_points": [
+        "Correct: \"ACETONE\" (not \"Nail Polish Remover\" or \"Dimethyl Ketone\")",
+        "Correct: \"PAINT, including paint, lacquer, enamel, stain, shellac solutions, varnish, polish, liquid filler, and liquid lacquer base\" (yes, some proper shipping names are long)",
+        "Correct: \"CORROSIVE LIQUID, N.O.S. (contains hydrochloric acid)\" -- the technical name in parentheses is required for N.O.S. entries"
+      ]
+    },
+    {
+      "slide_number": 11,
+      "slide_type": "content",
+      "title": "Section 2: Required Markings on Non-Bulk Packages (172.301) (cont.)",
+      "content": "The four-digit number from Column 4 of the Hazmat Table, preceded by \"UN\" or \"NA\":\n- **UN** numbers are internationally recognized\n- **NA** numbers are recognized only in North America (United States and Canada)\n\nExamples: UN1090 (Acetone), UN1203 (Gasoline), NA1993 (Diesel Fuel)\n\n**3. Consignee and Consignor Name and Address**",
+      "notes": "",
+      "bullet_points": [
+        "**UN** numbers are internationally recognized",
+        "**NA** numbers are recognized only in North America (United States and Canada)"
+      ]
+    },
+    {
+      "slide_number": 12,
+      "slide_type": "content",
+      "title": "Section 2: Required Markings on Non-Bulk Packages (172.301) (cont.)",
+      "content": "The name and address of both:\n- The **consignor** (shipper -- the person offering the material for transport)\n- The **consignee** (receiver -- the person the material is being shipped to)\n\nThis ensures that if a package is found damaged or separated from its shipment, responders know who sent it and where it was going.\n\n### Marking Quality Requirements",
+      "notes": "",
+      "bullet_points": [
+        "The **consignor** (shipper -- the person offering the material for transport)",
+        "The **consignee** (receiver -- the person the material is being shipped to)"
+      ]
+    },
+    {
+      "slide_number": 13,
+      "slide_type": "content",
+      "title": "Section 2: Required Markings on Non-Bulk Packages (172.301) (cont.)",
+      "content": "All markings must be:\n\n- **In English** (other languages may appear in addition, but English is required for domestic U.S. transport)\n- **Durable** -- must withstand exposure to weather and normal handling without becoming illegible. Markings made with water-soluble markers will wash off in rain. Use weather-resistant marking methods.\n- **Displayed on a contrasting background** -- black text on a white or light-colored surface, or white text on a dark surface. The marking must be clearly readable at arm's length. A black marker on a dark green drum is not compliant.\n- **Unobscured** -- not covered by labels, tape, strapping, or other markings. Do not place shipping labels or address stickers over hazmat markings.\n\n### Minimum Size Requirements for Non-Bulk Packages",
+      "notes": "",
+      "bullet_points": [
+        "**In English** (other languages may appear in addition, but English is required for domestic U.S. transport)",
+        "**Durable** -- must withstand exposure to weather and normal handling without becoming illegible. Markings made with water-soluble markers will wash off in rain. Use weather-resistant marking methods.",
+        "**Displayed on a contrasting background** -- black text on a white or light-colored surface, or white text on a dark surface. The marking must be clearly readable at arm's length. A black marker on a dark green drum is not compliant.",
+        "**Unobscured** -- not covered by labels, tape, strapping, or other markings. Do not place shipping labels or address stickers over hazmat markings."
+      ]
+    },
+    {
+      "slide_number": 14,
+      "slide_type": "content",
+      "title": "Section 2: Required Markings on Non-Bulk Packages (172.301) (cont.)",
+      "content": "Markings on non-bulk packages must be at least **12 mm (0.5 inches) high**, except:\n- Packages with a capacity of 30 liters (8 gallons) or less or a net mass of 30 kg (66 pounds) or less: markings must be of an **appropriate size** relative to the package (no specific minimum, but they must be clearly legible).\n- Cylinders with a water capacity of 19 liters (5 gallons) or less: markings must be an appropriate size.\n\n**Practical example:** On a standard 55-gallon steel drum, the proper shipping name and UN number should be prominently displayed in letters/numbers at least 12 mm high. Most drum stencils produce characters well above this minimum.\n\n---",
+      "notes": "",
+      "bullet_points": [
+        "Packages with a capacity of 30 liters (8 gallons) or less or a net mass of 30 kg (66 pounds) or less: markings must be of an **appropriate size** relative to the package (no specific minimum, but they must be clearly legible).",
+        "Cylinders with a water capacity of 19 liters (5 gallons) or less: markings must be an appropriate size."
+      ]
+    },
+    {
+      "slide_number": 15,
+      "slide_type": "section_divider",
+      "title": "Section 3: Required Markings on Bulk Packages (172.302)",
+      "content": "",
+      "notes": "",
+      "bullet_points": []
+    },
+    {
+      "slide_number": 16,
+      "slide_type": "content",
+      "title": "Section 3: Required Markings on Bulk Packages (172.302)",
+      "content": "Bulk packages -- cargo tanks, portable tanks, tank cars, IBCs over 450 liters -- have more demanding marking requirements because they carry larger quantities and are visible from a greater distance.\n\n### Required Marking Elements for Bulk Packages\n\n**1. UN or NA Identification Number**",
+      "notes": "",
+      "bullet_points": []
+    },
+    {
+      "slide_number": 17,
+      "slide_type": "content",
+      "title": "Section 3: Required Markings on Bulk Packages (172.302) (cont.)",
+      "content": "Must be displayed on **each side and each end** of the bulk package. For portable tanks, the number must appear on **two opposing sides**.\n\nThis means a cargo tank must have the UN/NA number visible from any approach direction -- front, back, left, and right.\n\n**2. Proper Shipping Name**",
+      "notes": "",
+      "bullet_points": []
+    },
+    {
+      "slide_number": 18,
+      "slide_type": "content",
+      "title": "Section 3: Required Markings on Bulk Packages (172.302) (cont.)",
+      "content": "Must appear **near the identification number** on at least two sides of the bulk package.\n\n**3. Size Requirements**\n\nThis is where bulk markings differ significantly from non-bulk:",
+      "notes": "",
+      "bullet_points": []
+    },
+    {
+      "slide_number": 19,
+      "slide_type": "content",
+      "title": "Section 3: Required Markings on Bulk Packages (172.302) (cont.)",
+      "content": "- Identification numbers on bulk packages must be at least **100 mm (3.9 inches) high** on portable tanks and bulk packages other than cargo tanks\n- On cargo tanks, the UN/NA number displayed on the placard or orange panel must be at least **100 mm (3.9 inches) high**\n\nThese large markings ensure that emergency responders can read the identification from a safe distance. If a cargo tank is involved in a highway incident, firefighters need to identify the contents from 50 feet away, not 5 feet.\n\n### Cargo Tank-Specific Markings",
+      "notes": "",
+      "bullet_points": [
+        "Identification numbers on bulk packages must be at least **100 mm (3.9 inches) high** on portable tanks and bulk packages other than cargo tanks",
+        "On cargo tanks, the UN/NA number displayed on the placard or orange panel must be at least **100 mm (3.9 inches) high**"
+      ]
+    },
+    {
+      "slide_number": 20,
+      "slide_type": "content",
+      "title": "Section 3: Required Markings on Bulk Packages (172.302) (cont.)",
+      "content": "In addition to the standard bulk markings, cargo tank motor vehicles (the tanker trucks your fleet may operate) must also display:\n\n- **Specification marking** (e.g., \"DOT 406\" or \"MC 306\") -- identifies the tank's design standard\n- **Retest date** -- cargo tanks undergo periodic testing; the most recent test date must be displayed\n- **QT or NQT** -- indicates whether the tank is authorized for transporting quenched and tempered (QT) materials\n- **Maximum Allowable Working Pressure (MAWP)** -- the maximum pressure the tank is rated for\n\n### IBC Markings",
+      "notes": "",
+      "bullet_points": [
+        "**Specification marking** (e.g., \"DOT 406\" or \"MC 306\") -- identifies the tank's design standard",
+        "**Retest date** -- cargo tanks undergo periodic testing; the most recent test date must be displayed",
+        "**QT or NQT** -- indicates whether the tank is authorized for transporting quenched and tempered (QT) materials",
+        "**Maximum Allowable Working Pressure (MAWP)** -- the maximum pressure the tank is rated for"
+      ]
+    },
+    {
+      "slide_number": 21,
+      "slide_type": "content",
+      "title": "Section 3: Required Markings on Bulk Packages (172.302) (cont.)",
+      "content": "IBCs (Intermediate Bulk Containers) must display:\n- UN packaging marking (discussed in the TNDS-HZ-003 Packaging module)\n- The proper shipping name and UN/NA number of their contents\n- For reusable IBCs: the date of the last inspection/test\n\n---",
+      "notes": "",
+      "bullet_points": [
+        "UN packaging marking (discussed in the TNDS-HZ-003 Packaging module)",
+        "The proper shipping name and UN/NA number of their contents",
+        "For reusable IBCs: the date of the last inspection/test"
+      ]
+    },
+    {
+      "slide_number": 22,
+      "slide_type": "section_divider",
+      "title": "Section 4: Special Markings",
+      "content": "",
+      "notes": "",
+      "bullet_points": []
+    },
+    {
+      "slide_number": 23,
+      "slide_type": "content",
+      "title": "Section 4: Special Markings",
+      "content": "Beyond the standard required markings, certain situations require additional special markings. Fleet operators encounter these regularly.\n\n### ORM-D and Limited Quantity Mark\n\n**ORM-D (Other Regulated Material -- Domestic)** was historically marked on consumer commodities containing small quantities of hazmat (like aerosol hair spray or small containers of lighter fluid). The ORM-D marking has been phased out as of January 1, 2021, and replaced by the **Limited Quantity Mark**.",
+      "notes": "",
+      "bullet_points": []
+    },
+    {
+      "slide_number": 24,
+      "slide_type": "content",
+      "title": "Section 4: Special Markings (cont.)",
+      "content": "The **Limited Quantity Mark** is a diamond shape (square-on-point) with a black border, at least 100 mm (3.9 inches) on each side for non-air transport. For air transport, the \"Y\" limited quantity mark includes the letter \"Y\" inside the diamond.\n\nYou will still see ORM-D markings on older inventory. These packages can no longer be offered for transport with just the ORM-D marking -- they must be re-marked with the Limited Quantity mark or fully marked as hazmat.\n\n### Marine Pollutant Mark",
+      "notes": "",
+      "bullet_points": []
+    },
+    {
+      "slide_number": 25,
+      "slide_type": "content",
+      "title": "Section 4: Special Markings (cont.)",
+      "content": "A material that meets the criteria as a **marine pollutant** under 49 CFR 171.8 must display the marine pollutant mark: a triangle with a fish and tree symbol. This mark alerts responders that a spill near waterways requires immediate environmental response.\n\n**When you need it:** Check Column 1 of the Hazmat Table for the letter \"G\" -- this indicates a marine pollutant. The mark goes on the package in addition to all other required markings and labels.\n\n### HOT Marking",
+      "notes": "",
+      "bullet_points": []
+    },
+    {
+      "slide_number": 26,
+      "slide_type": "content",
+      "title": "Section 4: Special Markings (cont.)",
+      "content": "Materials shipped at elevated temperatures (above 100 degrees C / 212 degrees F for liquids, or above 240 degrees C / 464 degrees F for solids) must be marked with the word **\"HOT\"** on the package. For bulk containers, \"HOT\" must appear on each side and each end in letters at least 100 mm high.\n\n**Real-world example:** Molten sulfur and hot asphalt are common elevated-temperature materials. A cargo tank carrying molten sulfur must display \"HOT\" on every side in large letters, in addition to the proper shipping name and UN number.\n\n### INHALATION HAZARD Marking",
+      "notes": "",
+      "bullet_points": []
+    },
+    {
+      "slide_number": 27,
+      "slide_type": "content",
+      "title": "Section 4: Special Markings (cont.)",
+      "content": "Materials that are **Poison Inhalation Hazard (PIH)** -- meaning they pose a danger through breathing the vapor -- must display the words **\"INHALATION HAZARD\"** on at least two opposing sides of the package.\n\nPIH materials include chlorine, anhydrous ammonia (at certain concentrations), hydrogen cyanide, and many other toxic gases and volatile liquids. These materials get the highest level of emergency response scrutiny, and the INHALATION HAZARD marking is a critical alert for first responders.\n\n### Orientation Arrows",
+      "notes": "",
+      "bullet_points": []
+    },
+    {
+      "slide_number": 28,
+      "slide_type": "content",
+      "title": "Section 4: Special Markings (cont.)",
+      "content": "Packages containing liquid hazmat in inner containers within an outer package must display **orientation arrows** -- two upward-pointing arrows on opposite sides of the outer package. These arrows indicate which end is up, preventing the package from being loaded upside down or on its side, which could cause inner containers to leak.\n\n**Exceptions:** Orientation arrows are not required on:\n- Single inner containers of 120 mL (4 oz) or less\n- Packages containing materials in sealed, pressure-rated inner containers\n- Infectious substances in primary receptacles of 50 mL or less\n\n### OVERPACK Marking",
+      "notes": "",
+      "bullet_points": [
+        "Single inner containers of 120 mL (4 oz) or less",
+        "Packages containing materials in sealed, pressure-rated inner containers",
+        "Infectious substances in primary receptacles of 50 mL or less"
+      ]
+    },
+    {
+      "slide_number": 29,
+      "slide_type": "content",
+      "title": "Section 4: Special Markings (cont.)",
+      "content": "When multiple hazmat packages are consolidated into a single outer container (placed inside a larger box, on a pallet wrapped in stretch film, or in an overpack drum), the word **\"OVERPACK\"** must appear on the outside of the overpack -- unless all required markings and labels on the inner packages are visible through the overpack.\n\n**Practical scenario:** Your warehouse team palletizes 20 boxes of UN1263 (Paint) and wraps the pallet in opaque stretch wrap. Because the individual package markings are no longer visible, the pallet must be marked \"OVERPACK\" on the outside, along with all the markings and labels that would be required on the individual packages.\n\n---",
+      "notes": "",
+      "bullet_points": []
+    },
+    {
+      "slide_number": 30,
+      "slide_type": "section_divider",
+      "title": "Section 5: Prohibited Markings (172.303)",
+      "content": "",
+      "notes": "",
+      "bullet_points": []
+    },
+    {
+      "slide_number": 31,
+      "slide_type": "content",
+      "title": "Section 5: Prohibited Markings (172.303)",
+      "content": "This section is short but important: **you must not display any marking on a package that could be confused with a required hazmat marking, unless it is the correct required marking for the current contents.**\n\n### What This Means in Practice\n\n- **Remove or obliterate old markings** when a container is reused for a different material. If you clean out a drum that previously held UN1090 (Acetone) and refill it with UN1263 (Paint), the old \"UN1090\" and \"ACETONE\" markings must be completely removed or covered before the new markings are applied.",
+      "notes": "",
+      "bullet_points": [
+        "**Remove or obliterate old markings** when a container is reused for a different material. If you clean out a drum that previously held UN1090 (Acetone) and refill it with UN1263 (Paint), the old \"UN1090\" and \"ACETONE\" markings must be completely removed or covered before the new markings are applied."
+      ]
+    },
+    {
+      "slide_number": 32,
+      "slide_type": "content",
+      "title": "Section 5: Prohibited Markings (172.303) (cont.)",
+      "content": "- **Do not use UN-style numbers casually.** If your company uses a proprietary numbering system that starts with \"UN\" or \"NA\" followed by four digits, those numbers could be confused with official identification numbers. Remove or change them.\n\n- **Remove old labels.** If a drum previously carried a Class 3 (Flammable Liquid) label and is now being used for a Class 8 (Corrosive) material, the old Class 3 label must be removed. Having both labels on the drum creates dangerous confusion for emergency responders -- they will not know which hazard they are actually dealing with.\n\n- **Trade names are fine** as long as they are in addition to (not instead of) the proper shipping name. You can print \"AcmeClean Industrial Degreaser\" on a drum, but it must also say \"FLAMMABLE LIQUID, N.O.S.\" (or whatever the proper shipping name is).",
+      "notes": "",
+      "bullet_points": [
+        "**Do not use UN-style numbers casually.** If your company uses a proprietary numbering system that starts with \"UN\" or \"NA\" followed by four digits, those numbers could be confused with official identification numbers. Remove or change them.",
+        "**Remove old labels.** If a drum previously carried a Class 3 (Flammable Liquid) label and is now being used for a Class 8 (Corrosive) material, the old Class 3 label must be removed. Having both labels on the drum creates dangerous confusion for emergency responders -- they will not know which hazard they are actually dealing with.",
+        "**Trade names are fine** as long as they are in addition to (not instead of) the proper shipping name. You can print \"AcmeClean Industrial Degreaser\" on a drum, but it must also say \"FLAMMABLE LIQUID, N.O.S.\" (or whatever the proper shipping name is)."
+      ]
+    },
+    {
+      "slide_number": 33,
+      "slide_type": "content",
+      "title": "Section 5: Prohibited Markings (172.303) (cont.)",
+      "content": "### Enforcement Reality\n\nPHMSA inspectors specifically look for packages bearing markings from previous contents. This is especially common with reused drums and IBCs. A single drum with conflicting markings -- say, \"SULFURIC ACID\" stenciled on one side and \"SODIUM HYDROXIDE\" on the other -- can result in a violation notice and civil penalty, even if the drum is otherwise properly marked for its current contents.\n\n---",
+      "notes": "",
+      "bullet_points": []
+    },
+    {
+      "slide_number": 34,
+      "slide_type": "section_divider",
+      "title": "Section 6: Practical Scenarios",
+      "content": "",
+      "notes": "",
+      "bullet_points": []
+    },
+    {
+      "slide_number": 35,
+      "slide_type": "content",
+      "title": "Section 6: Practical Scenarios",
+      "content": "### Scenario 1: Marking a Pallet of Paint Cans\n\n**Situation:** Your facility ships a pallet of 24 one-gallon cans of solvent-based paint. Each can is packed inside a 4G fiberboard box (4 cans per box, 6 boxes per pallet). The paint is classified as UN1263, Paint, Class 3, PG II.\n\n**What goes on each fiberboard box:**\n1. Proper shipping name: \"PAINT\"\n2. Identification number: \"UN1263\"\n3. Consignee and consignor name and address\n4. Characters at least 12 mm high, on a contrasting background\n5. Orientation arrows on two opposite sides (liquid inner containers)",
+      "notes": "",
+      "bullet_points": []
+    },
+    {
+      "slide_number": 36,
+      "slide_type": "content",
+      "title": "Section 6: Practical Scenarios (cont.)",
+      "content": "**What goes on the pallet (if boxes are wrapped in opaque film):**\n1. \"OVERPACK\" in letters large enough to be legible\n2. All the same markings required on the individual boxes\n3. All the same labels required on the individual boxes\n\n### Scenario 2: Marking a 55-Gallon Drum of Corrosive Liquid\n\n**Situation:** You are preparing a 55-gallon (208-liter) steel drum (UN 1A1) containing sulfuric acid, UN2796, Sulfuric Acid, Class 8, PG II, for highway transport.",
+      "notes": "",
+      "bullet_points": []
+    },
+    {
+      "slide_number": 37,
+      "slide_type": "content",
+      "title": "Section 6: Practical Scenarios (cont.)",
+      "content": "**Required markings on the drum:**\n1. \"SULFURIC ACID\" -- proper shipping name\n2. \"UN2796\" -- identification number\n3. Consignee and consignor name and address\n4. All markings at least 12 mm high\n5. Markings on a contrasting background (if the drum is black, use a white label panel or white stencil paint)\n\n**Also required but not markings:**\n- Class 8 (Corrosive) label -- diamond-shaped, placed near the markings\n- The UN packaging marking should already be on the drum from the manufacturer\n\n### Scenario 3: Marking a Cargo Tank of Gasoline",
+      "notes": "",
+      "bullet_points": [
+        "Class 8 (Corrosive) label -- diamond-shaped, placed near the markings",
+        "The UN packaging marking should already be on the drum from the manufacturer"
+      ]
+    },
+    {
+      "slide_number": 38,
+      "slide_type": "content",
+      "title": "Section 6: Practical Scenarios (cont.)",
+      "content": "**Situation:** Your fleet operates a DOT 406 aluminum cargo tank (8,500-gallon capacity) hauling UN1203, Gasoline, Class 3, PG II.\n\n**Required markings on the cargo tank:**\n1. \"UN1203\" on each side and each end -- at least 100 mm high, or displayed on the placard\n2. \"GASOLINE\" near the identification number on at least two sides\n3. DOT specification marking (\"DOT 406\")\n4. Retest date\n5. MAWP (Maximum Allowable Working Pressure)\n\n**Also required:**\n- Class 3 (Flammable) placards on each side and each end\n- The UN1203 number may appear on the placard itself (the black number in the center of the placard), which satisfies the identification number marking requirement for cargo tanks",
+      "notes": "",
+      "bullet_points": [
+        "Class 3 (Flammable) placards on each side and each end",
+        "The UN1203 number may appear on the placard itself (the black number in the center of the placard), which satisfies the identification number marking requirement for cargo tanks"
+      ]
+    },
+    {
+      "slide_number": 39,
+      "slide_type": "content",
+      "title": "Section 6: Practical Scenarios (cont.)",
+      "content": "**Driver checkpoint:** Before leaving the terminal, walk around the truck. Can you read the UN number from each approach direction? Is the proper shipping name visible? Are any markings obscured by dirt, damage, or equipment?\n\n---",
+      "notes": "",
+      "bullet_points": []
+    },
+    {
+      "slide_number": 40,
+      "slide_type": "section_divider",
+      "title": "Assessment",
+      "content": "",
+      "notes": "",
+      "bullet_points": []
+    },
+    {
+      "slide_number": 41,
+      "slide_type": "content",
+      "title": "Assessment",
+      "content": "### Q1\n**Type**: multiple_choice\n**Question**: What is the fundamental difference between a marking and a label on a hazmat package?\n**A**: Markings are temporary; labels are permanent\n**B**: Markings communicate the identity of the material through text and numbers; labels communicate the hazard class through diamond-shaped visual indicators (correct)\n**C**: Markings are required only for bulk packages; labels are required only for non-bulk packages\n**D**: Markings are placed by the carrier; labels are placed by the shipper\n**Explanation**: Markings are printed text and numbers (proper shipping name, UN/NA number, consignee/consignor) that identify what is in the package. Labels are diamond-shaped hazard class indicators that communicate what kind of danger the material poses. Both are placed by the shipper and required on both bulk and non-bulk packages, though the specific requirements differ.\n**CFR Reference**: 49 CFR 172.300, 172.400\n\n---\n\n### Q2\n**Type**: multiple_choice\n**Question**: Which of the following must appear on a non-bulk hazmat package per 49 CFR 172.301?\n**A**: Proper shipping name, UN/NA number, and names and addresses of both consignee and consignor (correct)\n**B**: Proper shipping name, DOT specification number, and driver's CDL number\n**C**: Trade name, emergency response phone number, and total package weight\n**D**: UN/NA number, flash point, and the ERG guide number\n**Explanation**: 49 CFR 172.301 requires three core marking elements on non-bulk packages: the proper shipping name (from Column 2 of the Hazmat Table), the UN/NA identification number (from Column 4), and the name and address of the consignee and consignor. The trade name, flash point, and ERG guide number are not required markings on the package.\n**CFR Reference**: 49 CFR 172.301",
+      "notes": "",
+      "bullet_points": []
+    },
+    {
+      "slide_number": 42,
+      "slide_type": "content",
+      "title": "Assessment (cont.)",
+      "content": "---\n\n### Q3\n**Type**: multiple_choice\n**Question**: What is the minimum character height for identification number markings displayed on a bulk package such as a cargo tank?\n**A**: 6 mm (0.25 inches)\n**B**: 12 mm (0.5 inches)\n**C**: 50 mm (2 inches)\n**D**: 100 mm (3.9 inches) (correct)\n**Explanation**: Bulk packages require significantly larger markings than non-bulk packages because they need to be readable from a greater distance, especially in emergency situations. The minimum character height for identification numbers on bulk packages is 100 mm (3.9 inches), compared to the 12 mm minimum for non-bulk packages.\n**CFR Reference**: 49 CFR 172.302(b)\n\n---",
+      "notes": "",
+      "bullet_points": []
+    },
+    {
+      "slide_number": 43,
+      "slide_type": "content",
+      "title": "Assessment (cont.)",
+      "content": "### Q4\n**Type**: multiple_choice\n**Question**: You receive a used 55-gallon drum that previously held acetone (UN1090) and you need to fill it with a Class 8 corrosive liquid. The old \"ACETONE\" and \"UN1090\" markings are still visible. What must you do before shipping the drum with its new contents?\n**A**: Apply the new markings next to the old ones so both are visible\n**B**: Remove or obliterate all old markings before applying the new markings for the current contents (correct)\n**C**: Leave the old markings in place since they show the drum's history\n**D**: Cover the old markings with the new label only\n**Explanation**: 49 CFR 172.303 prohibits displaying any marking that could be confused with a required hazmat marking unless it is the correct marking for the current contents. Old markings from a previous use must be completely removed or obliterated before the container is re-marked for its new contents. Leaving conflicting markings creates dangerous confusion for handlers and emergency responders.\n**CFR Reference**: 49 CFR 172.303\n\n---\n\n### Q5\n**Type**: multiple_choice\n**Question**: When is the word \"OVERPACK\" required to be displayed on the outside of a consolidated package?\n**A**: Whenever more than one hazmat package is loaded on the same vehicle\n**B**: When hazmat packages are placed inside an outer container or wrapped together and the inner package markings and labels are not visible (correct)\n**C**: Only when shipping by air\n**D**: Only when the overpack exceeds 1,000 pounds gross weight\n**Explanation**: The OVERPACK marking is required when hazmat packages are consolidated into a single outer container (or wrapped on a pallet) and the required markings and labels on the inner packages cannot be seen from the outside. If all inner package markings and labels are still visible through the overpack, the OVERPACK marking is not required.\n**CFR Reference**: 49 CFR 172.312",
+      "notes": "",
+      "bullet_points": []
+    },
+    {
+      "slide_number": 44,
+      "slide_type": "content",
+      "title": "Assessment (cont.)",
+      "content": "---\n\n### Q6\n**Type**: multiple_choice\n**Question**: A cargo tank is transporting molten sulfur at 135 degrees C (275 degrees F). In addition to the proper shipping name, UN number, and placards, which special marking is required?\n**A**: POISON INHALATION HAZARD\n**B**: DANGEROUS WHEN WET\n**C**: HOT (correct)\n**D**: MARINE POLLUTANT\n**Explanation**: Materials transported at elevated temperatures (above 100 degrees C / 212 degrees F for liquids, above 240 degrees C / 464 degrees F for solids) must display the word \"HOT\" on each side and each end of the bulk package. Molten sulfur at 135 degrees C exceeds the liquid threshold, so the HOT marking is required. This alerts emergency responders that the contents pose a burn hazard in addition to any chemical hazards.\n**CFR Reference**: 49 CFR 172.325",
+      "notes": "",
+      "bullet_points": []
+    },
+    {
+      "slide_number": 45,
+      "slide_type": "assessment_intro",
+      "title": "Assessment",
+      "content": "You have completed the training content for Marking Requirements. You will now take a short assessment to verify your understanding. A score of 80% or higher is required to pass.",
+      "notes": "",
+      "bullet_points": [
+        "Passing score: 80%",
+        "Questions are drawn from the material covered in this module",
+        "You may retake the assessment if needed"
+      ]
+    }
+  ]
+}

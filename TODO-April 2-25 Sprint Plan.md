@@ -562,7 +562,7 @@ This is not a one-off hazmat feature. It's a training platform that starts with 
 ## Definition of Done
 
 - [x] 12 hazmat training markdown files authored with assessments
-- [ ] Deck generation pipeline converts markdown to slide JSON
+- [x] Deck generation pipeline converts markdown to slide JSON
 - [ ] Web-based deck viewer for employee training delivery
 - [ ] Assessment engine with scoring and retake logic
 - [x] Training assignment and progress tracking (3 new DB tables)
@@ -763,13 +763,13 @@ CREATE TABLE training_progress (
 **Estimated Effort**: 1 day
 **Depends On**: B1 (needs training markdown to convert)
 
-- [ ] Create `tools/training-to-deck.py` -- converts training markdown to DeckRecord-compatible JSON
+- [x] Create `tools/training-to-deck.py` -- converts training markdown to DeckRecord-compatible JSON
   - Reads markdown, splits on `---` slide break markers
   - Maps YAML frontmatter to deck metadata
   - Outputs to format compatible with Electron deck engine (`DeckRecord` interface)
   - Batch mode for processing entire training-content directory
 
-- [ ] Add TNDS training theme to deck engine
+- [x] Add TNDS training theme to deck engine
   - Navy/Teal branded
   - Learning objective slide template
   - Key takeaway slide template

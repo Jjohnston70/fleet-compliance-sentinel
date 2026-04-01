@@ -1,0 +1,92 @@
+{
+  "generated_at": "2026-04-01T22:50:58.897045+00:00",
+  "theme": "tnds-training",
+  "total_modules": 12,
+  "total_slides": 526,
+  "modules": [
+    {
+      "module_code": "TNDS-HZ-000",
+      "title": "Hazardous Materials Regulations Introduction",
+      "phmsa_equivalent": "Module 0.0",
+      "slide_count": 29,
+      "estimated_duration_minutes": 30
+    },
+    {
+      "module_code": "TNDS-HZ-001",
+      "title": "Hazardous Materials Table",
+      "phmsa_equivalent": "Module 1.0",
+      "slide_count": 40,
+      "estimated_duration_minutes": 45
+    },
+    {
+      "module_code": "TNDS-HZ-002",
+      "title": "Shipping Papers",
+      "phmsa_equivalent": "Module 2.0",
+      "slide_count": 47,
+      "estimated_duration_minutes": 35
+    },
+    {
+      "module_code": "TNDS-HZ-003",
+      "title": "Packaging Requirements",
+      "phmsa_equivalent": "Module 3.0",
+      "slide_count": 57,
+      "estimated_duration_minutes": 40
+    },
+    {
+      "module_code": "TNDS-HZ-004",
+      "title": "Marking Requirements",
+      "phmsa_equivalent": "Module 4.0",
+      "slide_count": 45,
+      "estimated_duration_minutes": 30
+    },
+    {
+      "module_code": "TNDS-HZ-005",
+      "title": "Labeling Requirements",
+      "phmsa_equivalent": "Module 5.0",
+      "slide_count": 49,
+      "estimated_duration_minutes": 30
+    },
+    {
+      "module_code": "TNDS-HZ-006",
+      "title": "Placarding Requirements",
+      "phmsa_equivalent": "Module 6.0",
+      "slide_count": 35,
+      "estimated_duration_minutes": 35
+    },
+    {
+      "module_code": "TNDS-HZ-007a",
+      "title": "Carrier Requirements: Highway",
+      "phmsa_equivalent": "Module 7.0a",
+      "slide_count": 55,
+      "estimated_duration_minutes": 45
+    },
+    {
+      "module_code": "TNDS-HZ-007b",
+      "title": "Carrier Requirements: Air",
+      "phmsa_equivalent": "Module 7.0b",
+      "slide_count": 38,
+      "estimated_duration_minutes": 30
+    },
+    {
+      "module_code": "TNDS-HZ-007c",
+      "title": "Carrier Requirements: Rail",
+      "phmsa_equivalent": "Module 7.0c",
+      "slide_count": 37,
+      "estimated_duration_minutes": 30
+    },
+    {
+      "module_code": "TNDS-HZ-007d",
+      "title": "Carrier Requirements: Vessel",
+      "phmsa_equivalent": "Module 7.0d",
+      "slide_count": 41,
+      "estimated_duration_minutes": 30
+    },
+    {
+      "module_code": "TNDS-HZ-008",
+      "title": "Security Requirements",
+      "phmsa_equivalent": "Module 8.0",
+      "slide_count": 53,
+      "estimated_duration_minutes": 35
+    }
+  ]
+}
