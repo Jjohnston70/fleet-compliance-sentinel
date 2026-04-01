@@ -10,18 +10,18 @@ Applies to planned endpoints:
 
 1. Allowlist-only execution. No arbitrary shell commands.
 2. Deterministic action mapping: `moduleId + actionId -> fixed command template`.
-3. Unified job lifecycle: `queued | running | success | fail | timeout`.
+3. Unified job lifecycle: `queued | running | success | fail`.
 4. Output controls: capture `stdout`/`stderr`, truncate previews for API/UI safety.
 5. Backward-safe integration: additive only; no Penny route behavior changes.
 
-## Module and Action Identifiers (Phase 1 Registry)
+## Module and Action Identifiers (Current Registry)
 
 | Module ID | Action IDs (frozen namespace) |
 | --- | --- |
-| `ml-eia-petroleum-intel` | `ingest.all`, `ingest.source`, `ingest.api_update`, `pipeline.all`, `pipeline.product`, `export.report`, `export.json_only` |
-| `ml-signal-stack-tncc` | `export.csv_all`, `export.csv_source`, `pipeline.source`, `pipeline.all`, `report.generate`, `package.output` |
-| `mod-paperstack-pp` | `tools.list`, `tools.check`, `generate.pdf`, `generate.docx`, `convert.markdown`, `reverse.docx`, `inspect.pdf`, `scan.pdf` |
-| `command-center` | `discover.modules`, `discover.tools`, `search.tools`, `schema.tool`, `route.tool_call`, `status.system`, `detail.module`, `classifications.list`, `dashboard.system`, `usage.tools` |
+| `ML-EIA-PETROLEUM-INTEL` | `tests`, `ingest.all`, `ingest.source`, `ingest.api_update`, `pipeline.product`, `pipeline.all`, `export.report`, `export.skip_docx`, `export.json_only` |
+| `ML-SIGNAL-STACK-TNCC` | `pipeline.source`, `pipeline.all`, `export.csv`, `export.csv_all`, `export.csv_source`, `report.generate`, `package.output` |
+| `MOD-PAPERSTACK-PP` | `list`, `check`, `generate`, `convert`, `reverse`, `inspect`, `scan`, `tools.list`, `tools.check`, `generate.pdf`, `generate.docx` |
+| `command-center` | `tests`, `build` |
 
 ## `POST /api/modules/run`
 
@@ -186,10 +186,10 @@ interface ModuleJobRecord {
   stdoutTruncated: boolean;
   stderrTruncated: boolean;
   artifacts: Array<{
-    kind: 'file' | 'report' | 'dataset';
+    kind: 'file';
     path: string;
-    sizeBytes?: number;
-    modifiedAt?: string;
+    sizeBytes: number;
+    modifiedAt: string;
   }>;
   error?: {
     code: string;
@@ -215,7 +215,7 @@ interface ModuleJobRecord {
 2. Command-center execution path is currently "route and record" rather than full external side-effect execution; gateway adapter should preserve this behavior and normalize output.
 3. This contract is frozen for scaffold implementation in Phase 2; only additive fields are allowed in later phases.
 
-## Endpoint Usage Examples (Phase 2/3)
+## Endpoint Usage Examples (Phase 2-4)
 
 Note: these routes require a valid Clerk-authenticated org-admin session. For CLI calls, pass a valid `__session` cookie value from an authenticated browser session.
 
@@ -286,6 +286,25 @@ curl -X POST "http://localhost:3000/api/modules/run" \
   }'
 ```
 
+### Run (Execute PaperStack Convert)
+
+```bash
+curl -X POST "http://localhost:3000/api/modules/run" \
+  -H "Content-Type: application/json" \
+  -H "Cookie: __session=<clerk-session-token>" \
+  -d '{
+    "moduleId": "MOD-PAPERSTACK-PP",
+    "actionId": "convert",
+    "args": {
+      "inputPath": "README.md",
+      "outputPath": "output/README_converted.html",
+      "dark": true
+    },
+    "timeoutMs": 120000,
+    "correlationId": "phase4-paperstack-convert-001"
+  }'
+```
+
 ### Run (Execute command-center baseline validation)
 
 ```bash
@@ -307,9 +326,18 @@ curl -X GET "http://localhost:3000/api/modules/status/<run_id>" \
   -H "Cookie: __session=<clerk-session-token>"
 ```
 
-### Current Allowlist (Phase 3)
+### Current Allowlist (Phase 4)
 
 - `ML-EIA-PETROLEUM-INTEL`: `tests`, `ingest.all`, `ingest.source`, `ingest.api_update`, `pipeline.product`, `pipeline.all`, `export.report`, `export.skip_docx`, `export.json_only`
 - `ML-SIGNAL-STACK-TNCC`: `pipeline.source`, `pipeline.all`, `export.csv`, `export.csv_all`, `export.csv_source`, `report.generate`, `package.output`
-- `MOD-PAPERSTACK-PP`: `tools.list`, `tools.check`, `generate.pdf`, `generate.docx`
+- `MOD-PAPERSTACK-PP`: `list`, `check`, `generate`, `convert`, `reverse`, `inspect`, `scan`, `tools.list`, `tools.check`, `generate.pdf`, `generate.docx`
 - `command-center`: `tests`, `build`
+
+## Phase 4 Additions
+
+1. PaperStack path arguments are validated to remain inside `tooling/MOD-PAPERSTACK-PP`; traversal and unsafe absolute path jumps are rejected.
+2. Extension guards are enforced for path-bearing PaperStack actions:
+   - `convert.inputPath`: `.md`
+   - `reverse.inputPath`: `.docx`
+   - `inspect.inputPath`/`scan.inputPath`: `.pdf`
+3. Run status now includes PaperStack artifact metadata (`artifacts[]`) for generator/converter/reverse actions with path, size, and modified timestamp.

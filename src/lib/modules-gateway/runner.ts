@@ -1,5 +1,7 @@
 import { randomUUID } from 'node:crypto';
 import { spawn } from 'node:child_process';
+import { existsSync, statSync, type Stats } from 'node:fs';
+import path from 'node:path';
 import {
   getCatalog,
   getModuleAction,
@@ -10,6 +12,7 @@ import {
 } from '@/lib/modules-gateway/registry';
 import type {
   ModuleCatalogEntry,
+  ModuleRunArtifact,
   ModuleRunError,
   ModuleRunRecord,
   ModuleRunRequest,
@@ -57,6 +60,98 @@ function updateRun(runId: string, updater: (run: ModuleRunRecord) => ModuleRunRe
   const next = updater(existing);
   runs.set(runId, next);
   return next;
+}
+
+function toRepoRelativePath(absolutePath: string): string {
+  const relative = path.relative(process.cwd(), absolutePath);
+  if (relative.startsWith('..') || path.isAbsolute(relative)) {
+    return absolutePath;
+  }
+  return relative.split(path.sep).join('/');
+}
+
+function getPaperstackArtifactCandidates(run: ModuleRunRecord): string[] {
+  const args = run.args;
+  const inputPath = typeof args.inputPath === 'string' ? args.inputPath : null;
+  const outputPath = typeof args.outputPath === 'string' ? args.outputPath : null;
+
+  if (run.actionId === 'generate.pdf') {
+    return ['Pipeline_Flyer.pdf'];
+  }
+  if (run.actionId === 'generate.docx') {
+    return ['Pipeline_Flyer.docx'];
+  }
+  if (run.actionId === 'generate') {
+    const format = typeof args.format === 'string' ? args.format : 'pdf';
+    if (format === 'docx') return ['Pipeline_Flyer.docx'];
+    return ['Pipeline_Flyer.pdf'];
+  }
+  if (run.actionId === 'convert' && inputPath) {
+    if (outputPath) {
+      return [outputPath];
+    }
+    const parsed = path.parse(inputPath);
+    return [path.join(parsed.dir, `${parsed.name}.html`)];
+  }
+  if (run.actionId === 'reverse' && inputPath) {
+    if (outputPath) {
+      return [outputPath];
+    }
+
+    const baseName = path.parse(inputPath).name;
+    const mode = typeof args.mode === 'string' ? args.mode : 'js';
+    if (mode === 'python') {
+      return [`${baseName}_generator.py`];
+    }
+    if (mode === 'pdf') {
+      return [`${baseName}_pdf_generator.py`];
+    }
+    if (mode === 'python_pdf') {
+      return [`${baseName}_generator.py`, `${baseName}_pdf_generator.py`];
+    }
+    return [`${baseName}_generator.js`];
+  }
+
+  return [];
+}
+
+function collectRunArtifacts(run: ModuleRunRecord): ModuleRunArtifact[] {
+  if (run.moduleId !== 'MOD-PAPERSTACK-PP') {
+    return [];
+  }
+
+  const candidates = getPaperstackArtifactCandidates(run);
+  if (candidates.length === 0) {
+    return [];
+  }
+
+  const artifacts: ModuleRunArtifact[] = [];
+  const seen = new Set<string>();
+
+  for (const candidate of candidates) {
+    const absolutePath = path.resolve(run.cwd, candidate);
+    if (!existsSync(absolutePath)) continue;
+    let stats: Stats;
+    try {
+      stats = statSync(absolutePath);
+    } catch {
+      continue;
+    }
+    if (!stats.isFile()) continue;
+
+    const filePath = toRepoRelativePath(absolutePath);
+    if (seen.has(filePath)) continue;
+    seen.add(filePath);
+
+    artifacts.push({
+      kind: 'file',
+      path: filePath,
+      sizeBytes: stats.size,
+      modifiedAt: new Date(stats.mtimeMs).toISOString(),
+    });
+  }
+
+  return artifacts;
 }
 
 async function executeRun(runId: string): Promise<void> {
@@ -121,6 +216,7 @@ async function executeRun(runId: string): Promise<void> {
     const durationMs = Date.now() - startedAtEpoch;
     const stdoutPreview = previewOutput(stdout, stdoutCaptureTruncated);
     const stderrPreview = previewOutput(stderr, stderrCaptureTruncated);
+    const artifacts = collectRunArtifacts(run);
 
     if (timedOut) {
       updateRun(runId, (current) => ({
@@ -133,6 +229,7 @@ async function executeRun(runId: string): Promise<void> {
         stderrPreview: stderrPreview.preview,
         stdoutTruncated: stdoutPreview.wasPreviewTruncated,
         stderrTruncated: stderrPreview.wasPreviewTruncated,
+        artifacts,
         error: {
           code: 'EXEC_TIMEOUT',
           message: `Process exceeded timeout of ${current.timeoutMs}ms`,
@@ -153,6 +250,7 @@ async function executeRun(runId: string): Promise<void> {
         stderrPreview: stderrPreview.preview,
         stdoutTruncated: stdoutPreview.wasPreviewTruncated,
         stderrTruncated: stderrPreview.wasPreviewTruncated,
+        artifacts,
         error: {
           code: 'INTERNAL_ERROR',
           message: spawnErrorMessage,
@@ -172,6 +270,7 @@ async function executeRun(runId: string): Promise<void> {
         stderrPreview: stderrPreview.preview,
         stdoutTruncated: stdoutPreview.wasPreviewTruncated,
         stderrTruncated: stderrPreview.wasPreviewTruncated,
+        artifacts,
       }));
       return;
     }
@@ -186,6 +285,7 @@ async function executeRun(runId: string): Promise<void> {
       stderrPreview: stderrPreview.preview,
       stdoutTruncated: stdoutPreview.wasPreviewTruncated,
       stderrTruncated: stderrPreview.wasPreviewTruncated,
+      artifacts,
       error: {
         code: 'EXEC_FAILED',
         message: `Process exited with code ${result.exitCode ?? 'unknown'}`,
@@ -299,6 +399,7 @@ export function startModuleRun(input: ModuleRunRequest, requestedBy: string): Mo
     stderrPreview: '',
     stdoutTruncated: false,
     stderrTruncated: false,
+    artifacts: [],
   };
 
   runs.set(runId, runRecord);

@@ -1,12 +1,23 @@
 # Fleet-Compliance Sentinel — Status
 
-Last Updated: 2026-03-31 (SOC 2 controls remain stable; module integration sprint Phase 3 ML integration complete)
-Current Phase: Module integration sprint in progress (Phase 3 complete)
-Overall Completion: SOC 2 action plan 100%; module integration sprint 3/6 phases complete
+Last Updated: 2026-03-31 (SOC 2 controls remain stable; module integration sprint Phase 4 PaperStack integration complete)
+Current Phase: Module integration sprint in progress (Phase 4 complete)
+Overall Completion: SOC 2 action plan 100%; module integration sprint 4/6 phases complete
 Open Findings: 0 blockers; remaining items are accepted non-blocking hardening items
 SOC 2 Observation Window Start: 2026-03-24
 SOC 2 Type I Earliest Eligibility: 2026-06-22
 Days Until Type I Eligible: 83
+
+## 2026-03-31 Module Integration Sprint - Phase 4 Outcome
+
+| Workstream | Result |
+|-----------|--------|
+| PaperStack gateway integration | Complete - registered `list`, `check`, `generate`, `convert`, `reverse`, `inspect`, `scan` plus compatibility aliases |
+| Path safety controls | Complete - user path args constrained to `tooling/MOD-PAPERSTACK-PP`; traversal and unsafe absolute jumps rejected |
+| Artifact metadata capture | Complete - run status now includes structured file artifacts (`path`, `sizeBytes`, `modifiedAt`) for generate/convert/reverse |
+| PaperStack runbook | Complete - `docs/integration/PAPERSTACK_RUNBOOK.md` added with actions, payload examples, and limitations |
+| Gateway contract docs | Updated - `docs/integration/MODULE_GATEWAY_CONTRACT.md` refreshed with Phase 4 allowlist and artifact schema |
+| Verification | `npm run lint` pass (pre-existing unrelated warnings only); `npm run build` still blocked by known workspace `EACCES` scan issue |
 
 ## 2026-03-31 Module Integration Sprint - Phase 3 Outcome
 

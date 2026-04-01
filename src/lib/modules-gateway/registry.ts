@@ -26,6 +26,9 @@ const EIA_INGEST_SOURCES = [
 ];
 const SIGNAL_SOURCES = ['sales', 'ops_pulse', 'cash_flow_compass', 'pipeline_pulse', 'team_tempo'];
 const SIGNAL_SOURCE_OPTIONS = [...SIGNAL_SOURCES, 'all'];
+const PAPERSTACK_GENERATE_FORMATS = ['pdf', 'docx'];
+const PAPERSTACK_REVERSE_MODES = ['js', 'python', 'pdf', 'python_pdf'];
+const PAPERSTACK_SCAN_DPI_VALUES = [200, 300, 400];
 
 const EMPTY_ARGS_SCHEMA: ModuleActionArgsSchema = {
   type: 'object',
@@ -35,6 +38,52 @@ const EMPTY_ARGS_SCHEMA: ModuleActionArgsSchema = {
 
 function toolingPath(moduleName: string): string {
   return path.join(TOOLING_ROOT, moduleName);
+}
+
+const PAPERSTACK_ROOT = toolingPath('MOD-PAPERSTACK-PP');
+
+function isPathWithinRoot(rootPath: string, targetPath: string): boolean {
+  const relative = path.relative(rootPath, targetPath);
+  return relative === '' || (!relative.startsWith('..') && !path.isAbsolute(relative));
+}
+
+function relativeToPaperstackRoot(absolutePath: string): string {
+  const relativePath = path.relative(PAPERSTACK_ROOT, absolutePath);
+  return relativePath === '' ? '.' : relativePath;
+}
+
+function resolvePaperstackPathArg(
+  rawValue: unknown,
+  options: { label: string; allowMissing?: boolean; extensions?: string[]; baseDir?: string },
+): string {
+  if (typeof rawValue !== 'string' || rawValue.trim().length === 0) {
+    throw new Error(`${options.label} must be a non-empty string path`);
+  }
+
+  const trimmed = rawValue.trim();
+  if (trimmed.includes('\0')) {
+    throw new Error(`${options.label} contains invalid path characters`);
+  }
+
+  const baseDir = options.baseDir ?? PAPERSTACK_ROOT;
+  const absolutePath = path.isAbsolute(trimmed) ? path.resolve(trimmed) : path.resolve(baseDir, trimmed);
+  if (!isPathWithinRoot(PAPERSTACK_ROOT, absolutePath)) {
+    throw new Error(`${options.label} must stay within the MOD-PAPERSTACK-PP module directory`);
+  }
+
+  const allowedExtensions = options.extensions || [];
+  if (allowedExtensions.length > 0) {
+    const extension = path.extname(absolutePath).toLowerCase();
+    if (!allowedExtensions.includes(extension)) {
+      throw new Error(`${options.label} must use one of: ${allowedExtensions.join(', ')}`);
+    }
+  }
+
+  if (!options.allowMissing && !existsSync(absolutePath)) {
+    throw new Error(`${options.label} not found: ${relativeToPaperstackRoot(absolutePath)}`);
+  }
+
+  return relativeToPaperstackRoot(absolutePath);
 }
 
 function pythonAction(
@@ -496,6 +545,40 @@ const MODULE_REGISTRY: ModuleDefinition[] = [
     workingDirectory: toolingPath('MOD-PAPERSTACK-PP'),
     actions: [
       pythonAction(
+        'list',
+        'List available PaperStack tools and readiness',
+        ['python', 'paperstack.py', 'list'],
+        () => ['paperstack.py', 'list'],
+        EMPTY_ARGS_SCHEMA,
+        60_000,
+      ),
+      pythonAction(
+        'check',
+        'Run dependency diagnostics for PaperStack',
+        ['python', 'paperstack.py', 'check'],
+        () => ['paperstack.py', 'check'],
+        EMPTY_ARGS_SCHEMA,
+        120_000,
+      ),
+      pythonAction(
+        'generate',
+        'Generate the default PaperStack marketing flyer (PDF or DOCX)',
+        ['python', 'paperstack.py', 'generate', '<pdf|docx>'],
+        (args) => ['paperstack.py', 'generate', String(args.format)],
+        {
+          type: 'object',
+          properties: {
+            format: {
+              type: 'string',
+              enum: PAPERSTACK_GENERATE_FORMATS,
+              description: 'Generator output format',
+            },
+          },
+          required: ['format'],
+        },
+        120_000,
+      ),
+      pythonAction(
         'tools.list',
         'List available PaperStack tools and readiness',
         ['python', 'paperstack.py', 'list'],
@@ -526,6 +609,191 @@ const MODULE_REGISTRY: ModuleDefinition[] = [
         () => ['paperstack.py', 'generate', 'docx'],
         EMPTY_ARGS_SCHEMA,
         120_000,
+      ),
+      pythonAction(
+        'convert',
+        'Convert Markdown file to styled HTML',
+        ['python', 'paperstack.py', 'convert', '<input.md>', '<output.html?>', '--dark?'],
+        (args) => {
+          const inputPath = resolvePaperstackPathArg(args.inputPath, {
+            label: 'args.inputPath',
+            extensions: ['.md'],
+          });
+          const commandArgs = ['paperstack.py', 'convert', inputPath];
+
+          if (typeof args.outputPath === 'string' && args.outputPath.trim().length > 0) {
+            commandArgs.push(
+              resolvePaperstackPathArg(args.outputPath, {
+                label: 'args.outputPath',
+                allowMissing: true,
+                extensions: ['.html'],
+              }),
+            );
+          }
+
+          if (Boolean(args.dark)) {
+            commandArgs.push('--dark');
+          }
+
+          return commandArgs;
+        },
+        {
+          type: 'object',
+          properties: {
+            inputPath: {
+              type: 'string',
+              description: 'Path to input Markdown file within MOD-PAPERSTACK-PP',
+            },
+            outputPath: {
+              type: 'string',
+              description: 'Optional output HTML path within MOD-PAPERSTACK-PP',
+            },
+            dark: {
+              type: 'boolean',
+              default: false,
+              description: 'Enable dark GitHub-style output theme',
+            },
+          },
+          required: ['inputPath'],
+        },
+        120_000,
+      ),
+      pythonAction(
+        'reverse',
+        'Reverse engineer DOCX into generator code',
+        ['python', 'paperstack.py', 'reverse', '<input.docx>', '--python|--pdf?', '--output?'],
+        (args) => {
+          const inputPath = resolvePaperstackPathArg(args.inputPath, {
+            label: 'args.inputPath',
+            extensions: ['.docx'],
+          });
+          const mode = String(args.mode);
+          const commandArgs = ['paperstack.py', 'reverse', inputPath];
+
+          if (mode === 'python') {
+            commandArgs.push('--python');
+          } else if (mode === 'pdf') {
+            commandArgs.push('--pdf');
+          } else if (mode === 'python_pdf') {
+            commandArgs.push('--python', '--pdf');
+          }
+
+          if (typeof args.outputPath === 'string' && args.outputPath.trim().length > 0) {
+            commandArgs.push(
+              '--output',
+              resolvePaperstackPathArg(args.outputPath, {
+                label: 'args.outputPath',
+                allowMissing: true,
+              }),
+            );
+          }
+
+          return commandArgs;
+        },
+        {
+          type: 'object',
+          properties: {
+            inputPath: {
+              type: 'string',
+              description: 'Path to input DOCX file within MOD-PAPERSTACK-PP',
+            },
+            mode: {
+              type: 'string',
+              enum: PAPERSTACK_REVERSE_MODES,
+              default: 'js',
+              description: 'Reverse output mode (js, python, pdf, python_pdf)',
+            },
+            outputPath: {
+              type: 'string',
+              description: 'Optional custom output file path within MOD-PAPERSTACK-PP',
+            },
+          },
+          required: ['inputPath'],
+        },
+        180_000,
+      ),
+      pythonAction(
+        'inspect',
+        'Launch PDF inspector for text-based PDFs',
+        ['python', 'paperstack.py', 'inspect', '<input.pdf>', '--port', '<port>'],
+        (args) => {
+          const inputPath = resolvePaperstackPathArg(args.inputPath, {
+            label: 'args.inputPath',
+            extensions: ['.pdf'],
+          });
+          return ['paperstack.py', 'inspect', inputPath, '--port', String(args.port)];
+        },
+        {
+          type: 'object',
+          properties: {
+            inputPath: {
+              type: 'string',
+              description: 'Path to input PDF file within MOD-PAPERSTACK-PP',
+            },
+            port: {
+              type: 'number',
+              min: 1,
+              max: 65535,
+              default: 5000,
+              description: 'Local inspector web server port',
+            },
+          },
+          required: ['inputPath'],
+        },
+        900_000,
+      ),
+      pythonAction(
+        'scan',
+        'Launch OCR scan inspector for scanned PDFs',
+        ['python', 'paperstack.py', 'scan', '<input.pdf>', '--port', '<port>', '--dpi', '<200|300|400>', '--force-ocr?'],
+        (args) => {
+          const inputPath = resolvePaperstackPathArg(args.inputPath, {
+            label: 'args.inputPath',
+            extensions: ['.pdf'],
+          });
+          const commandArgs = [
+            'paperstack.py',
+            'scan',
+            inputPath,
+            '--port',
+            String(args.port),
+            '--dpi',
+            String(args.dpi),
+          ];
+          if (Boolean(args.forceOcr)) {
+            commandArgs.push('--force-ocr');
+          }
+          return commandArgs;
+        },
+        {
+          type: 'object',
+          properties: {
+            inputPath: {
+              type: 'string',
+              description: 'Path to input PDF file within MOD-PAPERSTACK-PP',
+            },
+            port: {
+              type: 'number',
+              min: 1,
+              max: 65535,
+              default: 5000,
+              description: 'Local inspector web server port',
+            },
+            dpi: {
+              type: 'number',
+              enum: PAPERSTACK_SCAN_DPI_VALUES,
+              default: 300,
+              description: 'OCR DPI quality setting',
+            },
+            forceOcr: {
+              type: 'boolean',
+              default: false,
+              description: 'Force OCR mode even when PDF text layer is available',
+            },
+          },
+          required: ['inputPath'],
+        },
+        900_000,
       ),
     ],
   },
