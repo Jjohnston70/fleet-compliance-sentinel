@@ -1,6 +1,6 @@
 import { randomUUID } from 'node:crypto';
 import { spawn } from 'node:child_process';
-import { existsSync, statSync, type Stats } from 'node:fs';
+import { existsSync, mkdirSync, readFileSync, statSync, writeFileSync, type Stats } from 'node:fs';
 import path from 'node:path';
 import {
   getCatalog,
@@ -232,6 +232,218 @@ function getMlEiaArtifactCandidates(run: ModuleRunRecord, stdoutRaw: string): st
   return [];
 }
 
+function escapeHtml(value: string): string {
+  return value
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+}
+
+function formatMetric(value: unknown, digits = 3): string {
+  if (typeof value !== 'number' || Number.isNaN(value)) return '-';
+  return value.toFixed(digits);
+}
+
+function readJsonFileSafe(filePath: string): unknown | null {
+  try {
+    const raw = readFileSync(filePath, 'utf8');
+    return JSON.parse(raw);
+  } catch {
+    return null;
+  }
+}
+
+function createMlEiaDashboardArtifact(run: ModuleRunRecord, candidates: string[]): string | null {
+  if (run.moduleId !== 'ML-EIA-PETROLEUM-INTEL') return null;
+
+  const absoluteCandidates = candidates.map((candidate) => resolveArtifactAbsolutePath(run, candidate));
+  const forecastFiles = absoluteCandidates.filter(
+    (filePath) => /[\\/]forecasts[\\/].+\.json$/i.test(filePath) && existsSync(filePath),
+  );
+  const alertsFile = absoluteCandidates.find((filePath) => /active_alerts\.json$/i.test(filePath) && existsSync(filePath));
+  const snapshotFile = absoluteCandidates.find(
+    (filePath) => /analysis_snapshot\.json$/i.test(filePath) && existsSync(filePath),
+  );
+
+  if (!snapshotFile && !alertsFile && forecastFiles.length === 0) {
+    return null;
+  }
+
+  const snapshot = (snapshotFile ? readJsonFileSafe(snapshotFile) : null) as Record<string, unknown> | null;
+  const alerts = (alertsFile ? readJsonFileSafe(alertsFile) : null) as Record<string, unknown> | null;
+  const regime = (snapshot?.regime || {}) as Record<string, unknown>;
+  const alertsArray = Array.isArray(alerts?.alerts) ? alerts?.alerts : [];
+  const alertCount =
+    typeof alerts?.alert_count === 'number'
+      ? alerts.alert_count
+      : Array.isArray(alertsArray)
+        ? alertsArray.length
+        : 0;
+
+  const forecastRows = forecastFiles
+    .map((filePath) => {
+      const doc = readJsonFileSafe(filePath) as Record<string, unknown> | null;
+      if (!doc) return null;
+      const series = Array.isArray(doc.forecast) ? doc.forecast : [];
+      const lastPoint = series.length > 0 ? (series[series.length - 1] as Record<string, unknown>) : null;
+      return {
+        product: typeof doc.product === 'string' ? doc.product : path.basename(filePath),
+        horizonDays: typeof doc.horizon_days === 'number' ? doc.horizon_days : null,
+        generatedAt: typeof doc.generated_at === 'string' ? doc.generated_at : null,
+        lastDate: typeof lastPoint?.date === 'string' ? lastPoint.date : null,
+        point: typeof lastPoint?.point === 'number' ? lastPoint.point : null,
+        ci80Low: typeof lastPoint?.ci_80_low === 'number' ? lastPoint.ci_80_low : null,
+        ci80High: typeof lastPoint?.ci_80_high === 'number' ? lastPoint.ci_80_high : null,
+      };
+    })
+    .filter((row): row is NonNullable<typeof row> => Boolean(row))
+    .sort((a, b) => a.product.localeCompare(b.product));
+
+  const alertRows = (alertsArray as Array<Record<string, unknown>>)
+    .slice(0, 12)
+    .map((alert) => ({
+      severity: typeof alert.severity === 'string' ? alert.severity : '-',
+      product: typeof alert.product === 'string' ? alert.product : '-',
+      type: typeof alert.type === 'string' ? alert.type : '-',
+      message: typeof alert.message === 'string' ? alert.message : '-',
+      date: typeof alert.date === 'string' ? alert.date : '-',
+    }));
+
+  const generatedAt =
+    (typeof snapshot?.generated_at === 'string' && snapshot.generated_at)
+    || (typeof alerts?.generated_at === 'string' && alerts.generated_at)
+    || nowIso();
+  const strategy = (snapshot?.pricing_strategy as Record<string, unknown> | undefined)?.overall_recommendation;
+
+  const html = `<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>ML-EIA Dashboard ${escapeHtml(run.id)}</title>
+    <style>
+      body { font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial; margin: 24px; color: #0f172a; background: #f8fafc; }
+      h1, h2 { margin: 0 0 10px 0; color: #1e3a5f; }
+      p, li { line-height: 1.45; }
+      .meta { color: #475569; margin-bottom: 18px; }
+      .grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; margin-bottom: 20px; }
+      .card { border: 1px solid #dbe3ee; border-radius: 10px; background: white; padding: 12px; min-width: 0; }
+      .label { font-size: 12px; text-transform: uppercase; letter-spacing: 0.05em; color: #64748b; margin-bottom: 6px; }
+      .value { font-size: 20px; font-weight: 700; color: #0f172a; word-break: break-word; }
+      table { width: 100%; border-collapse: collapse; margin-top: 8px; background: white; border: 1px solid #dbe3ee; }
+      th, td { text-align: left; padding: 8px; border-bottom: 1px solid #e2e8f0; vertical-align: top; }
+      th { background: #eff6ff; color: #1e3a5f; font-size: 12px; text-transform: uppercase; letter-spacing: 0.05em; }
+      code { background: #e2e8f0; border-radius: 6px; padding: 2px 6px; font-size: 12px; display: inline-block; }
+      .small { font-size: 12px; color: #64748b; }
+    </style>
+  </head>
+  <body>
+    <h1>ML-EIA Operator Dashboard</h1>
+    <p class="meta">Run <code>${escapeHtml(run.id)}</code> · Generated ${escapeHtml(generatedAt)}</p>
+
+    <div class="grid">
+      <div class="card">
+        <div class="label">Regime</div>
+        <div class="value">${escapeHtml(String(regime.current_regime || '-'))}</div>
+      </div>
+      <div class="card">
+        <div class="label">Days In Regime</div>
+        <div class="value">${escapeHtml(String(regime.days_in_regime ?? '-'))}</div>
+      </div>
+      <div class="card">
+        <div class="label">Pricing Strategy</div>
+        <div class="value">${escapeHtml(String(strategy || '-'))}</div>
+      </div>
+      <div class="card">
+        <div class="label">Alerts</div>
+        <div class="value">${escapeHtml(String(alertCount))}</div>
+      </div>
+      <div class="card">
+        <div class="label">Volatility 20d</div>
+        <div class="value">${escapeHtml(formatMetric(regime.volatility_20d))}</div>
+      </div>
+      <div class="card">
+        <div class="label">Transition Probability</div>
+        <div class="value">${escapeHtml(formatMetric(regime.transition_probability))}</div>
+      </div>
+    </div>
+
+    <h2>Forecast Snapshot</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>Product</th>
+          <th>Horizon</th>
+          <th>Last Point Date</th>
+          <th>Point</th>
+          <th>CI80 Low</th>
+          <th>CI80 High</th>
+        </tr>
+      </thead>
+      <tbody>
+        ${forecastRows.length > 0
+          ? forecastRows
+              .map(
+                (row) => `<tr>
+                  <td>${escapeHtml(row.product)}</td>
+                  <td>${escapeHtml(row.horizonDays ? `${row.horizonDays}d` : '-')}</td>
+                  <td>${escapeHtml(row.lastDate || '-')}</td>
+                  <td>${escapeHtml(formatMetric(row.point, 4))}</td>
+                  <td>${escapeHtml(formatMetric(row.ci80Low, 4))}</td>
+                  <td>${escapeHtml(formatMetric(row.ci80High, 4))}</td>
+                </tr>`,
+              )
+              .join('')
+          : '<tr><td colspan="6">No forecast artifacts found.</td></tr>'}
+      </tbody>
+    </table>
+
+    <h2 style="margin-top:16px;">Active Alerts</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>Severity</th>
+          <th>Product</th>
+          <th>Type</th>
+          <th>Message</th>
+          <th>Date</th>
+        </tr>
+      </thead>
+      <tbody>
+        ${alertRows.length > 0
+          ? alertRows
+              .map(
+                (row) => `<tr>
+                  <td>${escapeHtml(row.severity)}</td>
+                  <td>${escapeHtml(row.product)}</td>
+                  <td>${escapeHtml(row.type)}</td>
+                  <td>${escapeHtml(row.message)}</td>
+                  <td>${escapeHtml(row.date)}</td>
+                </tr>`,
+              )
+              .join('')
+          : '<tr><td colspan="5">No active alerts found.</td></tr>'}
+      </tbody>
+    </table>
+
+    <p class="small" style="margin-top:14px;">Source artifacts: analysis_snapshot.json, active_alerts.json, output/forecasts/*.json</p>
+  </body>
+</html>`;
+
+  const reportsDir = path.join(run.cwd, 'output', 'reports');
+  const outputName = `module_gateway_ml_eia_dashboard_${run.id}.html`;
+  const outputPath = path.join(reportsDir, outputName);
+  try {
+    mkdirSync(reportsDir, { recursive: true });
+    writeFileSync(outputPath, html, 'utf8');
+    return outputPath;
+  } catch {
+    return null;
+  }
+}
+
 function resolveArtifactAbsolutePath(run: ModuleRunRecord, candidate: string): string {
   if (path.isAbsolute(candidate)) return candidate;
   return path.resolve(run.cwd, candidate);
@@ -251,6 +463,13 @@ function collectRunArtifacts(run: ModuleRunRecord, stdoutRaw = ''): ModuleRunArt
 
   if (candidates.length === 0) {
     return [];
+  }
+
+  if (run.moduleId === 'ML-EIA-PETROLEUM-INTEL') {
+    const dashboardPath = createMlEiaDashboardArtifact(run, candidates);
+    if (dashboardPath) {
+      candidates = [dashboardPath, ...candidates];
+    }
   }
 
   const artifacts: ModuleRunArtifact[] = [];
