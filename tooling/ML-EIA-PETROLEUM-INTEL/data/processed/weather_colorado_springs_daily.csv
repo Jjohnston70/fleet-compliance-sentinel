@@ -1,0 +1,1153 @@
+date,product,value,source
+2024-10-16,Max Temperature F,67,weather_colorado_springs
+2024-10-16,Min Temperature F,67,weather_colorado_springs
+2024-10-16,Temperature F,67,weather_colorado_springs
+2024-10-16,Wind Speed MPH,8,weather_colorado_springs
+2024-10-17,Max Temperature F,68,weather_colorado_springs
+2024-10-17,Min Temperature F,68,weather_colorado_springs
+2024-10-17,Temperature F,68,weather_colorado_springs
+2024-10-17,Wind Speed MPH,9,weather_colorado_springs
+2024-10-18,Max Temperature F,62,weather_colorado_springs
+2024-10-18,Min Temperature F,62,weather_colorado_springs
+2024-10-18,Temperature F,62,weather_colorado_springs
+2024-10-18,Wind Speed MPH,16,weather_colorado_springs
+2024-10-19,Max Temperature F,41,weather_colorado_springs
+2024-10-19,Min Temperature F,41,weather_colorado_springs
+2024-10-19,Temperature F,41,weather_colorado_springs
+2024-10-19,Wind Speed MPH,7,weather_colorado_springs
+2024-10-23,Max Temperature F,56,weather_colorado_springs
+2024-10-23,Min Temperature F,56,weather_colorado_springs
+2024-10-23,Temperature F,56,weather_colorado_springs
+2024-10-23,Wind Speed MPH,8,weather_colorado_springs
+2024-10-24,Max Temperature F,69,weather_colorado_springs
+2024-10-24,Min Temperature F,69,weather_colorado_springs
+2024-10-24,Temperature F,69,weather_colorado_springs
+2024-10-24,Wind Speed MPH,10,weather_colorado_springs
+2024-10-25,Max Temperature F,60,weather_colorado_springs
+2024-10-25,Min Temperature F,60,weather_colorado_springs
+2024-10-25,Temperature F,60,weather_colorado_springs
+2024-10-25,Wind Speed MPH,11,weather_colorado_springs
+2024-10-26,Max Temperature F,68,weather_colorado_springs
+2024-10-26,Min Temperature F,68,weather_colorado_springs
+2024-10-26,Temperature F,68,weather_colorado_springs
+2024-10-26,Wind Speed MPH,2,weather_colorado_springs
+2024-10-27,Max Temperature F,73,weather_colorado_springs
+2024-10-27,Min Temperature F,73,weather_colorado_springs
+2024-10-27,Temperature F,73,weather_colorado_springs
+2024-10-27,Wind Speed MPH,6,weather_colorado_springs
+2024-10-28,Max Temperature F,59,weather_colorado_springs
+2024-10-28,Min Temperature F,59,weather_colorado_springs
+2024-10-28,Temperature F,59,weather_colorado_springs
+2024-10-28,Wind Speed MPH,11,weather_colorado_springs
+2024-10-29,Max Temperature F,64,weather_colorado_springs
+2024-10-29,Min Temperature F,64,weather_colorado_springs
+2024-10-29,Temperature F,64,weather_colorado_springs
+2024-10-29,Wind Speed MPH,26,weather_colorado_springs
+2024-10-30,Max Temperature F,44,weather_colorado_springs
+2024-10-30,Min Temperature F,44,weather_colorado_springs
+2024-10-30,Temperature F,44,weather_colorado_springs
+2024-10-30,Wind Speed MPH,4,weather_colorado_springs
+2024-10-31,Max Temperature F,48,weather_colorado_springs
+2024-10-31,Min Temperature F,41,weather_colorado_springs
+2024-10-31,Temperature F,41,weather_colorado_springs
+2024-10-31,Wind Speed MPH,5,weather_colorado_springs
+2024-11-01,Max Temperature F,52,weather_colorado_springs
+2024-11-01,Min Temperature F,52,weather_colorado_springs
+2024-11-01,Temperature F,52,weather_colorado_springs
+2024-11-01,Wind Speed MPH,7,weather_colorado_springs
+2024-11-02,Max Temperature F,57,weather_colorado_springs
+2024-11-02,Min Temperature F,57,weather_colorado_springs
+2024-11-02,Temperature F,57,weather_colorado_springs
+2024-11-02,Wind Speed MPH,8,weather_colorado_springs
+2024-11-03,Max Temperature F,51,weather_colorado_springs
+2024-11-03,Min Temperature F,51,weather_colorado_springs
+2024-11-03,Temperature F,51,weather_colorado_springs
+2024-11-03,Wind Speed MPH,10,weather_colorado_springs
+2024-11-04,Max Temperature F,39,weather_colorado_springs
+2024-11-04,Min Temperature F,39,weather_colorado_springs
+2024-11-04,Temperature F,39,weather_colorado_springs
+2024-11-04,Wind Speed MPH,13,weather_colorado_springs
+2024-11-05,Max Temperature F,50,weather_colorado_springs
+2024-11-05,Min Temperature F,50,weather_colorado_springs
+2024-11-05,Temperature F,50,weather_colorado_springs
+2024-11-05,Wind Speed MPH,10,weather_colorado_springs
+2024-11-06,Max Temperature F,28,weather_colorado_springs
+2024-11-06,Min Temperature F,28,weather_colorado_springs
+2024-11-06,Temperature F,28,weather_colorado_springs
+2024-11-06,Wind Speed MPH,13,weather_colorado_springs
+2024-11-07,Max Temperature F,35,weather_colorado_springs
+2024-11-07,Min Temperature F,35,weather_colorado_springs
+2024-11-07,Temperature F,35,weather_colorado_springs
+2024-11-07,Wind Speed MPH,6,weather_colorado_springs
+2024-11-08,Max Temperature F,37,weather_colorado_springs
+2024-11-08,Min Temperature F,37,weather_colorado_springs
+2024-11-08,Temperature F,37,weather_colorado_springs
+2024-11-08,Wind Speed MPH,11,weather_colorado_springs
+2024-11-09,Max Temperature F,42,weather_colorado_springs
+2024-11-09,Min Temperature F,42,weather_colorado_springs
+2024-11-09,Temperature F,42,weather_colorado_springs
+2024-11-09,Wind Speed MPH,4,weather_colorado_springs
+2024-11-10,Max Temperature F,53,weather_colorado_springs
+2024-11-10,Min Temperature F,53,weather_colorado_springs
+2024-11-10,Temperature F,53,weather_colorado_springs
+2024-11-10,Wind Speed MPH,2,weather_colorado_springs
+2024-11-11,Max Temperature F,57,weather_colorado_springs
+2024-11-11,Min Temperature F,57,weather_colorado_springs
+2024-11-11,Temperature F,57,weather_colorado_springs
+2024-11-11,Wind Speed MPH,3,weather_colorado_springs
+2024-11-12,Max Temperature F,50,weather_colorado_springs
+2024-11-12,Min Temperature F,50,weather_colorado_springs
+2024-11-12,Temperature F,50,weather_colorado_springs
+2024-11-12,Wind Speed MPH,17,weather_colorado_springs
+2024-11-13,Max Temperature F,46,weather_colorado_springs
+2024-11-13,Min Temperature F,46,weather_colorado_springs
+2024-11-13,Temperature F,46,weather_colorado_springs
+2024-11-13,Wind Speed MPH,1,weather_colorado_springs
+2024-11-14,Max Temperature F,56,weather_colorado_springs
+2024-11-14,Min Temperature F,56,weather_colorado_springs
+2024-11-14,Temperature F,56,weather_colorado_springs
+2024-11-14,Wind Speed MPH,2,weather_colorado_springs
+2024-11-15,Max Temperature F,51,weather_colorado_springs
+2024-11-15,Min Temperature F,51,weather_colorado_springs
+2024-11-15,Temperature F,51,weather_colorado_springs
+2024-11-15,Wind Speed MPH,7,weather_colorado_springs
+2024-11-16,Max Temperature F,46,weather_colorado_springs
+2024-11-16,Min Temperature F,46,weather_colorado_springs
+2024-11-16,Temperature F,46,weather_colorado_springs
+2024-11-16,Wind Speed MPH,5,weather_colorado_springs
+2024-11-17,Max Temperature F,47,weather_colorado_springs
+2024-11-17,Min Temperature F,47,weather_colorado_springs
+2024-11-17,Temperature F,47,weather_colorado_springs
+2024-11-17,Wind Speed MPH,5,weather_colorado_springs
+2024-11-18,Max Temperature F,51,weather_colorado_springs
+2024-11-18,Min Temperature F,51,weather_colorado_springs
+2024-11-18,Temperature F,51,weather_colorado_springs
+2024-11-18,Wind Speed MPH,9,weather_colorado_springs
+2024-11-19,Max Temperature F,34,weather_colorado_springs
+2024-11-19,Min Temperature F,34,weather_colorado_springs
+2024-11-19,Temperature F,34,weather_colorado_springs
+2024-11-19,Wind Speed MPH,21,weather_colorado_springs
+2024-11-20,Max Temperature F,45,weather_colorado_springs
+2024-11-20,Min Temperature F,45,weather_colorado_springs
+2024-11-20,Temperature F,45,weather_colorado_springs
+2024-11-20,Wind Speed MPH,1,weather_colorado_springs
+2024-11-21,Max Temperature F,55,weather_colorado_springs
+2024-11-21,Min Temperature F,55,weather_colorado_springs
+2024-11-21,Temperature F,55,weather_colorado_springs
+2024-11-21,Wind Speed MPH,5,weather_colorado_springs
+2024-11-22,Max Temperature F,60,weather_colorado_springs
+2024-11-22,Min Temperature F,60,weather_colorado_springs
+2024-11-22,Temperature F,60,weather_colorado_springs
+2024-11-22,Wind Speed MPH,3,weather_colorado_springs
+2024-11-23,Max Temperature F,63,weather_colorado_springs
+2024-11-23,Min Temperature F,63,weather_colorado_springs
+2024-11-23,Temperature F,63,weather_colorado_springs
+2024-11-23,Wind Speed MPH,3,weather_colorado_springs
+2024-11-24,Max Temperature F,55,weather_colorado_springs
+2024-11-24,Min Temperature F,55,weather_colorado_springs
+2024-11-24,Temperature F,55,weather_colorado_springs
+2024-11-24,Wind Speed MPH,7,weather_colorado_springs
+2024-11-25,Max Temperature F,41,weather_colorado_springs
+2024-11-25,Min Temperature F,41,weather_colorado_springs
+2024-11-25,Temperature F,41,weather_colorado_springs
+2024-11-25,Wind Speed MPH,9,weather_colorado_springs
+2024-11-26,Max Temperature F,54,weather_colorado_springs
+2024-11-26,Min Temperature F,54,weather_colorado_springs
+2024-11-26,Temperature F,54,weather_colorado_springs
+2024-11-26,Wind Speed MPH,4,weather_colorado_springs
+2024-11-27,Max Temperature F,31,weather_colorado_springs
+2024-11-27,Min Temperature F,31,weather_colorado_springs
+2024-11-27,Temperature F,31,weather_colorado_springs
+2024-11-27,Wind Speed MPH,9,weather_colorado_springs
+2024-11-28,Max Temperature F,38,weather_colorado_springs
+2024-11-28,Min Temperature F,38,weather_colorado_springs
+2024-11-28,Temperature F,38,weather_colorado_springs
+2024-11-28,Wind Speed MPH,6,weather_colorado_springs
+2024-11-29,Max Temperature F,41,weather_colorado_springs
+2024-11-29,Min Temperature F,41,weather_colorado_springs
+2024-11-29,Temperature F,41,weather_colorado_springs
+2024-11-29,Wind Speed MPH,2,weather_colorado_springs
+2024-11-30,Max Temperature F,44,weather_colorado_springs
+2024-11-30,Min Temperature F,44,weather_colorado_springs
+2024-11-30,Temperature F,44,weather_colorado_springs
+2024-11-30,Wind Speed MPH,6,weather_colorado_springs
+2024-12-01,Max Temperature F,48,weather_colorado_springs
+2024-12-01,Min Temperature F,48,weather_colorado_springs
+2024-12-01,Temperature F,48,weather_colorado_springs
+2024-12-01,Wind Speed MPH,3,weather_colorado_springs
+2024-12-02,Max Temperature F,50,weather_colorado_springs
+2024-12-02,Min Temperature F,50,weather_colorado_springs
+2024-12-02,Temperature F,50,weather_colorado_springs
+2024-12-02,Wind Speed MPH,3,weather_colorado_springs
+2024-12-03,Max Temperature F,54,weather_colorado_springs
+2024-12-03,Min Temperature F,54,weather_colorado_springs
+2024-12-03,Temperature F,54,weather_colorado_springs
+2024-12-03,Wind Speed MPH,2,weather_colorado_springs
+2024-12-04,Max Temperature F,51,weather_colorado_springs
+2024-12-04,Min Temperature F,51,weather_colorado_springs
+2024-12-04,Temperature F,51,weather_colorado_springs
+2024-12-04,Wind Speed MPH,7,weather_colorado_springs
+2024-12-05,Max Temperature F,50,weather_colorado_springs
+2024-12-05,Min Temperature F,50,weather_colorado_springs
+2024-12-05,Temperature F,50,weather_colorado_springs
+2024-12-05,Wind Speed MPH,2,weather_colorado_springs
+2024-12-06,Max Temperature F,51,weather_colorado_springs
+2024-12-06,Min Temperature F,51,weather_colorado_springs
+2024-12-06,Temperature F,51,weather_colorado_springs
+2024-12-06,Wind Speed MPH,4,weather_colorado_springs
+2024-12-07,Max Temperature F,54,weather_colorado_springs
+2024-12-07,Min Temperature F,54,weather_colorado_springs
+2024-12-07,Temperature F,54,weather_colorado_springs
+2024-12-07,Wind Speed MPH,2,weather_colorado_springs
+2024-12-08,Max Temperature F,54,weather_colorado_springs
+2024-12-08,Min Temperature F,54,weather_colorado_springs
+2024-12-08,Temperature F,54,weather_colorado_springs
+2024-12-08,Wind Speed MPH,1,weather_colorado_springs
+2024-12-09,Max Temperature F,26,weather_colorado_springs
+2024-12-09,Min Temperature F,26,weather_colorado_springs
+2024-12-09,Temperature F,26,weather_colorado_springs
+2024-12-09,Wind Speed MPH,6,weather_colorado_springs
+2024-12-10,Max Temperature F,31,weather_colorado_springs
+2024-12-10,Min Temperature F,31,weather_colorado_springs
+2024-12-10,Temperature F,31,weather_colorado_springs
+2024-12-10,Wind Speed MPH,6,weather_colorado_springs
+2024-12-11,Max Temperature F,45,weather_colorado_springs
+2024-12-11,Min Temperature F,45,weather_colorado_springs
+2024-12-11,Temperature F,45,weather_colorado_springs
+2024-12-11,Wind Speed MPH,4,weather_colorado_springs
+2024-12-12,Max Temperature F,47,weather_colorado_springs
+2024-12-12,Min Temperature F,47,weather_colorado_springs
+2024-12-12,Temperature F,47,weather_colorado_springs
+2024-12-12,Wind Speed MPH,2,weather_colorado_springs
+2024-12-13,Max Temperature F,42,weather_colorado_springs
+2024-12-13,Min Temperature F,42,weather_colorado_springs
+2024-12-13,Temperature F,42,weather_colorado_springs
+2024-12-13,Wind Speed MPH,13,weather_colorado_springs
+2024-12-14,Max Temperature F,49,weather_colorado_springs
+2024-12-14,Min Temperature F,49,weather_colorado_springs
+2024-12-14,Temperature F,49,weather_colorado_springs
+2024-12-14,Wind Speed MPH,2,weather_colorado_springs
+2024-12-15,Max Temperature F,46,weather_colorado_springs
+2024-12-15,Min Temperature F,46,weather_colorado_springs
+2024-12-15,Temperature F,46,weather_colorado_springs
+2024-12-15,Wind Speed MPH,6,weather_colorado_springs
+2024-12-16,Max Temperature F,46,weather_colorado_springs
+2024-12-16,Min Temperature F,39,weather_colorado_springs
+2024-12-16,Temperature F,39,weather_colorado_springs
+2024-12-16,Wind Speed MPH,5,weather_colorado_springs
+2024-12-17,Max Temperature F,47,weather_colorado_springs
+2024-12-17,Min Temperature F,47,weather_colorado_springs
+2024-12-17,Temperature F,47,weather_colorado_springs
+2024-12-17,Wind Speed MPH,2,weather_colorado_springs
+2024-12-18,Max Temperature F,46,weather_colorado_springs
+2024-12-18,Min Temperature F,46,weather_colorado_springs
+2024-12-18,Temperature F,46,weather_colorado_springs
+2024-12-18,Wind Speed MPH,3,weather_colorado_springs
+2024-12-19,Max Temperature F,52,weather_colorado_springs
+2024-12-19,Min Temperature F,52,weather_colorado_springs
+2024-12-19,Temperature F,52,weather_colorado_springs
+2024-12-19,Wind Speed MPH,3,weather_colorado_springs
+2024-12-20,Max Temperature F,55,weather_colorado_springs
+2024-12-20,Min Temperature F,55,weather_colorado_springs
+2024-12-20,Temperature F,55,weather_colorado_springs
+2024-12-20,Wind Speed MPH,2,weather_colorado_springs
+2024-12-21,Max Temperature F,54,weather_colorado_springs
+2024-12-21,Min Temperature F,54,weather_colorado_springs
+2024-12-21,Temperature F,54,weather_colorado_springs
+2024-12-21,Wind Speed MPH,4,weather_colorado_springs
+2024-12-22,Max Temperature F,57,weather_colorado_springs
+2024-12-22,Min Temperature F,57,weather_colorado_springs
+2024-12-22,Temperature F,57,weather_colorado_springs
+2024-12-22,Wind Speed MPH,1,weather_colorado_springs
+2024-12-23,Max Temperature F,49,weather_colorado_springs
+2024-12-23,Min Temperature F,49,weather_colorado_springs
+2024-12-23,Temperature F,49,weather_colorado_springs
+2024-12-23,Wind Speed MPH,6,weather_colorado_springs
+2024-12-24,Max Temperature F,49,weather_colorado_springs
+2024-12-24,Min Temperature F,49,weather_colorado_springs
+2024-12-24,Temperature F,49,weather_colorado_springs
+2024-12-24,Wind Speed MPH,8,weather_colorado_springs
+2024-12-25,Max Temperature F,47,weather_colorado_springs
+2024-12-25,Min Temperature F,47,weather_colorado_springs
+2024-12-25,Temperature F,47,weather_colorado_springs
+2024-12-25,Wind Speed MPH,8,weather_colorado_springs
+2024-12-26,Max Temperature F,50,weather_colorado_springs
+2024-12-26,Min Temperature F,50,weather_colorado_springs
+2024-12-26,Temperature F,50,weather_colorado_springs
+2024-12-26,Wind Speed MPH,5,weather_colorado_springs
+2024-12-27,Max Temperature F,44,weather_colorado_springs
+2024-12-27,Min Temperature F,44,weather_colorado_springs
+2024-12-27,Temperature F,44,weather_colorado_springs
+2024-12-27,Wind Speed MPH,7,weather_colorado_springs
+2024-12-28,Max Temperature F,47,weather_colorado_springs
+2024-12-28,Min Temperature F,47,weather_colorado_springs
+2024-12-28,Temperature F,47,weather_colorado_springs
+2024-12-28,Wind Speed MPH,6,weather_colorado_springs
+2024-12-29,Max Temperature F,50,weather_colorado_springs
+2024-12-29,Min Temperature F,50,weather_colorado_springs
+2024-12-29,Temperature F,50,weather_colorado_springs
+2024-12-29,Wind Speed MPH,3,weather_colorado_springs
+2024-12-30,Max Temperature F,41,weather_colorado_springs
+2024-12-30,Min Temperature F,41,weather_colorado_springs
+2024-12-30,Temperature F,41,weather_colorado_springs
+2024-12-30,Wind Speed MPH,16,weather_colorado_springs
+2024-12-31,Max Temperature F,33,weather_colorado_springs
+2024-12-31,Min Temperature F,33,weather_colorado_springs
+2024-12-31,Temperature F,33,weather_colorado_springs
+2024-12-31,Wind Speed MPH,10,weather_colorado_springs
+2025-01-01,Max Temperature F,38,weather_colorado_springs
+2025-01-01,Min Temperature F,38,weather_colorado_springs
+2025-01-01,Temperature F,38,weather_colorado_springs
+2025-01-01,Wind Speed MPH,4,weather_colorado_springs
+2025-01-02,Max Temperature F,45,weather_colorado_springs
+2025-01-02,Min Temperature F,45,weather_colorado_springs
+2025-01-02,Temperature F,45,weather_colorado_springs
+2025-01-02,Wind Speed MPH,7,weather_colorado_springs
+2025-01-03,Max Temperature F,55,weather_colorado_springs
+2025-01-03,Min Temperature F,55,weather_colorado_springs
+2025-01-03,Temperature F,55,weather_colorado_springs
+2025-01-03,Wind Speed MPH,2,weather_colorado_springs
+2025-01-04,Max Temperature F,46,weather_colorado_springs
+2025-01-04,Min Temperature F,46,weather_colorado_springs
+2025-01-04,Temperature F,46,weather_colorado_springs
+2025-01-04,Wind Speed MPH,14,weather_colorado_springs
+2025-01-05,Max Temperature F,35,weather_colorado_springs
+2025-01-05,Min Temperature F,35,weather_colorado_springs
+2025-01-05,Temperature F,35,weather_colorado_springs
+2025-01-05,Wind Speed MPH,3,weather_colorado_springs
+2025-01-06,Max Temperature F,35,weather_colorado_springs
+2025-01-06,Min Temperature F,35,weather_colorado_springs
+2025-01-06,Temperature F,35,weather_colorado_springs
+2025-01-06,Wind Speed MPH,6,weather_colorado_springs
+2025-01-07,Max Temperature F,25,weather_colorado_springs
+2025-01-07,Min Temperature F,25,weather_colorado_springs
+2025-01-07,Temperature F,25,weather_colorado_springs
+2025-01-07,Wind Speed MPH,7,weather_colorado_springs
+2025-01-08,Max Temperature F,35,weather_colorado_springs
+2025-01-08,Min Temperature F,35,weather_colorado_springs
+2025-01-08,Temperature F,35,weather_colorado_springs
+2025-01-08,Wind Speed MPH,1,weather_colorado_springs
+2025-01-09,Max Temperature F,25,weather_colorado_springs
+2025-01-09,Min Temperature F,25,weather_colorado_springs
+2025-01-09,Temperature F,25,weather_colorado_springs
+2025-01-09,Wind Speed MPH,18,weather_colorado_springs
+2025-01-10,Max Temperature F,37,weather_colorado_springs
+2025-01-10,Min Temperature F,37,weather_colorado_springs
+2025-01-10,Temperature F,37,weather_colorado_springs
+2025-01-10,Wind Speed MPH,0,weather_colorado_springs
+2025-01-11,Max Temperature F,34,weather_colorado_springs
+2025-01-11,Min Temperature F,34,weather_colorado_springs
+2025-01-11,Temperature F,34,weather_colorado_springs
+2025-01-11,Wind Speed MPH,1,weather_colorado_springs
+2025-01-12,Max Temperature F,29,weather_colorado_springs
+2025-01-12,Min Temperature F,29,weather_colorado_springs
+2025-01-12,Temperature F,29,weather_colorado_springs
+2025-01-12,Wind Speed MPH,5,weather_colorado_springs
+2025-01-13,Max Temperature F,28,weather_colorado_springs
+2025-01-13,Min Temperature F,28,weather_colorado_springs
+2025-01-13,Temperature F,28,weather_colorado_springs
+2025-01-13,Wind Speed MPH,2,weather_colorado_springs
+2025-01-14,Max Temperature F,31,weather_colorado_springs
+2025-01-14,Min Temperature F,31,weather_colorado_springs
+2025-01-14,Temperature F,31,weather_colorado_springs
+2025-01-14,Wind Speed MPH,4,weather_colorado_springs
+2025-01-15,Max Temperature F,41,weather_colorado_springs
+2025-01-15,Min Temperature F,41,weather_colorado_springs
+2025-01-15,Temperature F,41,weather_colorado_springs
+2025-01-15,Wind Speed MPH,2,weather_colorado_springs
+2025-01-16,Max Temperature F,47,weather_colorado_springs
+2025-01-16,Min Temperature F,47,weather_colorado_springs
+2025-01-16,Temperature F,47,weather_colorado_springs
+2025-01-16,Wind Speed MPH,2,weather_colorado_springs
+2025-01-17,Max Temperature F,40,weather_colorado_springs
+2025-01-17,Min Temperature F,40,weather_colorado_springs
+2025-01-17,Temperature F,40,weather_colorado_springs
+2025-01-17,Wind Speed MPH,6,weather_colorado_springs
+2025-01-18,Max Temperature F,16,weather_colorado_springs
+2025-01-18,Min Temperature F,16,weather_colorado_springs
+2025-01-18,Temperature F,16,weather_colorado_springs
+2025-01-18,Wind Speed MPH,10,weather_colorado_springs
+2025-01-19,Max Temperature F,20,weather_colorado_springs
+2025-01-19,Min Temperature F,20,weather_colorado_springs
+2025-01-19,Temperature F,20,weather_colorado_springs
+2025-01-19,Wind Speed MPH,5,weather_colorado_springs
+2025-01-20,Max Temperature F,10,weather_colorado_springs
+2025-01-20,Min Temperature F,10,weather_colorado_springs
+2025-01-20,Temperature F,10,weather_colorado_springs
+2025-01-20,Wind Speed MPH,7,weather_colorado_springs
+2025-01-21,Max Temperature F,37,weather_colorado_springs
+2025-01-21,Min Temperature F,37,weather_colorado_springs
+2025-01-21,Temperature F,37,weather_colorado_springs
+2025-01-21,Wind Speed MPH,5,weather_colorado_springs
+2025-01-22,Max Temperature F,25,weather_colorado_springs
+2025-01-22,Min Temperature F,25,weather_colorado_springs
+2025-01-22,Temperature F,25,weather_colorado_springs
+2025-01-22,Wind Speed MPH,14,weather_colorado_springs
+2025-01-23,Max Temperature F,26,weather_colorado_springs
+2025-01-23,Min Temperature F,26,weather_colorado_springs
+2025-01-23,Temperature F,26,weather_colorado_springs
+2025-01-23,Wind Speed MPH,4,weather_colorado_springs
+2025-01-24,Max Temperature F,44,weather_colorado_springs
+2025-01-24,Min Temperature F,44,weather_colorado_springs
+2025-01-24,Temperature F,44,weather_colorado_springs
+2025-01-24,Wind Speed MPH,2,weather_colorado_springs
+2025-01-25,Max Temperature F,24,weather_colorado_springs
+2025-01-25,Min Temperature F,24,weather_colorado_springs
+2025-01-25,Temperature F,24,weather_colorado_springs
+2025-01-25,Wind Speed MPH,8,weather_colorado_springs
+2025-01-26,Max Temperature F,36,weather_colorado_springs
+2025-01-26,Min Temperature F,36,weather_colorado_springs
+2025-01-26,Temperature F,36,weather_colorado_springs
+2025-01-26,Wind Speed MPH,3,weather_colorado_springs
+2025-01-27,Max Temperature F,42,weather_colorado_springs
+2025-01-27,Min Temperature F,42,weather_colorado_springs
+2025-01-27,Temperature F,42,weather_colorado_springs
+2025-01-27,Wind Speed MPH,1,weather_colorado_springs
+2025-01-28,Max Temperature F,41,weather_colorado_springs
+2025-01-28,Min Temperature F,41,weather_colorado_springs
+2025-01-28,Temperature F,41,weather_colorado_springs
+2025-01-28,Wind Speed MPH,5,weather_colorado_springs
+2025-01-29,Max Temperature F,38,weather_colorado_springs
+2025-01-29,Min Temperature F,38,weather_colorado_springs
+2025-01-29,Temperature F,38,weather_colorado_springs
+2025-01-29,Wind Speed MPH,6,weather_colorado_springs
+2025-01-30,Max Temperature F,38,weather_colorado_springs
+2025-01-30,Min Temperature F,38,weather_colorado_springs
+2025-01-30,Temperature F,38,weather_colorado_springs
+2025-01-30,Wind Speed MPH,21,weather_colorado_springs
+2025-01-31,Max Temperature F,49,weather_colorado_springs
+2025-01-31,Min Temperature F,49,weather_colorado_springs
+2025-01-31,Temperature F,49,weather_colorado_springs
+2025-01-31,Wind Speed MPH,2,weather_colorado_springs
+2025-02-01,Max Temperature F,48,weather_colorado_springs
+2025-02-01,Min Temperature F,48,weather_colorado_springs
+2025-02-01,Temperature F,48,weather_colorado_springs
+2025-02-01,Wind Speed MPH,3,weather_colorado_springs
+2025-02-02,Max Temperature F,52,weather_colorado_springs
+2025-02-02,Min Temperature F,52,weather_colorado_springs
+2025-02-02,Temperature F,52,weather_colorado_springs
+2025-02-02,Wind Speed MPH,5,weather_colorado_springs
+2025-02-03,Max Temperature F,58,weather_colorado_springs
+2025-02-03,Min Temperature F,58,weather_colorado_springs
+2025-02-03,Temperature F,58,weather_colorado_springs
+2025-02-03,Wind Speed MPH,4,weather_colorado_springs
+2025-02-04,Max Temperature F,56,weather_colorado_springs
+2025-02-04,Min Temperature F,56,weather_colorado_springs
+2025-02-04,Temperature F,56,weather_colorado_springs
+2025-02-04,Wind Speed MPH,4,weather_colorado_springs
+2025-02-05,Max Temperature F,55,weather_colorado_springs
+2025-02-05,Min Temperature F,55,weather_colorado_springs
+2025-02-05,Temperature F,55,weather_colorado_springs
+2025-02-05,Wind Speed MPH,18,weather_colorado_springs
+2025-02-06,Max Temperature F,53,weather_colorado_springs
+2025-02-06,Min Temperature F,53,weather_colorado_springs
+2025-02-06,Temperature F,53,weather_colorado_springs
+2025-02-06,Wind Speed MPH,11,weather_colorado_springs
+2025-02-07,Max Temperature F,59,weather_colorado_springs
+2025-02-07,Min Temperature F,59,weather_colorado_springs
+2025-02-07,Temperature F,59,weather_colorado_springs
+2025-02-07,Wind Speed MPH,14,weather_colorado_springs
+2025-02-08,Max Temperature F,44,weather_colorado_springs
+2025-02-08,Min Temperature F,44,weather_colorado_springs
+2025-02-08,Temperature F,44,weather_colorado_springs
+2025-02-08,Wind Speed MPH,14,weather_colorado_springs
+2025-02-09,Max Temperature F,38,weather_colorado_springs
+2025-02-09,Min Temperature F,38,weather_colorado_springs
+2025-02-09,Temperature F,38,weather_colorado_springs
+2025-02-09,Wind Speed MPH,10,weather_colorado_springs
+2025-02-10,Max Temperature F,43,weather_colorado_springs
+2025-02-10,Min Temperature F,43,weather_colorado_springs
+2025-02-10,Temperature F,43,weather_colorado_springs
+2025-02-10,Wind Speed MPH,4,weather_colorado_springs
+2025-02-11,Max Temperature F,31,weather_colorado_springs
+2025-02-11,Min Temperature F,31,weather_colorado_springs
+2025-02-11,Temperature F,31,weather_colorado_springs
+2025-02-11,Wind Speed MPH,13,weather_colorado_springs
+2025-02-12,Max Temperature F,18,weather_colorado_springs
+2025-02-12,Min Temperature F,18,weather_colorado_springs
+2025-02-12,Temperature F,18,weather_colorado_springs
+2025-02-12,Wind Speed MPH,7,weather_colorado_springs
+2025-02-13,Max Temperature F,39,weather_colorado_springs
+2025-02-13,Min Temperature F,39,weather_colorado_springs
+2025-02-13,Temperature F,39,weather_colorado_springs
+2025-02-13,Wind Speed MPH,8,weather_colorado_springs
+2025-02-14,Max Temperature F,48,weather_colorado_springs
+2025-02-14,Min Temperature F,48,weather_colorado_springs
+2025-02-14,Temperature F,48,weather_colorado_springs
+2025-02-14,Wind Speed MPH,5,weather_colorado_springs
+2025-02-15,Max Temperature F,40,weather_colorado_springs
+2025-02-15,Min Temperature F,40,weather_colorado_springs
+2025-02-15,Temperature F,40,weather_colorado_springs
+2025-02-15,Wind Speed MPH,4,weather_colorado_springs
+2025-02-16,Max Temperature F,41,weather_colorado_springs
+2025-02-16,Min Temperature F,41,weather_colorado_springs
+2025-02-16,Temperature F,41,weather_colorado_springs
+2025-02-16,Wind Speed MPH,8,weather_colorado_springs
+2025-02-17,Max Temperature F,51,weather_colorado_springs
+2025-02-17,Min Temperature F,51,weather_colorado_springs
+2025-02-17,Temperature F,51,weather_colorado_springs
+2025-02-17,Wind Speed MPH,17,weather_colorado_springs
+2025-02-18,Max Temperature F,33,weather_colorado_springs
+2025-02-18,Min Temperature F,33,weather_colorado_springs
+2025-02-18,Temperature F,33,weather_colorado_springs
+2025-02-18,Wind Speed MPH,2,weather_colorado_springs
+2025-02-19,Max Temperature F,33,weather_colorado_springs
+2025-02-19,Min Temperature F,33,weather_colorado_springs
+2025-02-19,Temperature F,33,weather_colorado_springs
+2025-02-19,Wind Speed MPH,5,weather_colorado_springs
+2025-02-20,Max Temperature F,35,weather_colorado_springs
+2025-02-20,Min Temperature F,35,weather_colorado_springs
+2025-02-20,Temperature F,35,weather_colorado_springs
+2025-02-20,Wind Speed MPH,7,weather_colorado_springs
+2025-02-21,Max Temperature F,42,weather_colorado_springs
+2025-02-21,Min Temperature F,42,weather_colorado_springs
+2025-02-21,Temperature F,42,weather_colorado_springs
+2025-02-21,Wind Speed MPH,3,weather_colorado_springs
+2025-02-22,Max Temperature F,53,weather_colorado_springs
+2025-02-22,Min Temperature F,53,weather_colorado_springs
+2025-02-22,Temperature F,53,weather_colorado_springs
+2025-02-22,Wind Speed MPH,3,weather_colorado_springs
+2025-02-23,Max Temperature F,56,weather_colorado_springs
+2025-02-23,Min Temperature F,56,weather_colorado_springs
+2025-02-23,Temperature F,56,weather_colorado_springs
+2025-02-23,Wind Speed MPH,1,weather_colorado_springs
+2025-02-24,Max Temperature F,59,weather_colorado_springs
+2025-02-24,Min Temperature F,59,weather_colorado_springs
+2025-02-24,Temperature F,59,weather_colorado_springs
+2025-02-24,Wind Speed MPH,6,weather_colorado_springs
+2025-02-25,Max Temperature F,60,weather_colorado_springs
+2025-02-25,Min Temperature F,60,weather_colorado_springs
+2025-02-25,Temperature F,60,weather_colorado_springs
+2025-02-25,Wind Speed MPH,6,weather_colorado_springs
+2025-02-26,Max Temperature F,42,weather_colorado_springs
+2025-02-26,Min Temperature F,42,weather_colorado_springs
+2025-02-26,Temperature F,42,weather_colorado_springs
+2025-02-26,Wind Speed MPH,8,weather_colorado_springs
+2025-02-27,Max Temperature F,57,weather_colorado_springs
+2025-02-27,Min Temperature F,57,weather_colorado_springs
+2025-02-27,Temperature F,57,weather_colorado_springs
+2025-02-27,Wind Speed MPH,8,weather_colorado_springs
+2025-02-28,Max Temperature F,60,weather_colorado_springs
+2025-02-28,Min Temperature F,60,weather_colorado_springs
+2025-02-28,Temperature F,60,weather_colorado_springs
+2025-02-28,Wind Speed MPH,8,weather_colorado_springs
+2025-03-01,Max Temperature F,60,weather_colorado_springs
+2025-03-01,Min Temperature F,60,weather_colorado_springs
+2025-03-01,Temperature F,60,weather_colorado_springs
+2025-03-01,Wind Speed MPH,8,weather_colorado_springs
+2025-03-02,Max Temperature F,61,weather_colorado_springs
+2025-03-02,Min Temperature F,61,weather_colorado_springs
+2025-03-02,Temperature F,61,weather_colorado_springs
+2025-03-02,Wind Speed MPH,9,weather_colorado_springs
+2025-03-03,Max Temperature F,54,weather_colorado_springs
+2025-03-03,Min Temperature F,54,weather_colorado_springs
+2025-03-03,Temperature F,54,weather_colorado_springs
+2025-03-03,Wind Speed MPH,8,weather_colorado_springs
+2025-03-04,Max Temperature F,39,weather_colorado_springs
+2025-03-04,Min Temperature F,39,weather_colorado_springs
+2025-03-04,Temperature F,39,weather_colorado_springs
+2025-03-04,Wind Speed MPH,19,weather_colorado_springs
+2025-03-05,Max Temperature F,48,weather_colorado_springs
+2025-03-05,Min Temperature F,48,weather_colorado_springs
+2025-03-05,Temperature F,48,weather_colorado_springs
+2025-03-05,Wind Speed MPH,9,weather_colorado_springs
+2025-03-06,Max Temperature F,55,weather_colorado_springs
+2025-03-06,Min Temperature F,55,weather_colorado_springs
+2025-03-06,Temperature F,55,weather_colorado_springs
+2025-03-06,Wind Speed MPH,16,weather_colorado_springs
+2025-03-07,Max Temperature F,40,weather_colorado_springs
+2025-03-07,Min Temperature F,40,weather_colorado_springs
+2025-03-07,Temperature F,40,weather_colorado_springs
+2025-03-07,Wind Speed MPH,9,weather_colorado_springs
+2025-03-08,Max Temperature F,45,weather_colorado_springs
+2025-03-08,Min Temperature F,45,weather_colorado_springs
+2025-03-08,Temperature F,45,weather_colorado_springs
+2025-03-08,Wind Speed MPH,7,weather_colorado_springs
+2025-03-09,Max Temperature F,59,weather_colorado_springs
+2025-03-09,Min Temperature F,59,weather_colorado_springs
+2025-03-09,Temperature F,59,weather_colorado_springs
+2025-03-09,Wind Speed MPH,7,weather_colorado_springs
+2025-03-10,Max Temperature F,62,weather_colorado_springs
+2025-03-10,Min Temperature F,62,weather_colorado_springs
+2025-03-10,Temperature F,62,weather_colorado_springs
+2025-03-10,Wind Speed MPH,4,weather_colorado_springs
+2025-03-11,Max Temperature F,58,weather_colorado_springs
+2025-03-11,Min Temperature F,58,weather_colorado_springs
+2025-03-11,Temperature F,58,weather_colorado_springs
+2025-03-11,Wind Speed MPH,5,weather_colorado_springs
+2025-03-12,Max Temperature F,55,weather_colorado_springs
+2025-03-12,Min Temperature F,55,weather_colorado_springs
+2025-03-12,Temperature F,55,weather_colorado_springs
+2025-03-12,Wind Speed MPH,7,weather_colorado_springs
+2025-03-13,Max Temperature F,58,weather_colorado_springs
+2025-03-13,Min Temperature F,58,weather_colorado_springs
+2025-03-13,Temperature F,58,weather_colorado_springs
+2025-03-13,Wind Speed MPH,8,weather_colorado_springs
+2025-03-14,Max Temperature F,44,weather_colorado_springs
+2025-03-14,Min Temperature F,44,weather_colorado_springs
+2025-03-14,Temperature F,44,weather_colorado_springs
+2025-03-14,Wind Speed MPH,15,weather_colorado_springs
+2025-03-15,Max Temperature F,39,weather_colorado_springs
+2025-03-15,Min Temperature F,39,weather_colorado_springs
+2025-03-15,Temperature F,39,weather_colorado_springs
+2025-03-15,Wind Speed MPH,7,weather_colorado_springs
+2025-03-16,Max Temperature F,47,weather_colorado_springs
+2025-03-16,Min Temperature F,47,weather_colorado_springs
+2025-03-16,Temperature F,47,weather_colorado_springs
+2025-03-16,Wind Speed MPH,2,weather_colorado_springs
+2025-03-17,Max Temperature F,63,weather_colorado_springs
+2025-03-17,Min Temperature F,63,weather_colorado_springs
+2025-03-17,Temperature F,63,weather_colorado_springs
+2025-03-17,Wind Speed MPH,21,weather_colorado_springs
+2025-03-18,Max Temperature F,53,weather_colorado_springs
+2025-03-18,Min Temperature F,53,weather_colorado_springs
+2025-03-18,Temperature F,53,weather_colorado_springs
+2025-03-18,Wind Speed MPH,26,weather_colorado_springs
+2025-03-19,Max Temperature F,33,weather_colorado_springs
+2025-03-19,Min Temperature F,33,weather_colorado_springs
+2025-03-19,Temperature F,33,weather_colorado_springs
+2025-03-19,Wind Speed MPH,13,weather_colorado_springs
+2025-03-20,Max Temperature F,48,weather_colorado_springs
+2025-03-20,Min Temperature F,48,weather_colorado_springs
+2025-03-20,Temperature F,48,weather_colorado_springs
+2025-03-20,Wind Speed MPH,5,weather_colorado_springs
+2025-03-21,Max Temperature F,53,weather_colorado_springs
+2025-03-21,Min Temperature F,53,weather_colorado_springs
+2025-03-21,Temperature F,53,weather_colorado_springs
+2025-03-21,Wind Speed MPH,2,weather_colorado_springs
+2025-03-22,Max Temperature F,59,weather_colorado_springs
+2025-03-22,Min Temperature F,59,weather_colorado_springs
+2025-03-22,Temperature F,59,weather_colorado_springs
+2025-03-22,Wind Speed MPH,15,weather_colorado_springs
+2025-03-23,Max Temperature F,51,weather_colorado_springs
+2025-03-23,Min Temperature F,51,weather_colorado_springs
+2025-03-23,Temperature F,51,weather_colorado_springs
+2025-03-23,Wind Speed MPH,8,weather_colorado_springs
+2025-03-24,Max Temperature F,60,weather_colorado_springs
+2025-03-24,Min Temperature F,60,weather_colorado_springs
+2025-03-24,Temperature F,60,weather_colorado_springs
+2025-03-24,Wind Speed MPH,2,weather_colorado_springs
+2025-03-25,Max Temperature F,63,weather_colorado_springs
+2025-03-25,Min Temperature F,63,weather_colorado_springs
+2025-03-25,Temperature F,63,weather_colorado_springs
+2025-03-25,Wind Speed MPH,10,weather_colorado_springs
+2025-03-26,Max Temperature F,67,weather_colorado_springs
+2025-03-26,Min Temperature F,67,weather_colorado_springs
+2025-03-26,Temperature F,67,weather_colorado_springs
+2025-03-26,Wind Speed MPH,6,weather_colorado_springs
+2025-03-27,Max Temperature F,71,weather_colorado_springs
+2025-03-27,Min Temperature F,71,weather_colorado_springs
+2025-03-27,Temperature F,71,weather_colorado_springs
+2025-03-27,Wind Speed MPH,5,weather_colorado_springs
+2025-03-28,Max Temperature F,71,weather_colorado_springs
+2025-03-28,Min Temperature F,71,weather_colorado_springs
+2025-03-28,Temperature F,71,weather_colorado_springs
+2025-03-28,Wind Speed MPH,8,weather_colorado_springs
+2025-03-29,Max Temperature F,55,weather_colorado_springs
+2025-03-29,Min Temperature F,55,weather_colorado_springs
+2025-03-29,Temperature F,55,weather_colorado_springs
+2025-03-29,Wind Speed MPH,8,weather_colorado_springs
+2025-03-30,Max Temperature F,46,weather_colorado_springs
+2025-03-30,Min Temperature F,46,weather_colorado_springs
+2025-03-30,Temperature F,46,weather_colorado_springs
+2025-03-30,Wind Speed MPH,9,weather_colorado_springs
+2025-03-31,Max Temperature F,49,weather_colorado_springs
+2025-03-31,Min Temperature F,49,weather_colorado_springs
+2025-03-31,Temperature F,49,weather_colorado_springs
+2025-03-31,Wind Speed MPH,9,weather_colorado_springs
+2025-04-01,Max Temperature F,50,weather_colorado_springs
+2025-04-01,Min Temperature F,50,weather_colorado_springs
+2025-04-01,Temperature F,50,weather_colorado_springs
+2025-04-01,Wind Speed MPH,25,weather_colorado_springs
+2025-04-02,Max Temperature F,35,weather_colorado_springs
+2025-04-02,Min Temperature F,35,weather_colorado_springs
+2025-04-02,Temperature F,35,weather_colorado_springs
+2025-04-02,Wind Speed MPH,20,weather_colorado_springs
+2025-04-03,Max Temperature F,40,weather_colorado_springs
+2025-04-03,Min Temperature F,40,weather_colorado_springs
+2025-04-03,Temperature F,40,weather_colorado_springs
+2025-04-03,Wind Speed MPH,7,weather_colorado_springs
+2025-04-04,Max Temperature F,37,weather_colorado_springs
+2025-04-04,Min Temperature F,37,weather_colorado_springs
+2025-04-04,Temperature F,37,weather_colorado_springs
+2025-04-04,Wind Speed MPH,13,weather_colorado_springs
+2025-04-05,Max Temperature F,36,weather_colorado_springs
+2025-04-05,Min Temperature F,36,weather_colorado_springs
+2025-04-05,Temperature F,36,weather_colorado_springs
+2025-04-05,Wind Speed MPH,5,weather_colorado_springs
+2025-04-06,Max Temperature F,42,weather_colorado_springs
+2025-04-06,Min Temperature F,42,weather_colorado_springs
+2025-04-06,Temperature F,42,weather_colorado_springs
+2025-04-06,Wind Speed MPH,4,weather_colorado_springs
+2025-04-07,Max Temperature F,57,weather_colorado_springs
+2025-04-07,Min Temperature F,57,weather_colorado_springs
+2025-04-07,Temperature F,57,weather_colorado_springs
+2025-04-07,Wind Speed MPH,6,weather_colorado_springs
+2025-04-08,Max Temperature F,67,weather_colorado_springs
+2025-04-08,Min Temperature F,67,weather_colorado_springs
+2025-04-08,Temperature F,67,weather_colorado_springs
+2025-04-08,Wind Speed MPH,4,weather_colorado_springs
+2025-04-09,Max Temperature F,71,weather_colorado_springs
+2025-04-09,Min Temperature F,71,weather_colorado_springs
+2025-04-09,Temperature F,71,weather_colorado_springs
+2025-04-09,Wind Speed MPH,12,weather_colorado_springs
+2025-04-10,Max Temperature F,65,weather_colorado_springs
+2025-04-10,Min Temperature F,65,weather_colorado_springs
+2025-04-10,Temperature F,65,weather_colorado_springs
+2025-04-10,Wind Speed MPH,9,weather_colorado_springs
+2025-04-11,Max Temperature F,72,weather_colorado_springs
+2025-04-11,Min Temperature F,72,weather_colorado_springs
+2025-04-11,Temperature F,72,weather_colorado_springs
+2025-04-11,Wind Speed MPH,7,weather_colorado_springs
+2025-04-12,Max Temperature F,80,weather_colorado_springs
+2025-04-12,Min Temperature F,80,weather_colorado_springs
+2025-04-12,Temperature F,80,weather_colorado_springs
+2025-04-12,Wind Speed MPH,2,weather_colorado_springs
+2025-04-13,Max Temperature F,74,weather_colorado_springs
+2025-04-13,Min Temperature F,74,weather_colorado_springs
+2025-04-13,Temperature F,74,weather_colorado_springs
+2025-04-13,Wind Speed MPH,14,weather_colorado_springs
+2025-04-14,Max Temperature F,59,weather_colorado_springs
+2025-04-14,Min Temperature F,59,weather_colorado_springs
+2025-04-14,Temperature F,59,weather_colorado_springs
+2025-04-14,Wind Speed MPH,10,weather_colorado_springs
+2025-04-15,Max Temperature F,57,weather_colorado_springs
+2025-04-15,Min Temperature F,57,weather_colorado_springs
+2025-04-15,Temperature F,57,weather_colorado_springs
+2025-04-15,Wind Speed MPH,6,weather_colorado_springs
+2025-04-16,Max Temperature F,61,weather_colorado_springs
+2025-04-16,Min Temperature F,61,weather_colorado_springs
+2025-04-16,Temperature F,61,weather_colorado_springs
+2025-04-16,Wind Speed MPH,4,weather_colorado_springs
+2025-04-17,Max Temperature F,69,weather_colorado_springs
+2025-04-17,Min Temperature F,69,weather_colorado_springs
+2025-04-17,Temperature F,69,weather_colorado_springs
+2025-04-17,Wind Speed MPH,20,weather_colorado_springs
+2025-04-18,Max Temperature F,40,weather_colorado_springs
+2025-04-18,Min Temperature F,40,weather_colorado_springs
+2025-04-18,Temperature F,40,weather_colorado_springs
+2025-04-18,Wind Speed MPH,12,weather_colorado_springs
+2025-04-19,Max Temperature F,26,weather_colorado_springs
+2025-04-19,Min Temperature F,26,weather_colorado_springs
+2025-04-19,Temperature F,26,weather_colorado_springs
+2025-04-19,Wind Speed MPH,9,weather_colorado_springs
+2025-04-20,Max Temperature F,52,weather_colorado_springs
+2025-04-20,Min Temperature F,52,weather_colorado_springs
+2025-04-20,Temperature F,52,weather_colorado_springs
+2025-04-20,Wind Speed MPH,4,weather_colorado_springs
+2025-04-21,Max Temperature F,63,weather_colorado_springs
+2025-04-21,Min Temperature F,63,weather_colorado_springs
+2025-04-21,Temperature F,63,weather_colorado_springs
+2025-04-21,Wind Speed MPH,11,weather_colorado_springs
+2025-04-22,Max Temperature F,69,weather_colorado_springs
+2025-04-22,Min Temperature F,69,weather_colorado_springs
+2025-04-22,Temperature F,69,weather_colorado_springs
+2025-04-22,Wind Speed MPH,10,weather_colorado_springs
+2025-04-23,Max Temperature F,67,weather_colorado_springs
+2025-04-23,Min Temperature F,67,weather_colorado_springs
+2025-04-23,Temperature F,67,weather_colorado_springs
+2025-04-23,Wind Speed MPH,11,weather_colorado_springs
+2025-04-24,Max Temperature F,69,weather_colorado_springs
+2025-04-24,Min Temperature F,69,weather_colorado_springs
+2025-04-24,Temperature F,69,weather_colorado_springs
+2025-04-24,Wind Speed MPH,5,weather_colorado_springs
+2025-04-25,Max Temperature F,43,weather_colorado_springs
+2025-04-25,Min Temperature F,43,weather_colorado_springs
+2025-04-25,Temperature F,43,weather_colorado_springs
+2025-04-25,Wind Speed MPH,9,weather_colorado_springs
+2025-04-26,Max Temperature F,60,weather_colorado_springs
+2025-04-26,Min Temperature F,60,weather_colorado_springs
+2025-04-26,Temperature F,60,weather_colorado_springs
+2025-04-26,Wind Speed MPH,11,weather_colorado_springs
+2025-04-27,Max Temperature F,69,weather_colorado_springs
+2025-04-27,Min Temperature F,69,weather_colorado_springs
+2025-04-27,Temperature F,69,weather_colorado_springs
+2025-04-27,Wind Speed MPH,14,weather_colorado_springs
+2025-04-28,Max Temperature F,60,weather_colorado_springs
+2025-04-28,Min Temperature F,60,weather_colorado_springs
+2025-04-28,Temperature F,60,weather_colorado_springs
+2025-04-28,Wind Speed MPH,11,weather_colorado_springs
+2025-04-29,Max Temperature F,58,weather_colorado_springs
+2025-04-29,Min Temperature F,58,weather_colorado_springs
+2025-04-29,Temperature F,58,weather_colorado_springs
+2025-04-29,Wind Speed MPH,15,weather_colorado_springs
+2025-04-30,Max Temperature F,59,weather_colorado_springs
+2025-04-30,Min Temperature F,59,weather_colorado_springs
+2025-04-30,Temperature F,59,weather_colorado_springs
+2025-04-30,Wind Speed MPH,8,weather_colorado_springs
+2025-05-01,Max Temperature F,45,weather_colorado_springs
+2025-05-01,Min Temperature F,45,weather_colorado_springs
+2025-05-01,Temperature F,45,weather_colorado_springs
+2025-05-01,Wind Speed MPH,4,weather_colorado_springs
+2025-05-02,Max Temperature F,61,weather_colorado_springs
+2025-05-02,Min Temperature F,61,weather_colorado_springs
+2025-05-02,Temperature F,61,weather_colorado_springs
+2025-05-02,Wind Speed MPH,8,weather_colorado_springs
+2025-05-03,Max Temperature F,69,weather_colorado_springs
+2025-05-03,Min Temperature F,69,weather_colorado_springs
+2025-05-03,Temperature F,69,weather_colorado_springs
+2025-05-03,Wind Speed MPH,9,weather_colorado_springs
+2025-05-04,Max Temperature F,70,weather_colorado_springs
+2025-05-04,Min Temperature F,70,weather_colorado_springs
+2025-05-04,Temperature F,70,weather_colorado_springs
+2025-05-04,Wind Speed MPH,12,weather_colorado_springs
+2025-05-05,Max Temperature F,52,weather_colorado_springs
+2025-05-05,Min Temperature F,52,weather_colorado_springs
+2025-05-05,Temperature F,52,weather_colorado_springs
+2025-05-05,Wind Speed MPH,4,weather_colorado_springs
+2025-05-06,Max Temperature F,48,weather_colorado_springs
+2025-05-06,Min Temperature F,48,weather_colorado_springs
+2025-05-06,Temperature F,48,weather_colorado_springs
+2025-05-06,Wind Speed MPH,10,weather_colorado_springs
+2025-05-07,Max Temperature F,45,weather_colorado_springs
+2025-05-07,Min Temperature F,45,weather_colorado_springs
+2025-05-07,Temperature F,45,weather_colorado_springs
+2025-05-07,Wind Speed MPH,6,weather_colorado_springs
+2025-05-08,Max Temperature F,57,weather_colorado_springs
+2025-05-08,Min Temperature F,57,weather_colorado_springs
+2025-05-08,Temperature F,57,weather_colorado_springs
+2025-05-08,Wind Speed MPH,8,weather_colorado_springs
+2025-05-09,Max Temperature F,67,weather_colorado_springs
+2025-05-09,Min Temperature F,67,weather_colorado_springs
+2025-05-09,Temperature F,67,weather_colorado_springs
+2025-05-09,Wind Speed MPH,6,weather_colorado_springs
+2025-05-10,Max Temperature F,72,weather_colorado_springs
+2025-05-10,Min Temperature F,72,weather_colorado_springs
+2025-05-10,Temperature F,72,weather_colorado_springs
+2025-05-10,Wind Speed MPH,9,weather_colorado_springs
+2025-05-11,Max Temperature F,76,weather_colorado_springs
+2025-05-11,Min Temperature F,76,weather_colorado_springs
+2025-05-11,Temperature F,76,weather_colorado_springs
+2025-05-11,Wind Speed MPH,10,weather_colorado_springs
+2025-05-12,Max Temperature F,79,weather_colorado_springs
+2025-05-12,Min Temperature F,79,weather_colorado_springs
+2025-05-12,Temperature F,79,weather_colorado_springs
+2025-05-12,Wind Speed MPH,6,weather_colorado_springs
+2025-05-13,Max Temperature F,79,weather_colorado_springs
+2025-05-13,Min Temperature F,79,weather_colorado_springs
+2025-05-13,Temperature F,79,weather_colorado_springs
+2025-05-13,Wind Speed MPH,4,weather_colorado_springs
+2025-05-14,Max Temperature F,74,weather_colorado_springs
+2025-05-14,Min Temperature F,74,weather_colorado_springs
+2025-05-14,Temperature F,74,weather_colorado_springs
+2025-05-14,Wind Speed MPH,16,weather_colorado_springs
+2025-05-15,Max Temperature F,67,weather_colorado_springs
+2025-05-15,Min Temperature F,67,weather_colorado_springs
+2025-05-15,Temperature F,67,weather_colorado_springs
+2025-05-15,Wind Speed MPH,6,weather_colorado_springs
+2025-05-16,Max Temperature F,69,weather_colorado_springs
+2025-05-16,Min Temperature F,69,weather_colorado_springs
+2025-05-16,Temperature F,69,weather_colorado_springs
+2025-05-16,Wind Speed MPH,18,weather_colorado_springs
+2025-05-17,Max Temperature F,69,weather_colorado_springs
+2025-05-17,Min Temperature F,69,weather_colorado_springs
+2025-05-17,Temperature F,69,weather_colorado_springs
+2025-05-17,Wind Speed MPH,12,weather_colorado_springs
+2025-05-18,Max Temperature F,68,weather_colorado_springs
+2025-05-18,Min Temperature F,68,weather_colorado_springs
+2025-05-18,Temperature F,68,weather_colorado_springs
+2025-05-18,Wind Speed MPH,21,weather_colorado_springs
+2025-05-19,Max Temperature F,50,weather_colorado_springs
+2025-05-19,Min Temperature F,50,weather_colorado_springs
+2025-05-19,Temperature F,50,weather_colorado_springs
+2025-05-19,Wind Speed MPH,8,weather_colorado_springs
+2025-05-20,Max Temperature F,61,weather_colorado_springs
+2025-05-20,Min Temperature F,61,weather_colorado_springs
+2025-05-20,Temperature F,61,weather_colorado_springs
+2025-05-20,Wind Speed MPH,1,weather_colorado_springs
+2025-05-21,Max Temperature F,72,weather_colorado_springs
+2025-05-21,Min Temperature F,72,weather_colorado_springs
+2025-05-21,Temperature F,72,weather_colorado_springs
+2025-05-21,Wind Speed MPH,18,weather_colorado_springs
+2025-05-22,Max Temperature F,67,weather_colorado_springs
+2025-05-22,Min Temperature F,67,weather_colorado_springs
+2025-05-22,Temperature F,67,weather_colorado_springs
+2025-05-22,Wind Speed MPH,11,weather_colorado_springs
+2025-05-23,Max Temperature F,75,weather_colorado_springs
+2025-05-23,Min Temperature F,75,weather_colorado_springs
+2025-05-23,Temperature F,75,weather_colorado_springs
+2025-05-23,Wind Speed MPH,8,weather_colorado_springs
+2025-05-24,Max Temperature F,69,weather_colorado_springs
+2025-05-24,Min Temperature F,69,weather_colorado_springs
+2025-05-24,Temperature F,69,weather_colorado_springs
+2025-05-24,Wind Speed MPH,13,weather_colorado_springs
+2025-05-25,Max Temperature F,61,weather_colorado_springs
+2025-05-25,Min Temperature F,61,weather_colorado_springs
+2025-05-25,Temperature F,61,weather_colorado_springs
+2025-05-25,Wind Speed MPH,8,weather_colorado_springs
+2025-05-26,Max Temperature F,62,weather_colorado_springs
+2025-05-26,Min Temperature F,62,weather_colorado_springs
+2025-05-26,Temperature F,62,weather_colorado_springs
+2025-05-26,Wind Speed MPH,10,weather_colorado_springs
+2025-05-27,Max Temperature F,60,weather_colorado_springs
+2025-05-27,Min Temperature F,60,weather_colorado_springs
+2025-05-27,Temperature F,60,weather_colorado_springs
+2025-05-27,Wind Speed MPH,8,weather_colorado_springs
+2025-05-28,Max Temperature F,62,weather_colorado_springs
+2025-05-28,Min Temperature F,62,weather_colorado_springs
+2025-05-28,Temperature F,62,weather_colorado_springs
+2025-05-28,Wind Speed MPH,4,weather_colorado_springs
+2025-05-29,Max Temperature F,55,weather_colorado_springs
+2025-05-29,Min Temperature F,55,weather_colorado_springs
+2025-05-29,Temperature F,55,weather_colorado_springs
+2025-05-29,Wind Speed MPH,9,weather_colorado_springs
+2025-05-30,Max Temperature F,72,weather_colorado_springs
+2025-05-30,Min Temperature F,72,weather_colorado_springs
+2025-05-30,Temperature F,72,weather_colorado_springs
+2025-05-30,Wind Speed MPH,5,weather_colorado_springs
+2025-05-31,Max Temperature F,74,weather_colorado_springs
+2025-05-31,Min Temperature F,74,weather_colorado_springs
+2025-05-31,Temperature F,74,weather_colorado_springs
+2025-05-31,Wind Speed MPH,7,weather_colorado_springs
+2025-06-01,Max Temperature F,76,weather_colorado_springs
+2025-06-01,Min Temperature F,76,weather_colorado_springs
+2025-06-01,Temperature F,76,weather_colorado_springs
+2025-06-01,Wind Speed MPH,7,weather_colorado_springs
+2025-06-02,Max Temperature F,78,weather_colorado_springs
+2025-06-02,Min Temperature F,78,weather_colorado_springs
+2025-06-02,Temperature F,78,weather_colorado_springs
+2025-06-02,Wind Speed MPH,10,weather_colorado_springs
+2025-06-03,Max Temperature F,52,weather_colorado_springs
+2025-06-03,Min Temperature F,52,weather_colorado_springs
+2025-06-03,Temperature F,52,weather_colorado_springs
+2025-06-03,Wind Speed MPH,5,weather_colorado_springs
+2025-06-04,Max Temperature F,64,weather_colorado_springs
+2025-06-04,Min Temperature F,64,weather_colorado_springs
+2025-06-04,Temperature F,64,weather_colorado_springs
+2025-06-04,Wind Speed MPH,9,weather_colorado_springs
+2025-06-05,Max Temperature F,59,weather_colorado_springs
+2025-06-05,Min Temperature F,59,weather_colorado_springs
+2025-06-05,Temperature F,59,weather_colorado_springs
+2025-06-05,Wind Speed MPH,7,weather_colorado_springs
+2025-06-06,Max Temperature F,61,weather_colorado_springs
+2025-06-06,Min Temperature F,61,weather_colorado_springs
+2025-06-06,Temperature F,61,weather_colorado_springs
+2025-06-06,Wind Speed MPH,6,weather_colorado_springs
+2025-06-07,Max Temperature F,74,weather_colorado_springs
+2025-06-07,Min Temperature F,74,weather_colorado_springs
+2025-06-07,Temperature F,74,weather_colorado_springs
+2025-06-07,Wind Speed MPH,3,weather_colorado_springs
+2025-06-08,Max Temperature F,75,weather_colorado_springs
+2025-06-08,Min Temperature F,75,weather_colorado_springs
+2025-06-08,Temperature F,75,weather_colorado_springs
+2025-06-08,Wind Speed MPH,6,weather_colorado_springs
+2025-06-09,Max Temperature F,68,weather_colorado_springs
+2025-06-09,Min Temperature F,68,weather_colorado_springs
+2025-06-09,Temperature F,68,weather_colorado_springs
+2025-06-09,Wind Speed MPH,8,weather_colorado_springs
+2025-06-10,Max Temperature F,81,weather_colorado_springs
+2025-06-10,Min Temperature F,81,weather_colorado_springs
+2025-06-10,Temperature F,81,weather_colorado_springs
+2025-06-10,Wind Speed MPH,9,weather_colorado_springs
+2025-06-11,Max Temperature F,85,weather_colorado_springs
+2025-06-11,Min Temperature F,85,weather_colorado_springs
+2025-06-11,Temperature F,85,weather_colorado_springs
+2025-06-11,Wind Speed MPH,6,weather_colorado_springs
+2025-06-12,Max Temperature F,86,weather_colorado_springs
+2025-06-12,Min Temperature F,86,weather_colorado_springs
+2025-06-12,Temperature F,86,weather_colorado_springs
+2025-06-12,Wind Speed MPH,3,weather_colorado_springs
+2025-06-13,Max Temperature F,78,weather_colorado_springs
+2025-06-13,Min Temperature F,78,weather_colorado_springs
+2025-06-13,Temperature F,78,weather_colorado_springs
+2025-06-13,Wind Speed MPH,6,weather_colorado_springs
+2025-06-14,Max Temperature F,85,weather_colorado_springs
+2025-06-14,Min Temperature F,85,weather_colorado_springs
+2025-06-14,Temperature F,85,weather_colorado_springs
+2025-06-14,Wind Speed MPH,7,weather_colorado_springs
+2025-06-15,Max Temperature F,85,weather_colorado_springs
+2025-06-15,Min Temperature F,85,weather_colorado_springs
+2025-06-15,Temperature F,85,weather_colorado_springs
+2025-06-15,Wind Speed MPH,10,weather_colorado_springs
+2025-06-16,Max Temperature F,87,weather_colorado_springs
+2025-06-16,Min Temperature F,87,weather_colorado_springs
+2025-06-16,Temperature F,87,weather_colorado_springs
+2025-06-16,Wind Speed MPH,5,weather_colorado_springs
+2025-06-17,Max Temperature F,80,weather_colorado_springs
+2025-06-17,Min Temperature F,80,weather_colorado_springs
+2025-06-17,Temperature F,80,weather_colorado_springs
+2025-06-17,Wind Speed MPH,7,weather_colorado_springs
+2025-06-18,Max Temperature F,67,weather_colorado_springs
+2025-06-18,Min Temperature F,67,weather_colorado_springs
+2025-06-18,Temperature F,67,weather_colorado_springs
+2025-06-18,Wind Speed MPH,7,weather_colorado_springs
+2025-06-19,Max Temperature F,80,weather_colorado_springs
+2025-06-19,Min Temperature F,80,weather_colorado_springs
+2025-06-19,Temperature F,80,weather_colorado_springs
+2025-06-19,Wind Speed MPH,7,weather_colorado_springs
+2025-06-20,Max Temperature F,90,weather_colorado_springs
+2025-06-20,Min Temperature F,90,weather_colorado_springs
+2025-06-20,Temperature F,90,weather_colorado_springs
+2025-06-20,Wind Speed MPH,16,weather_colorado_springs
+2025-06-21,Max Temperature F,90,weather_colorado_springs
+2025-06-21,Min Temperature F,90,weather_colorado_springs
+2025-06-21,Temperature F,90,weather_colorado_springs
+2025-06-21,Wind Speed MPH,14,weather_colorado_springs
+2025-06-22,Max Temperature F,85,weather_colorado_springs
+2025-06-22,Min Temperature F,85,weather_colorado_springs
+2025-06-22,Temperature F,85,weather_colorado_springs
+2025-06-22,Wind Speed MPH,19,weather_colorado_springs
+2025-06-23,Max Temperature F,76,weather_colorado_springs
+2025-06-23,Min Temperature F,76,weather_colorado_springs
+2025-06-23,Temperature F,76,weather_colorado_springs
+2025-06-23,Wind Speed MPH,12,weather_colorado_springs
+2025-06-24,Max Temperature F,72,weather_colorado_springs
+2025-06-24,Min Temperature F,72,weather_colorado_springs
+2025-06-24,Temperature F,72,weather_colorado_springs
+2025-06-24,Wind Speed MPH,8,weather_colorado_springs
+2025-06-25,Max Temperature F,76,weather_colorado_springs
+2025-06-25,Min Temperature F,76,weather_colorado_springs
+2025-06-25,Temperature F,76,weather_colorado_springs
+2025-06-25,Wind Speed MPH,7,weather_colorado_springs
+2025-06-26,Max Temperature F,77,weather_colorado_springs
+2025-06-26,Min Temperature F,77,weather_colorado_springs
+2025-06-26,Temperature F,77,weather_colorado_springs
+2025-06-26,Wind Speed MPH,8,weather_colorado_springs
+2025-06-27,Max Temperature F,79,weather_colorado_springs
+2025-06-27,Min Temperature F,79,weather_colorado_springs
+2025-06-27,Temperature F,79,weather_colorado_springs
+2025-06-27,Wind Speed MPH,9,weather_colorado_springs
+2025-06-28,Max Temperature F,88,weather_colorado_springs
+2025-06-28,Min Temperature F,88,weather_colorado_springs
+2025-06-28,Temperature F,88,weather_colorado_springs
+2025-06-28,Wind Speed MPH,7,weather_colorado_springs
+2025-06-29,Max Temperature F,83,weather_colorado_springs
+2025-06-29,Min Temperature F,83,weather_colorado_springs
+2025-06-29,Temperature F,83,weather_colorado_springs
+2025-06-29,Wind Speed MPH,9,weather_colorado_springs
+2025-06-30,Max Temperature F,73,weather_colorado_springs
+2025-06-30,Min Temperature F,73,weather_colorado_springs
+2025-06-30,Temperature F,73,weather_colorado_springs
+2025-06-30,Wind Speed MPH,8,weather_colorado_springs
+2025-07-01,Max Temperature F,81,weather_colorado_springs
+2025-07-01,Min Temperature F,81,weather_colorado_springs
+2025-07-01,Temperature F,81,weather_colorado_springs
+2025-07-01,Wind Speed MPH,10,weather_colorado_springs
+2025-07-02,Max Temperature F,84,weather_colorado_springs
+2025-07-02,Min Temperature F,84,weather_colorado_springs
+2025-07-02,Temperature F,84,weather_colorado_springs
+2025-07-02,Wind Speed MPH,11,weather_colorado_springs
+2025-07-03,Max Temperature F,85,weather_colorado_springs
+2025-07-03,Min Temperature F,85,weather_colorado_springs
+2025-07-03,Temperature F,85,weather_colorado_springs
+2025-07-03,Wind Speed MPH,10,weather_colorado_springs
+2025-07-04,Max Temperature F,81,weather_colorado_springs
+2025-07-04,Min Temperature F,81,weather_colorado_springs
+2025-07-04,Temperature F,81,weather_colorado_springs
+2025-07-04,Wind Speed MPH,4,weather_colorado_springs
+2025-07-05,Max Temperature F,83,weather_colorado_springs
+2025-07-05,Min Temperature F,83,weather_colorado_springs
+2025-07-05,Temperature F,83,weather_colorado_springs
+2025-07-05,Wind Speed MPH,9,weather_colorado_springs
+2025-07-06,Max Temperature F,87,weather_colorado_springs
+2025-07-06,Min Temperature F,87,weather_colorado_springs
+2025-07-06,Temperature F,87,weather_colorado_springs
+2025-07-06,Wind Speed MPH,9,weather_colorado_springs
+2025-07-07,Max Temperature F,83,weather_colorado_springs
+2025-07-07,Min Temperature F,83,weather_colorado_springs
+2025-07-07,Temperature F,83,weather_colorado_springs
+2025-07-07,Wind Speed MPH,6,weather_colorado_springs
+2025-07-08,Max Temperature F,85,weather_colorado_springs
+2025-07-08,Min Temperature F,85,weather_colorado_springs
+2025-07-08,Temperature F,85,weather_colorado_springs
+2025-07-08,Wind Speed MPH,8,weather_colorado_springs
+2025-07-09,Max Temperature F,93,weather_colorado_springs
+2025-07-09,Min Temperature F,93,weather_colorado_springs
+2025-07-09,Temperature F,93,weather_colorado_springs
+2025-07-09,Wind Speed MPH,5,weather_colorado_springs
+2025-07-10,Max Temperature F,92,weather_colorado_springs
+2025-07-10,Min Temperature F,92,weather_colorado_springs
+2025-07-10,Temperature F,92,weather_colorado_springs
+2025-07-10,Wind Speed MPH,10,weather_colorado_springs
+2025-07-11,Max Temperature F,81,weather_colorado_springs
+2025-07-11,Min Temperature F,81,weather_colorado_springs
+2025-07-11,Temperature F,81,weather_colorado_springs
+2025-07-11,Wind Speed MPH,11,weather_colorado_springs
+2025-07-12,Max Temperature F,77,weather_colorado_springs
+2025-07-12,Min Temperature F,77,weather_colorado_springs
+2025-07-12,Temperature F,77,weather_colorado_springs
+2025-07-12,Wind Speed MPH,11,weather_colorado_springs
+2025-07-13,Max Temperature F,78,weather_colorado_springs
+2025-07-13,Min Temperature F,78,weather_colorado_springs
+2025-07-13,Temperature F,78,weather_colorado_springs
+2025-07-13,Wind Speed MPH,8,weather_colorado_springs
+2025-07-14,Max Temperature F,88,weather_colorado_springs
+2025-07-14,Min Temperature F,88,weather_colorado_springs
+2025-07-14,Temperature F,88,weather_colorado_springs
+2025-07-14,Wind Speed MPH,10,weather_colorado_springs
+2025-07-15,Max Temperature F,89,weather_colorado_springs
+2025-07-15,Min Temperature F,89,weather_colorado_springs
+2025-07-15,Temperature F,89,weather_colorado_springs
+2025-07-15,Wind Speed MPH,3,weather_colorado_springs
+2025-07-16,Max Temperature F,84,weather_colorado_springs
+2025-07-16,Min Temperature F,84,weather_colorado_springs
+2025-07-16,Temperature F,84,weather_colorado_springs
+2025-07-16,Wind Speed MPH,10,weather_colorado_springs
+2025-07-17,Max Temperature F,75,weather_colorado_springs
+2025-07-17,Min Temperature F,75,weather_colorado_springs
+2025-07-17,Temperature F,75,weather_colorado_springs
+2025-07-17,Wind Speed MPH,10,weather_colorado_springs
+2025-07-18,Max Temperature F,81,weather_colorado_springs
+2025-07-18,Min Temperature F,81,weather_colorado_springs
+2025-07-18,Temperature F,81,weather_colorado_springs
+2025-07-18,Wind Speed MPH,5,weather_colorado_springs
+2025-07-19,Max Temperature F,87,weather_colorado_springs
+2025-07-19,Min Temperature F,87,weather_colorado_springs
+2025-07-19,Temperature F,87,weather_colorado_springs
+2025-07-19,Wind Speed MPH,1,weather_colorado_springs
+2025-07-20,Max Temperature F,86,weather_colorado_springs
+2025-07-20,Min Temperature F,86,weather_colorado_springs
+2025-07-20,Temperature F,86,weather_colorado_springs
+2025-07-20,Wind Speed MPH,5,weather_colorado_springs
+2025-07-21,Max Temperature F,89,weather_colorado_springs
+2025-07-21,Min Temperature F,89,weather_colorado_springs
+2025-07-21,Temperature F,89,weather_colorado_springs
+2025-07-21,Wind Speed MPH,8,weather_colorado_springs
+2025-07-22,Max Temperature F,85,weather_colorado_springs
+2025-07-22,Min Temperature F,85,weather_colorado_springs
+2025-07-22,Temperature F,85,weather_colorado_springs
+2025-07-22,Wind Speed MPH,6,weather_colorado_springs
+2025-07-23,Max Temperature F,78,weather_colorado_springs
+2025-07-23,Min Temperature F,78,weather_colorado_springs
+2025-07-23,Temperature F,78,weather_colorado_springs
+2025-07-23,Wind Speed MPH,9,weather_colorado_springs
+2025-07-24,Max Temperature F,84,weather_colorado_springs
+2025-07-24,Min Temperature F,84,weather_colorado_springs
+2025-07-24,Temperature F,84,weather_colorado_springs
+2025-07-24,Wind Speed MPH,10,weather_colorado_springs
+2025-07-25,Max Temperature F,81,weather_colorado_springs
+2025-07-25,Min Temperature F,81,weather_colorado_springs
+2025-07-25,Temperature F,81,weather_colorado_springs
+2025-07-25,Wind Speed MPH,7,weather_colorado_springs
+2025-07-26,Max Temperature F,86,weather_colorado_springs
+2025-07-26,Min Temperature F,86,weather_colorado_springs
+2025-07-26,Temperature F,86,weather_colorado_springs
+2025-07-26,Wind Speed MPH,9,weather_colorado_springs
+2025-07-27,Max Temperature F,92,weather_colorado_springs
+2025-07-27,Min Temperature F,92,weather_colorado_springs
+2025-07-27,Temperature F,92,weather_colorado_springs
+2025-07-27,Wind Speed MPH,5,weather_colorado_springs
+2025-07-28,Max Temperature F,92,weather_colorado_springs
+2025-07-28,Min Temperature F,92,weather_colorado_springs
+2025-07-28,Temperature F,92,weather_colorado_springs
+2025-07-28,Wind Speed MPH,8,weather_colorado_springs
+2025-07-29,Max Temperature F,82,weather_colorado_springs
+2025-07-29,Min Temperature F,82,weather_colorado_springs
+2025-07-29,Temperature F,82,weather_colorado_springs
+2025-07-29,Wind Speed MPH,7,weather_colorado_springs
+2025-07-30,Max Temperature F,80,weather_colorado_springs
+2025-07-30,Min Temperature F,80,weather_colorado_springs
+2025-07-30,Temperature F,80,weather_colorado_springs
+2025-07-30,Wind Speed MPH,10,weather_colorado_springs
+2025-07-31,Max Temperature F,76,weather_colorado_springs
+2025-07-31,Min Temperature F,76,weather_colorado_springs
+2025-07-31,Temperature F,76,weather_colorado_springs
+2025-07-31,Wind Speed MPH,12,weather_colorado_springs
+2025-08-01,Max Temperature F,79,weather_colorado_springs
+2025-08-01,Min Temperature F,79,weather_colorado_springs
+2025-08-01,Temperature F,79,weather_colorado_springs
+2025-08-01,Wind Speed MPH,9,weather_colorado_springs
+2025-08-02,Max Temperature F,83,weather_colorado_springs
+2025-08-02,Min Temperature F,83,weather_colorado_springs
+2025-08-02,Temperature F,83,weather_colorado_springs
+2025-08-02,Wind Speed MPH,2,weather_colorado_springs

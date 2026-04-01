@@ -1,0 +1,2106 @@
+date,product,value,source
+2023-05-01,Diesel,2.98,client_fountain_opis
+2023-05-01,Dyed Diesel,2.9812,client_fountain_opis
+2023-05-01,Unleaded,2.5231,client_fountain_opis
+2023-05-02,Diesel,2.9539,client_fountain_opis
+2023-05-02,Dyed Diesel,2.9549,client_fountain_opis
+2023-05-02,Unleaded,2.5249,client_fountain_opis
+2023-05-03,Diesel,2.8308,client_fountain_opis
+2023-05-03,Dyed Diesel,2.8442,client_fountain_opis
+2023-05-03,Unleaded,2.4224,client_fountain_opis
+2023-05-04,Diesel,2.7962,client_fountain_opis
+2023-05-04,Dyed Diesel,2.8016,client_fountain_opis
+2023-05-04,Unleaded,2.3372,client_fountain_opis
+2023-05-05,Diesel,2.8241,client_fountain_opis
+2023-05-05,Dyed Diesel,2.8252,client_fountain_opis
+2023-05-05,Unleaded,2.3742,client_fountain_opis
+2023-05-06,Diesel,2.9102,client_fountain_opis
+2023-05-06,Dyed Diesel,2.9125,client_fountain_opis
+2023-05-06,Unleaded,2.4084,client_fountain_opis
+2023-05-08,Diesel,2.9102,client_fountain_opis
+2023-05-08,Dyed Diesel,2.9125,client_fountain_opis
+2023-05-08,Unleaded,2.4084,client_fountain_opis
+2023-05-09,Diesel,2.9517,client_fountain_opis
+2023-05-09,Dyed Diesel,2.9512,client_fountain_opis
+2023-05-09,Unleaded,2.4784,client_fountain_opis
+2023-05-10,Diesel,2.9656,client_fountain_opis
+2023-05-10,Dyed Diesel,2.9629,client_fountain_opis
+2023-05-10,Unleaded,2.4804,client_fountain_opis
+2023-05-11,Diesel,3.0464,client_fountain_opis
+2023-05-11,Dyed Diesel,3.0439,client_fountain_opis
+2023-05-11,Unleaded,2.4898,client_fountain_opis
+2023-05-12,Diesel,3.0104,client_fountain_opis
+2023-05-12,Dyed Diesel,3.0057,client_fountain_opis
+2023-05-12,Unleaded,2.4304,client_fountain_opis
+2023-05-13,Diesel,3.0009,client_fountain_opis
+2023-05-13,Dyed Diesel,2.9974,client_fountain_opis
+2023-05-13,Unleaded,2.4255,client_fountain_opis
+2023-05-15,Diesel,3.0009,client_fountain_opis
+2023-05-15,Dyed Diesel,2.9974,client_fountain_opis
+2023-05-15,Unleaded,2.4255,client_fountain_opis
+2023-05-16,Diesel,3.0346,client_fountain_opis
+2023-05-16,Dyed Diesel,3.0271,client_fountain_opis
+2023-05-16,Unleaded,2.535,client_fountain_opis
+2023-05-17,Diesel,2.9866,client_fountain_opis
+2023-05-17,Dyed Diesel,2.9834,client_fountain_opis
+2023-05-17,Unleaded,2.5288,client_fountain_opis
+2023-05-18,Diesel,3.0284,client_fountain_opis
+2023-05-18,Dyed Diesel,3.02,client_fountain_opis
+2023-05-18,Unleaded,2.6243,client_fountain_opis
+2023-05-19,Diesel,2.9688,client_fountain_opis
+2023-05-19,Dyed Diesel,2.976,client_fountain_opis
+2023-05-19,Unleaded,2.6136,client_fountain_opis
+2023-05-20,Diesel,2.937,client_fountain_opis
+2023-05-20,Dyed Diesel,2.9431,client_fountain_opis
+2023-05-20,Unleaded,2.6314,client_fountain_opis
+2023-05-22,Diesel,2.937,client_fountain_opis
+2023-05-22,Dyed Diesel,2.9431,client_fountain_opis
+2023-05-22,Unleaded,2.6314,client_fountain_opis
+2023-05-23,Diesel,2.9297,client_fountain_opis
+2023-05-23,Dyed Diesel,2.9362,client_fountain_opis
+2023-05-23,Unleaded,2.6643,client_fountain_opis
+2023-05-24,Diesel,2.9665,client_fountain_opis
+2023-05-24,Dyed Diesel,2.9727,client_fountain_opis
+2023-05-24,Unleaded,2.696,client_fountain_opis
+2023-05-25,Diesel,2.9736,client_fountain_opis
+2023-05-25,Dyed Diesel,2.9842,client_fountain_opis
+2023-05-25,Unleaded,2.7499,client_fountain_opis
+2023-05-26,Diesel,2.9615,client_fountain_opis
+2023-05-26,Dyed Diesel,2.9688,client_fountain_opis
+2023-05-26,Unleaded,2.7525,client_fountain_opis
+2023-05-27,Diesel,2.9807,client_fountain_opis
+2023-05-27,Dyed Diesel,2.9847,client_fountain_opis
+2023-05-27,Unleaded,2.7684,client_fountain_opis
+2023-05-29,Diesel,2.9807,client_fountain_opis
+2023-05-29,Dyed Diesel,2.9847,client_fountain_opis
+2023-05-29,Unleaded,2.7684,client_fountain_opis
+2023-05-30,Diesel,2.9807,client_fountain_opis
+2023-05-30,Dyed Diesel,2.9847,client_fountain_opis
+2023-05-30,Unleaded,2.7684,client_fountain_opis
+2023-05-31,Diesel,2.9303,client_fountain_opis
+2023-05-31,Dyed Diesel,2.9351,client_fountain_opis
+2023-05-31,Unleaded,2.7068,client_fountain_opis
+2023-06-01,Diesel,2.8999,client_fountain_opis
+2023-06-01,Dyed Diesel,2.9111,client_fountain_opis
+2023-06-01,Unleaded,2.7263,client_fountain_opis
+2023-06-02,Diesel,2.937,client_fountain_opis
+2023-06-02,Dyed Diesel,2.9436,client_fountain_opis
+2023-06-02,Unleaded,2.7257,client_fountain_opis
+2023-06-03,Diesel,2.967,client_fountain_opis
+2023-06-03,Dyed Diesel,2.971,client_fountain_opis
+2023-06-03,Unleaded,2.7703,client_fountain_opis
+2023-06-05,Diesel,2.967,client_fountain_opis
+2023-06-05,Dyed Diesel,2.971,client_fountain_opis
+2023-06-05,Unleaded,2.7703,client_fountain_opis
+2023-06-06,Diesel,2.9437,client_fountain_opis
+2023-06-06,Dyed Diesel,2.9484,client_fountain_opis
+2023-06-06,Unleaded,2.7631,client_fountain_opis
+2023-06-07,Diesel,2.9514,client_fountain_opis
+2023-06-07,Dyed Diesel,2.9531,client_fountain_opis
+2023-06-07,Unleaded,2.7833,client_fountain_opis
+2023-06-08,Diesel,2.9822,client_fountain_opis
+2023-06-08,Dyed Diesel,2.9857,client_fountain_opis
+2023-06-08,Unleaded,2.8992,client_fountain_opis
+2023-06-09,Diesel,2.9943,client_fountain_opis
+2023-06-09,Dyed Diesel,2.9963,client_fountain_opis
+2023-06-09,Unleaded,2.9018,client_fountain_opis
+2023-06-10,Diesel,2.9577,client_fountain_opis
+2023-06-10,Dyed Diesel,2.9642,client_fountain_opis
+2023-06-10,Unleaded,2.8779,client_fountain_opis
+2023-06-12,Diesel,2.9577,client_fountain_opis
+2023-06-12,Dyed Diesel,2.9642,client_fountain_opis
+2023-06-12,Unleaded,2.8779,client_fountain_opis
+2023-06-13,Diesel,2.9204,client_fountain_opis
+2023-06-13,Dyed Diesel,2.9266,client_fountain_opis
+2023-06-13,Unleaded,2.7689,client_fountain_opis
+2023-06-14,Diesel,2.9652,client_fountain_opis
+2023-06-14,Dyed Diesel,2.9663,client_fountain_opis
+2023-06-14,Unleaded,2.8282,client_fountain_opis
+2023-06-15,Diesel,2.9356,client_fountain_opis
+2023-06-15,Dyed Diesel,2.9364,client_fountain_opis
+2023-06-15,Unleaded,2.7946,client_fountain_opis
+2023-06-16,Diesel,3.0307,client_fountain_opis
+2023-06-16,Dyed Diesel,3.0225,client_fountain_opis
+2023-06-16,Unleaded,2.866,client_fountain_opis
+2023-06-17,Diesel,3.0871,client_fountain_opis
+2023-06-17,Dyed Diesel,3.086,client_fountain_opis
+2023-06-17,Unleaded,2.9467,client_fountain_opis
+2023-06-19,Diesel,3.0871,client_fountain_opis
+2023-06-19,Dyed Diesel,3.086,client_fountain_opis
+2023-06-19,Unleaded,2.9467,client_fountain_opis
+2023-06-20,Diesel,3.0786,client_fountain_opis
+2023-06-20,Dyed Diesel,3.074,client_fountain_opis
+2023-06-20,Unleaded,2.9446,client_fountain_opis
+2023-06-21,Diesel,3.0175,client_fountain_opis
+2023-06-21,Dyed Diesel,3.0119,client_fountain_opis
+2023-06-21,Unleaded,2.9447,client_fountain_opis
+2023-06-22,Diesel,3.0661,client_fountain_opis
+2023-06-22,Dyed Diesel,3.0581,client_fountain_opis
+2023-06-22,Unleaded,2.9919,client_fountain_opis
+2023-06-23,Diesel,2.992,client_fountain_opis
+2023-06-23,Dyed Diesel,2.9924,client_fountain_opis
+2023-06-23,Unleaded,2.9723,client_fountain_opis
+2023-06-24,Diesel,2.9678,client_fountain_opis
+2023-06-24,Dyed Diesel,2.9645,client_fountain_opis
+2023-06-24,Unleaded,2.987,client_fountain_opis
+2023-06-26,Diesel,2.9678,client_fountain_opis
+2023-06-26,Dyed Diesel,2.9645,client_fountain_opis
+2023-06-26,Unleaded,2.987,client_fountain_opis
+2023-06-27,Diesel,2.9986,client_fountain_opis
+2023-06-27,Dyed Diesel,2.9976,client_fountain_opis
+2023-06-27,Unleaded,3.064,client_fountain_opis
+2023-06-28,Diesel,2.9399,client_fountain_opis
+2023-06-28,Dyed Diesel,2.9414,client_fountain_opis
+2023-06-28,Unleaded,3.0281,client_fountain_opis
+2023-06-29,Diesel,2.8992,client_fountain_opis
+2023-06-29,Dyed Diesel,2.9061,client_fountain_opis
+2023-06-29,Unleaded,3.054,client_fountain_opis
+2023-06-30,Diesel,2.8996,client_fountain_opis
+2023-06-30,Dyed Diesel,2.9036,client_fountain_opis
+2023-06-30,Unleaded,3.1022,client_fountain_opis
+2023-07-01,Diesel,2.9259,client_fountain_opis
+2023-07-01,Dyed Diesel,2.9284,client_fountain_opis
+2023-07-01,Unleaded,3.089,client_fountain_opis
+2023-07-03,Diesel,2.9259,client_fountain_opis
+2023-07-03,Dyed Diesel,2.9284,client_fountain_opis
+2023-07-03,Unleaded,3.089,client_fountain_opis
+2023-07-04,Diesel,2.9051,client_fountain_opis
+2023-07-04,Dyed Diesel,2.8993,client_fountain_opis
+2023-07-04,Unleaded,3.0792,client_fountain_opis
+2023-07-05,Diesel,2.9051,client_fountain_opis
+2023-07-05,Dyed Diesel,2.8993,client_fountain_opis
+2023-07-05,Unleaded,3.0792,client_fountain_opis
+2023-07-06,Diesel,2.984,client_fountain_opis
+2023-07-06,Dyed Diesel,2.9888,client_fountain_opis
+2023-07-06,Unleaded,3.1085,client_fountain_opis
+2023-07-07,Diesel,2.97,client_fountain_opis
+2023-07-07,Dyed Diesel,2.9738,client_fountain_opis
+2023-07-07,Unleaded,3.1218,client_fountain_opis
+2023-07-08,Diesel,3.0327,client_fountain_opis
+2023-07-08,Dyed Diesel,3.0324,client_fountain_opis
+2023-07-08,Unleaded,3.1839,client_fountain_opis
+2023-07-10,Diesel,3.0327,client_fountain_opis
+2023-07-10,Dyed Diesel,3.0324,client_fountain_opis
+2023-07-10,Unleaded,3.1839,client_fountain_opis
+2023-07-11,Diesel,3.0128,client_fountain_opis
+2023-07-11,Dyed Diesel,3.008,client_fountain_opis
+2023-07-11,Unleaded,3.1551,client_fountain_opis
+2023-07-12,Diesel,3.0172,client_fountain_opis
+2023-07-12,Dyed Diesel,3.0106,client_fountain_opis
+2023-07-12,Unleaded,3.1856,client_fountain_opis
+2023-07-13,Diesel,3.0463,client_fountain_opis
+2023-07-13,Dyed Diesel,3.0344,client_fountain_opis
+2023-07-13,Unleaded,3.1563,client_fountain_opis
+2023-07-14,Diesel,3.0596,client_fountain_opis
+2023-07-14,Dyed Diesel,3.048,client_fountain_opis
+2023-07-14,Unleaded,3.1693,client_fountain_opis
+2023-07-15,Diesel,3.041,client_fountain_opis
+2023-07-15,Dyed Diesel,3.0355,client_fountain_opis
+2023-07-15,Unleaded,3.1523,client_fountain_opis
+2023-07-17,Diesel,3.041,client_fountain_opis
+2023-07-17,Dyed Diesel,3.0355,client_fountain_opis
+2023-07-17,Unleaded,3.0915,client_fountain_opis
+2023-07-18,Diesel,3.0315,client_fountain_opis
+2023-07-18,Dyed Diesel,3.0227,client_fountain_opis
+2023-07-18,Unleaded,3.0935,client_fountain_opis
+2023-07-19,Diesel,3.0618,client_fountain_opis
+2023-07-19,Dyed Diesel,3.053,client_fountain_opis
+2023-07-19,Unleaded,3.1456,client_fountain_opis
+2023-07-20,Diesel,3.0888,client_fountain_opis
+2023-07-20,Dyed Diesel,3.0858,client_fountain_opis
+2023-07-20,Unleaded,3.1691,client_fountain_opis
+2023-07-21,Diesel,3.0948,client_fountain_opis
+2023-07-21,Dyed Diesel,3.1023,client_fountain_opis
+2023-07-21,Unleaded,3.1833,client_fountain_opis
+2023-07-22,Diesel,3.1416,client_fountain_opis
+2023-07-22,Dyed Diesel,3.1495,client_fountain_opis
+2023-07-22,Unleaded,3.2179,client_fountain_opis
+2023-07-24,Diesel,3.1416,client_fountain_opis
+2023-07-24,Dyed Diesel,3.1495,client_fountain_opis
+2023-07-24,Unleaded,3.2179,client_fountain_opis
+2023-07-25,Diesel,3.1567,client_fountain_opis
+2023-07-25,Dyed Diesel,3.164,client_fountain_opis
+2023-07-25,Unleaded,3.2951,client_fountain_opis
+2023-07-26,Diesel,3.139,client_fountain_opis
+2023-07-26,Dyed Diesel,3.1508,client_fountain_opis
+2023-07-26,Unleaded,3.2394,client_fountain_opis
+2023-07-27,Diesel,3.1833,client_fountain_opis
+2023-07-27,Dyed Diesel,3.1863,client_fountain_opis
+2023-07-27,Unleaded,3.3009,client_fountain_opis
+2023-07-28,Diesel,3.2533,client_fountain_opis
+2023-07-28,Dyed Diesel,3.2468,client_fountain_opis
+2023-07-28,Unleaded,3.3358,client_fountain_opis
+2023-07-29,Diesel,3.2725,client_fountain_opis
+2023-07-29,Dyed Diesel,3.2693,client_fountain_opis
+2023-07-29,Unleaded,3.3644,client_fountain_opis
+2023-07-31,Diesel,3.2725,client_fountain_opis
+2023-07-31,Dyed Diesel,3.2693,client_fountain_opis
+2023-07-31,Unleaded,3.3644,client_fountain_opis
+2023-08-01,Diesel,3.2889,client_fountain_opis
+2023-08-01,Dyed Diesel,3.2802,client_fountain_opis
+2023-08-01,Unleaded,3.3649,client_fountain_opis
+2023-08-02,Diesel,3.3084,client_fountain_opis
+2023-08-02,Dyed Diesel,3.2969,client_fountain_opis
+2023-08-02,Unleaded,3.2453,client_fountain_opis
+2023-08-03,Diesel,3.2867,client_fountain_opis
+2023-08-03,Dyed Diesel,3.2746,client_fountain_opis
+2023-08-03,Unleaded,3.1599,client_fountain_opis
+2023-08-04,Diesel,3.3528,client_fountain_opis
+2023-08-04,Dyed Diesel,3.3416,client_fountain_opis
+2023-08-04,Unleaded,3.1626,client_fountain_opis
+2023-08-05,Diesel,3.3487,client_fountain_opis
+2023-08-05,Dyed Diesel,3.3324,client_fountain_opis
+2023-08-05,Unleaded,3.2082,client_fountain_opis
+2023-08-07,Diesel,3.3487,client_fountain_opis
+2023-08-07,Dyed Diesel,3.3324,client_fountain_opis
+2023-08-07,Unleaded,3.2082,client_fountain_opis
+2023-08-08,Diesel,3.3199,client_fountain_opis
+2023-08-08,Dyed Diesel,3.3026,client_fountain_opis
+2023-08-08,Unleaded,3.3038,client_fountain_opis
+2023-08-09,Diesel,3.3874,client_fountain_opis
+2023-08-09,Dyed Diesel,3.3719,client_fountain_opis
+2023-08-09,Unleaded,3.2665,client_fountain_opis
+2023-08-10,Diesel,3.4894,client_fountain_opis
+2023-08-10,Dyed Diesel,3.4744,client_fountain_opis
+2023-08-10,Unleaded,3.273,client_fountain_opis
+2023-08-11,Diesel,3.471,client_fountain_opis
+2023-08-11,Dyed Diesel,3.4617,client_fountain_opis
+2023-08-11,Unleaded,3.2394,client_fountain_opis
+2023-08-12,Diesel,3.4636,client_fountain_opis
+2023-08-12,Dyed Diesel,3.4525,client_fountain_opis
+2023-08-12,Unleaded,3.2607,client_fountain_opis
+2023-08-14,Diesel,3.4636,client_fountain_opis
+2023-08-14,Dyed Diesel,3.4525,client_fountain_opis
+2023-08-14,Unleaded,3.2607,client_fountain_opis
+2023-08-15,Diesel,3.4317,client_fountain_opis
+2023-08-15,Dyed Diesel,3.4234,client_fountain_opis
+2023-08-15,Unleaded,3.1717,client_fountain_opis
+2023-08-16,Diesel,3.3871,client_fountain_opis
+2023-08-16,Dyed Diesel,3.384,client_fountain_opis
+2023-08-16,Unleaded,3.0789,client_fountain_opis
+2023-08-17,Diesel,3.3904,client_fountain_opis
+2023-08-17,Dyed Diesel,3.3865,client_fountain_opis
+2023-08-17,Unleaded,3.0807,client_fountain_opis
+2023-08-18,Diesel,3.4412,client_fountain_opis
+2023-08-18,Dyed Diesel,3.4351,client_fountain_opis
+2023-08-18,Unleaded,3.0465,client_fountain_opis
+2023-08-19,Diesel,3.4945,client_fountain_opis
+2023-08-19,Dyed Diesel,3.4926,client_fountain_opis
+2023-08-19,Unleaded,3.0361,client_fountain_opis
+2023-08-21,Diesel,3.4945,client_fountain_opis
+2023-08-21,Dyed Diesel,3.4926,client_fountain_opis
+2023-08-21,Unleaded,3.0361,client_fountain_opis
+2023-08-22,Diesel,3.4673,client_fountain_opis
+2023-08-22,Dyed Diesel,3.4693,client_fountain_opis
+2023-08-22,Unleaded,2.9976,client_fountain_opis
+2023-08-23,Diesel,3.4934,client_fountain_opis
+2023-08-23,Dyed Diesel,3.4947,client_fountain_opis
+2023-08-23,Unleaded,2.9986,client_fountain_opis
+2023-08-24,Diesel,3.4856,client_fountain_opis
+2023-08-24,Dyed Diesel,3.4903,client_fountain_opis
+2023-08-24,Unleaded,2.9713,client_fountain_opis
+2023-08-25,Diesel,3.5044,client_fountain_opis
+2023-08-25,Dyed Diesel,3.507,client_fountain_opis
+2023-08-25,Unleaded,3.0076,client_fountain_opis
+2023-08-26,Diesel,3.6116,client_fountain_opis
+2023-08-26,Dyed Diesel,3.6105,client_fountain_opis
+2023-08-26,Unleaded,3.0971,client_fountain_opis
+2023-08-28,Diesel,3.6116,client_fountain_opis
+2023-08-28,Dyed Diesel,3.6105,client_fountain_opis
+2023-08-28,Unleaded,3.0971,client_fountain_opis
+2023-08-29,Diesel,3.5215,client_fountain_opis
+2023-08-29,Dyed Diesel,3.5199,client_fountain_opis
+2023-08-29,Unleaded,3.0191,client_fountain_opis
+2023-08-30,Diesel,3.5403,client_fountain_opis
+2023-08-30,Dyed Diesel,3.5357,client_fountain_opis
+2023-08-30,Unleaded,3.0309,client_fountain_opis
+2023-08-31,Diesel,3.442,client_fountain_opis
+2023-08-31,Dyed Diesel,3.4385,client_fountain_opis
+2023-08-31,Unleaded,3.0556,client_fountain_opis
+2023-09-01,Diesel,3.4824,client_fountain_opis
+2023-09-01,Dyed Diesel,3.4786,client_fountain_opis
+2023-09-01,Unleaded,3.0602,client_fountain_opis
+2023-09-02,Diesel,3.4623,client_fountain_opis
+2023-09-02,Dyed Diesel,3.4604,client_fountain_opis
+2023-09-02,Unleaded,3.0843,client_fountain_opis
+2023-09-04,Diesel,3.4623,client_fountain_opis
+2023-09-04,Dyed Diesel,3.4604,client_fountain_opis
+2023-09-04,Unleaded,3.0586,client_fountain_opis
+2023-09-05,Diesel,3.4623,client_fountain_opis
+2023-09-05,Dyed Diesel,3.4604,client_fountain_opis
+2023-09-05,Unleaded,3.05,client_fountain_opis
+2023-09-06,Diesel,3.5301,client_fountain_opis
+2023-09-06,Dyed Diesel,3.5273,client_fountain_opis
+2023-09-06,Unleaded,3.0049,client_fountain_opis
+2023-09-07,Diesel,3.4875,client_fountain_opis
+2023-09-07,Dyed Diesel,3.4817,client_fountain_opis
+2023-09-07,Unleaded,3.3607,client_fountain_opis
+2023-09-08,Diesel,3.4978,client_fountain_opis
+2023-09-08,Dyed Diesel,3.4931,client_fountain_opis
+2023-09-08,Unleaded,3.5377,client_fountain_opis
+2023-09-09,Diesel,3.5891,client_fountain_opis
+2023-09-09,Dyed Diesel,3.5904,client_fountain_opis
+2023-09-09,Unleaded,3.3,client_fountain_opis
+2023-09-11,Diesel,3.5891,client_fountain_opis
+2023-09-11,Dyed Diesel,3.5904,client_fountain_opis
+2023-09-11,Unleaded,3.3,client_fountain_opis
+2023-09-12,Diesel,3.6601,client_fountain_opis
+2023-09-12,Dyed Diesel,3.6689,client_fountain_opis
+2023-09-12,Unleaded,3.3155,client_fountain_opis
+2023-09-13,Diesel,3.6235,client_fountain_opis
+2023-09-13,Dyed Diesel,3.6317,client_fountain_opis
+2023-09-13,Unleaded,3.2743,client_fountain_opis
+2023-09-14,Diesel,3.7118,client_fountain_opis
+2023-09-14,Dyed Diesel,3.7167,client_fountain_opis
+2023-09-14,Unleaded,3.1896,client_fountain_opis
+2023-09-15,Diesel,3.7372,client_fountain_opis
+2023-09-15,Dyed Diesel,3.7353,client_fountain_opis
+2023-09-15,Unleaded,3.1728,client_fountain_opis
+2023-09-16,Diesel,3.673,client_fountain_opis
+2023-09-16,Dyed Diesel,3.6714,client_fountain_opis
+2023-09-16,Unleaded,3.1033,client_fountain_opis
+2023-09-18,Diesel,3.673,client_fountain_opis
+2023-09-18,Dyed Diesel,3.6714,client_fountain_opis
+2023-09-18,Unleaded,3.1033,client_fountain_opis
+2023-09-19,Diesel,3.6123,client_fountain_opis
+2023-09-19,Dyed Diesel,3.6104,client_fountain_opis
+2023-09-19,Unleaded,3.0062,client_fountain_opis
+2023-09-20,Diesel,3.6802,client_fountain_opis
+2023-09-20,Dyed Diesel,3.6774,client_fountain_opis
+2023-09-20,Unleaded,2.9078,client_fountain_opis
+2023-09-21,Diesel,3.6306,client_fountain_opis
+2023-09-21,Dyed Diesel,3.618,client_fountain_opis
+2023-09-21,Unleaded,2.8752,client_fountain_opis
+2023-09-22,Diesel,3.6485,client_fountain_opis
+2023-09-22,Dyed Diesel,3.6313,client_fountain_opis
+2023-09-22,Unleaded,2.8636,client_fountain_opis
+2023-09-23,Diesel,3.6048,client_fountain_opis
+2023-09-23,Dyed Diesel,3.5905,client_fountain_opis
+2023-09-23,Unleaded,2.8401,client_fountain_opis
+2023-09-25,Diesel,3.6048,client_fountain_opis
+2023-09-25,Dyed Diesel,3.5905,client_fountain_opis
+2023-09-25,Unleaded,2.8401,client_fountain_opis
+2023-09-26,Diesel,3.5391,client_fountain_opis
+2023-09-26,Dyed Diesel,3.527,client_fountain_opis
+2023-09-26,Unleaded,2.8125,client_fountain_opis
+2023-09-27,Diesel,3.4999,client_fountain_opis
+2023-09-27,Dyed Diesel,3.4882,client_fountain_opis
+2023-09-27,Unleaded,2.8315,client_fountain_opis
+2023-09-28,Diesel,3.5554,client_fountain_opis
+2023-09-28,Dyed Diesel,3.5415,client_fountain_opis
+2023-09-28,Unleaded,2.8534,client_fountain_opis
+2023-09-29,Diesel,3.5835,client_fountain_opis
+2023-09-29,Dyed Diesel,3.5768,client_fountain_opis
+2023-09-29,Unleaded,2.7954,client_fountain_opis
+2023-09-30,Diesel,3.629,client_fountain_opis
+2023-09-30,Dyed Diesel,3.6357,client_fountain_opis
+2023-09-30,Unleaded,2.747,client_fountain_opis
+2023-10-02,Diesel,3.629,client_fountain_opis
+2023-10-02,Dyed Diesel,3.6357,client_fountain_opis
+2023-10-02,Unleaded,2.747,client_fountain_opis
+2023-10-03,Diesel,3.5763,client_fountain_opis
+2023-10-03,Dyed Diesel,3.5847,client_fountain_opis
+2023-10-03,Unleaded,2.7654,client_fountain_opis
+2023-10-04,Diesel,3.5459,client_fountain_opis
+2023-10-04,Dyed Diesel,3.5447,client_fountain_opis
+2023-10-04,Unleaded,2.7206,client_fountain_opis
+2023-10-05,Diesel,3.3976,client_fountain_opis
+2023-10-05,Dyed Diesel,3.3998,client_fountain_opis
+2023-10-05,Unleaded,2.5779,client_fountain_opis
+2023-10-06,Diesel,3.2626,client_fountain_opis
+2023-10-06,Dyed Diesel,3.2522,client_fountain_opis
+2023-10-06,Unleaded,2.5954,client_fountain_opis
+2023-10-07,Diesel,3.2685,client_fountain_opis
+2023-10-07,Dyed Diesel,3.2587,client_fountain_opis
+2023-10-07,Unleaded,2.5889,client_fountain_opis
+2023-10-09,Diesel,3.2685,client_fountain_opis
+2023-10-09,Dyed Diesel,3.2587,client_fountain_opis
+2023-10-09,Unleaded,2.5889,client_fountain_opis
+2023-10-10,Diesel,3.2944,client_fountain_opis
+2023-10-10,Dyed Diesel,3.2756,client_fountain_opis
+2023-10-10,Unleaded,2.5995,client_fountain_opis
+2023-10-11,Diesel,3.3263,client_fountain_opis
+2023-10-11,Dyed Diesel,3.3029,client_fountain_opis
+2023-10-11,Unleaded,2.5811,client_fountain_opis
+2023-10-12,Diesel,3.305,client_fountain_opis
+2023-10-12,Dyed Diesel,3.2948,client_fountain_opis
+2023-10-12,Unleaded,2.5266,client_fountain_opis
+2023-10-13,Diesel,3.3566,client_fountain_opis
+2023-10-13,Dyed Diesel,3.3471,client_fountain_opis
+2023-10-13,Unleaded,2.4788,client_fountain_opis
+2023-10-14,Diesel,3.6417,client_fountain_opis
+2023-10-14,Dyed Diesel,3.621,client_fountain_opis
+2023-10-14,Unleaded,2.6009,client_fountain_opis
+2023-10-16,Diesel,3.6417,client_fountain_opis
+2023-10-16,Dyed Diesel,3.621,client_fountain_opis
+2023-10-16,Unleaded,2.6009,client_fountain_opis
+2023-10-17,Diesel,3.549,client_fountain_opis
+2023-10-17,Dyed Diesel,3.5531,client_fountain_opis
+2023-10-17,Unleaded,2.5907,client_fountain_opis
+2023-10-18,Diesel,3.7311,client_fountain_opis
+2023-10-18,Dyed Diesel,3.725,client_fountain_opis
+2023-10-18,Unleaded,2.6044,client_fountain_opis
+2023-10-19,Diesel,4.0692,client_fountain_opis
+2023-10-19,Dyed Diesel,4.0666,client_fountain_opis
+2023-10-19,Unleaded,2.7038,client_fountain_opis
+2023-10-20,Diesel,4.3942,client_fountain_opis
+2023-10-20,Dyed Diesel,4.4091,client_fountain_opis
+2023-10-20,Unleaded,2.7142,client_fountain_opis
+2023-10-21,Diesel,4.3347,client_fountain_opis
+2023-10-21,Dyed Diesel,4.3218,client_fountain_opis
+2023-10-21,Unleaded,2.6108,client_fountain_opis
+2023-10-23,Diesel,4.3347,client_fountain_opis
+2023-10-23,Dyed Diesel,4.3218,client_fountain_opis
+2023-10-23,Unleaded,2.6108,client_fountain_opis
+2023-10-24,Diesel,3.6317,client_fountain_opis
+2023-10-24,Dyed Diesel,3.6479,client_fountain_opis
+2023-10-24,Unleaded,2.5162,client_fountain_opis
+2023-10-25,Diesel,3.4839,client_fountain_opis
+2023-10-25,Dyed Diesel,3.4331,client_fountain_opis
+2023-10-25,Unleaded,2.3592,client_fountain_opis
+2023-10-26,Diesel,3.3578,client_fountain_opis
+2023-10-26,Dyed Diesel,3.3308,client_fountain_opis
+2023-10-26,Unleaded,2.3005,client_fountain_opis
+2023-10-27,Diesel,3.3326,client_fountain_opis
+2023-10-27,Dyed Diesel,3.3037,client_fountain_opis
+2023-10-27,Unleaded,2.2325,client_fountain_opis
+2023-10-28,Diesel,3.3278,client_fountain_opis
+2023-10-28,Dyed Diesel,3.3002,client_fountain_opis
+2023-10-28,Unleaded,2.2573,client_fountain_opis
+2023-10-30,Diesel,3.3278,client_fountain_opis
+2023-10-30,Dyed Diesel,3.3002,client_fountain_opis
+2023-10-30,Unleaded,2.2573,client_fountain_opis
+2023-10-31,Diesel,3.1771,client_fountain_opis
+2023-10-31,Dyed Diesel,3.1929,client_fountain_opis
+2023-10-31,Unleaded,2.1671,client_fountain_opis
+2023-11-01,Diesel,3.1179,client_fountain_opis
+2023-11-01,Dyed Diesel,3.1278,client_fountain_opis
+2023-11-01,Unleaded,2.1727,client_fountain_opis
+2023-11-02,Diesel,3.106,client_fountain_opis
+2023-11-02,Dyed Diesel,3.1144,client_fountain_opis
+2023-11-02,Unleaded,2.1413,client_fountain_opis
+2023-11-03,Diesel,3.1281,client_fountain_opis
+2023-11-03,Dyed Diesel,3.13,client_fountain_opis
+2023-11-03,Unleaded,2.1879,client_fountain_opis
+2023-11-04,Diesel,3.052,client_fountain_opis
+2023-11-04,Dyed Diesel,3.0689,client_fountain_opis
+2023-11-04,Unleaded,2.2344,client_fountain_opis
+2023-11-06,Diesel,3.052,client_fountain_opis
+2023-11-06,Dyed Diesel,3.0689,client_fountain_opis
+2023-11-06,Unleaded,2.2344,client_fountain_opis
+2023-11-07,Diesel,3.0939,client_fountain_opis
+2023-11-07,Dyed Diesel,3.105,client_fountain_opis
+2023-11-07,Unleaded,2.2971,client_fountain_opis
+2023-11-08,Diesel,3.0187,client_fountain_opis
+2023-11-08,Dyed Diesel,3.0309,client_fountain_opis
+2023-11-08,Unleaded,2.2458,client_fountain_opis
+2023-11-09,Diesel,2.9432,client_fountain_opis
+2023-11-09,Dyed Diesel,2.9589,client_fountain_opis
+2023-11-09,Unleaded,2.2207,client_fountain_opis
+2023-11-10,Diesel,2.9334,client_fountain_opis
+2023-11-10,Dyed Diesel,2.9386,client_fountain_opis
+2023-11-10,Unleaded,2.2351,client_fountain_opis
+2023-11-11,Diesel,2.9175,client_fountain_opis
+2023-11-11,Dyed Diesel,2.9191,client_fountain_opis
+2023-11-11,Unleaded,2.2405,client_fountain_opis
+2023-11-13,Diesel,2.9175,client_fountain_opis
+2023-11-13,Dyed Diesel,2.9191,client_fountain_opis
+2023-11-13,Unleaded,2.2405,client_fountain_opis
+2023-11-14,Diesel,2.9715,client_fountain_opis
+2023-11-14,Dyed Diesel,2.9632,client_fountain_opis
+2023-11-14,Unleaded,2.2728,client_fountain_opis
+2023-11-15,Diesel,2.9479,client_fountain_opis
+2023-11-15,Dyed Diesel,2.9347,client_fountain_opis
+2023-11-15,Unleaded,2.2149,client_fountain_opis
+2023-11-16,Diesel,3.0035,client_fountain_opis
+2023-11-16,Dyed Diesel,2.9881,client_fountain_opis
+2023-11-16,Unleaded,2.2056,client_fountain_opis
+2023-11-17,Diesel,2.946,client_fountain_opis
+2023-11-17,Dyed Diesel,2.9394,client_fountain_opis
+2023-11-17,Unleaded,2.1354,client_fountain_opis
+2023-11-18,Diesel,2.9597,client_fountain_opis
+2023-11-18,Dyed Diesel,2.955,client_fountain_opis
+2023-11-18,Unleaded,2.1838,client_fountain_opis
+2023-11-20,Diesel,2.9597,client_fountain_opis
+2023-11-20,Dyed Diesel,2.955,client_fountain_opis
+2023-11-20,Unleaded,2.1838,client_fountain_opis
+2023-11-21,Diesel,2.8988,client_fountain_opis
+2023-11-21,Dyed Diesel,2.9055,client_fountain_opis
+2023-11-21,Unleaded,2.1666,client_fountain_opis
+2023-11-22,Diesel,2.9134,client_fountain_opis
+2023-11-22,Dyed Diesel,2.9112,client_fountain_opis
+2023-11-22,Unleaded,2.1651,client_fountain_opis
+2023-11-23,Diesel,2.907,client_fountain_opis
+2023-11-23,Dyed Diesel,2.9046,client_fountain_opis
+2023-11-23,Unleaded,2.1327,client_fountain_opis
+2023-11-24,Diesel,2.907,client_fountain_opis
+2023-11-24,Dyed Diesel,2.9046,client_fountain_opis
+2023-11-24,Unleaded,2.1327,client_fountain_opis
+2023-11-25,Diesel,2.907,client_fountain_opis
+2023-11-25,Dyed Diesel,2.9046,client_fountain_opis
+2023-11-25,Unleaded,2.1327,client_fountain_opis
+2023-11-27,Diesel,2.907,client_fountain_opis
+2023-11-27,Dyed Diesel,2.9046,client_fountain_opis
+2023-11-27,Unleaded,2.1327,client_fountain_opis
+2023-11-28,Diesel,2.8263,client_fountain_opis
+2023-11-28,Dyed Diesel,2.8287,client_fountain_opis
+2023-11-28,Unleaded,2.0693,client_fountain_opis
+2023-11-29,Diesel,2.8736,client_fountain_opis
+2023-11-29,Dyed Diesel,2.8739,client_fountain_opis
+2023-11-29,Unleaded,2.1081,client_fountain_opis
+2023-11-30,Diesel,2.8615,client_fountain_opis
+2023-11-30,Dyed Diesel,2.861,client_fountain_opis
+2023-11-30,Unleaded,2.1451,client_fountain_opis
+2023-12-01,Diesel,2.7919,client_fountain_opis
+2023-12-01,Dyed Diesel,2.7898,client_fountain_opis
+2023-12-01,Unleaded,2.086,client_fountain_opis
+2023-12-02,Diesel,2.727,client_fountain_opis
+2023-12-02,Dyed Diesel,2.7248,client_fountain_opis
+2023-12-02,Unleaded,2.0383,client_fountain_opis
+2023-12-04,Diesel,2.727,client_fountain_opis
+2023-12-04,Dyed Diesel,2.7248,client_fountain_opis
+2023-12-04,Unleaded,2.0383,client_fountain_opis
+2023-12-05,Diesel,2.7158,client_fountain_opis
+2023-12-05,Dyed Diesel,2.7168,client_fountain_opis
+2023-12-05,Unleaded,2.0438,client_fountain_opis
+2023-12-06,Diesel,2.6373,client_fountain_opis
+2023-12-06,Dyed Diesel,2.6331,client_fountain_opis
+2023-12-06,Unleaded,1.9858,client_fountain_opis
+2023-12-07,Diesel,2.5589,client_fountain_opis
+2023-12-07,Dyed Diesel,2.5543,client_fountain_opis
+2023-12-07,Unleaded,1.9125,client_fountain_opis
+2023-12-08,Diesel,2.5356,client_fountain_opis
+2023-12-08,Dyed Diesel,2.5244,client_fountain_opis
+2023-12-08,Unleaded,1.866,client_fountain_opis
+2023-12-09,Diesel,2.5585,client_fountain_opis
+2023-12-09,Dyed Diesel,2.5537,client_fountain_opis
+2023-12-09,Unleaded,1.9017,client_fountain_opis
+2023-12-11,Diesel,2.5585,client_fountain_opis
+2023-12-11,Dyed Diesel,2.5537,client_fountain_opis
+2023-12-11,Unleaded,1.9017,client_fountain_opis
+2023-12-12,Diesel,2.5676,client_fountain_opis
+2023-12-12,Dyed Diesel,2.5449,client_fountain_opis
+2023-12-12,Unleaded,1.8604,client_fountain_opis
+2023-12-13,Diesel,2.4981,client_fountain_opis
+2023-12-13,Dyed Diesel,2.4832,client_fountain_opis
+2023-12-13,Unleaded,1.8039,client_fountain_opis
+2023-12-14,Diesel,2.5336,client_fountain_opis
+2023-12-14,Dyed Diesel,2.5201,client_fountain_opis
+2023-12-14,Unleaded,1.8382,client_fountain_opis
+2023-12-15,Diesel,2.59,client_fountain_opis
+2023-12-15,Dyed Diesel,2.5697,client_fountain_opis
+2023-12-15,Unleaded,1.904,client_fountain_opis
+2023-12-16,Diesel,2.6318,client_fountain_opis
+2023-12-16,Dyed Diesel,2.6075,client_fountain_opis
+2023-12-16,Unleaded,1.9318,client_fountain_opis
+2023-12-18,Diesel,2.6318,client_fountain_opis
+2023-12-18,Dyed Diesel,2.6075,client_fountain_opis
+2023-12-18,Unleaded,1.9318,client_fountain_opis
+2023-12-19,Diesel,2.652,client_fountain_opis
+2023-12-19,Dyed Diesel,2.6253,client_fountain_opis
+2023-12-19,Unleaded,1.9552,client_fountain_opis
+2023-12-20,Diesel,2.652,client_fountain_opis
+2023-12-20,Dyed Diesel,2.6253,client_fountain_opis
+2023-12-20,Unleaded,1.9552,client_fountain_opis
+2023-12-21,Diesel,2.6427,client_fountain_opis
+2023-12-21,Dyed Diesel,2.6507,client_fountain_opis
+2023-12-21,Unleaded,1.9697,client_fountain_opis
+2023-12-22,Diesel,2.6338,client_fountain_opis
+2023-12-22,Dyed Diesel,2.6386,client_fountain_opis
+2023-12-22,Unleaded,1.9671,client_fountain_opis
+2023-12-23,Diesel,2.6189,client_fountain_opis
+2023-12-23,Dyed Diesel,2.6269,client_fountain_opis
+2023-12-23,Unleaded,1.9527,client_fountain_opis
+2023-12-25,Diesel,2.6189,client_fountain_opis
+2023-12-25,Dyed Diesel,2.6269,client_fountain_opis
+2023-12-25,Unleaded,1.9527,client_fountain_opis
+2023-12-26,Diesel,2.6189,client_fountain_opis
+2023-12-26,Dyed Diesel,2.6269,client_fountain_opis
+2023-12-26,Unleaded,1.9527,client_fountain_opis
+2023-12-27,Diesel,2.6044,client_fountain_opis
+2023-12-27,Dyed Diesel,2.6112,client_fountain_opis
+2023-12-27,Unleaded,1.9753,client_fountain_opis
+2023-12-28,Diesel,2.5349,client_fountain_opis
+2023-12-28,Dyed Diesel,2.5437,client_fountain_opis
+2023-12-28,Unleaded,1.9382,client_fountain_opis
+2023-12-29,Diesel,2.4793,client_fountain_opis
+2023-12-29,Dyed Diesel,2.4812,client_fountain_opis
+2023-12-29,Unleaded,1.8562,client_fountain_opis
+2023-12-30,Diesel,2.4698,client_fountain_opis
+2023-12-30,Dyed Diesel,2.4702,client_fountain_opis
+2023-12-30,Unleaded,1.8749,client_fountain_opis
+2024-01-01,Diesel,2.4698,client_fountain_opis
+2024-01-01,Dyed Diesel,2.4702,client_fountain_opis
+2024-01-01,Unleaded,1.8749,client_fountain_opis
+2024-01-03,Diesel,2.5023,client_fountain_opis
+2024-01-03,Dyed Diesel,2.5019,client_fountain_opis
+2024-01-03,Unleaded,1.9042,client_fountain_opis
+2024-01-04,Diesel,2.5267,client_fountain_opis
+2024-01-04,Dyed Diesel,2.522,client_fountain_opis
+2024-01-04,Unleaded,1.9421,client_fountain_opis
+2024-01-05,Diesel,2.5088,client_fountain_opis
+2024-01-05,Dyed Diesel,2.503,client_fountain_opis
+2024-01-05,Unleaded,1.9129,client_fountain_opis
+2024-01-06,Diesel,2.5386,client_fountain_opis
+2024-01-06,Dyed Diesel,2.5295,client_fountain_opis
+2024-01-06,Unleaded,1.8897,client_fountain_opis
+2024-01-08,Diesel,2.5386,client_fountain_opis
+2024-01-08,Dyed Diesel,2.5295,client_fountain_opis
+2024-01-08,Unleaded,1.8897,client_fountain_opis
+2024-01-09,Diesel,2.4803,client_fountain_opis
+2024-01-09,Dyed Diesel,2.4692,client_fountain_opis
+2024-01-09,Unleaded,1.794,client_fountain_opis
+2024-01-10,Diesel,2.5386,client_fountain_opis
+2024-01-10,Dyed Diesel,2.5212,client_fountain_opis
+2024-01-10,Unleaded,1.8385,client_fountain_opis
+2024-01-11,Diesel,2.498,client_fountain_opis
+2024-01-11,Dyed Diesel,2.4841,client_fountain_opis
+2024-01-11,Unleaded,1.8074,client_fountain_opis
+2024-01-12,Diesel,2.5267,client_fountain_opis
+2024-01-12,Dyed Diesel,2.5182,client_fountain_opis
+2024-01-12,Unleaded,1.8357,client_fountain_opis
+2024-01-13,Diesel,2.4945,client_fountain_opis
+2024-01-13,Dyed Diesel,2.4852,client_fountain_opis
+2024-01-13,Unleaded,1.8367,client_fountain_opis
+2024-01-15,Diesel,2.4945,client_fountain_opis
+2024-01-15,Dyed Diesel,2.4852,client_fountain_opis
+2024-01-15,Unleaded,1.8367,client_fountain_opis
+2024-01-16,Diesel,2.4945,client_fountain_opis
+2024-01-16,Dyed Diesel,2.4852,client_fountain_opis
+2024-01-16,Unleaded,1.8367,client_fountain_opis
+2024-01-17,Diesel,2.4435,client_fountain_opis
+2024-01-17,Dyed Diesel,2.4372,client_fountain_opis
+2024-01-17,Unleaded,1.844,client_fountain_opis
+2024-01-18,Diesel,2.4012,client_fountain_opis
+2024-01-18,Dyed Diesel,2.4017,client_fountain_opis
+2024-01-18,Unleaded,1.8286,client_fountain_opis
+2024-01-19,Diesel,2.4369,client_fountain_opis
+2024-01-19,Dyed Diesel,2.4355,client_fountain_opis
+2024-01-19,Unleaded,1.8292,client_fountain_opis
+2024-01-20,Diesel,2.4131,client_fountain_opis
+2024-01-20,Dyed Diesel,2.4129,client_fountain_opis
+2024-01-20,Unleaded,1.8034,client_fountain_opis
+2024-01-22,Diesel,2.4131,client_fountain_opis
+2024-01-22,Dyed Diesel,2.4129,client_fountain_opis
+2024-01-22,Unleaded,1.8034,client_fountain_opis
+2024-01-23,Diesel,2.4048,client_fountain_opis
+2024-01-23,Dyed Diesel,2.409,client_fountain_opis
+2024-01-23,Unleaded,1.9168,client_fountain_opis
+2024-01-24,Diesel,2.3707,client_fountain_opis
+2024-01-24,Dyed Diesel,2.3725,client_fountain_opis
+2024-01-24,Unleaded,1.9345,client_fountain_opis
+2024-01-25,Diesel,2.3177,client_fountain_opis
+2024-01-25,Dyed Diesel,2.3178,client_fountain_opis
+2024-01-25,Unleaded,1.9446,client_fountain_opis
+2024-01-26,Diesel,2.3682,client_fountain_opis
+2024-01-26,Dyed Diesel,2.3614,client_fountain_opis
+2024-01-26,Unleaded,1.9829,client_fountain_opis
+2024-01-27,Diesel,2.4387,client_fountain_opis
+2024-01-27,Dyed Diesel,2.4374,client_fountain_opis
+2024-01-27,Unleaded,2.0492,client_fountain_opis
+2024-01-29,Diesel,2.4387,client_fountain_opis
+2024-01-29,Dyed Diesel,2.4374,client_fountain_opis
+2024-01-29,Unleaded,2.0492,client_fountain_opis
+2024-01-30,Diesel,2.4465,client_fountain_opis
+2024-01-30,Dyed Diesel,2.446,client_fountain_opis
+2024-01-30,Unleaded,2.0555,client_fountain_opis
+2024-01-31,Diesel,2.4394,client_fountain_opis
+2024-01-31,Dyed Diesel,2.4394,client_fountain_opis
+2024-01-31,Unleaded,2.0935,client_fountain_opis
+2024-02-01,Diesel,2.4319,client_fountain_opis
+2024-02-01,Dyed Diesel,2.431,client_fountain_opis
+2024-02-01,Unleaded,2.0191,client_fountain_opis
+2024-02-02,Diesel,2.4332,client_fountain_opis
+2024-02-02,Dyed Diesel,2.4343,client_fountain_opis
+2024-02-02,Unleaded,1.9227,client_fountain_opis
+2024-02-03,Diesel,2.4568,client_fountain_opis
+2024-02-03,Dyed Diesel,2.4564,client_fountain_opis
+2024-02-03,Unleaded,1.877,client_fountain_opis
+2024-02-05,Diesel,2.4568,client_fountain_opis
+2024-02-05,Dyed Diesel,2.4564,client_fountain_opis
+2024-02-05,Unleaded,1.877,client_fountain_opis
+2024-02-06,Diesel,2.4771,client_fountain_opis
+2024-02-06,Dyed Diesel,2.4692,client_fountain_opis
+2024-02-06,Unleaded,1.9615,client_fountain_opis
+2024-02-07,Diesel,2.5299,client_fountain_opis
+2024-02-07,Dyed Diesel,2.5129,client_fountain_opis
+2024-02-07,Unleaded,1.99,client_fountain_opis
+2024-02-08,Diesel,2.6752,client_fountain_opis
+2024-02-08,Dyed Diesel,2.6616,client_fountain_opis
+2024-02-08,Unleaded,2.0639,client_fountain_opis
+2024-02-09,Diesel,2.8568,client_fountain_opis
+2024-02-09,Dyed Diesel,2.838,client_fountain_opis
+2024-02-09,Unleaded,2.1887,client_fountain_opis
+2024-02-10,Diesel,2.9273,client_fountain_opis
+2024-02-10,Dyed Diesel,2.9155,client_fountain_opis
+2024-02-10,Unleaded,2.1696,client_fountain_opis
+2024-02-12,Diesel,2.9273,client_fountain_opis
+2024-02-12,Dyed Diesel,2.9155,client_fountain_opis
+2024-02-12,Unleaded,2.1696,client_fountain_opis
+2024-02-13,Diesel,2.8909,client_fountain_opis
+2024-02-13,Dyed Diesel,2.8758,client_fountain_opis
+2024-02-13,Unleaded,2.2301,client_fountain_opis
+2024-02-14,Diesel,2.8769,client_fountain_opis
+2024-02-14,Dyed Diesel,2.8566,client_fountain_opis
+2024-02-14,Unleaded,2.2669,client_fountain_opis
+2024-02-15,Diesel,2.831,client_fountain_opis
+2024-02-15,Dyed Diesel,2.8175,client_fountain_opis
+2024-02-15,Unleaded,2.1995,client_fountain_opis
+2024-02-16,Diesel,2.8518,client_fountain_opis
+2024-02-16,Dyed Diesel,2.8389,client_fountain_opis
+2024-02-16,Unleaded,2.1972,client_fountain_opis
+2024-02-17,Diesel,2.8562,client_fountain_opis
+2024-02-17,Dyed Diesel,2.8437,client_fountain_opis
+2024-02-17,Unleaded,2.2043,client_fountain_opis
+2024-02-19,Diesel,2.8562,client_fountain_opis
+2024-02-19,Dyed Diesel,2.8437,client_fountain_opis
+2024-02-19,Unleaded,2.2043,client_fountain_opis
+2024-02-20,Diesel,2.8559,client_fountain_opis
+2024-02-20,Dyed Diesel,2.8433,client_fountain_opis
+2024-02-20,Unleaded,2.2032,client_fountain_opis
+2024-02-21,Diesel,2.7664,client_fountain_opis
+2024-02-21,Dyed Diesel,2.757,client_fountain_opis
+2024-02-21,Unleaded,2.1572,client_fountain_opis
+2024-02-22,Diesel,2.7288,client_fountain_opis
+2024-02-22,Dyed Diesel,2.7174,client_fountain_opis
+2024-02-22,Unleaded,2.1731,client_fountain_opis
+2024-02-23,Diesel,2.7456,client_fountain_opis
+2024-02-23,Dyed Diesel,2.7335,client_fountain_opis
+2024-02-23,Unleaded,2.2553,client_fountain_opis
+2024-02-24,Diesel,2.6617,client_fountain_opis
+2024-02-24,Dyed Diesel,2.6493,client_fountain_opis
+2024-02-24,Unleaded,2.2131,client_fountain_opis
+2024-02-26,Diesel,2.6617,client_fountain_opis
+2024-02-26,Dyed Diesel,2.6493,client_fountain_opis
+2024-02-26,Unleaded,2.2131,client_fountain_opis
+2024-02-27,Diesel,2.7144,client_fountain_opis
+2024-02-27,Dyed Diesel,2.7011,client_fountain_opis
+2024-02-27,Unleaded,2.2524,client_fountain_opis
+2024-02-28,Diesel,2.6872,client_fountain_opis
+2024-02-28,Dyed Diesel,2.6739,client_fountain_opis
+2024-02-28,Unleaded,2.3045,client_fountain_opis
+2024-02-29,Diesel,2.6744,client_fountain_opis
+2024-02-29,Dyed Diesel,2.6653,client_fountain_opis
+2024-02-29,Unleaded,2.2477,client_fountain_opis
+2024-03-01,Diesel,2.7363,client_fountain_opis
+2024-03-01,Dyed Diesel,2.7132,client_fountain_opis
+2024-03-01,Unleaded,2.3145,client_fountain_opis
+2024-03-02,Diesel,2.8418,client_fountain_opis
+2024-03-02,Dyed Diesel,2.8202,client_fountain_opis
+2024-03-02,Unleaded,2.4135,client_fountain_opis
+2024-03-04,Diesel,2.8418,client_fountain_opis
+2024-03-04,Dyed Diesel,2.8202,client_fountain_opis
+2024-03-04,Unleaded,2.4135,client_fountain_opis
+2024-03-05,Diesel,2.7875,client_fountain_opis
+2024-03-05,Dyed Diesel,2.7648,client_fountain_opis
+2024-03-05,Unleaded,2.3726,client_fountain_opis
+2024-03-06,Diesel,2.7721,client_fountain_opis
+2024-03-06,Dyed Diesel,2.7505,client_fountain_opis
+2024-03-06,Unleaded,2.3055,client_fountain_opis
+2024-03-07,Diesel,2.8456,client_fountain_opis
+2024-03-07,Dyed Diesel,2.8262,client_fountain_opis
+2024-03-07,Unleaded,2.3128,client_fountain_opis
+2024-03-08,Diesel,2.8705,client_fountain_opis
+2024-03-08,Dyed Diesel,2.8537,client_fountain_opis
+2024-03-08,Unleaded,2.2863,client_fountain_opis
+2024-03-09,Diesel,2.8267,client_fountain_opis
+2024-03-09,Dyed Diesel,2.8091,client_fountain_opis
+2024-03-09,Unleaded,2.2725,client_fountain_opis
+2024-03-11,Diesel,2.8267,client_fountain_opis
+2024-03-11,Dyed Diesel,2.8091,client_fountain_opis
+2024-03-11,Unleaded,2.2725,client_fountain_opis
+2024-03-12,Diesel,2.8426,client_fountain_opis
+2024-03-12,Dyed Diesel,2.8242,client_fountain_opis
+2024-03-12,Unleaded,2.3503,client_fountain_opis
+2024-03-13,Diesel,2.7856,client_fountain_opis
+2024-03-13,Dyed Diesel,2.7834,client_fountain_opis
+2024-03-13,Unleaded,2.3541,client_fountain_opis
+2024-03-14,Diesel,2.8295,client_fountain_opis
+2024-03-14,Dyed Diesel,2.8345,client_fountain_opis
+2024-03-14,Unleaded,2.4194,client_fountain_opis
+2024-03-15,Diesel,2.8456,client_fountain_opis
+2024-03-15,Dyed Diesel,2.8498,client_fountain_opis
+2024-03-15,Unleaded,2.466,client_fountain_opis
+2024-03-16,Diesel,2.8635,client_fountain_opis
+2024-03-16,Dyed Diesel,2.8673,client_fountain_opis
+2024-03-16,Unleaded,2.4823,client_fountain_opis
+2024-03-18,Diesel,2.8635,client_fountain_opis
+2024-03-18,Dyed Diesel,2.8673,client_fountain_opis
+2024-03-18,Unleaded,2.4823,client_fountain_opis
+2024-03-19,Diesel,2.9048,client_fountain_opis
+2024-03-19,Dyed Diesel,2.9068,client_fountain_opis
+2024-03-19,Unleaded,2.4786,client_fountain_opis
+2024-03-20,Diesel,2.8546,client_fountain_opis
+2024-03-20,Dyed Diesel,2.8511,client_fountain_opis
+2024-03-20,Unleaded,2.4727,client_fountain_opis
+2024-03-21,Diesel,2.8011,client_fountain_opis
+2024-03-21,Dyed Diesel,2.798,client_fountain_opis
+2024-03-21,Unleaded,2.4426,client_fountain_opis
+2024-03-22,Diesel,2.7742,client_fountain_opis
+2024-03-22,Dyed Diesel,2.7687,client_fountain_opis
+2024-03-22,Unleaded,2.4232,client_fountain_opis
+2024-03-23,Diesel,2.7586,client_fountain_opis
+2024-03-23,Dyed Diesel,2.753,client_fountain_opis
+2024-03-23,Unleaded,2.4181,client_fountain_opis
+2024-03-25,Diesel,2.7586,client_fountain_opis
+2024-03-25,Dyed Diesel,2.753,client_fountain_opis
+2024-03-25,Unleaded,2.4181,client_fountain_opis
+2024-03-26,Diesel,2.764,client_fountain_opis
+2024-03-26,Dyed Diesel,2.7523,client_fountain_opis
+2024-03-26,Unleaded,2.4153,client_fountain_opis
+2024-03-27,Diesel,2.6842,client_fountain_opis
+2024-03-27,Dyed Diesel,2.6706,client_fountain_opis
+2024-03-27,Unleaded,2.3723,client_fountain_opis
+2024-03-28,Diesel,2.676,client_fountain_opis
+2024-03-28,Dyed Diesel,2.6591,client_fountain_opis
+2024-03-28,Unleaded,2.344,client_fountain_opis
+2024-03-29,Diesel,2.6395,client_fountain_opis
+2024-03-29,Dyed Diesel,2.6486,client_fountain_opis
+2024-03-29,Unleaded,2.3659,client_fountain_opis
+2024-03-30,Diesel,2.6055,client_fountain_opis
+2024-03-30,Dyed Diesel,2.6061,client_fountain_opis
+2024-03-30,Unleaded,2.3659,client_fountain_opis
+2024-04-01,Diesel,2.6055,client_fountain_opis
+2024-04-01,Dyed Diesel,2.6061,client_fountain_opis
+2024-04-01,Unleaded,2.3659,client_fountain_opis
+2024-04-02,Diesel,2.607,client_fountain_opis
+2024-04-02,Dyed Diesel,2.6077,client_fountain_opis
+2024-04-02,Unleaded,2.3492,client_fountain_opis
+2024-04-03,Diesel,2.6514,client_fountain_opis
+2024-04-03,Dyed Diesel,2.6465,client_fountain_opis
+2024-04-03,Unleaded,2.3758,client_fountain_opis
+2024-04-04,Diesel,2.6504,client_fountain_opis
+2024-04-04,Dyed Diesel,2.6422,client_fountain_opis
+2024-04-04,Unleaded,2.373,client_fountain_opis
+2024-04-05,Diesel,2.6615,client_fountain_opis
+2024-04-05,Dyed Diesel,2.6511,client_fountain_opis
+2024-04-05,Unleaded,2.4047,client_fountain_opis
+2024-04-06,Diesel,2.6835,client_fountain_opis
+2024-04-06,Dyed Diesel,2.6714,client_fountain_opis
+2024-04-06,Unleaded,2.4022,client_fountain_opis
+2024-04-08,Diesel,2.6835,client_fountain_opis
+2024-04-08,Dyed Diesel,2.6714,client_fountain_opis
+2024-04-08,Unleaded,2.4022,client_fountain_opis
+2024-04-09,Diesel,2.6387,client_fountain_opis
+2024-04-09,Dyed Diesel,2.6262,client_fountain_opis
+2024-04-09,Unleaded,2.3706,client_fountain_opis
+2024-04-10,Diesel,2.5803,client_fountain_opis
+2024-04-10,Dyed Diesel,2.5857,client_fountain_opis
+2024-04-10,Unleaded,2.3759,client_fountain_opis
+2024-04-11,Diesel,2.603,client_fountain_opis
+2024-04-11,Dyed Diesel,2.6009,client_fountain_opis
+2024-04-11,Unleaded,2.3813,client_fountain_opis
+2024-04-12,Diesel,2.5775,client_fountain_opis
+2024-04-12,Dyed Diesel,2.5768,client_fountain_opis
+2024-04-12,Unleaded,2.3766,client_fountain_opis
+2024-04-13,Diesel,2.5935,client_fountain_opis
+2024-04-13,Dyed Diesel,2.588,client_fountain_opis
+2024-04-13,Unleaded,2.3818,client_fountain_opis
+2024-04-15,Diesel,2.5935,client_fountain_opis
+2024-04-15,Dyed Diesel,2.588,client_fountain_opis
+2024-04-15,Unleaded,2.3818,client_fountain_opis
+2024-04-16,Diesel,2.5642,client_fountain_opis
+2024-04-16,Dyed Diesel,2.5588,client_fountain_opis
+2024-04-16,Unleaded,2.3473,client_fountain_opis
+2024-04-17,Diesel,2.5706,client_fountain_opis
+2024-04-17,Dyed Diesel,2.567,client_fountain_opis
+2024-04-17,Unleaded,2.3769,client_fountain_opis
+2024-04-18,Diesel,2.5101,client_fountain_opis
+2024-04-18,Dyed Diesel,2.5089,client_fountain_opis
+2024-04-18,Unleaded,2.3134,client_fountain_opis
+2024-04-19,Diesel,2.4998,client_fountain_opis
+2024-04-19,Dyed Diesel,2.4925,client_fountain_opis
+2024-04-19,Unleaded,2.3121,client_fountain_opis
+2024-04-20,Diesel,2.5066,client_fountain_opis
+2024-04-20,Dyed Diesel,2.5012,client_fountain_opis
+2024-04-20,Unleaded,2.3343,client_fountain_opis
+2024-04-22,Diesel,2.5066,client_fountain_opis
+2024-04-22,Dyed Diesel,2.5012,client_fountain_opis
+2024-04-22,Unleaded,2.3343,client_fountain_opis
+2024-04-23,Diesel,2.5111,client_fountain_opis
+2024-04-23,Dyed Diesel,2.5056,client_fountain_opis
+2024-04-23,Unleaded,2.3173,client_fountain_opis
+2024-04-24,Diesel,2.5052,client_fountain_opis
+2024-04-24,Dyed Diesel,2.4995,client_fountain_opis
+2024-04-24,Unleaded,2.3618,client_fountain_opis
+2024-04-25,Diesel,2.4904,client_fountain_opis
+2024-04-25,Dyed Diesel,2.4868,client_fountain_opis
+2024-04-25,Unleaded,2.3889,client_fountain_opis
+2024-04-26,Diesel,2.5005,client_fountain_opis
+2024-04-26,Dyed Diesel,2.4984,client_fountain_opis
+2024-04-26,Unleaded,2.4363,client_fountain_opis
+2024-04-27,Diesel,2.5062,client_fountain_opis
+2024-04-27,Dyed Diesel,2.5058,client_fountain_opis
+2024-04-27,Unleaded,2.4736,client_fountain_opis
+2024-04-29,Diesel,2.5062,client_fountain_opis
+2024-04-29,Dyed Diesel,2.5058,client_fountain_opis
+2024-04-29,Unleaded,2.4736,client_fountain_opis
+2024-04-30,Diesel,2.5191,client_fountain_opis
+2024-04-30,Dyed Diesel,2.5207,client_fountain_opis
+2024-04-30,Unleaded,2.4937,client_fountain_opis
+2024-05-01,Diesel,2.5474,client_fountain_opis
+2024-05-01,Dyed Diesel,2.5367,client_fountain_opis
+2024-05-01,Unleaded,2.4946,client_fountain_opis
+2024-05-02,Diesel,2.5215,client_fountain_opis
+2024-05-02,Dyed Diesel,2.5185,client_fountain_opis
+2024-05-02,Unleaded,2.4524,client_fountain_opis
+2024-05-03,Diesel,2.5211,client_fountain_opis
+2024-05-03,Dyed Diesel,2.5136,client_fountain_opis
+2024-05-03,Unleaded,2.5033,client_fountain_opis
+2024-05-04,Diesel,2.536,client_fountain_opis
+2024-05-04,Dyed Diesel,2.5335,client_fountain_opis
+2024-05-04,Unleaded,2.5239,client_fountain_opis
+2024-05-06,Diesel,2.536,client_fountain_opis
+2024-05-06,Dyed Diesel,2.5335,client_fountain_opis
+2024-05-06,Unleaded,2.5239,client_fountain_opis
+2024-05-07,Diesel,2.5578,client_fountain_opis
+2024-05-07,Dyed Diesel,2.5587,client_fountain_opis
+2024-05-07,Unleaded,2.5802,client_fountain_opis
+2024-05-08,Diesel,2.5545,client_fountain_opis
+2024-05-08,Dyed Diesel,2.5572,client_fountain_opis
+2024-05-08,Unleaded,2.5515,client_fountain_opis
+2024-05-09,Diesel,2.557,client_fountain_opis
+2024-05-09,Dyed Diesel,2.5586,client_fountain_opis
+2024-05-09,Unleaded,2.5642,client_fountain_opis
+2024-05-10,Diesel,2.548,client_fountain_opis
+2024-05-10,Dyed Diesel,2.5474,client_fountain_opis
+2024-05-10,Unleaded,2.5791,client_fountain_opis
+2024-05-11,Diesel,2.5158,client_fountain_opis
+2024-05-11,Dyed Diesel,2.5165,client_fountain_opis
+2024-05-11,Unleaded,2.5593,client_fountain_opis
+2024-05-13,Diesel,2.5158,client_fountain_opis
+2024-05-13,Dyed Diesel,2.5165,client_fountain_opis
+2024-05-13,Unleaded,2.5593,client_fountain_opis
+2024-05-14,Diesel,2.4911,client_fountain_opis
+2024-05-14,Dyed Diesel,2.4931,client_fountain_opis
+2024-05-14,Unleaded,2.5932,client_fountain_opis
+2024-05-15,Diesel,2.4461,client_fountain_opis
+2024-05-15,Dyed Diesel,2.4497,client_fountain_opis
+2024-05-15,Unleaded,2.5461,client_fountain_opis
+2024-05-16,Diesel,2.4531,client_fountain_opis
+2024-05-16,Dyed Diesel,2.4571,client_fountain_opis
+2024-05-16,Unleaded,2.5671,client_fountain_opis
+2024-05-17,Diesel,2.4725,client_fountain_opis
+2024-05-17,Dyed Diesel,2.4763,client_fountain_opis
+2024-05-17,Unleaded,2.5789,client_fountain_opis
+2024-05-18,Diesel,2.5041,client_fountain_opis
+2024-05-18,Dyed Diesel,2.5066,client_fountain_opis
+2024-05-18,Unleaded,2.6062,client_fountain_opis
+2024-05-20,Diesel,2.5041,client_fountain_opis
+2024-05-20,Dyed Diesel,2.5066,client_fountain_opis
+2024-05-20,Unleaded,2.6062,client_fountain_opis
+2024-05-21,Diesel,2.4977,client_fountain_opis
+2024-05-21,Dyed Diesel,2.4995,client_fountain_opis
+2024-05-21,Unleaded,2.5572,client_fountain_opis
+2024-05-22,Diesel,2.4824,client_fountain_opis
+2024-05-22,Dyed Diesel,2.4837,client_fountain_opis
+2024-05-22,Unleaded,2.5229,client_fountain_opis
+2024-05-23,Diesel,2.473,client_fountain_opis
+2024-05-23,Dyed Diesel,2.4765,client_fountain_opis
+2024-05-23,Unleaded,2.4982,client_fountain_opis
+2024-05-24,Diesel,2.4761,client_fountain_opis
+2024-05-24,Dyed Diesel,2.4797,client_fountain_opis
+2024-05-24,Unleaded,2.4951,client_fountain_opis
+2024-05-25,Diesel,2.4804,client_fountain_opis
+2024-05-25,Dyed Diesel,2.4839,client_fountain_opis
+2024-05-25,Unleaded,2.4771,client_fountain_opis
+2024-05-27,Diesel,2.4804,client_fountain_opis
+2024-05-27,Dyed Diesel,2.4839,client_fountain_opis
+2024-05-27,Unleaded,2.4771,client_fountain_opis
+2024-05-28,Diesel,2.4761,client_fountain_opis
+2024-05-28,Dyed Diesel,2.4789,client_fountain_opis
+2024-05-28,Unleaded,2.4771,client_fountain_opis
+2024-05-29,Diesel,2.5207,client_fountain_opis
+2024-05-29,Dyed Diesel,2.523,client_fountain_opis
+2024-05-29,Unleaded,2.4987,client_fountain_opis
+2024-05-30,Diesel,2.4905,client_fountain_opis
+2024-05-30,Dyed Diesel,2.4932,client_fountain_opis
+2024-05-30,Unleaded,2.4705,client_fountain_opis
+2024-05-31,Diesel,2.4431,client_fountain_opis
+2024-05-31,Dyed Diesel,2.4466,client_fountain_opis
+2024-05-31,Unleaded,2.4236,client_fountain_opis
+2024-06-01,Diesel,2.4718,client_fountain_opis
+2024-06-01,Dyed Diesel,2.479,client_fountain_opis
+2024-06-01,Unleaded,2.4723,client_fountain_opis
+2024-06-03,Diesel,2.4718,client_fountain_opis
+2024-06-03,Dyed Diesel,2.479,client_fountain_opis
+2024-06-03,Unleaded,2.4723,client_fountain_opis
+2024-06-04,Diesel,2.3954,client_fountain_opis
+2024-06-04,Dyed Diesel,2.4063,client_fountain_opis
+2024-06-04,Unleaded,2.3953,client_fountain_opis
+2024-06-05,Diesel,2.3684,client_fountain_opis
+2024-06-05,Dyed Diesel,2.3798,client_fountain_opis
+2024-06-05,Unleaded,2.424,client_fountain_opis
+2024-06-06,Diesel,2.3729,client_fountain_opis
+2024-06-06,Dyed Diesel,2.3823,client_fountain_opis
+2024-06-06,Unleaded,2.4353,client_fountain_opis
+2024-06-07,Diesel,2.3978,client_fountain_opis
+2024-06-07,Dyed Diesel,2.4026,client_fountain_opis
+2024-06-07,Unleaded,2.4541,client_fountain_opis
+2024-06-08,Diesel,2.3764,client_fountain_opis
+2024-06-08,Dyed Diesel,2.3824,client_fountain_opis
+2024-06-08,Unleaded,2.4255,client_fountain_opis
+2024-06-10,Diesel,2.3764,client_fountain_opis
+2024-06-10,Dyed Diesel,2.3824,client_fountain_opis
+2024-06-10,Unleaded,2.4255,client_fountain_opis
+2024-06-11,Diesel,2.4138,client_fountain_opis
+2024-06-11,Dyed Diesel,2.4153,client_fountain_opis
+2024-06-11,Unleaded,2.4497,client_fountain_opis
+2024-06-12,Diesel,2.4165,client_fountain_opis
+2024-06-12,Dyed Diesel,2.4171,client_fountain_opis
+2024-06-12,Unleaded,2.4589,client_fountain_opis
+2024-06-13,Diesel,2.4309,client_fountain_opis
+2024-06-13,Dyed Diesel,2.4298,client_fountain_opis
+2024-06-13,Unleaded,2.4525,client_fountain_opis
+2024-06-14,Diesel,2.474,client_fountain_opis
+2024-06-14,Dyed Diesel,2.4686,client_fountain_opis
+2024-06-14,Unleaded,2.4702,client_fountain_opis
+2024-06-15,Diesel,2.514,client_fountain_opis
+2024-06-15,Dyed Diesel,2.5085,client_fountain_opis
+2024-06-15,Unleaded,2.4597,client_fountain_opis
+2024-06-17,Diesel,2.514,client_fountain_opis
+2024-06-17,Dyed Diesel,2.5085,client_fountain_opis
+2024-06-17,Unleaded,2.4597,client_fountain_opis
+2024-06-18,Diesel,2.509,client_fountain_opis
+2024-06-18,Dyed Diesel,2.5021,client_fountain_opis
+2024-06-18,Unleaded,2.4836,client_fountain_opis
+2024-06-19,Diesel,2.5077,client_fountain_opis
+2024-06-19,Dyed Diesel,2.5001,client_fountain_opis
+2024-06-19,Unleaded,2.5006,client_fountain_opis
+2024-06-20,Diesel,2.5077,client_fountain_opis
+2024-06-20,Dyed Diesel,2.5001,client_fountain_opis
+2024-06-20,Unleaded,2.4913,client_fountain_opis
+2024-06-21,Diesel,2.5181,client_fountain_opis
+2024-06-21,Dyed Diesel,2.509,client_fountain_opis
+2024-06-21,Unleaded,2.4944,client_fountain_opis
+2024-06-22,Diesel,2.5034,client_fountain_opis
+2024-06-22,Dyed Diesel,2.5024,client_fountain_opis
+2024-06-22,Unleaded,2.4911,client_fountain_opis
+2024-06-24,Diesel,2.5034,client_fountain_opis
+2024-06-24,Dyed Diesel,2.5024,client_fountain_opis
+2024-06-24,Unleaded,2.4911,client_fountain_opis
+2024-06-25,Diesel,2.5211,client_fountain_opis
+2024-06-25,Dyed Diesel,2.5181,client_fountain_opis
+2024-06-25,Unleaded,2.4828,client_fountain_opis
+2024-06-26,Diesel,2.5088,client_fountain_opis
+2024-06-26,Dyed Diesel,2.5118,client_fountain_opis
+2024-06-26,Unleaded,2.4802,client_fountain_opis
+2024-06-27,Diesel,2.5276,client_fountain_opis
+2024-06-27,Dyed Diesel,2.5295,client_fountain_opis
+2024-06-27,Unleaded,2.4939,client_fountain_opis
+2024-06-28,Diesel,2.5486,client_fountain_opis
+2024-06-28,Dyed Diesel,2.5536,client_fountain_opis
+2024-06-28,Unleaded,2.491,client_fountain_opis
+2024-06-29,Diesel,2.5281,client_fountain_opis
+2024-06-29,Dyed Diesel,2.532,client_fountain_opis
+2024-06-29,Unleaded,2.4554,client_fountain_opis
+2024-07-01,Diesel,2.5281,client_fountain_opis
+2024-07-01,Dyed Diesel,2.532,client_fountain_opis
+2024-07-01,Unleaded,2.4554,client_fountain_opis
+2024-07-02,Diesel,2.6216,client_fountain_opis
+2024-07-02,Dyed Diesel,2.6267,client_fountain_opis
+2024-07-02,Unleaded,2.5201,client_fountain_opis
+2024-07-03,Diesel,2.6355,client_fountain_opis
+2024-07-03,Dyed Diesel,2.6419,client_fountain_opis
+2024-07-03,Unleaded,2.5212,client_fountain_opis
+2024-07-04,Diesel,2.6111,client_fountain_opis
+2024-07-04,Dyed Diesel,2.6176,client_fountain_opis
+2024-07-04,Unleaded,2.5452,client_fountain_opis
+2024-07-05,Diesel,2.6111,client_fountain_opis
+2024-07-05,Dyed Diesel,2.6176,client_fountain_opis
+2024-07-05,Unleaded,2.5452,client_fountain_opis
+2024-07-06,Diesel,2.602,client_fountain_opis
+2024-07-06,Dyed Diesel,2.6066,client_fountain_opis
+2024-07-06,Unleaded,2.533,client_fountain_opis
+2024-07-08,Diesel,2.602,client_fountain_opis
+2024-07-08,Dyed Diesel,2.6066,client_fountain_opis
+2024-07-08,Unleaded,2.533,client_fountain_opis
+2024-07-09,Diesel,2.5336,client_fountain_opis
+2024-07-09,Dyed Diesel,2.5406,client_fountain_opis
+2024-07-09,Unleaded,2.4947,client_fountain_opis
+2024-07-10,Diesel,2.4995,client_fountain_opis
+2024-07-10,Dyed Diesel,2.5052,client_fountain_opis
+2024-07-10,Unleaded,2.4737,client_fountain_opis
+2024-07-11,Diesel,2.4794,client_fountain_opis
+2024-07-11,Dyed Diesel,2.489,client_fountain_opis
+2024-07-11,Unleaded,2.4641,client_fountain_opis
+2024-07-12,Diesel,2.4838,client_fountain_opis
+2024-07-12,Dyed Diesel,2.4924,client_fountain_opis
+2024-07-12,Unleaded,2.4793,client_fountain_opis
+2024-07-13,Diesel,2.4861,client_fountain_opis
+2024-07-13,Dyed Diesel,2.4961,client_fountain_opis
+2024-07-13,Unleaded,2.4925,client_fountain_opis
+2024-07-15,Diesel,2.4861,client_fountain_opis
+2024-07-15,Dyed Diesel,2.4961,client_fountain_opis
+2024-07-15,Unleaded,2.4925,client_fountain_opis
+2024-07-16,Diesel,2.4788,client_fountain_opis
+2024-07-16,Dyed Diesel,2.4888,client_fountain_opis
+2024-07-16,Unleaded,2.4663,client_fountain_opis
+2024-07-17,Diesel,2.4576,client_fountain_opis
+2024-07-17,Dyed Diesel,2.4685,client_fountain_opis
+2024-07-17,Unleaded,2.4686,client_fountain_opis
+2024-07-18,Diesel,2.5104,client_fountain_opis
+2024-07-18,Dyed Diesel,2.5223,client_fountain_opis
+2024-07-18,Unleaded,2.5327,client_fountain_opis
+2024-07-19,Diesel,2.5046,client_fountain_opis
+2024-07-19,Dyed Diesel,2.5176,client_fountain_opis
+2024-07-19,Unleaded,2.5652,client_fountain_opis
+2024-07-20,Diesel,2.4738,client_fountain_opis
+2024-07-20,Dyed Diesel,2.4888,client_fountain_opis
+2024-07-20,Unleaded,2.5348,client_fountain_opis
+2024-07-22,Diesel,2.4738,client_fountain_opis
+2024-07-22,Dyed Diesel,2.4888,client_fountain_opis
+2024-07-22,Unleaded,2.5348,client_fountain_opis
+2024-07-23,Diesel,2.4898,client_fountain_opis
+2024-07-23,Dyed Diesel,2.505,client_fountain_opis
+2024-07-23,Unleaded,2.5833,client_fountain_opis
+2024-07-24,Diesel,2.4866,client_fountain_opis
+2024-07-24,Dyed Diesel,2.5022,client_fountain_opis
+2024-07-24,Unleaded,2.5703,client_fountain_opis
+2024-07-25,Diesel,2.5345,client_fountain_opis
+2024-07-25,Dyed Diesel,2.5312,client_fountain_opis
+2024-07-25,Unleaded,2.6497,client_fountain_opis
+2024-07-26,Diesel,2.5451,client_fountain_opis
+2024-07-26,Dyed Diesel,2.5419,client_fountain_opis
+2024-07-26,Unleaded,2.6927,client_fountain_opis
+2024-07-27,Diesel,2.4951,client_fountain_opis
+2024-07-27,Dyed Diesel,2.493,client_fountain_opis
+2024-07-27,Unleaded,2.686,client_fountain_opis
+2024-07-29,Diesel,2.4951,client_fountain_opis
+2024-07-29,Dyed Diesel,2.493,client_fountain_opis
+2024-07-29,Unleaded,2.686,client_fountain_opis
+2024-07-30,Diesel,2.4526,client_fountain_opis
+2024-07-30,Dyed Diesel,2.4524,client_fountain_opis
+2024-07-30,Unleaded,2.6574,client_fountain_opis
+2024-07-31,Diesel,2.4129,client_fountain_opis
+2024-07-31,Dyed Diesel,2.4118,client_fountain_opis
+2024-07-31,Unleaded,2.6385,client_fountain_opis
+2024-08-01,Diesel,2.4799,client_fountain_opis
+2024-08-01,Dyed Diesel,2.4767,client_fountain_opis
+2024-08-01,Unleaded,2.7028,client_fountain_opis
+2024-08-02,Diesel,2.4602,client_fountain_opis
+2024-08-02,Dyed Diesel,2.4566,client_fountain_opis
+2024-08-02,Unleaded,2.6594,client_fountain_opis
+2024-08-03,Diesel,2.4051,client_fountain_opis
+2024-08-03,Dyed Diesel,2.4024,client_fountain_opis
+2024-08-03,Unleaded,2.6201,client_fountain_opis
+2024-08-05,Diesel,2.4051,client_fountain_opis
+2024-08-05,Dyed Diesel,2.4024,client_fountain_opis
+2024-08-05,Unleaded,2.6201,client_fountain_opis
+2024-08-06,Diesel,2.4144,client_fountain_opis
+2024-08-06,Dyed Diesel,2.4124,client_fountain_opis
+2024-08-06,Unleaded,2.6566,client_fountain_opis
+2024-08-07,Diesel,2.4223,client_fountain_opis
+2024-08-07,Dyed Diesel,2.4207,client_fountain_opis
+2024-08-07,Unleaded,2.6946,client_fountain_opis
+2024-08-08,Diesel,2.4735,client_fountain_opis
+2024-08-08,Dyed Diesel,2.4717,client_fountain_opis
+2024-08-08,Unleaded,2.7943,client_fountain_opis
+2024-08-09,Diesel,2.4857,client_fountain_opis
+2024-08-09,Dyed Diesel,2.4834,client_fountain_opis
+2024-08-09,Unleaded,2.8317,client_fountain_opis
+2024-08-10,Diesel,2.4748,client_fountain_opis
+2024-08-10,Dyed Diesel,2.474,client_fountain_opis
+2024-08-10,Unleaded,2.7942,client_fountain_opis
+2024-08-12,Diesel,2.4748,client_fountain_opis
+2024-08-12,Dyed Diesel,2.474,client_fountain_opis
+2024-08-12,Unleaded,2.7942,client_fountain_opis
+2024-08-13,Diesel,2.5378,client_fountain_opis
+2024-08-13,Dyed Diesel,2.5383,client_fountain_opis
+2024-08-13,Unleaded,2.7755,client_fountain_opis
+2024-08-14,Diesel,2.5223,client_fountain_opis
+2024-08-14,Dyed Diesel,2.5228,client_fountain_opis
+2024-08-14,Unleaded,2.717,client_fountain_opis
+2024-08-15,Diesel,2.5277,client_fountain_opis
+2024-08-15,Dyed Diesel,2.5282,client_fountain_opis
+2024-08-15,Unleaded,2.693,client_fountain_opis
+2024-08-16,Diesel,2.5327,client_fountain_opis
+2024-08-16,Dyed Diesel,2.5346,client_fountain_opis
+2024-08-16,Unleaded,2.7082,client_fountain_opis
+2024-08-17,Diesel,2.5079,client_fountain_opis
+2024-08-17,Dyed Diesel,2.5122,client_fountain_opis
+2024-08-17,Unleaded,2.6744,client_fountain_opis
+2024-08-19,Diesel,2.5079,client_fountain_opis
+2024-08-19,Dyed Diesel,2.5122,client_fountain_opis
+2024-08-19,Unleaded,2.6744,client_fountain_opis
+2024-08-20,Diesel,2.4569,client_fountain_opis
+2024-08-20,Dyed Diesel,2.4639,client_fountain_opis
+2024-08-20,Unleaded,2.6429,client_fountain_opis
+2024-08-21,Diesel,2.4905,client_fountain_opis
+2024-08-21,Dyed Diesel,2.4942,client_fountain_opis
+2024-08-21,Unleaded,2.6368,client_fountain_opis
+2024-08-22,Diesel,2.4838,client_fountain_opis
+2024-08-22,Dyed Diesel,2.4887,client_fountain_opis
+2024-08-22,Unleaded,2.6025,client_fountain_opis
+2024-08-23,Diesel,2.5029,client_fountain_opis
+2024-08-23,Dyed Diesel,2.5096,client_fountain_opis
+2024-08-23,Unleaded,2.6481,client_fountain_opis
+2024-08-24,Diesel,2.5559,client_fountain_opis
+2024-08-24,Dyed Diesel,2.5653,client_fountain_opis
+2024-08-24,Unleaded,2.6841,client_fountain_opis
+2024-08-26,Diesel,2.5559,client_fountain_opis
+2024-08-26,Dyed Diesel,2.5653,client_fountain_opis
+2024-08-26,Unleaded,2.6841,client_fountain_opis
+2024-08-27,Diesel,2.5991,client_fountain_opis
+2024-08-27,Dyed Diesel,2.6081,client_fountain_opis
+2024-08-27,Unleaded,2.6863,client_fountain_opis
+2024-08-28,Diesel,2.5673,client_fountain_opis
+2024-08-28,Dyed Diesel,2.5714,client_fountain_opis
+2024-08-28,Unleaded,2.6681,client_fountain_opis
+2024-08-29,Diesel,2.5319,client_fountain_opis
+2024-08-29,Dyed Diesel,2.5384,client_fountain_opis
+2024-08-29,Unleaded,2.6394,client_fountain_opis
+2024-08-30,Diesel,2.5942,client_fountain_opis
+2024-08-30,Dyed Diesel,2.5987,client_fountain_opis
+2024-08-30,Unleaded,2.6848,client_fountain_opis
+2024-08-31,Diesel,2.5898,client_fountain_opis
+2024-08-31,Dyed Diesel,2.5954,client_fountain_opis
+2024-08-31,Unleaded,2.6719,client_fountain_opis
+2024-09-02,Diesel,2.5898,client_fountain_opis
+2024-09-02,Dyed Diesel,2.5954,client_fountain_opis
+2024-09-02,Unleaded,2.6719,client_fountain_opis
+2024-09-03,Diesel,2.5898,client_fountain_opis
+2024-09-03,Dyed Diesel,2.5954,client_fountain_opis
+2024-09-03,Unleaded,2.6719,client_fountain_opis
+2024-09-04,Diesel,2.5385,client_fountain_opis
+2024-09-04,Dyed Diesel,2.5478,client_fountain_opis
+2024-09-04,Unleaded,2.5799,client_fountain_opis
+2024-09-05,Diesel,2.5052,client_fountain_opis
+2024-09-05,Dyed Diesel,2.5174,client_fountain_opis
+2024-09-05,Unleaded,2.5962,client_fountain_opis
+2024-09-06,Diesel,2.5197,client_fountain_opis
+2024-09-06,Dyed Diesel,2.5333,client_fountain_opis
+2024-09-06,Unleaded,2.6328,client_fountain_opis
+2024-09-07,Diesel,2.4812,client_fountain_opis
+2024-09-07,Dyed Diesel,2.497,client_fountain_opis
+2024-09-07,Unleaded,2.6283,client_fountain_opis
+2024-09-09,Diesel,2.4812,client_fountain_opis
+2024-09-09,Dyed Diesel,2.497,client_fountain_opis
+2024-09-09,Unleaded,2.6283,client_fountain_opis
+2024-09-10,Diesel,2.5033,client_fountain_opis
+2024-09-10,Dyed Diesel,2.5191,client_fountain_opis
+2024-09-10,Unleaded,2.6683,client_fountain_opis
+2024-09-11,Diesel,2.4482,client_fountain_opis
+2024-09-11,Dyed Diesel,2.469,client_fountain_opis
+2024-09-11,Unleaded,2.7069,client_fountain_opis
+2024-09-12,Diesel,2.5024,client_fountain_opis
+2024-09-12,Dyed Diesel,2.507,client_fountain_opis
+2024-09-12,Unleaded,2.6603,client_fountain_opis
+2024-09-13,Diesel,2.5322,client_fountain_opis
+2024-09-13,Dyed Diesel,2.5368,client_fountain_opis
+2024-09-13,Unleaded,2.676,client_fountain_opis
+2024-09-14,Diesel,2.5111,client_fountain_opis
+2024-09-14,Dyed Diesel,2.5175,client_fountain_opis
+2024-09-14,Unleaded,2.6904,client_fountain_opis
+2024-09-16,Diesel,2.5111,client_fountain_opis
+2024-09-16,Dyed Diesel,2.5175,client_fountain_opis
+2024-09-16,Unleaded,2.6904,client_fountain_opis
+2024-09-17,Diesel,2.5298,client_fountain_opis
+2024-09-17,Dyed Diesel,2.5359,client_fountain_opis
+2024-09-17,Unleaded,2.697,client_fountain_opis
+2024-09-18,Diesel,2.5719,client_fountain_opis
+2024-09-18,Dyed Diesel,2.5784,client_fountain_opis
+2024-09-18,Unleaded,2.7355,client_fountain_opis
+2024-09-19,Diesel,2.58,client_fountain_opis
+2024-09-19,Dyed Diesel,2.5867,client_fountain_opis
+2024-09-19,Unleaded,2.7843,client_fountain_opis
+2024-09-20,Diesel,2.6061,client_fountain_opis
+2024-09-20,Dyed Diesel,2.6039,client_fountain_opis
+2024-09-20,Unleaded,2.8572,client_fountain_opis
+2024-09-21,Diesel,2.5951,client_fountain_opis
+2024-09-21,Dyed Diesel,2.5938,client_fountain_opis
+2024-09-21,Unleaded,2.781,client_fountain_opis
+2024-09-23,Diesel,2.5951,client_fountain_opis
+2024-09-23,Dyed Diesel,2.5938,client_fountain_opis
+2024-09-23,Unleaded,2.781,client_fountain_opis
+2024-09-24,Diesel,2.5846,client_fountain_opis
+2024-09-24,Dyed Diesel,2.5836,client_fountain_opis
+2024-09-24,Unleaded,2.719,client_fountain_opis
+2024-09-25,Diesel,2.6095,client_fountain_opis
+2024-09-25,Dyed Diesel,2.6085,client_fountain_opis
+2024-09-25,Unleaded,2.6577,client_fountain_opis
+2024-09-26,Diesel,2.5908,client_fountain_opis
+2024-09-26,Dyed Diesel,2.5896,client_fountain_opis
+2024-09-26,Unleaded,2.5834,client_fountain_opis
+2024-09-27,Diesel,2.5756,client_fountain_opis
+2024-09-27,Dyed Diesel,2.5743,client_fountain_opis
+2024-09-27,Unleaded,2.523,client_fountain_opis
+2024-09-28,Diesel,2.5731,client_fountain_opis
+2024-09-28,Dyed Diesel,2.5729,client_fountain_opis
+2024-09-28,Unleaded,2.4548,client_fountain_opis
+2024-09-30,Diesel,2.5731,client_fountain_opis
+2024-09-30,Dyed Diesel,2.5729,client_fountain_opis
+2024-09-30,Unleaded,2.4548,client_fountain_opis
+2024-10-01,Diesel,2.5864,client_fountain_opis
+2024-10-01,Dyed Diesel,2.5853,client_fountain_opis
+2024-10-01,Unleaded,2.4274,client_fountain_opis
+2024-10-02,Diesel,2.5979,client_fountain_opis
+2024-10-02,Dyed Diesel,2.5976,client_fountain_opis
+2024-10-02,Unleaded,2.4379,client_fountain_opis
+2024-10-03,Diesel,2.6059,client_fountain_opis
+2024-10-03,Dyed Diesel,2.606,client_fountain_opis
+2024-10-03,Unleaded,2.4534,client_fountain_opis
+2024-10-04,Diesel,2.7111,client_fountain_opis
+2024-10-04,Dyed Diesel,2.7109,client_fountain_opis
+2024-10-04,Unleaded,2.5045,client_fountain_opis
+2024-10-05,Diesel,2.7349,client_fountain_opis
+2024-10-05,Dyed Diesel,2.7361,client_fountain_opis
+2024-10-05,Unleaded,2.491,client_fountain_opis
+2024-10-07,Diesel,2.7349,client_fountain_opis
+2024-10-07,Dyed Diesel,2.7361,client_fountain_opis
+2024-10-07,Unleaded,2.491,client_fountain_opis
+2024-10-08,Diesel,2.8092,client_fountain_opis
+2024-10-08,Dyed Diesel,2.8116,client_fountain_opis
+2024-10-08,Unleaded,2.536,client_fountain_opis
+2024-10-09,Diesel,2.7349,client_fountain_opis
+2024-10-09,Dyed Diesel,2.7394,client_fountain_opis
+2024-10-09,Unleaded,2.4486,client_fountain_opis
+2024-10-10,Diesel,2.7182,client_fountain_opis
+2024-10-10,Dyed Diesel,2.7236,client_fountain_opis
+2024-10-10,Unleaded,2.4632,client_fountain_opis
+2024-10-11,Diesel,2.7841,client_fountain_opis
+2024-10-11,Dyed Diesel,2.7868,client_fountain_opis
+2024-10-11,Unleaded,2.5349,client_fountain_opis
+2024-10-12,Diesel,2.7796,client_fountain_opis
+2024-10-12,Dyed Diesel,2.7837,client_fountain_opis
+2024-10-12,Unleaded,2.5322,client_fountain_opis
+2024-10-14,Diesel,2.7796,client_fountain_opis
+2024-10-14,Dyed Diesel,2.7837,client_fountain_opis
+2024-10-14,Unleaded,2.5322,client_fountain_opis
+2024-10-15,Diesel,2.7308,client_fountain_opis
+2024-10-15,Dyed Diesel,2.7358,client_fountain_opis
+2024-10-15,Unleaded,2.4964,client_fountain_opis
+2024-10-16,Diesel,2.6563,client_fountain_opis
+2024-10-16,Dyed Diesel,2.6639,client_fountain_opis
+2024-10-16,Unleaded,2.4279,client_fountain_opis
+2024-10-17,Diesel,2.6339,client_fountain_opis
+2024-10-17,Dyed Diesel,2.642,client_fountain_opis
+2024-10-17,Unleaded,2.4271,client_fountain_opis
+2024-10-18,Diesel,2.6479,client_fountain_opis
+2024-10-18,Dyed Diesel,2.6557,client_fountain_opis
+2024-10-18,Unleaded,2.4413,client_fountain_opis
+2024-10-19,Diesel,2.6006,client_fountain_opis
+2024-10-19,Dyed Diesel,2.6107,client_fountain_opis
+2024-10-19,Unleaded,2.4032,client_fountain_opis
+2024-10-21,Diesel,2.6006,client_fountain_opis
+2024-10-21,Dyed Diesel,2.6107,client_fountain_opis
+2024-10-21,Unleaded,2.4032,client_fountain_opis
+2024-10-22,Diesel,2.6035,client_fountain_opis
+2024-10-22,Dyed Diesel,2.6136,client_fountain_opis
+2024-10-22,Unleaded,2.4135,client_fountain_opis
+2024-10-23,Diesel,2.6374,client_fountain_opis
+2024-10-23,Dyed Diesel,2.6465,client_fountain_opis
+2024-10-23,Unleaded,2.4393,client_fountain_opis
+2024-10-24,Diesel,2.6106,client_fountain_opis
+2024-10-24,Dyed Diesel,2.6199,client_fountain_opis
+2024-10-24,Unleaded,2.3912,client_fountain_opis
+2024-10-25,Diesel,2.5966,client_fountain_opis
+2024-10-25,Dyed Diesel,2.6065,client_fountain_opis
+2024-10-25,Unleaded,2.38,client_fountain_opis
+2024-10-26,Diesel,2.6392,client_fountain_opis
+2024-10-26,Dyed Diesel,2.6508,client_fountain_opis
+2024-10-26,Unleaded,2.4198,client_fountain_opis
+2024-10-28,Diesel,2.6392,client_fountain_opis
+2024-10-28,Dyed Diesel,2.6508,client_fountain_opis
+2024-10-28,Unleaded,2.4198,client_fountain_opis
+2024-10-29,Diesel,2.5401,client_fountain_opis
+2024-10-29,Dyed Diesel,2.5552,client_fountain_opis
+2024-10-29,Unleaded,2.3388,client_fountain_opis
+2024-10-30,Diesel,2.5559,client_fountain_opis
+2024-10-30,Dyed Diesel,2.5636,client_fountain_opis
+2024-10-30,Unleaded,2.3191,client_fountain_opis
+2024-10-31,Diesel,2.5983,client_fountain_opis
+2024-10-31,Dyed Diesel,2.6047,client_fountain_opis
+2024-10-31,Unleaded,2.3345,client_fountain_opis
+2024-11-01,Diesel,2.6265,client_fountain_opis
+2024-11-01,Dyed Diesel,2.6327,client_fountain_opis
+2024-11-01,Unleaded,2.3279,client_fountain_opis
+2024-11-02,Diesel,2.6274,client_fountain_opis
+2024-11-02,Dyed Diesel,2.6304,client_fountain_opis
+2024-11-02,Unleaded,2.3134,client_fountain_opis
+2024-11-04,Diesel,2.6274,client_fountain_opis
+2024-11-04,Dyed Diesel,2.6304,client_fountain_opis
+2024-11-04,Unleaded,2.3134,client_fountain_opis
+2024-11-05,Diesel,2.6559,client_fountain_opis
+2024-11-05,Dyed Diesel,2.6578,client_fountain_opis
+2024-11-05,Unleaded,2.3492,client_fountain_opis
+2024-11-06,Diesel,2.669,client_fountain_opis
+2024-11-06,Dyed Diesel,2.6689,client_fountain_opis
+2024-11-06,Unleaded,2.3297,client_fountain_opis
+2024-11-07,Diesel,2.6515,client_fountain_opis
+2024-11-07,Dyed Diesel,2.6519,client_fountain_opis
+2024-11-07,Unleaded,2.3185,client_fountain_opis
+2024-11-08,Diesel,2.6603,client_fountain_opis
+2024-11-08,Dyed Diesel,2.6609,client_fountain_opis
+2024-11-08,Unleaded,2.314,client_fountain_opis
+2024-11-09,Diesel,2.6099,client_fountain_opis
+2024-11-09,Dyed Diesel,2.6112,client_fountain_opis
+2024-11-09,Unleaded,2.2628,client_fountain_opis
+2024-11-10,Diesel,2.6603,client_fountain_opis
+2024-11-10,Dyed Diesel,2.6609,client_fountain_opis
+2024-11-10,Unleaded,2.314,client_fountain_opis
+2024-11-12,Diesel,2.5538,client_fountain_opis
+2024-11-12,Dyed Diesel,2.5549,client_fountain_opis
+2024-11-12,Unleaded,2.2023,client_fountain_opis
+2024-11-13,Diesel,2.5418,client_fountain_opis
+2024-11-13,Dyed Diesel,2.5413,client_fountain_opis
+2024-11-13,Unleaded,2.163,client_fountain_opis
+2024-11-14,Diesel,2.5335,client_fountain_opis
+2024-11-14,Dyed Diesel,2.5396,client_fountain_opis
+2024-11-14,Unleaded,2.1536,client_fountain_opis
+2024-11-15,Diesel,2.5162,client_fountain_opis
+2024-11-15,Dyed Diesel,2.519,client_fountain_opis
+2024-11-15,Unleaded,2.1474,client_fountain_opis
+2024-11-16,Diesel,2.4594,client_fountain_opis
+2024-11-16,Dyed Diesel,2.4577,client_fountain_opis
+2024-11-16,Unleaded,2.0969,client_fountain_opis
+2024-11-18,Diesel,2.4594,client_fountain_opis
+2024-11-18,Dyed Diesel,2.4577,client_fountain_opis
+2024-11-18,Unleaded,2.0969,client_fountain_opis
+2024-11-19,Diesel,2.502,client_fountain_opis
+2024-11-19,Dyed Diesel,2.4949,client_fountain_opis
+2024-11-19,Unleaded,2.1234,client_fountain_opis
+2024-11-20,Diesel,2.4772,client_fountain_opis
+2024-11-20,Dyed Diesel,2.4681,client_fountain_opis
+2024-11-20,Unleaded,2.1242,client_fountain_opis
+2024-11-21,Diesel,2.4315,client_fountain_opis
+2024-11-21,Dyed Diesel,2.4335,client_fountain_opis
+2024-11-21,Unleaded,2.0956,client_fountain_opis
+2024-11-22,Diesel,2.4544,client_fountain_opis
+2024-11-22,Dyed Diesel,2.466,client_fountain_opis
+2024-11-22,Unleaded,2.0855,client_fountain_opis
+2024-11-23,Diesel,2.4433,client_fountain_opis
+2024-11-23,Dyed Diesel,2.4556,client_fountain_opis
+2024-11-23,Unleaded,2.0839,client_fountain_opis
+2024-11-25,Diesel,2.4433,client_fountain_opis
+2024-11-25,Dyed Diesel,2.4556,client_fountain_opis
+2024-11-25,Unleaded,2.0839,client_fountain_opis
+2024-11-26,Diesel,2.4097,client_fountain_opis
+2024-11-26,Dyed Diesel,2.421,client_fountain_opis
+2024-11-26,Unleaded,2.0543,client_fountain_opis
+2024-11-27,Diesel,2.403,client_fountain_opis
+2024-11-27,Dyed Diesel,2.4123,client_fountain_opis
+2024-11-27,Unleaded,2.0499,client_fountain_opis
+2024-11-28,Diesel,2.3716,client_fountain_opis
+2024-11-28,Dyed Diesel,2.3778,client_fountain_opis
+2024-11-28,Unleaded,2.0332,client_fountain_opis
+2024-11-29,Diesel,2.3716,client_fountain_opis
+2024-11-29,Dyed Diesel,2.3778,client_fountain_opis
+2024-11-29,Unleaded,2.0332,client_fountain_opis
+2024-11-30,Diesel,2.368,client_fountain_opis
+2024-11-30,Dyed Diesel,2.3736,client_fountain_opis
+2024-11-30,Unleaded,2.0332,client_fountain_opis
+2024-12-02,Diesel,2.368,client_fountain_opis
+2024-12-02,Dyed Diesel,2.3736,client_fountain_opis
+2024-12-02,Unleaded,2.0332,client_fountain_opis
+2024-12-03,Diesel,2.3157,client_fountain_opis
+2024-12-03,Dyed Diesel,2.325,client_fountain_opis
+2024-12-03,Unleaded,2.0059,client_fountain_opis
+2024-12-04,Diesel,2.2904,client_fountain_opis
+2024-12-04,Dyed Diesel,2.2926,client_fountain_opis
+2024-12-04,Unleaded,2.041,client_fountain_opis
+2024-12-05,Diesel,2.2362,client_fountain_opis
+2024-12-05,Dyed Diesel,2.237,client_fountain_opis
+2024-12-05,Unleaded,2.0213,client_fountain_opis
+2024-12-06,Diesel,2.2135,client_fountain_opis
+2024-12-06,Dyed Diesel,2.2139,client_fountain_opis
+2024-12-06,Unleaded,1.9992,client_fountain_opis
+2024-12-07,Diesel,2.1878,client_fountain_opis
+2024-12-07,Dyed Diesel,2.1875,client_fountain_opis
+2024-12-07,Unleaded,1.9762,client_fountain_opis
+2024-12-09,Diesel,2.1878,client_fountain_opis
+2024-12-09,Dyed Diesel,2.1875,client_fountain_opis
+2024-12-09,Unleaded,1.9762,client_fountain_opis
+2024-12-10,Diesel,2.2204,client_fountain_opis
+2024-12-10,Dyed Diesel,2.2181,client_fountain_opis
+2024-12-10,Unleaded,2.0174,client_fountain_opis
+2024-12-11,Diesel,2.2157,client_fountain_opis
+2024-12-11,Dyed Diesel,2.2122,client_fountain_opis
+2024-12-11,Unleaded,2.0279,client_fountain_opis
+2024-12-12,Diesel,2.2452,client_fountain_opis
+2024-12-12,Dyed Diesel,2.2399,client_fountain_opis
+2024-12-12,Unleaded,2.0767,client_fountain_opis
+2024-12-13,Diesel,2.2516,client_fountain_opis
+2024-12-13,Dyed Diesel,2.2462,client_fountain_opis
+2024-12-13,Unleaded,2.0853,client_fountain_opis
+2024-12-14,Diesel,2.2886,client_fountain_opis
+2024-12-14,Dyed Diesel,2.2822,client_fountain_opis
+2024-12-14,Unleaded,2.1035,client_fountain_opis
+2024-12-16,Diesel,2.2886,client_fountain_opis
+2024-12-16,Dyed Diesel,2.2822,client_fountain_opis
+2024-12-16,Unleaded,2.1035,client_fountain_opis
+2024-12-17,Diesel,2.2805,client_fountain_opis
+2024-12-17,Dyed Diesel,2.2744,client_fountain_opis
+2024-12-17,Unleaded,2.0874,client_fountain_opis
+2024-12-18,Diesel,2.2532,client_fountain_opis
+2024-12-18,Dyed Diesel,2.2471,client_fountain_opis
+2024-12-18,Unleaded,2.081,client_fountain_opis
+2024-12-19,Diesel,2.2736,client_fountain_opis
+2024-12-19,Dyed Diesel,2.2713,client_fountain_opis
+2024-12-19,Unleaded,2.0583,client_fountain_opis
+2024-12-20,Diesel,2.2778,client_fountain_opis
+2024-12-20,Dyed Diesel,2.275,client_fountain_opis
+2024-12-20,Unleaded,2.043,client_fountain_opis
+2024-12-21,Diesel,2.2728,client_fountain_opis
+2024-12-21,Dyed Diesel,2.2718,client_fountain_opis
+2024-12-21,Unleaded,2.0584,client_fountain_opis
+2024-12-23,Diesel,2.2728,client_fountain_opis
+2024-12-23,Dyed Diesel,2.2718,client_fountain_opis
+2024-12-23,Unleaded,2.0584,client_fountain_opis
+2024-12-24,Diesel,2.2815,client_fountain_opis
+2024-12-24,Dyed Diesel,2.2815,client_fountain_opis
+2024-12-24,Unleaded,2.0706,client_fountain_opis
+2024-12-25,Diesel,2.2688,client_fountain_opis
+2024-12-25,Dyed Diesel,2.2686,client_fountain_opis
+2024-12-25,Unleaded,2.0875,client_fountain_opis
+2024-12-26,Diesel,2.2688,client_fountain_opis
+2024-12-26,Dyed Diesel,2.2686,client_fountain_opis
+2024-12-26,Unleaded,2.0875,client_fountain_opis
+2024-12-27,Diesel,2.26,client_fountain_opis
+2024-12-27,Dyed Diesel,2.2591,client_fountain_opis
+2024-12-27,Unleaded,2.0657,client_fountain_opis
+2024-12-28,Diesel,2.2797,client_fountain_opis
+2024-12-28,Dyed Diesel,2.2796,client_fountain_opis
+2024-12-28,Unleaded,2.085,client_fountain_opis
+2024-12-30,Diesel,2.2797,client_fountain_opis
+2024-12-30,Dyed Diesel,2.2796,client_fountain_opis
+2024-12-30,Unleaded,2.085,client_fountain_opis
+2024-12-31,Diesel,2.3045,client_fountain_opis
+2024-12-31,Dyed Diesel,2.3035,client_fountain_opis
+2024-12-31,Unleaded,2.1034,client_fountain_opis
+2025-01-01,Diesel,2.3237,client_fountain_opis
+2025-01-01,Dyed Diesel,2.3225,client_fountain_opis
+2025-01-01,Unleaded,2.1273,client_fountain_opis
+2025-01-02,Diesel,2.3237,client_fountain_opis
+2025-01-02,Dyed Diesel,2.3225,client_fountain_opis
+2025-01-02,Unleaded,2.1273,client_fountain_opis
+2025-01-03,Diesel,2.3585,client_fountain_opis
+2025-01-03,Dyed Diesel,2.3565,client_fountain_opis
+2025-01-03,Unleaded,2.1531,client_fountain_opis
+2025-01-04,Diesel,2.3528,client_fountain_opis
+2025-01-04,Dyed Diesel,2.3504,client_fountain_opis
+2025-01-04,Unleaded,2.1589,client_fountain_opis
+2025-01-06,Diesel,2.3528,client_fountain_opis
+2025-01-06,Dyed Diesel,2.3504,client_fountain_opis
+2025-01-06,Unleaded,2.1589,client_fountain_opis
+2025-01-07,Diesel,2.3337,client_fountain_opis
+2025-01-07,Dyed Diesel,2.3319,client_fountain_opis
+2025-01-07,Unleaded,2.1332,client_fountain_opis
+2025-01-08,Diesel,2.3163,client_fountain_opis
+2025-01-08,Dyed Diesel,2.3162,client_fountain_opis
+2025-01-08,Unleaded,2.1283,client_fountain_opis
+2025-01-09,Diesel,2.2577,client_fountain_opis
+2025-01-09,Dyed Diesel,2.2591,client_fountain_opis
+2025-01-09,Unleaded,2.1092,client_fountain_opis
+2025-01-10,Diesel,2.2918,client_fountain_opis
+2025-01-10,Dyed Diesel,2.2942,client_fountain_opis
+2025-01-10,Unleaded,2.1367,client_fountain_opis
+2025-01-11,Diesel,2.3934,client_fountain_opis
+2025-01-11,Dyed Diesel,2.3949,client_fountain_opis
+2025-01-11,Unleaded,2.1788,client_fountain_opis
+2025-01-13,Diesel,2.3934,client_fountain_opis
+2025-01-13,Dyed Diesel,2.3949,client_fountain_opis
+2025-01-13,Unleaded,2.1788,client_fountain_opis
+2025-01-14,Diesel,2.38,client_fountain_opis
+2025-01-14,Dyed Diesel,2.3805,client_fountain_opis
+2025-01-14,Unleaded,2.1938,client_fountain_opis
+2025-01-15,Diesel,2.3092,client_fountain_opis
+2025-01-15,Dyed Diesel,2.3108,client_fountain_opis
+2025-01-15,Unleaded,2.1967,client_fountain_opis
+2025-01-16,Diesel,2.444,client_fountain_opis
+2025-01-16,Dyed Diesel,2.4422,client_fountain_opis
+2025-01-16,Unleaded,2.236,client_fountain_opis
+2025-01-17,Diesel,2.4862,client_fountain_opis
+2025-01-17,Dyed Diesel,2.4857,client_fountain_opis
+2025-01-17,Unleaded,2.2115,client_fountain_opis
+2025-01-18,Diesel,2.5433,client_fountain_opis
+2025-01-18,Dyed Diesel,2.5436,client_fountain_opis
+2025-01-18,Unleaded,2.2337,client_fountain_opis
+2025-01-20,Diesel,2.5433,client_fountain_opis
+2025-01-20,Dyed Diesel,2.5436,client_fountain_opis
+2025-01-20,Unleaded,2.2337,client_fountain_opis
+2025-01-21,Diesel,2.5464,client_fountain_opis
+2025-01-21,Dyed Diesel,2.5472,client_fountain_opis
+2025-01-21,Unleaded,2.2316,client_fountain_opis
+2025-01-22,Diesel,2.5035,client_fountain_opis
+2025-01-22,Dyed Diesel,2.5038,client_fountain_opis
+2025-01-22,Unleaded,2.2093,client_fountain_opis
+2025-01-23,Diesel,2.4699,client_fountain_opis
+2025-01-23,Dyed Diesel,2.4713,client_fountain_opis
+2025-01-23,Unleaded,2.2019,client_fountain_opis
+2025-01-24,Diesel,2.4652,client_fountain_opis
+2025-01-24,Dyed Diesel,2.4662,client_fountain_opis
+2025-01-24,Unleaded,2.216,client_fountain_opis
+2025-01-25,Diesel,2.483,client_fountain_opis
+2025-01-25,Dyed Diesel,2.4811,client_fountain_opis
+2025-01-25,Unleaded,2.2322,client_fountain_opis
+2025-01-27,Diesel,2.483,client_fountain_opis
+2025-01-27,Dyed Diesel,2.4811,client_fountain_opis
+2025-01-27,Unleaded,2.2322,client_fountain_opis
+2025-01-28,Diesel,2.4382,client_fountain_opis
+2025-01-28,Dyed Diesel,2.4355,client_fountain_opis
+2025-01-28,Unleaded,2.2393,client_fountain_opis
+2025-01-29,Diesel,2.3923,client_fountain_opis
+2025-01-29,Dyed Diesel,2.3894,client_fountain_opis
+2025-01-29,Unleaded,2.2557,client_fountain_opis
+2025-01-30,Diesel,2.4075,client_fountain_opis
+2025-01-30,Dyed Diesel,2.4035,client_fountain_opis
+2025-01-30,Unleaded,2.2274,client_fountain_opis
+2025-01-31,Diesel,2.4238,client_fountain_opis
+2025-01-31,Dyed Diesel,2.4183,client_fountain_opis
+2025-01-31,Unleaded,2.2289,client_fountain_opis
+2025-02-01,Diesel,2.4339,client_fountain_opis
+2025-02-01,Dyed Diesel,2.4305,client_fountain_opis
+2025-02-01,Unleaded,2.2335,client_fountain_opis
+2025-02-03,Diesel,2.4339,client_fountain_opis
+2025-02-03,Dyed Diesel,2.4305,client_fountain_opis
+2025-02-03,Unleaded,2.2335,client_fountain_opis
+2025-02-04,Diesel,2.4874,client_fountain_opis
+2025-02-04,Dyed Diesel,2.4808,client_fountain_opis
+2025-02-04,Unleaded,2.2976,client_fountain_opis
+2025-02-05,Diesel,2.452,client_fountain_opis
+2025-02-05,Dyed Diesel,2.4462,client_fountain_opis
+2025-02-05,Unleaded,2.2935,client_fountain_opis
+2025-02-06,Diesel,2.3865,client_fountain_opis
+2025-02-06,Dyed Diesel,2.389,client_fountain_opis
+2025-02-06,Unleaded,2.2656,client_fountain_opis
+2025-02-07,Diesel,2.3557,client_fountain_opis
+2025-02-07,Dyed Diesel,2.3584,client_fountain_opis
+2025-02-07,Unleaded,2.2986,client_fountain_opis
+2025-02-10,Diesel,2.3733,client_fountain_opis
+2025-02-10,Dyed Diesel,2.3739,client_fountain_opis
+2025-02-10,Unleaded,2.2922,client_fountain_opis
+2025-02-11,Diesel,2.37,client_fountain_opis
+2025-02-11,Dyed Diesel,2.3714,client_fountain_opis
+2025-02-11,Unleaded,2.2974,client_fountain_opis
+2025-02-12,Diesel,2.4213,client_fountain_opis
+2025-02-12,Dyed Diesel,2.426,client_fountain_opis
+2025-02-12,Unleaded,2.3542,client_fountain_opis
+2025-02-13,Diesel,2.38,client_fountain_opis
+2025-02-13,Dyed Diesel,2.3847,client_fountain_opis
+2025-02-13,Unleaded,2.3062,client_fountain_opis
+2025-02-14,Diesel,2.4304,client_fountain_opis
+2025-02-14,Dyed Diesel,2.4285,client_fountain_opis
+2025-02-14,Unleaded,2.3323,client_fountain_opis
+2025-02-15,Diesel,2.4443,client_fountain_opis
+2025-02-15,Dyed Diesel,2.4427,client_fountain_opis
+2025-02-15,Unleaded,2.3081,client_fountain_opis
+2025-02-17,Diesel,2.4443,client_fountain_opis
+2025-02-17,Dyed Diesel,2.4427,client_fountain_opis
+2025-02-17,Unleaded,2.3081,client_fountain_opis
+2025-02-18,Diesel,2.4452,client_fountain_opis
+2025-02-18,Dyed Diesel,2.4437,client_fountain_opis
+2025-02-18,Unleaded,2.3052,client_fountain_opis
+2025-02-19,Diesel,2.4017,client_fountain_opis
+2025-02-19,Dyed Diesel,2.3996,client_fountain_opis
+2025-02-19,Unleaded,2.2879,client_fountain_opis
+2025-02-20,Diesel,2.3411,client_fountain_opis
+2025-02-20,Dyed Diesel,2.3435,client_fountain_opis
+2025-02-20,Unleaded,2.2854,client_fountain_opis
+2025-02-21,Diesel,2.312,client_fountain_opis
+2025-02-21,Dyed Diesel,2.3124,client_fountain_opis
+2025-02-21,Unleaded,2.2865,client_fountain_opis
+2025-02-22,Diesel,2.3115,client_fountain_opis
+2025-02-22,Dyed Diesel,2.3085,client_fountain_opis
+2025-02-22,Unleaded,2.2377,client_fountain_opis
+2025-02-24,Diesel,2.3115,client_fountain_opis
+2025-02-24,Dyed Diesel,2.3085,client_fountain_opis
+2025-02-24,Unleaded,2.2377,client_fountain_opis
+2025-02-25,Diesel,2.3748,client_fountain_opis
+2025-02-25,Dyed Diesel,2.3736,client_fountain_opis
+2025-02-25,Unleaded,2.2519,client_fountain_opis
+2025-02-26,Diesel,2.373,client_fountain_opis
+2025-02-26,Dyed Diesel,2.374,client_fountain_opis
+2025-02-26,Unleaded,2.2499,client_fountain_opis
+2025-02-27,Diesel,2.3545,client_fountain_opis
+2025-02-27,Dyed Diesel,2.3591,client_fountain_opis
+2025-02-27,Unleaded,2.246,client_fountain_opis
+2025-02-28,Diesel,2.4117,client_fountain_opis
+2025-02-28,Dyed Diesel,2.4137,client_fountain_opis
+2025-02-28,Unleaded,2.285,client_fountain_opis
+2025-03-01,Diesel,2.3942,client_fountain_opis
+2025-03-01,Dyed Diesel,2.3967,client_fountain_opis
+2025-03-01,Unleaded,2.2465,client_fountain_opis
+2025-03-03,Diesel,2.3942,client_fountain_opis
+2025-03-03,Dyed Diesel,2.3967,client_fountain_opis
+2025-03-03,Unleaded,2.2465,client_fountain_opis
+2025-03-04,Diesel,2.3333,client_fountain_opis
+2025-03-04,Dyed Diesel,2.3382,client_fountain_opis
+2025-03-04,Unleaded,2.271,client_fountain_opis
+2025-03-05,Diesel,2.3674,client_fountain_opis
+2025-03-05,Dyed Diesel,2.3734,client_fountain_opis
+2025-03-05,Unleaded,2.2782,client_fountain_opis
+2025-03-06,Diesel,2.341,client_fountain_opis
+2025-03-06,Dyed Diesel,2.3484,client_fountain_opis
+2025-03-06,Unleaded,2.2181,client_fountain_opis
+2025-03-07,Diesel,2.3468,client_fountain_opis
+2025-03-07,Dyed Diesel,2.353,client_fountain_opis
+2025-03-07,Unleaded,2.1669,client_fountain_opis
+2025-03-08,Diesel,2.3543,client_fountain_opis
+2025-03-08,Dyed Diesel,2.3605,client_fountain_opis
+2025-03-08,Unleaded,2.1616,client_fountain_opis
+2025-03-10,Diesel,2.3543,client_fountain_opis
+2025-03-10,Dyed Diesel,2.3605,client_fountain_opis
+2025-03-10,Unleaded,2.1616,client_fountain_opis
+2025-03-11,Diesel,2.3342,client_fountain_opis
+2025-03-11,Dyed Diesel,2.341,client_fountain_opis
+2025-03-11,Unleaded,2.1595,client_fountain_opis
+2025-03-12,Diesel,2.3531,client_fountain_opis
+2025-03-12,Dyed Diesel,2.3608,client_fountain_opis
+2025-03-12,Unleaded,2.1754,client_fountain_opis
+2025-03-13,Diesel,2.3754,client_fountain_opis
+2025-03-13,Dyed Diesel,2.383,client_fountain_opis
+2025-03-13,Unleaded,2.2155,client_fountain_opis
+2025-03-14,Diesel,2.3593,client_fountain_opis
+2025-03-14,Dyed Diesel,2.3614,client_fountain_opis
+2025-03-14,Unleaded,2.1916,client_fountain_opis
+2025-03-15,Diesel,2.3657,client_fountain_opis
+2025-03-15,Dyed Diesel,2.3683,client_fountain_opis
+2025-03-15,Unleaded,2.2047,client_fountain_opis
+2025-03-17,Diesel,2.3657,client_fountain_opis
+2025-03-17,Dyed Diesel,2.3683,client_fountain_opis
+2025-03-17,Unleaded,2.2047,client_fountain_opis
+2025-03-18,Diesel,2.3963,client_fountain_opis
+2025-03-18,Dyed Diesel,2.3986,client_fountain_opis
+2025-03-18,Unleaded,2.2488,client_fountain_opis
+2025-03-19,Diesel,2.3894,client_fountain_opis
+2025-03-19,Dyed Diesel,2.3919,client_fountain_opis
+2025-03-19,Unleaded,2.2374,client_fountain_opis
+2025-03-20,Diesel,2.4331,client_fountain_opis
+2025-03-20,Dyed Diesel,2.4366,client_fountain_opis
+2025-03-20,Unleaded,2.2493,client_fountain_opis
+2025-03-21,Diesel,2.4665,client_fountain_opis
+2025-03-21,Dyed Diesel,2.4717,client_fountain_opis
+2025-03-21,Unleaded,2.2756,client_fountain_opis
+2025-03-22,Diesel,2.4762,client_fountain_opis
+2025-03-22,Dyed Diesel,2.4837,client_fountain_opis
+2025-03-22,Unleaded,2.3084,client_fountain_opis
+2025-03-24,Diesel,2.4762,client_fountain_opis
+2025-03-24,Dyed Diesel,2.4837,client_fountain_opis
+2025-03-24,Unleaded,2.3084,client_fountain_opis
+2025-03-25,Diesel,2.5074,client_fountain_opis
+2025-03-25,Dyed Diesel,2.5167,client_fountain_opis
+2025-03-25,Unleaded,2.3335,client_fountain_opis
+2025-03-26,Diesel,2.5362,client_fountain_opis
+2025-03-26,Dyed Diesel,2.546,client_fountain_opis
+2025-03-26,Unleaded,2.3222,client_fountain_opis
+2025-03-27,Diesel,2.5638,client_fountain_opis
+2025-03-27,Dyed Diesel,2.5599,client_fountain_opis
+2025-03-27,Unleaded,2.3676,client_fountain_opis
+2025-03-28,Diesel,2.5817,client_fountain_opis
+2025-03-28,Dyed Diesel,2.5794,client_fountain_opis
+2025-03-28,Unleaded,2.3887,client_fountain_opis
+2025-03-29,Diesel,2.5617,client_fountain_opis
+2025-03-29,Dyed Diesel,2.5606,client_fountain_opis
+2025-03-29,Unleaded,2.4084,client_fountain_opis
+2025-03-31,Diesel,2.5617,client_fountain_opis
+2025-03-31,Dyed Diesel,2.5606,client_fountain_opis
+2025-03-31,Unleaded,2.4084,client_fountain_opis
+2025-04-01,Diesel,2.633,client_fountain_opis
+2025-04-01,Dyed Diesel,2.6322,client_fountain_opis
+2025-04-01,Unleaded,2.4636,client_fountain_opis
+2025-04-02,Diesel,2.6413,client_fountain_opis
+2025-04-02,Dyed Diesel,2.6394,client_fountain_opis
+2025-04-02,Unleaded,2.4847,client_fountain_opis
+2025-04-03,Diesel,2.6884,client_fountain_opis
+2025-04-03,Dyed Diesel,2.6931,client_fountain_opis
+2025-04-03,Unleaded,2.521,client_fountain_opis
+2025-04-04,Diesel,2.5909,client_fountain_opis
+2025-04-04,Dyed Diesel,2.5923,client_fountain_opis
+2025-04-04,Unleaded,2.4042,client_fountain_opis
+2025-04-05,Diesel,2.5202,client_fountain_opis
+2025-04-05,Dyed Diesel,2.5239,client_fountain_opis
+2025-04-05,Unleaded,2.3436,client_fountain_opis
+2025-04-07,Diesel,2.5202,client_fountain_opis
+2025-04-07,Dyed Diesel,2.5239,client_fountain_opis
+2025-04-07,Unleaded,2.3436,client_fountain_opis
+2025-04-08,Diesel,2.5146,client_fountain_opis
+2025-04-08,Dyed Diesel,2.5199,client_fountain_opis
+2025-04-08,Unleaded,2.3377,client_fountain_opis
+2025-04-09,Diesel,2.4778,client_fountain_opis
+2025-04-09,Dyed Diesel,2.4832,client_fountain_opis
+2025-04-09,Unleaded,2.3169,client_fountain_opis
+2025-04-10,Diesel,2.5362,client_fountain_opis
+2025-04-10,Dyed Diesel,2.5409,client_fountain_opis
+2025-04-10,Unleaded,2.3569,client_fountain_opis
+2025-04-11,Diesel,2.5,client_fountain_opis
+2025-04-11,Dyed Diesel,2.4999,client_fountain_opis
+2025-04-11,Unleaded,2.2899,client_fountain_opis
+2025-04-12,Diesel,2.521,client_fountain_opis
+2025-04-12,Dyed Diesel,2.5213,client_fountain_opis
+2025-04-12,Unleaded,2.3354,client_fountain_opis
+2025-04-14,Diesel,2.521,client_fountain_opis
+2025-04-14,Dyed Diesel,2.5213,client_fountain_opis
+2025-04-14,Unleaded,2.3354,client_fountain_opis
+2025-04-15,Diesel,2.5472,client_fountain_opis
+2025-04-15,Dyed Diesel,2.5473,client_fountain_opis
+2025-04-15,Unleaded,2.3543,client_fountain_opis
+2025-04-16,Diesel,2.5314,client_fountain_opis
+2025-04-16,Dyed Diesel,2.5315,client_fountain_opis
+2025-04-16,Unleaded,2.3577,client_fountain_opis
+2025-04-17,Diesel,2.5588,client_fountain_opis
+2025-04-17,Dyed Diesel,2.5583,client_fountain_opis
+2025-04-17,Unleaded,2.3721,client_fountain_opis
+2025-04-18,Diesel,2.5935,client_fountain_opis
+2025-04-18,Dyed Diesel,2.5933,client_fountain_opis
+2025-04-18,Unleaded,2.4207,client_fountain_opis
+2025-04-19,Diesel,2.5935,client_fountain_opis
+2025-04-19,Dyed Diesel,2.5933,client_fountain_opis
+2025-04-21,Diesel,2.5935,client_fountain_opis
+2025-04-21,Dyed Diesel,2.5933,client_fountain_opis
+2025-04-21,Unleaded,2.4207,client_fountain_opis
+2025-04-22,Diesel,2.5642,client_fountain_opis
+2025-04-22,Dyed Diesel,2.565,client_fountain_opis
+2025-04-22,Unleaded,2.3901,client_fountain_opis
+2025-04-23,Diesel,2.5812,client_fountain_opis
+2025-04-23,Dyed Diesel,2.5802,client_fountain_opis
+2025-04-23,Unleaded,2.4175,client_fountain_opis
+2025-04-24,Diesel,2.5585,client_fountain_opis
+2025-04-24,Dyed Diesel,2.5571,client_fountain_opis
+2025-04-24,Unleaded,2.4025,client_fountain_opis
+2025-04-25,Diesel,2.5666,client_fountain_opis
+2025-04-25,Dyed Diesel,2.5714,client_fountain_opis
+2025-04-25,Unleaded,2.4385,client_fountain_opis
+2025-04-26,Diesel,2.5817,client_fountain_opis
+2025-04-26,Dyed Diesel,2.5881,client_fountain_opis
+2025-04-26,Unleaded,2.4535,client_fountain_opis
+2025-04-28,Diesel,2.5817,client_fountain_opis
+2025-04-28,Dyed Diesel,2.5881,client_fountain_opis
+2025-04-28,Unleaded,2.4535,client_fountain_opis
+2025-04-29,Diesel,2.5699,client_fountain_opis
+2025-04-29,Dyed Diesel,2.5757,client_fountain_opis
+2025-04-29,Unleaded,2.4417,client_fountain_opis
+2025-04-30,Diesel,2.506,client_fountain_opis
+2025-04-30,Dyed Diesel,2.5115,client_fountain_opis
+2025-04-30,Unleaded,2.3976,client_fountain_opis
+2025-05-01,Diesel,2.452,client_fountain_opis
+2025-05-01,Dyed Diesel,2.4579,client_fountain_opis
+2025-05-01,Unleaded,2.3574,client_fountain_opis
+2025-05-02,Diesel,2.4609,client_fountain_opis
+2025-05-02,Dyed Diesel,2.4659,client_fountain_opis
+2025-05-02,Unleaded,2.3597,client_fountain_opis
+2025-05-03,Diesel,2.4469,client_fountain_opis
+2025-05-03,Dyed Diesel,2.4516,client_fountain_opis
+2025-05-03,Unleaded,2.3248,client_fountain_opis
+2025-05-05,Diesel,2.4469,client_fountain_opis
+2025-05-05,Dyed Diesel,2.4516,client_fountain_opis
+2025-05-05,Unleaded,2.3248,client_fountain_opis
+2025-05-06,Diesel,2.4275,client_fountain_opis
+2025-05-06,Dyed Diesel,2.4326,client_fountain_opis
+2025-05-06,Unleaded,2.3265,client_fountain_opis
+2025-05-07,Diesel,2.4411,client_fountain_opis
+2025-05-07,Dyed Diesel,2.4457,client_fountain_opis
+2025-05-07,Unleaded,2.3698,client_fountain_opis
+2025-05-08,Diesel,2.3985,client_fountain_opis
+2025-05-08,Dyed Diesel,2.4075,client_fountain_opis
+2025-05-08,Unleaded,2.3359,client_fountain_opis
+2025-05-09,Diesel,2.461,client_fountain_opis
+2025-05-09,Dyed Diesel,2.4691,client_fountain_opis
+2025-05-09,Unleaded,2.3924,client_fountain_opis
+2025-05-10,Diesel,2.4845,client_fountain_opis
+2025-05-10,Dyed Diesel,2.4929,client_fountain_opis
+2025-05-10,Unleaded,2.4108,client_fountain_opis
+2025-05-12,Diesel,2.4845,client_fountain_opis
+2025-05-12,Dyed Diesel,2.4929,client_fountain_opis
+2025-05-12,Unleaded,2.4108,client_fountain_opis
+2025-05-13,Diesel,2.515,client_fountain_opis
+2025-05-13,Dyed Diesel,2.5218,client_fountain_opis
+2025-05-13,Unleaded,2.4464,client_fountain_opis
+2025-05-14,Diesel,2.5602,client_fountain_opis
+2025-05-14,Dyed Diesel,2.5669,client_fountain_opis
+2025-05-14,Unleaded,2.4744,client_fountain_opis
+2025-05-15,Diesel,2.6001,client_fountain_opis
+2025-05-15,Dyed Diesel,2.601,client_fountain_opis
+2025-05-15,Unleaded,2.4622,client_fountain_opis
+2025-05-16,Diesel,2.5589,client_fountain_opis
+2025-05-16,Dyed Diesel,2.5601,client_fountain_opis
+2025-05-16,Unleaded,2.422,client_fountain_opis
+2025-05-17,Diesel,2.5386,client_fountain_opis
+2025-05-17,Dyed Diesel,2.5405,client_fountain_opis
+2025-05-17,Unleaded,2.4381,client_fountain_opis
+2025-05-19,Diesel,2.5386,client_fountain_opis
+2025-05-19,Dyed Diesel,2.5405,client_fountain_opis
+2025-05-19,Unleaded,2.4381,client_fountain_opis
+2025-05-20,Diesel,2.5293,client_fountain_opis
+2025-05-20,Dyed Diesel,2.531,client_fountain_opis
+2025-05-20,Unleaded,2.4506,client_fountain_opis
+2025-05-21,Diesel,2.5201,client_fountain_opis
+2025-05-21,Dyed Diesel,2.522,client_fountain_opis
+2025-05-21,Unleaded,2.4834,client_fountain_opis
+2025-05-22,Diesel,2.5189,client_fountain_opis
+2025-05-22,Dyed Diesel,2.5208,client_fountain_opis
+2025-05-22,Unleaded,2.46,client_fountain_opis
+2025-05-23,Diesel,2.4932,client_fountain_opis
+2025-05-23,Dyed Diesel,2.4951,client_fountain_opis
+2025-05-23,Unleaded,2.4338,client_fountain_opis
+2025-05-24,Diesel,2.4716,client_fountain_opis
+2025-05-24,Dyed Diesel,2.4722,client_fountain_opis
+2025-05-24,Unleaded,2.4082,client_fountain_opis
+2025-05-26,Diesel,2.4716,client_fountain_opis
+2025-05-26,Dyed Diesel,2.4722,client_fountain_opis
+2025-05-26,Unleaded,2.4082,client_fountain_opis
+2025-05-27,Diesel,2.4716,client_fountain_opis
+2025-05-27,Dyed Diesel,2.4722,client_fountain_opis
+2025-05-27,Unleaded,2.4082,client_fountain_opis
+2025-05-28,Diesel,2.432,client_fountain_opis
+2025-05-28,Dyed Diesel,2.433,client_fountain_opis
+2025-05-28,Unleaded,2.3718,client_fountain_opis
+2025-05-29,Diesel,2.4295,client_fountain_opis
+2025-05-29,Dyed Diesel,2.4298,client_fountain_opis
+2025-05-29,Unleaded,2.3748,client_fountain_opis
+2025-05-30,Diesel,2.3912,client_fountain_opis
+2025-05-30,Dyed Diesel,2.3916,client_fountain_opis
+2025-05-30,Unleaded,2.3372,client_fountain_opis
+2025-05-31,Diesel,2.3623,client_fountain_opis
+2025-05-31,Dyed Diesel,2.3626,client_fountain_opis
+2025-05-31,Unleaded,2.3143,client_fountain_opis
+2025-06-02,Diesel,2.3623,client_fountain_opis
+2025-06-02,Dyed Diesel,2.3626,client_fountain_opis
+2025-06-02,Unleaded,2.3143,client_fountain_opis
+2025-06-03,Diesel,2.3905,client_fountain_opis
+2025-06-03,Dyed Diesel,2.3907,client_fountain_opis
+2025-06-03,Unleaded,2.3425,client_fountain_opis
+2025-06-04,Diesel,2.4363,client_fountain_opis
+2025-06-04,Dyed Diesel,2.4362,client_fountain_opis
+2025-06-04,Unleaded,2.3598,client_fountain_opis
+2025-06-05,Diesel,2.4037,client_fountain_opis
+2025-06-05,Dyed Diesel,2.4033,client_fountain_opis
+2025-06-05,Unleaded,2.3085,client_fountain_opis
+2025-06-06,Diesel,2.4195,client_fountain_opis
+2025-06-06,Dyed Diesel,2.418,client_fountain_opis
+2025-06-06,Unleaded,2.3184,client_fountain_opis
+2025-06-07,Diesel,2.4195,client_fountain_opis
+2025-06-07,Dyed Diesel,2.418,client_fountain_opis
+2025-06-07,Unleaded,2.3184,client_fountain_opis
+2025-06-09,Diesel,2.4473,client_fountain_opis
+2025-06-09,Dyed Diesel,2.4456,client_fountain_opis
+2025-06-09,Unleaded,2.3234,client_fountain_opis
+2025-06-10,Diesel,2.4603,client_fountain_opis
+2025-06-10,Dyed Diesel,2.4585,client_fountain_opis
+2025-06-10,Unleaded,2.3056,client_fountain_opis
+2025-06-11,Diesel,2.4588,client_fountain_opis
+2025-06-11,Dyed Diesel,2.4564,client_fountain_opis
+2025-06-11,Unleaded,2.2907,client_fountain_opis
+2025-06-12,Diesel,2.5158,client_fountain_opis
+2025-06-12,Dyed Diesel,2.5131,client_fountain_opis
+2025-06-12,Unleaded,2.3494,client_fountain_opis
+2025-06-13,Diesel,2.5006,client_fountain_opis
+2025-06-13,Dyed Diesel,2.496,client_fountain_opis
+2025-06-13,Unleaded,2.3171,client_fountain_opis
+2025-06-14,Diesel,2.6482,client_fountain_opis
+2025-06-14,Dyed Diesel,2.6416,client_fountain_opis
+2025-06-14,Unleaded,2.3666,client_fountain_opis
+2025-06-16,Diesel,2.6482,client_fountain_opis
+2025-06-16,Dyed Diesel,2.6416,client_fountain_opis
+2025-06-16,Unleaded,2.3666,client_fountain_opis
+2025-06-17,Diesel,2.651,client_fountain_opis
+2025-06-17,Dyed Diesel,2.6557,client_fountain_opis
+2025-06-17,Unleaded,2.3469,client_fountain_opis
+2025-06-18,Diesel,2.719,client_fountain_opis
+2025-06-18,Dyed Diesel,2.726,client_fountain_opis
+2025-06-18,Unleaded,2.374,client_fountain_opis
+2025-06-19,Diesel,2.7315,client_fountain_opis
+2025-06-19,Dyed Diesel,2.7357,client_fountain_opis
+2025-06-19,Unleaded,2.3968,client_fountain_opis
+2025-06-20,Diesel,2.7462,client_fountain_opis
+2025-06-20,Dyed Diesel,2.7529,client_fountain_opis
+2025-06-20,Unleaded,2.3733,client_fountain_opis
+2025-06-21,Diesel,2.7104,client_fountain_opis
+2025-06-21,Dyed Diesel,2.7118,client_fountain_opis
+2025-06-21,Unleaded,2.3702,client_fountain_opis
+2025-06-23,Diesel,2.7104,client_fountain_opis
+2025-06-23,Dyed Diesel,2.7118,client_fountain_opis
+2025-06-23,Unleaded,2.3702,client_fountain_opis
+2025-06-24,Diesel,2.5401,client_fountain_opis
+2025-06-24,Dyed Diesel,2.5409,client_fountain_opis
+2025-06-24,Unleaded,2.2486,client_fountain_opis
+2025-06-25,Diesel,2.4475,client_fountain_opis
+2025-06-25,Dyed Diesel,2.4472,client_fountain_opis
+2025-06-25,Unleaded,2.1142,client_fountain_opis
+2025-06-26,Diesel,2.4254,client_fountain_opis
+2025-06-26,Dyed Diesel,2.4374,client_fountain_opis
+2025-06-26,Unleaded,2.0908,client_fountain_opis
+2025-06-27,Diesel,2.4404,client_fountain_opis
+2025-06-27,Dyed Diesel,2.4583,client_fountain_opis
+2025-06-27,Unleaded,2.081,client_fountain_opis
+2025-06-28,Diesel,2.39,client_fountain_opis
+2025-06-28,Dyed Diesel,2.4066,client_fountain_opis
+2025-06-28,Unleaded,2.0586,client_fountain_opis
+2025-06-30,Diesel,2.39,client_fountain_opis
+2025-06-30,Dyed Diesel,2.4066,client_fountain_opis
+2025-06-30,Unleaded,2.0586,client_fountain_opis
+2025-07-01,Diesel,2.4022,client_fountain_opis
+2025-07-01,Dyed Diesel,2.4198,client_fountain_opis
+2025-07-01,Unleaded,2.0495,client_fountain_opis
+2025-07-02,Diesel,2.4333,client_fountain_opis
+2025-07-02,Dyed Diesel,2.4545,client_fountain_opis
+2025-07-02,Unleaded,2.0634,client_fountain_opis
+2025-07-03,Diesel,2.485,client_fountain_opis
+2025-07-03,Dyed Diesel,2.5033,client_fountain_opis
+2025-07-03,Unleaded,2.0635,client_fountain_opis
+2025-07-04,Diesel,2.4613,client_fountain_opis
+2025-07-04,Dyed Diesel,2.4795,client_fountain_opis
+2025-07-04,Unleaded,2.0617,client_fountain_opis
+2025-07-05,Diesel,2.4613,client_fountain_opis
+2025-07-05,Dyed Diesel,2.4795,client_fountain_opis
+2025-07-05,Unleaded,2.0617,client_fountain_opis
+2025-07-07,Diesel,2.4613,client_fountain_opis
+2025-07-07,Dyed Diesel,2.4795,client_fountain_opis
+2025-07-07,Unleaded,2.0617,client_fountain_opis
+2025-07-08,Diesel,2.5044,client_fountain_opis
+2025-07-08,Dyed Diesel,2.5223,client_fountain_opis
+2025-07-08,Unleaded,2.1123,client_fountain_opis
+2025-07-09,Diesel,2.5242,client_fountain_opis
+2025-07-09,Dyed Diesel,2.5418,client_fountain_opis
+2025-07-09,Unleaded,2.1504,client_fountain_opis
+2025-07-10,Diesel,2.518,client_fountain_opis
+2025-07-10,Dyed Diesel,2.522,client_fountain_opis
+2025-07-10,Unleaded,2.1407,client_fountain_opis
+2025-07-11,Diesel,2.5007,client_fountain_opis
+2025-07-11,Dyed Diesel,2.5006,client_fountain_opis
+2025-07-11,Unleaded,2.1041,client_fountain_opis
+2025-07-12,Diesel,2.5702,client_fountain_opis
+2025-07-12,Dyed Diesel,2.5704,client_fountain_opis
+2025-07-12,Unleaded,2.134,client_fountain_opis
+2025-07-14,Diesel,2.5702,client_fountain_opis
+2025-07-14,Dyed Diesel,2.5704,client_fountain_opis
+2025-07-14,Unleaded,2.134,client_fountain_opis
+2025-07-15,Diesel,2.5407,client_fountain_opis
+2025-07-15,Dyed Diesel,2.5436,client_fountain_opis
+2025-07-15,Unleaded,2.1051,client_fountain_opis
+2025-07-16,Diesel,2.5416,client_fountain_opis
+2025-07-16,Dyed Diesel,2.5417,client_fountain_opis
+2025-07-16,Unleaded,2.125,client_fountain_opis
+2025-07-17,Diesel,2.5787,client_fountain_opis
+2025-07-17,Dyed Diesel,2.5872,client_fountain_opis
+2025-07-17,Unleaded,2.1097,client_fountain_opis
+2025-07-18,Diesel,2.6578,client_fountain_opis
+2025-07-18,Dyed Diesel,2.6682,client_fountain_opis
+2025-07-18,Unleaded,2.1383,client_fountain_opis
+2025-07-19,Diesel,2.6761,client_fountain_opis
+2025-07-19,Dyed Diesel,2.6897,client_fountain_opis
+2025-07-19,Unleaded,2.1456,client_fountain_opis
+2025-07-21,Diesel,2.6761,client_fountain_opis
+2025-07-21,Dyed Diesel,2.6897,client_fountain_opis
+2025-07-21,Unleaded,2.1456,client_fountain_opis
+2025-07-22,Diesel,2.7412,client_fountain_opis
+2025-07-22,Dyed Diesel,2.758,client_fountain_opis
+2025-07-22,Unleaded,2.1491,client_fountain_opis
+2025-07-23,Diesel,2.7122,client_fountain_opis
+2025-07-23,Dyed Diesel,2.7325,client_fountain_opis
+2025-07-23,Unleaded,2.135,client_fountain_opis
+2025-07-24,Diesel,2.7318,client_fountain_opis
+2025-07-24,Dyed Diesel,2.7477,client_fountain_opis
+2025-07-24,Unleaded,2.1768,client_fountain_opis
+2025-07-25,Diesel,2.7189,client_fountain_opis
+2025-07-25,Dyed Diesel,2.7375,client_fountain_opis
+2025-07-25,Unleaded,2.1794,client_fountain_opis
+2025-07-26,Diesel,2.7125,client_fountain_opis
+2025-07-26,Dyed Diesel,2.7343,client_fountain_opis
+2025-07-26,Unleaded,2.1945,client_fountain_opis
+2025-07-28,Diesel,2.7179,client_fountain_opis
+2025-07-28,Dyed Diesel,2.7377,client_fountain_opis
+2025-07-28,Unleaded,2.1945,client_fountain_opis
+2025-07-29,Diesel,2.7585,client_fountain_opis
+2025-07-29,Dyed Diesel,2.765,client_fountain_opis
+2025-07-29,Unleaded,2.2539,client_fountain_opis

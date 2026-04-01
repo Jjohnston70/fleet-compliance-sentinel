@@ -2,6 +2,7 @@ import {
   fleetComplianceAuthErrorResponse,
   requireFleetComplianceOrgWithRole,
 } from '@/lib/fleet-compliance-auth';
+import { shouldUseRemoteModuleGateway, startRemoteModuleRun } from '@/lib/modules-gateway/remote';
 import { buildValidationError, startModuleRun } from '@/lib/modules-gateway/runner';
 import type { ModuleRunRequest } from '@/lib/modules-gateway/types';
 
@@ -72,6 +73,24 @@ export async function POST(request: Request) {
   if (!parsed.ok) {
     const error = buildValidationError(parsed.error);
     return Response.json({ ok: false, error }, { status: 400 });
+  }
+  
+  if (shouldUseRemoteModuleGateway()) {
+    try {
+      const { res, body } = await startRemoteModuleRun(parsed.data);
+      return Response.json(body, { status: res.status });
+    } catch (error: unknown) {
+      return Response.json(
+        {
+          ok: false,
+          error: {
+            code: 'INTERNAL_ERROR',
+            message: error instanceof Error ? error.message : 'Remote module gateway unavailable',
+          },
+        },
+        { status: 502 },
+      );
+    }
   }
 
   const result = startModuleRun(parsed.data, userId);

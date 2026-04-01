@@ -111,8 +111,10 @@ GENERAL_FALLBACK_LABEL = GENERAL_FALLBACK_PREFIX.lower()
 origins = [origin.strip() for origin in os.getenv("CORS_ORIGINS", "*").split(",") if origin.strip()]
 
 app = FastAPI(title="Pipeline Penny API", version=APP_VERSION)
+from app.modules_router import modules_router
 from app.telematics_router import telematics_router
 
+app.include_router(modules_router)
 app.include_router(telematics_router)
 app.add_middleware(
     CORSMiddleware,

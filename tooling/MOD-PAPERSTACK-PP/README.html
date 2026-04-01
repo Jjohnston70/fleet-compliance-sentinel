@@ -1,0 +1,814 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>README</title>
+    
+    <style>
+        /* ============================================
+         * CSS VARIABLES
+         * All colors defined here via the dark/light toggle above
+         * var(--name) references these throughout the stylesheet
+         * ============================================ */
+        :root {
+            
+            --bg-primary: #0d1117;           /* Page background - very dark blue-gray */
+            --bg-secondary: #161b22;         /* Card/container background - slightly lighter */
+            --bg-tertiary: #21262d;          /* Code blocks, table headers - even lighter */
+            --border-color: #30363d;         /* Borders on tables, blockquotes, hr lines */
+            --text-primary: #e6edf3;         /* Main body text - off-white */
+            --text-secondary: #8b949e;       /* Muted text - gray */
+            --text-link: #58a6ff;            /* Link color - bright blue */
+            --text-heading: #e6edf3;         /* Heading text - same as primary */
+            --code-bg: #161b22;              /* Inline code background */
+            --code-text: #e6edf3;            /* Inline code text color */
+            --blockquote-border: #3b4754;    /* Left border on blockquotes */
+            --blockquote-text: #8b949e;      /* Blockquote text color */
+            --table-row-alt: #161b22;        /* Alternating table row background */
+            --highlight: #1f6feb33;          /* Selected/highlighted text background (33 = 20% opacity) */
+        
+        }
+
+        /* ============================================
+         * RESET & BASE
+         * Remove default browser styling for consistency
+         * ============================================ */
+        * {
+            margin: 0;                                  /* Remove all default margins */
+            padding: 0;                                 /* Remove all default padding */
+            box-sizing: border-box;                     /* Width includes padding + border */
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Noto Sans',  /* GitHub's exact font stack */
+                         Helvetica, Arial, sans-serif, 'Apple Color Emoji',
+                         'Segoe UI Emoji';
+            font-size: 16px;                            /* Base font size - all rem units are relative to this */
+            line-height: 1.5;                           /* Default line spacing */
+            color: var(--text-primary);                 /* Default text color */
+            background-color: var(--bg-primary);        /* Page background */
+            -webkit-font-smoothing: antialiased;        /* Smoother font rendering on Mac/Chrome */
+        }
+
+        /* ============================================
+         * MAIN CONTAINER
+         * The white/dark card that holds all content
+         * Mimics the README container on GitHub
+         * ============================================ */
+        .markdown-body {
+            max-width: 980px;                           /* GitHub's README max width */
+            margin: 32px auto;                          /* 32px top/bottom, auto centers horizontally */
+            padding: 48px;                              /* Internal padding on all sides */
+            background: var(--bg-primary);              /* Container background */
+            border: 1px solid var(--border-color);      /* Subtle border around the container */
+            border-radius: 6px;                         /* Rounded corners */
+        }
+
+        /* ============================================
+         * HEADINGS (h1 through h6)
+         * Each level gets progressively smaller
+         * h1 and h2 get a bottom border (like GitHub)
+         * ============================================ */
+        .markdown-body h1,
+        .markdown-body h2,
+        .markdown-body h3,
+        .markdown-body h4,
+        .markdown-body h5,
+        .markdown-body h6 {
+            margin-top: 24px;                           /* Space above heading */
+            margin-bottom: 16px;                        /* Space below heading */
+            font-weight: 600;                           /* Semi-bold (600 = between normal 400 and bold 700) */
+            line-height: 1.25;                          /* Tighter line height for headings */
+            color: var(--text-heading);
+        }
+
+        .markdown-body h1 {
+            font-size: 2em;                             /* 2x base size = 32px */
+            padding-bottom: 0.3em;                      /* Space between text and border */
+            border-bottom: 1px solid var(--border-color);  /* Horizontal line under h1 (GitHub style) */
+        }
+
+        .markdown-body h2 {
+            font-size: 1.5em;                           /* 1.5x = 24px */
+            padding-bottom: 0.3em;
+            border-bottom: 1px solid var(--border-color);  /* Line under h2 too */
+        }
+
+        .markdown-body h3 { font-size: 1.25em; }     /* 20px */
+        .markdown-body h4 { font-size: 1em; }         /* 16px (same as body but bold) */
+        .markdown-body h5 { font-size: 0.875em; }     /* 14px */
+        .markdown-body h6 { font-size: 0.85em; color: var(--text-secondary); }  /* 13.6px, muted color */
+
+        /* ============================================
+         * PARAGRAPHS & BASIC TEXT
+         * ============================================ */
+        .markdown-body p {
+            margin-bottom: 16px;                        /* Space between paragraphs */
+        }
+
+        .markdown-body a {
+            color: var(--text-link);                    /* Link color */
+            text-decoration: none;                      /* No underline by default */
+        }
+
+        .markdown-body a:hover {
+            text-decoration: underline;                 /* Underline on hover */
+        }
+
+        .markdown-body strong {
+            font-weight: 600;                           /* Bold text */
+        }
+
+        .markdown-body em {
+            font-style: italic;
+        }
+
+        /* ============================================
+         * HORIZONTAL RULES (--- in markdown)
+         * ============================================ */
+        .markdown-body hr {
+            height: 0.25em;                             /* Slightly thick line */
+            padding: 0;
+            margin: 24px 0;                             /* 24px space above and below */
+            background-color: var(--border-color);      /* Gray line color */
+            border: 0;                                  /* Remove default border (we use background instead) */
+            border-radius: 2px;                         /* Slight rounding */
+        }
+
+        /* ============================================
+         * LISTS (bullets and numbered)
+         * ============================================ */
+        .markdown-body ul,
+        .markdown-body ol {
+            margin-bottom: 16px;
+            padding-left: 2em;                          /* Indent the list from the left edge */
+        }
+
+        .markdown-body li {
+            margin-bottom: 4px;                         /* Small gap between list items */
+        }
+
+        .markdown-body li + li {
+            margin-top: 0.25em;                         /* Additional gap between consecutive items */
+        }
+
+        /* Nested lists (list inside a list) */
+        .markdown-body li > ul,
+        .markdown-body li > ol {
+            margin-top: 4px;
+            margin-bottom: 0;                           /* No extra bottom margin for nested lists */
+        }
+
+        /* ============================================
+         * BLOCKQUOTES (> in markdown)
+         * ============================================ */
+        .markdown-body blockquote {
+            margin: 0 0 16px 0;
+            padding: 0 1em;                             /* 1em padding on left and right */
+            color: var(--blockquote-text);              /* Muted text color */
+            border-left: 0.25em solid var(--blockquote-border);  /* Thick left border (GitHub style) */
+        }
+
+        .markdown-body blockquote > :first-child {
+            margin-top: 0;                              /* Remove top margin from first element inside blockquote */
+        }
+
+        .markdown-body blockquote > :last-child {
+            margin-bottom: 0;                           /* Remove bottom margin from last element */
+        }
+
+        /* ============================================
+         * CODE - Inline and Block
+         * ============================================ */
+
+        /* Inline code: `code` in markdown */
+        .markdown-body code {
+            padding: 0.2em 0.4em;                       /* Small padding around inline code */
+            margin: 0;
+            font-size: 85%;                             /* Slightly smaller than body text */
+            font-family: 'SFMono-Regular', Consolas,    /* Monospace font stack */
+                         'Liberation Mono', Menlo, monospace;
+            background-color: var(--code-bg);           /* Light gray background */
+            color: var(--code-text);
+            border-radius: 6px;                         /* Rounded corners */
+            white-space: break-spaces;                  /* Allow wrapping within inline code */
+            word-break: break-word;                     /* Break long words to prevent overflow */
+        }
+
+        /* Code blocks: ```code``` in markdown */
+        .markdown-body pre {
+            margin-bottom: 16px;
+            padding: 16px;                              /* Internal padding */
+            overflow: auto;                             /* Horizontal scrollbar if code is too wide */
+            font-size: 85%;
+            line-height: 1.45;                          /* Slightly tighter than body text */
+            background-color: var(--bg-secondary);      /* Slightly different background than page */
+            border-radius: 6px;                         /* Rounded corners */
+            border: 1px solid var(--border-color);      /* Subtle border */
+            word-wrap: normal;                          /* Don't wrap code lines (use scrollbar instead) */
+        }
+
+        /* Code inside code blocks should NOT have the inline code styling */
+        .markdown-body pre code {
+            padding: 0;                                 /* Remove inline code padding */
+            margin: 0;
+            font-size: 100%;                            /* Full size (the pre already sets 85%) */
+            background-color: transparent;              /* No background (pre handles it) */
+            border-radius: 0;
+            white-space: pre;                           /* Preserve whitespace and line breaks exactly */
+            word-break: normal;
+        }
+
+        /* ============================================
+         * TABLES
+         * ============================================ */
+        .markdown-body table {
+            border-collapse: collapse;                  /* Remove gaps between cell borders */
+            border-spacing: 0;                          /* No space between cells */
+            margin-bottom: 16px;
+            width: 100%;                                /* Full width of container */
+            overflow: auto;                             /* Scrollbar if table is too wide */
+            display: block;                             /* Required for overflow to work on tables */
+        }
+
+        .markdown-body th,
+        .markdown-body td {
+            padding: 6px 13px;                          /* Cell padding: 6px top/bottom, 13px left/right */
+            border: 1px solid var(--border-color);      /* Cell borders */
+            text-align: left;                           /* Left-align by default */
+        }
+
+        .markdown-body th {
+            font-weight: 600;                           /* Bold header text */
+            background-color: var(--bg-secondary);      /* Slightly shaded header row */
+        }
+
+        /* Alternating row colors (zebra striping) */
+        .markdown-body tr:nth-child(2n) {
+            background-color: var(--table-row-alt);     /* Every even row gets a subtle background */
+        }
+
+        /* ============================================
+         * IMAGES
+         * ============================================ */
+        .markdown-body img {
+            max-width: 100%;                            /* Never wider than container */
+            height: auto;                               /* Maintain aspect ratio */
+            border-radius: 4px;                         /* Slight rounding */
+        }
+
+        /* ============================================
+         * SUB/SUP (small text tags often used in markdown)
+         * ============================================ */
+        .markdown-body sub {
+            font-size: 0.75em;                          /* 75% of parent size */
+            color: var(--text-secondary);               /* Muted color */
+        }
+
+        /* ============================================
+         * TASK LISTS (- [ ] and - [x] in markdown)
+         * ============================================ */
+        .markdown-body .task-list-item {
+            list-style-type: none;                      /* Remove bullet since checkbox replaces it */
+        }
+
+        .markdown-body .task-list-item input {
+            margin-right: 0.5em;                        /* Space between checkbox and text */
+        }
+
+        /* ============================================
+         * PRINT STYLES
+         * Applied when printing (Ctrl+P)
+         * ============================================ */
+        @media print {
+            body {
+                background: white;                      /* White background for print */
+            }
+            .markdown-body {
+                border: none;                           /* Remove border for print */
+                margin: 0;                              /* No margins */
+                padding: 20px;                          /* Minimal padding */
+                max-width: 100%;                        /* Full page width */
+            }
+        }
+
+        /* ============================================
+         * RESPONSIVE (Mobile)
+         * ============================================ */
+        @media (max-width: 767px) {
+            .markdown-body {
+                padding: 16px;                          /* Less padding on mobile */
+                margin: 0;                              /* No margin - fill the screen */
+                border: none;                           /* No border on mobile */
+                border-radius: 0;                       /* No rounded corners */
+            }
+        }
+    </style>
+    
+</head>
+<body>
+    <article class="markdown-body">
+        <h1 id="paperstack-document-engineering-toolkit">PaperStack — Document Engineering Toolkit</h1>
+<p><strong>True North Data Strategies LLC</strong><br />
+Turning Data into Direction</p>
+<hr />
+<h2 id="what-this-is">What This Is</h2>
+<p>A complete set of tools for creating, converting, reverse engineering, and inspecting documents. Build marketing flyers from code, reverse engineer Word docs into generator scripts, inspect scanned PDFs for data extraction coordinates, and convert Markdown to styled HTML — all annotated with line-by-line dev notes for learning.</p>
+<p>This started as a Pipeline product flyer generator and grew into a full document engineering system. Every tool in here is production-ready and Pipeline Punks teaching-ready.</p>
+<hr />
+<h2 id="whats-in-the-box">What&rsquo;s In The Box</h2>
+<div class="highlight"><pre><span></span><code>PaperStack/
+│
+├── paperstack.py                                    ← Main launcher (single entry point)
+├── setup.py                                         ← One-command install
+├── requirements.txt                                 ← Python dependencies
+├── README.md                                        ← You are here
+├── .gitignore                                       ← Git ignore rules
+│
+├── src/                                             ← All tool source code
+│   ├── generators/                                  ← Code → Document (Forward)
+│   │   ├── pdf_generator.py                         ← Python → PDF (reportlab)
+│   │   └── docx_generator.js                        ← Node.js → Word (docx-js)
+│   │
+│   ├── converters/                                  ← Format conversion
+│   │   └── md_to_html.py                            ← Markdown → GitHub-styled HTML
+│   │
+│   ├── reverse/                                     ← Document → Code (Reverse)
+│   │   └── doc_to_code.py                           ← DOCX → generator code
+│   │
+│   ├── inspectors/                                  ← Visual document inspection
+│   │   ├── pdf_inspector.py                         ← Click-to-extract for text PDFs
+│   │   └── pdf_scan_inspector.py                    ← OCR inspector for scanned PDFs
+│   │
+│   └── shared/                                      ← Shared config and utilities
+│       └── config.py                                ← Brand colors, paths, tool registry
+│
+├── templates/                                       ← Ready-to-use document templates
+│   ├── Pipeline_Flyer.html                          ← Standalone HTML flyer
+│   └── Pipeline_Flyer.md                            ← Markdown flyer
+│
+├── assets/                                          ← Marketing and example files
+│   ├── marketing/                                   ← Email and social templates
+│   │   ├── Pipeline_Cold_Email_Template.md
+│   │   └── Pipeline_Social_Media_Posts.md
+│   └── examples/                                    ← Generated code examples
+│       └── TNDS_Email_Sequences_generator.*         ← Reverse engineer output samples
+│
+├── docs/                                            ← Documentation
+│   └── USER_MANUAL.md                               ← Complete operator guide
+│
+├── invoice-samples/                                 ← 12 fleet maintenance invoice PDFs
+│
+├── tests/                                           ← Invoice extraction test suite
+│   ├── conftest.py                                  ← pytest fixtures
+│   ├── expected_values.json                         ← Ground truth per vendor
+│   └── test_invoice_extraction.py                   ← 24 test cases
+│
+├── invoice-module/                                  ← STANDALONE package (copy to other projects)
+│   ├── README.md                                    ← Standalone usage guide
+│   ├── requirements.txt                             ← Invoice module dependencies only
+│   ├── setup.py                                     ← pip install -e .
+│   └── ...                                          ← Self-contained copy of the module
+│
+├── TNDS_UserManual_InvoiceExtractionModule_*.docx   ← Branded user manual
+├── TODO.md                                          ← Invoice module task tracker
+│
+├── output/                                          ← Generated files land here
+│
+└── scripts/                                         ← Future automation scripts
+</code></pre></div>
+
+<hr />
+<h2 id="the-tools-at-a-glance">The Tools at a Glance</h2>
+<h3 id="forward-code-document">Forward: Code → Document</h3>
+<table>
+<thead>
+<tr>
+<th>Tool</th>
+<th>Input</th>
+<th>Output</th>
+<th>Library</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>Pipeline_Flyer_Generator.py</code></td>
+<td>Python script</td>
+<td>PDF file</td>
+<td>reportlab</td>
+</tr>
+<tr>
+<td><code>Pipeline_Flyer_Generator_DOCX.js</code></td>
+<td>Node.js script</td>
+<td>Word file</td>
+<td>docx-js</td>
+</tr>
+<tr>
+<td><code>Pipeline_Flyer.html</code></td>
+<td>Double-click</td>
+<td>Browser view</td>
+<td>HTML/CSS</td>
+</tr>
+<tr>
+<td><code>Pipeline_Flyer.md</code></td>
+<td>Text editor</td>
+<td>Markdown view</td>
+<td>None</td>
+</tr>
+</tbody>
+</table>
+<h3 id="converter-format-format">Converter: Format → Format</h3>
+<table>
+<thead>
+<tr>
+<th>Tool</th>
+<th>Input</th>
+<th>Output</th>
+<th>Library</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>md_to_html.py</code></td>
+<td>Any <code>.md</code> file</td>
+<td>Styled <code>.html</code> file</td>
+<td>markdown</td>
+</tr>
+</tbody>
+</table>
+<h3 id="reverse-document-code">Reverse: Document → Code</h3>
+<table>
+<thead>
+<tr>
+<th>Tool</th>
+<th>Input</th>
+<th>Output</th>
+<th>Library</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>doc_to_code.py</code></td>
+<td>Any <code>.docx</code> file</td>
+<td>Generator code (JS, Python, or PDF)</td>
+<td>python-docx</td>
+</tr>
+</tbody>
+</table>
+<h3 id="inspector-visual-document-analysis">Inspector: Visual Document Analysis</h3>
+<table>
+<thead>
+<tr>
+<th>Tool</th>
+<th>Input</th>
+<th>Output</th>
+<th>Library</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>pdf_inspector.py</code></td>
+<td>Text-based PDF</td>
+<td>Click-to-extract code</td>
+<td>pdfplumber + Flask</td>
+</tr>
+<tr>
+<td><code>pdf_scan_inspector.py</code></td>
+<td>Scanned or text PDF</td>
+<td>OCR click-to-extract code</td>
+<td>Tesseract + pdfplumber + Flask</td>
+</tr>
+</tbody>
+</table>
+<h3 id="invoice-extraction-module-v110">Invoice Extraction Module (v1.1.0)</h3>
+<table>
+<thead>
+<tr>
+<th>Tool</th>
+<th>Input</th>
+<th>Output</th>
+<th>Library</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>invoice_module.extract()</code></td>
+<td>Single invoice PDF</td>
+<td>Structured dict</td>
+<td>pdfplumber</td>
+</tr>
+<tr>
+<td><code>invoice_module.extract_batch()</code></td>
+<td>Multiple invoice PDFs</td>
+<td>List of dicts</td>
+<td>pdfplumber</td>
+</tr>
+<tr>
+<td><code>invoice_module.to_xlsx()</code></td>
+<td>Extracted data</td>
+<td>Excel (maintenance_import format)</td>
+<td>openpyxl</td>
+</tr>
+<tr>
+<td><code>invoice_module.to_fleet_xlsx()</code></td>
+<td>Extracted data</td>
+<td>Excel (fleet-compliance format)</td>
+<td>openpyxl</td>
+</tr>
+<tr>
+<td><code>vendor_parsers.py</code></td>
+<td>Any of 12 vendor PDFs</td>
+<td>Auto-detected structured data</td>
+<td>pdfplumber + pytesseract</td>
+</tr>
+<tr>
+<td><code>compliance.py</code></td>
+<td>Extraction operations</td>
+<td>Audit logs + PII masking</td>
+<td>SOC2 controls</td>
+</tr>
+</tbody>
+</table>
+<p>12 vendors supported. 24 tests passing. SOC2 compliant. See <code>src/invoice_module/README.md</code> for full API reference or the TNDS User Manual (.docx) for operator guide.</p>
+<p>Also available as a <strong>standalone package</strong> at <code>invoice-module/</code> — copy it to any project and <code>pip install -e .</code> to use.</p>
+<hr />
+<h2 id="quick-start">Quick Start</h2>
+<h3 id="first-time-setup">First Time Setup</h3>
+<div class="highlight"><pre><span></span><code><span class="nb">cd </span><span class="n">C</span><span class="p">:\</span><span class="n">Users</span><span class="p">\</span><span class="n">truenorth</span><span class="p">\</span><span class="n">Desktop</span><span class="p">\</span><span class="n">PaperStack</span>
+<span class="n">python</span> <span class="n">setup</span><span class="p">.</span><span class="n">py</span>
+</code></pre></div>
+
+<h3 id="using-the-launcher-recommended">Using the Launcher (Recommended)</h3>
+<p>Every tool runs through <code>paperstack.py</code> — one command, one entry point:</p>
+<div class="highlight"><pre><span></span><code><span class="nb">cd </span><span class="n">C</span><span class="p">:\</span><span class="n">Users</span><span class="p">\</span><span class="n">truenorth</span><span class="p">\</span><span class="n">Desktop</span><span class="p">\</span><span class="n">PaperStack</span>
+
+<span class="n">python</span> <span class="n">paperstack</span><span class="p">.</span><span class="n">py</span>                                    <span class="c"># Show all commands</span>
+<span class="n">python</span> <span class="n">paperstack</span><span class="p">.</span><span class="n">py</span> <span class="n">list</span>                               <span class="c"># Show all tools with status</span>
+<span class="n">python</span> <span class="n">paperstack</span><span class="p">.</span><span class="n">py</span> <span class="n">check</span>                              <span class="c"># Check all dependencies</span>
+
+<span class="n">python</span> <span class="n">paperstack</span><span class="p">.</span><span class="n">py</span> <span class="n">generate</span> <span class="n">pdf</span>                       <span class="c"># Generate Pipeline PDF flyer</span>
+<span class="n">python</span> <span class="n">paperstack</span><span class="p">.</span><span class="n">py</span> <span class="n">generate</span> <span class="n">docx</span>                      <span class="c"># Generate Pipeline Word flyer</span>
+
+<span class="n">python</span> <span class="n">paperstack</span><span class="p">.</span><span class="n">py</span> <span class="n">convert</span> <span class="n">README</span><span class="p">.</span><span class="nb">md </span>                 <span class="c"># Convert Markdown to HTML</span>
+<span class="n">python</span> <span class="n">paperstack</span><span class="p">.</span><span class="n">py</span> <span class="n">convert</span> <span class="n">README</span><span class="p">.</span><span class="nb">md </span><span class="p">-</span><span class="n">-dark</span> <span class="p">-</span><span class="n">-open</span>    <span class="c"># Dark theme + auto-open</span>
+
+<span class="n">python</span> <span class="n">paperstack</span><span class="p">.</span><span class="n">py</span> <span class="n">reverse</span> <span class="n">proposal</span><span class="p">.</span><span class="n">docx</span>              <span class="c"># Reverse DOCX → Node.js code</span>
+<span class="n">python</span> <span class="n">paperstack</span><span class="p">.</span><span class="n">py</span> <span class="n">reverse</span> <span class="n">proposal</span><span class="p">.</span><span class="n">docx</span> <span class="p">-</span><span class="n">-python</span>     <span class="c"># Reverse DOCX → Python code</span>
+<span class="n">python</span> <span class="n">paperstack</span><span class="p">.</span><span class="n">py</span> <span class="n">reverse</span> <span class="n">proposal</span><span class="p">.</span><span class="n">docx</span> <span class="p">-</span><span class="n">-pdf</span>        <span class="c"># Reverse DOCX → reportlab code</span>
+
+<span class="n">python</span> <span class="n">paperstack</span><span class="p">.</span><span class="n">py</span> <span class="n">inspect</span> <span class="n">invoice</span><span class="p">.</span><span class="n">pdf</span>                <span class="c"># Visual inspector for text PDFs</span>
+<span class="n">python</span> <span class="n">paperstack</span><span class="p">.</span><span class="n">py</span> <span class="n">scan</span> <span class="n">scanned_form</span><span class="p">.</span><span class="n">pdf</span>              <span class="c"># OCR inspector for scanned PDFs</span>
+<span class="n">python</span> <span class="n">paperstack</span><span class="p">.</span><span class="n">py</span> <span class="n">scan</span> <span class="n">blurry</span><span class="p">.</span><span class="n">pdf</span> <span class="p">-</span><span class="n">-dpi</span> <span class="n">400</span>          <span class="c"># Higher DPI for poor scans</span>
+</code></pre></div>
+
+<h3 id="running-tools-directly-also-works">Running Tools Directly (Also Works)</h3>
+<div class="highlight"><pre><span></span><code><span class="n">python</span> <span class="n">src</span><span class="p">\</span><span class="n">generators</span><span class="p">\</span><span class="n">pdf_generator</span><span class="p">.</span><span class="n">py</span>
+<span class="n">node</span> <span class="n">src</span><span class="p">\</span><span class="n">generators</span><span class="p">\</span><span class="n">docx_generator</span><span class="p">.</span><span class="n">js</span>
+<span class="n">python</span> <span class="n">src</span><span class="p">\</span><span class="n">converters</span><span class="p">\</span><span class="n">md_to_html</span><span class="p">.</span><span class="n">py</span> <span class="n">README</span><span class="p">.</span><span class="nb">md </span><span class="p">-</span><span class="n">-dark</span>
+<span class="n">python</span> <span class="n">src</span><span class="p">\</span><span class="n">reverse</span><span class="p">\</span><span class="n">doc_to_code</span><span class="p">.</span><span class="n">py</span> <span class="n">document</span><span class="p">.</span><span class="n">docx</span> <span class="p">-</span><span class="n">-python</span>
+<span class="n">python</span> <span class="n">src</span><span class="p">\</span><span class="n">inspectors</span><span class="p">\</span><span class="n">pdf_inspector</span><span class="p">.</span><span class="n">py</span> <span class="n">invoice</span><span class="p">.</span><span class="n">pdf</span>
+<span class="n">python</span> <span class="n">src</span><span class="p">\</span><span class="n">inspectors</span><span class="p">\</span><span class="n">pdf_scan_inspector</span><span class="p">.</span><span class="n">py</span> <span class="n">scan</span><span class="p">.</span><span class="n">pdf</span> <span class="p">-</span><span class="n">-dpi</span> <span class="n">400</span>
+</code></pre></div>
+
+<hr />
+<h2 id="system-requirements">System Requirements</h2>
+<h3 id="already-installed-your-windows-desktop">Already Installed (Your Windows Desktop)</h3>
+<ul>
+<li>Windows 10/11</li>
+<li>Python 3.14</li>
+<li>Node.js</li>
+<li>PowerShell 7.5</li>
+<li>VS Code</li>
+<li>Any web browser (Chrome, Edge, Firefox)</li>
+</ul>
+<h3 id="python-libraries">Python Libraries</h3>
+<table>
+<thead>
+<tr>
+<th>Library</th>
+<th>Used By</th>
+<th>Install</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>reportlab</td>
+<td>PDF Generator</td>
+<td><code>pip install reportlab</code></td>
+</tr>
+<tr>
+<td>python-docx</td>
+<td>Doc Reverse Engineer</td>
+<td><code>pip install python-docx</code></td>
+</tr>
+<tr>
+<td>markdown</td>
+<td>Markdown Converter</td>
+<td><code>pip install markdown pymdown-extensions</code></td>
+</tr>
+<tr>
+<td>pdfplumber</td>
+<td>PDF Inspector</td>
+<td><code>pip install pdfplumber</code></td>
+</tr>
+<tr>
+<td>flask</td>
+<td>PDF Inspectors (web UI)</td>
+<td><code>pip install flask</code></td>
+</tr>
+<tr>
+<td>pdf2image</td>
+<td>PDF Inspectors (rendering)</td>
+<td><code>pip install pdf2image</code></td>
+</tr>
+<tr>
+<td>Pillow</td>
+<td>PDF Inspectors (image handling)</td>
+<td><code>pip install Pillow</code></td>
+</tr>
+<tr>
+<td>pytesseract</td>
+<td>Scan Inspector (OCR)</td>
+<td><code>pip install pytesseract</code></td>
+</tr>
+</tbody>
+</table>
+<h3 id="nodejs-libraries">Node.js Libraries</h3>
+<table>
+<thead>
+<tr>
+<th>Library</th>
+<th>Used By</th>
+<th>Install</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>docx</td>
+<td>Word Generator</td>
+<td><code>npm install docx</code></td>
+</tr>
+</tbody>
+</table>
+<h3 id="external-tools-not-pythonnode">External Tools (Not Python/Node)</h3>
+<table>
+<thead>
+<tr>
+<th>Tool</th>
+<th>Used By</th>
+<th>Install</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Poppler</td>
+<td>PDF Inspectors (page rendering)</td>
+<td>Download from <a href="https://github.com/oschwartz10612/poppler-windows/releases">GitHub</a>, extract to <code>C:\poppler</code>, add <code>C:\poppler\Library\bin</code> to PATH</td>
+</tr>
+<tr>
+<td>Tesseract OCR</td>
+<td>Scan Inspector</td>
+<td>Download from <a href="https://github.com/UB-Mannheim/tesseract/wiki">GitHub</a>, install, add to PATH</td>
+</tr>
+</tbody>
+</table>
+<h3 id="install-everything-at-once">Install Everything at Once</h3>
+<div class="highlight"><pre><span></span><code><span class="nb">cd </span><span class="n">C</span><span class="p">:\</span><span class="n">Users</span><span class="p">\</span><span class="n">truenorth</span><span class="p">\</span><span class="n">Desktop</span><span class="p">\</span><span class="n">PaperStack</span>
+<span class="n">python</span> <span class="n">setup</span><span class="p">.</span><span class="n">py</span>                    <span class="c"># Installs everything</span>
+<span class="n">python</span> <span class="n">paperstack</span><span class="p">.</span><span class="n">py</span> <span class="n">check</span>             <span class="c"># Verify it all worked</span>
+</code></pre></div>
+
+<p>Or manually:</p>
+<div class="highlight"><pre><span></span><code><span class="n">pip</span> <span class="n">install</span> <span class="n">-r</span> <span class="n">requirements</span><span class="p">.</span><span class="n">txt</span>
+<span class="n">npm</span> <span class="n">install</span> <span class="n">docx</span>
+</code></pre></div>
+
+<hr />
+<h2 id="how-each-tool-works">How Each Tool Works</h2>
+<h3 id="pipeline-flyer-generator-python-pdf">Pipeline Flyer Generator (Python → PDF)</h3>
+<p>Uses reportlab to draw on a canvas with x,y coordinates. Every element is positioned absolutely — you place text, shapes, and colors at exact points on the page. The coordinate system starts at bottom-left (0,0) and goes to top-right (612, 792) for US Letter. Every line is annotated with what it does and what happens when you change parameters.</p>
+<h3 id="pipeline-flyer-generator-nodejs-word">Pipeline Flyer Generator (Node.js → Word)</h3>
+<p>Uses docx-js to build Word documents from JavaScript objects. The key technique is invisible tables with colored cell backgrounds to create the appearance of designed sections. Every cell has borders set to <code>BorderStyle.NONE</code> and shading set to <code>ShadingType.CLEAR</code> with a fill color. Units are DXA (1440 = 1 inch) and half-points for font sizes (24 = 12pt).</p>
+<h3 id="markdown-to-html-converter">Markdown to HTML Converter</h3>
+<p>Takes any <code>.md</code> file and wraps it in a self-contained HTML page with GitHub-style CSS. Supports light and dark themes. All styling is inline — no external files, no internet needed. Good for making documentation look professional without a build step.</p>
+<h3 id="document-reverse-engineer">Document Reverse Engineer</h3>
+<p>Reads a <code>.docx</code> file using python-docx, extracts every paragraph, run, table, style, color, font, and margin, then generates runnable code that recreates the document. Three output modes: Node.js (docx-js), Python (python-docx), or Python (reportlab for PDF). The generated code is commented and ready to edit.</p>
+<h3 id="pdf-inspector-text-pdfs">PDF Inspector (Text PDFs)</h3>
+<p>Opens a web browser with a split-screen view. Left side shows the PDF rendered as an image with invisible clickable overlays on every word. Right side shows extraction code. Click any text and get the exact coordinates, font, size, and pdfplumber code to extract it. Drag to select a region and get code for all elements in that zone. Outputs ready-to-use code for writing to Excel, CSV, or database.</p>
+<h3 id="pdf-scan-inspector-scanned-pdfs">PDF Scan Inspector (Scanned PDFs)</h3>
+<p>Same split-screen UI as the text inspector but handles scanned documents. Auto-detects whether a PDF is text-based or scanned. For scanned pages, runs Tesseract OCR to find every word, then gives the same click-to-extract workflow. Shows confidence scores for OCR results (green = high, yellow = medium, red = low). Generates pytesseract extraction code instead of pdfplumber code for scanned pages.</p>
+<hr />
+<h2 id="creating-client-specific-flyers">Creating Client-Specific Flyers</h2>
+<p>All generators keep content at the top of the file and layout code below. To create a version for a specific client, edit the content variables:</p>
+<h3 id="python-pdf">Python (PDF)</h3>
+<div class="highlight"><pre><span></span><code><span class="n">HEADLINE</span> <span class="o">=</span> <span class="s2">&quot;PIPELINE SUMMIT&quot;</span>
+<span class="n">TAGLINE_1</span> <span class="o">=</span> <span class="s2">&quot;Your listings, transactions, and team — in one place.&quot;</span>
+<span class="n">OUTPUT_FILE</span> <span class="o">=</span> <span class="s2">&quot;Pipeline_Summit.pdf&quot;</span>
+</code></pre></div>
+
+<h3 id="javascript-word">JavaScript (Word)</h3>
+<div class="highlight"><pre><span></span><code><span class="kd">const</span><span class="w"> </span><span class="nx">HEADLINE</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;PIPELINE SUMMIT&quot;</span><span class="p">;</span>
+<span class="kd">const</span><span class="w"> </span><span class="nx">TAGLINE_1</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;Your listings, transactions, and team — in one place.&quot;</span><span class="p">;</span>
+<span class="kd">const</span><span class="w"> </span><span class="nx">OUTPUT_FILE</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;Pipeline_Summit.docx&quot;</span><span class="p">;</span>
+</code></pre></div>
+
+<h3 id="html">HTML</h3>
+<p>Find and replace text in the <code>&lt;body&gt;</code> section. Colors are in CSS variables at the top.</p>
+<h3 id="markdown">Markdown</h3>
+<p>Edit the text directly. No code involved.</p>
+<hr />
+<h2 id="brand-colors-all-formats">Brand Colors (All Formats)</h2>
+<table>
+<thead>
+<tr>
+<th>Color</th>
+<th>Hex</th>
+<th>Usage</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Navy</td>
+<td>#1a3a5c</td>
+<td>Primary background</td>
+</tr>
+<tr>
+<td>Navy Light</td>
+<td>#1f4570</td>
+<td>Hero section</td>
+</tr>
+<tr>
+<td>Navy Card</td>
+<td>#162e48</td>
+<td>Card backgrounds</td>
+</tr>
+<tr>
+<td>Navy Dark</td>
+<td>#0f2236</td>
+<td>Footer</td>
+</tr>
+<tr>
+<td>Teal</td>
+<td>#3d8eb9</td>
+<td>Accent, headers, CTA</td>
+</tr>
+<tr>
+<td>White</td>
+<td>#ffffff</td>
+<td>Headlines</td>
+</tr>
+<tr>
+<td>Text Light</td>
+<td>#c8dae8</td>
+<td>Body text</td>
+</tr>
+<tr>
+<td>Text Muted</td>
+<td>#a0b8cc</td>
+<td>Secondary text</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="teaching-notes">Teaching Notes</h2>
+<p>Every file in this toolkit follows the same pattern:</p>
+<ol>
+<li>Header comment block — what the file does, how to run it, what it needs</li>
+<li>Cheat sheet — units, syntax reference, common patterns</li>
+<li>Content section — all editable text and colors at the top of the file</li>
+<li>Layout section — positioning and spacing variables</li>
+<li>Implementation — rendering code with line-by-line annotations</li>
+</ol>
+<p>Dev note format: what this line does, what parameters control it, what happens when you change values. This is Pipeline Punks curriculum material — every file is a lesson.</p>
+<hr />
+<h2 id="troubleshooting">Troubleshooting</h2>
+<h3 id="python-python-not-recognized">Python: &lsquo;python&rsquo; not recognized</h3>
+<p>Reinstall Python and check &ldquo;Add to PATH&rdquo; during setup. Or use <code>py</code> instead of <code>python</code>.</p>
+<h3 id="node-node-not-recognized">Node: &lsquo;node&rsquo; not recognized</h3>
+<p>Reinstall Node.js from nodejs.org. The installer adds it to PATH.</p>
+<h3 id="reportlab-no-module-named-reportlab">reportlab: No module named &lsquo;reportlab&rsquo;</h3>
+<div class="highlight"><pre><span></span><code><span class="n">pip</span> <span class="n">install</span> <span class="n">reportlab</span>
+</code></pre></div>
+
+<h3 id="docx-cannot-find-module-docx">docx: Cannot find module &lsquo;docx&rsquo;</h3>
+<p>Run <code>npm install docx</code> in the same folder as the <code>.js</code> file.</p>
+<h3 id="pdf-inspector-poppler-not-found">PDF Inspector: poppler not found</h3>
+<p>Download Poppler, extract to <code>C:\poppler</code>, add <code>C:\poppler\Library\bin</code> to your system PATH. Restart your terminal.</p>
+<h3 id="scan-inspector-tesseract-not-found">Scan Inspector: tesseract not found</h3>
+<p>Download Tesseract from the UB-Mannheim page, install it, and make sure &ldquo;Add to PATH&rdquo; is checked. If it still fails, add this line to the top of the script:</p>
+<div class="highlight"><pre><span></span><code><span class="n">pytesseract</span><span class="o">.</span><span class="n">pytesseract</span><span class="o">.</span><span class="n">tesseract_cmd</span> <span class="o">=</span> <span class="sa">r</span><span class="s1">&#39;C:\Program Files\Tesseract-OCR\tesseract.exe&#39;</span>
+</code></pre></div>
+
+<h3 id="pdf-inspector-blank-page-or-no-words">PDF Inspector: blank page or no words</h3>
+<p>If the PDF is scanned (image-only), use <code>pdf_scan_inspector.py</code> instead of <code>pdf_inspector.py</code>. The scan inspector auto-detects and runs OCR.</p>
+<h3 id="no-background-colors-when-printing-html">No background colors when printing HTML</h3>
+<p>In your browser&rsquo;s print dialog, check &ldquo;Background graphics&rdquo; before saving as PDF.</p>
+<hr />
+<p><strong>True North Data Strategies LLC</strong><br />
+Jacob Johnston | 555-555-5555 | jacob@truenorthstrategyops.com<br />
+Fixed scope, fixed price. No open-ended projects. No surprise invoices.</p>
+<h1 id="paperstack">PAPERSTACK</h1>
+    </article>
+</body>
+</html>

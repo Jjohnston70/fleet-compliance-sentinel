@@ -1,0 +1,37 @@
+{
+  "spt:RWTC": {
+    "last_checked_date": "2026-03-30",
+    "last_success_date": "2026-03-30",
+    "last_rows_fetched": 6,
+    "last_rows_added": 6,
+    "last_period_seen": "2026-03-23"
+  },
+  "spt:EER_EPD2F_PF4_Y35NY_DPG": {
+    "last_checked_date": "2026-03-30",
+    "last_success_date": "2026-03-30",
+    "last_rows_fetched": 6,
+    "last_rows_added": 6,
+    "last_period_seen": "2026-03-23"
+  },
+  "spt:EER_EPD2DXL0_PF4_Y35NY_DPG": {
+    "last_checked_date": "2026-03-30",
+    "last_success_date": "2026-03-30",
+    "last_rows_fetched": 6,
+    "last_rows_added": 0,
+    "last_period_seen": "2026-03-23"
+  },
+  "spt:EER_EPMRU_PF4_Y35NY_DPG": {
+    "last_checked_date": "2026-03-30",
+    "last_success_date": "2026-03-30",
+    "last_rows_fetched": 6,
+    "last_rows_added": 6,
+    "last_period_seen": "2026-03-23"
+  },
+  "gnd:EMM_EPM0_PTE_SCO_DPG": {
+    "last_checked_date": "2026-03-30",
+    "last_success_date": "2026-03-30",
+    "last_rows_fetched": 2,
+    "last_rows_added": 0,
+    "last_period_seen": "2026-03-23"
+  }
+}

@@ -13,6 +13,11 @@ COPY data ./data
 COPY integrations ./integrations
 COPY models ./models
 COPY scripts ./scripts
+COPY tooling ./tooling
+
+RUN pip install --no-cache-dir -r tooling/ML-EIA-PETROLEUM-INTEL/requirements.txt \
+  && pip install --no-cache-dir -r tooling/ML-SIGNAL-STACK-TNCC/requirements.txt \
+  && pip install --no-cache-dir -r tooling/MOD-PAPERSTACK-PP/requirements.txt
 
 EXPOSE 8000
 

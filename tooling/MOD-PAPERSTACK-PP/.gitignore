@@ -1,0 +1,38 @@
+# DOC_GEN .gitignore
+
+# Output files (generated, not source)
+output/
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+.venv/
+venv/
+*.egg-info/
+dist/
+build/
+.pytest_cache/
+
+# Node
+node_modules/
+package-lock.json
+
+# OS
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Temp
+*.tmp
+*.bak
+pytest-cache-files-*/
+
+# Audit logs (contain operational data)
+audit.jsonl

@@ -13,6 +13,11 @@ COPY railway-backend/data ./data
 COPY railway-backend/integrations ./integrations
 COPY railway-backend/models ./models
 COPY railway-backend/scripts ./scripts
+COPY tooling ./tooling
+
+RUN pip install --no-cache-dir -r tooling/ML-EIA-PETROLEUM-INTEL/requirements.txt \
+  && pip install --no-cache-dir -r tooling/ML-SIGNAL-STACK-TNCC/requirements.txt \
+  && pip install --no-cache-dir -r tooling/MOD-PAPERSTACK-PP/requirements.txt
 
 EXPOSE 8000
 

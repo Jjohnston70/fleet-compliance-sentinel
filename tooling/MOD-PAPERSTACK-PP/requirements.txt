@@ -1,0 +1,27 @@
+# PaperStack - Python Dependencies
+# Install: pip install -r requirements.txt
+# Pinned: 2026-03-26
+
+# Generators
+reportlab>=4.4.10           # PDF creation (pdf_generator.py)
+
+# Converters
+markdown>=3.10.2            # Markdown parsing (md_to_html.py)
+pymdown-extensions>=10.21   # Extended Markdown features (md_to_html.py)
+
+# Reverse Engineering
+python-docx>=1.2.0          # Read/write Word documents (doc_to_code.py)
+pypdf>=3.17.4               # PDF metadata reading (doc_to_code.py)
+
+# Inspectors
+pdfplumber>=0.11.9          # PDF text/table extraction (pdf_inspector.py, vendor_parsers.py)
+flask>=3.0.0                # Web server for inspector UI (pdf_inspector.py, pdf_scan_inspector.py)
+pdf2image>=1.17.0           # PDF page rendering (pdf_inspector.py, pdf_scan_inspector.py)
+Pillow>=12.1.1              # Image processing (pdf_scan_inspector.py)
+pytesseract>=0.3.13         # OCR engine wrapper (pdf_scan_inspector.py, vendor_parsers.py)
+
+# Export Targets
+openpyxl>=3.1.5             # Excel file creation (inspector export, invoice_module)
+
+# Testing
+pytest>=9.0.0               # Test framework (tests/)

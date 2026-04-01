@@ -1,0 +1,608 @@
+<!--
+  Pipeline Flyer - HTML VERSION
+  TRUE NORTH DATA STRATEGIES
+  =============================================
+
+  HOW TO USE:
+  1. Save this file as Pipeline_Flyer.html
+  2. Double-click it to open in any browser
+  3. Edit any text or color directly in this file
+  4. Refresh browser to see changes
+  5. Print to PDF from browser (Ctrl+P > Save as PDF) for a print-ready version
+
+  HOW HTML/CSS WORKS (CRASH COURSE):
+  - HTML = the STRUCTURE (what elements exist: headings, paragraphs, dividers)
+  - CSS = the STYLING (how elements look: colors, sizes, spacing, layout)
+  - HTML uses TAGS: <div>, <h1>, <p>, <span> etc.
+  - CSS uses PROPERTIES: color, background, font-size, padding, margin, etc.
+  - CSS goes inside <style> tags at the top, HTML goes inside <body> tags below
+
+  CSS UNITS CHEAT SHEET:
+  - px    = pixels (fixed size, most common)
+  - rem   = relative to root font size (1rem = 16px default, scales with zoom)
+  - em    = relative to parent font size
+  - %     = percentage of parent element's size
+  - vw/vh = percentage of browser window width/height (100vw = full width)
+
+  CSS BOX MODEL (every element is a box):
+  - content  = the text/image inside
+  - padding  = space INSIDE the border (between content and border)
+  - border   = the outline around the element
+  - margin   = space OUTSIDE the border (between this element and neighbors)
+  - Think of it like a picture frame: art (content) > matting (padding) > frame (border) > wall space (margin)
+
+  LAYOUT CHEAT SHEET:
+  - display: flex        = Arrange children in a row or column
+  - flex-direction: row  = Children go left to right (default)
+  - flex-direction: column = Children go top to bottom
+  - justify-content      = Align along the MAIN axis (horizontal for row, vertical for column)
+  - align-items          = Align along the CROSS axis (vertical for row, horizontal for column)
+  - gap                  = Space between flex children
+  - max-width            = Element won't grow wider than this
+  - margin: 0 auto       = Center a block element horizontally
+-->
+
+<!DOCTYPE html>
+<!-- DOCTYPE tells the browser this is an HTML5 document -->
+
+<html lang="en">
+<!-- <html> is the root element | lang="en" tells search engines and screen readers this page is in English -->
+
+<head>
+<!-- <head> contains metadata, styles, and settings - nothing here is visible on the page itself -->
+
+  <meta charset="UTF-8">
+  <!-- charset="UTF-8" means this file supports special characters like em dashes (—), smart quotes (""), copyright (©), etc. -->
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <!-- viewport meta tag makes the page responsive on mobile devices | width=device-width means "match the screen width" | initial-scale=1.0 means "don't zoom in or out by default" -->
+
+  <title>Pipeline - True North Data Strategies</title>
+  <!-- <title> shows in the browser tab and in search engine results -->
+
+  <!-- Google Fonts import - loads the "DM Sans" font family from Google's free font library -->
+  <!-- You can change this to any Google Font: https://fonts.google.com -->
+  <!-- To change: pick a font on Google Fonts, click "Get embed code", replace this URL -->
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,400;0,500;0,700&display=swap" rel="stylesheet">
+
+  <style>
+    /*
+     * ============================================
+     * CSS VARIABLES (Custom Properties)
+     * ============================================
+     * Defined once here, used everywhere with var(--name)
+     * Change a color here and it updates the ENTIRE page
+     * :root means these variables are available globally
+     */
+    :root {
+      --navy: #1a3a5c;           /* Primary dark background */
+      --navy-light: #1f4570;     /* Hero section background - slightly lighter for depth */
+      --navy-card: #162e48;      /* Card backgrounds (HOW IT WORKS section) */
+      --navy-dark: #0f2236;      /* Footer background - darkest shade */
+      --teal: #3d8eb9;           /* Primary accent color - headers, buttons, highlights */
+      --white: #ffffff;          /* Pure white for headlines */
+      --text-light: #c8dae8;     /* Body text on dark bg */
+      --text-muted: #a0b8cc;     /* Secondary/description text */
+      --text-subtle: #6b8aa5;    /* Footer text */
+    }
+
+    /*
+     * ============================================
+     * RESET & BASE STYLES
+     * ============================================
+     * These remove default browser styling so everything
+     * looks consistent across Chrome, Firefox, Edge, etc.
+     */
+
+    * {
+      margin: 0;                 /* Remove default margins from ALL elements */
+      padding: 0;                /* Remove default padding from ALL elements */
+      box-sizing: border-box;    /* Makes width/height include padding and border, not just content | without this, a 100px wide box with 10px padding would actually be 120px wide */
+    }
+
+    body {
+      font-family: 'DM Sans', sans-serif;  /* Use DM Sans font, fall back to any sans-serif if it fails to load */
+      background: #0d1b2a;                  /* Dark navy background behind the flyer (visible if window is wider than flyer) */
+      color: var(--text-light);             /* Default text color for the page */
+      line-height: 1.6;                     /* Line spacing: 1.6x the font size | 1.0 = lines touching, 1.6 = comfortable reading */
+    }
+
+    /*
+     * ============================================
+     * FLYER CONTAINER
+     * ============================================
+     * This wraps the entire flyer content
+     * max-width keeps it from stretching too wide on big screens
+     * margin: 0 auto centers it horizontally
+     */
+    .flyer {
+      max-width: 850px;          /* Flyer won't exceed 850px wide (roughly letter-width on screen) | change this to make flyer wider/narrower */
+      margin: 0 auto;           /* 0 top/bottom margin, auto left/right = centered horizontally on page */
+      background: var(--navy);   /* Navy background for the flyer itself */
+      overflow: hidden;          /* Clips any content that extends beyond the flyer boundaries | prevents diagonal line from causing horizontal scroll */
+    }
+
+    /*
+     * ============================================
+     * TOP ACCENT BAR
+     * ============================================
+     * Thin teal strip at the very top
+     */
+    .accent-bar-top {
+      height: 6px;               /* 6px tall thin strip | change this number to make it thicker/thinner */
+      background: var(--teal);   /* Teal color */
+      width: 100%;               /* Full width of the flyer */
+    }
+
+    /*
+     * ============================================
+     * COMPANY INFO BAR
+     * ============================================
+     */
+    .company-bar {
+      padding: 12px 48px;        /* 12px top/bottom, 48px left/right | padding is INSIDE the element | first value = vertical, second = horizontal */
+      font-size: 0.75rem;        /* 0.75rem = 12px (0.75 x 16) | small text for company info */
+      color: var(--text-muted);  /* Muted color - not attention-grabbing */
+      letter-spacing: 0.5px;     /* Adds tiny space between each letter | makes small uppercase text more readable */
+    }
+
+    /*
+     * ============================================
+     * HERO SECTION
+     * ============================================
+     * The main headline area with PIPELINE, taglines, and description
+     */
+    .hero {
+      background: var(--navy-light);  /* Slightly lighter navy than the rest of the page for visual separation */
+      padding: 48px 48px 40px;        /* 48px top, 48px left/right, 40px bottom | 3 values = top, horizontal, bottom */
+      position: relative;              /* Allows absolutely-positioned children (like the diagonal) to be placed relative to this element, not the page */
+      overflow: hidden;                /* Hides anything that extends beyond this section (the diagonal line bleeds off-edge) */
+    }
+
+    /* Diagonal decorative line behind the hero content */
+    .hero::before {
+      content: '';                     /* Required for pseudo-elements to render - even if empty */
+      position: absolute;              /* Removes from document flow, positioned relative to .hero */
+      top: -50px;                      /* Starts 50px above the hero section */
+      left: -100px;                    /* Starts 100px left of the hero (off-screen for bleed effect) */
+      right: -100px;                   /* Extends 100px right of the hero */
+      height: 200px;                   /* 200px tall band */
+      background: rgba(42, 85, 128, 0.4);  /* Semi-transparent blue | rgba = red, green, blue, alpha(opacity) | 0.4 = 40% opaque */
+      transform: rotate(-8deg);        /* Rotates the element -8 degrees (tilts left) | this creates the diagonal effect */
+      z-index: 0;                      /* Stacking order: 0 = behind content (content has z-index: 1 by default when positioned) */
+    }
+
+    /* Make all hero content sit ABOVE the diagonal line */
+    .hero > * {
+      position: relative;              /* Creates a stacking context so these elements sit above the z-index: 0 diagonal */
+      z-index: 1;                      /* Higher z-index = on top of the diagonal */
+    }
+
+    /* "PIPELINE" headline */
+    .hero h1 {
+      font-size: 4rem;                /* 4rem = 64px (4 x 16) | the largest text on the page */
+      font-weight: 700;               /* 700 = bold | weights go from 100 (thin) to 900 (black) */
+      color: var(--white);            /* White text */
+      margin-bottom: 8px;             /* 8px space below the headline before the teal underline */
+      letter-spacing: 2px;            /* Spreads letters apart slightly - common for large headlines */
+      line-height: 1.1;               /* Tight line height for large text (1.1x font size) | large text needs tighter spacing than body text */
+    }
+
+    /* Teal underline bar below PIPELINE */
+    .hero-underline {
+      width: 140px;                    /* 140px wide - doesn't span full width, just an accent */
+      height: 4px;                     /* 4px tall thin bar */
+      background: var(--teal);         /* Teal color */
+      margin-bottom: 24px;            /* 24px space below before taglines */
+    }
+
+    /* Tagline styling */
+    .tagline {
+      font-size: 1.15rem;             /* ~18.4px */
+      margin-bottom: 4px;             /* Tiny gap between tagline 1 and 2 */
+    }
+
+    .tagline-bold {
+      font-weight: 700;               /* Bold */
+      color: var(--white);            /* White to emphasize over the regular tagline */
+      margin-bottom: 20px;            /* 20px gap before the body paragraph */
+    }
+
+    /* Hero body paragraph */
+    .hero-body {
+      font-size: 1rem;                /* 16px - standard body text */
+      color: var(--text-muted);       /* Muted color - secondary to headlines and taglines */
+      max-width: 600px;               /* Limits paragraph width for readability | long lines are hard to read, 600px keeps it comfortable */
+      line-height: 1.7;               /* Generous line spacing for the body text */
+    }
+
+    /* Stat callout (5+) - positioned in top-right of hero */
+    .hero-stat {
+      position: absolute;              /* Positioned relative to .hero (which has position: relative) */
+      right: 48px;                     /* 48px from right edge of hero section */
+      bottom: 40px;                    /* 40px from bottom of hero section */
+      text-align: right;              /* Right-align the text within this element */
+    }
+
+    .hero-stat .number {
+      font-size: 3.5rem;              /* ~56px - large attention-grabbing number */
+      font-weight: 700;
+      color: var(--teal);             /* Teal accent color */
+      line-height: 1;                 /* Tight line height so the description text sits close below */
+    }
+
+    .hero-stat .label {
+      font-size: 0.8rem;              /* ~12.8px small text */
+      color: var(--text-muted);
+    }
+
+    /*
+     * ============================================
+     * SECTION HEADERS (SOUND FAMILIAR?, WHAT YOU GET)
+     * ============================================
+     */
+    .section-header {
+      color: var(--teal);             /* Teal text */
+      font-size: 0.9rem;              /* ~14.4px */
+      font-weight: 700;               /* Bold */
+      letter-spacing: 1px;            /* Slight letter spacing for all-caps text */
+      padding: 24px 48px 12px;        /* 24px top (gap from previous section), 48px sides (align with content), 12px bottom */
+    }
+
+    /*
+     * ============================================
+     * PAIN POINTS - Three columns
+     * ============================================
+     * Uses CSS Flexbox for the 3-column layout
+     * display: flex puts children side by side
+     */
+    .pain-points {
+      display: flex;                   /* Flexbox: arrange children (.pain-col) in a row */
+      gap: 24px;                       /* 24px space between each column */
+      padding: 0 48px 32px;           /* 0 top (header above handles spacing), 48px sides, 32px bottom */
+    }
+
+    .pain-col {
+      flex: 1;                         /* flex: 1 means each column takes equal width | 3 columns with flex: 1 each = 33.3% each */
+    }
+
+    .pain-col h3 {
+      font-size: 0.95rem;             /* ~15.2px */
+      font-weight: 700;
+      color: var(--white);            /* White titles */
+      margin-bottom: 8px;             /* Gap between title and description */
+      display: flex;                   /* Makes the title a flex container so we can put the dot and text side by side */
+      align-items: center;            /* Vertically centers the dot with the text */
+      gap: 8px;                        /* Space between dot and text */
+    }
+
+    /* Teal dot before each pain point title */
+    .pain-col h3::before {
+      content: '';                     /* Empty content - the dot is created entirely with CSS */
+      width: 8px;                      /* 8px diameter */
+      height: 8px;
+      background: var(--teal);         /* Teal dot */
+      border-radius: 50%;             /* 50% border-radius on a square = perfect circle */
+      flex-shrink: 0;                  /* Prevents the dot from shrinking when text wraps to multiple lines */
+    }
+
+    .pain-col p {
+      font-size: 0.85rem;             /* ~13.6px - slightly smaller for description text */
+      color: var(--text-muted);
+      line-height: 1.6;
+    }
+
+    /*
+     * ============================================
+     * HOW PIPELINE WORKS - Card
+     * ============================================
+     */
+    .how-card {
+      background: var(--navy-card);    /* Slightly different navy creates "card floating on page" effect */
+      margin: 0 36px;                  /* 0 top/bottom, 36px left/right = card is inset from page edges */
+      padding: 28px 36px;             /* Internal padding inside the card */
+      border-radius: 8px;             /* Rounds the corners of the card | 8px = subtle rounding */
+    }
+
+    .how-card h2 {
+      color: var(--teal);
+      font-size: 0.9rem;
+      font-weight: 700;
+      letter-spacing: 1px;
+      margin-bottom: 20px;            /* Gap between header and first step */
+    }
+
+    .step {
+      display: flex;                   /* Flex row: number, title, and description in a line */
+      align-items: baseline;          /* Aligns text baselines so "01", "Connect", and description text all sit on the same text line */
+      gap: 12px;                       /* 12px between number, title, and description */
+      margin-bottom: 12px;            /* 12px between each step */
+    }
+
+    .step-num {
+      font-size: 1.3rem;              /* ~20.8px - larger for visual emphasis */
+      font-weight: 700;
+      color: var(--teal);
+      min-width: 32px;                /* Ensures all numbers take the same width so titles align vertically */
+    }
+
+    .step-title {
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: var(--white);
+      white-space: nowrap;            /* Prevents title from wrapping to next line */
+    }
+
+    .step-desc {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+    }
+
+    /*
+     * ============================================
+     * WHAT YOU GET - Benefits list
+     * ============================================
+     */
+    .benefits {
+      padding: 0 48px 24px;
+    }
+
+    .benefit {
+      display: flex;                   /* Flex row: dash and text side by side */
+      align-items: flex-start;        /* Top-align in case text wraps to 2 lines */
+      gap: 12px;                       /* Space between dash and text */
+      margin-bottom: 8px;             /* Space between benefit lines */
+      font-size: 0.9rem;
+    }
+
+    .benefit-dash {
+      color: var(--teal);             /* Teal em dash */
+      font-weight: 700;
+      font-size: 1.1rem;
+      flex-shrink: 0;                  /* Don't let the dash shrink - keep it visible */
+      line-height: 1.5;               /* Aligns dash vertically with the text */
+    }
+
+    .benefit-text {
+      color: var(--text-light);
+    }
+
+    /*
+     * ============================================
+     * CTA CARD - Call to action
+     * ============================================
+     */
+    .cta-card {
+      background: var(--teal);         /* Teal background makes this section pop against navy */
+      margin: 16px 36px;               /* 16px top/bottom gap, 36px side inset (matches how-card) */
+      padding: 28px 36px;             /* Internal padding */
+      border-radius: 8px;             /* Rounded corners to match how-card */
+      text-align: center;             /* Center ALL text inside this element */
+    }
+
+    .cta-card h2 {
+      font-size: 1.2rem;              /* ~19.2px */
+      font-weight: 700;
+      color: var(--white);
+      margin-bottom: 8px;
+    }
+
+    .cta-contact {
+      font-size: 0.95rem;
+      color: var(--white);
+      margin-bottom: 4px;
+    }
+
+    .cta-website {
+      font-size: 0.8rem;
+      color: rgba(255, 255, 255, 0.8);  /* White at 80% opacity - slightly softer than pure white */
+    }
+
+    /*
+     * ============================================
+     * FOOTER
+     * ============================================
+     */
+    .footer {
+      background: var(--navy-dark);    /* Darkest navy */
+      display: flex;                   /* Flex row: left text and right text side by side */
+      justify-content: space-between;  /* Push left text to far left, right text to far right */
+      align-items: center;            /* Vertically center both text blocks */
+      padding: 14px 48px;             /* 14px top/bottom, 48px sides */
+      font-size: 0.65rem;             /* ~10.4px - smallest text on the page */
+      color: var(--text-subtle);       /* Subtle gray */
+    }
+
+    /*
+     * ============================================
+     * BOTTOM ACCENT BAR
+     * ============================================
+     */
+    .accent-bar-bottom {
+      height: 4px;                     /* 4px tall - slightly thinner than top bar */
+      background: var(--teal);
+      width: 100%;
+    }
+
+    /*
+     * ============================================
+     * PRINT STYLES
+     * ============================================
+     * @media print applies ONLY when printing (Ctrl+P)
+     * This ensures the flyer prints correctly as a PDF
+     */
+    @media print {
+      body {
+        background: none;              /* Remove the dark background behind the flyer when printing */
+        margin: 0;                     /* Remove body margins */
+        -webkit-print-color-adjust: exact;  /* Force Chrome/Safari to print background colors (they skip them by default to save ink) */
+        print-color-adjust: exact;          /* Same thing for Firefox */
+      }
+      .flyer {
+        max-width: 100%;               /* Let flyer fill the print page */
+        margin: 0;                     /* No margins - fill the page */
+      }
+    }
+
+    /*
+     * ============================================
+     * RESPONSIVE - Mobile adjustments
+     * ============================================
+     * @media (max-width: 600px) applies when screen is narrower than 600px
+     * This makes the flyer readable on phones
+     */
+    @media (max-width: 600px) {
+      .hero h1 { font-size: 2.5rem; }          /* Shrink headline on mobile (4rem -> 2.5rem) */
+      .pain-points { flex-direction: column; }  /* Stack 3 columns vertically instead of side by side */
+      .step { flex-direction: column; gap: 4px; }  /* Stack step elements vertically */
+      .hero-stat { display: none; }             /* Hide the "5+" stat on mobile (not enough room) */
+    }
+  </style>
+</head>
+
+<body>
+<!-- Everything visible on the page goes inside <body> -->
+
+  <!-- .flyer wraps the entire flyer content and centers it on the page -->
+  <div class="flyer">
+
+    <!-- Top teal accent strip -->
+    <div class="accent-bar-top"></div>
+    <!-- Empty div - all visual styling comes from CSS (.accent-bar-top class) -->
+
+    <!-- Company info bar -->
+    <div class="company-bar">
+      TRUE NORTH DATA STRATEGIES &nbsp;|&nbsp; SBA-Certified SDVOSB &nbsp;|&nbsp; Colorado Springs, CO
+      <!-- &nbsp; = non-breaking space - prevents the browser from collapsing multiple spaces into one -->
+    </div>
+
+    <!-- Hero section -->
+    <section class="hero">
+    <!-- <section> is like <div> but with semantic meaning - tells search engines "this is a distinct section" -->
+
+      <!-- Main headline -->
+      <h1>PIPELINE</h1>
+      <!-- <h1> = top-level heading - only one per page for SEO | styled by .hero h1 in CSS -->
+
+      <!-- Teal underline bar -->
+      <div class="hero-underline"></div>
+
+      <!-- Taglines -->
+      <p class="tagline">Your business already has the answers.</p>
+      <!-- <p> = paragraph | class="tagline" applies the .tagline CSS styles -->
+
+      <p class="tagline tagline-bold">Pipeline connects them.</p>
+      <!-- Two classes: "tagline" for base style + "tagline-bold" for bold/white override -->
+
+      <!-- Hero description -->
+      <p class="hero-body">
+        Pipeline connects your scattered business tools &mdash; email, spreadsheets,
+        databases, CRMs, and documents &mdash; into one central hub where anyone on your
+        team can ask questions in plain English and get answers instantly.
+        <!-- &mdash; = em dash character (—) in HTML | use HTML entities for special characters -->
+      </p>
+
+      <!-- Stat callout (positioned absolute to top-right) -->
+      <div class="hero-stat">
+        <div class="number">5+</div>
+        <div class="label">apps checked before one<br>question gets answered</div>
+        <!-- <br> = line break within the same paragraph -->
+      </div>
+    </section>
+
+    <!-- Sound Familiar section header -->
+    <div class="section-header">SOUND FAMILIAR?</div>
+
+    <!-- Three pain point columns -->
+    <div class="pain-points">
+      <!-- Column 1 -->
+      <div class="pain-col">
+        <h3>Information is everywhere</h3>
+        <!-- <h3> = level 3 heading | the ::before CSS pseudo-element adds the teal dot automatically -->
+        <p>Client details in email. Job info in a spreadsheet. Financials in one app. Schedules in another. Nothing talks to each other.</p>
+      </div>
+      <!-- Column 2 -->
+      <div class="pain-col">
+        <h3>One person knows everything</h3>
+        <p>The owner or office manager is the human search engine. If they&rsquo;re gone, the team is stuck. Nobody can take a day off.</p>
+        <!-- &rsquo; = right single quote / smart apostrophe (') -->
+      </div>
+      <!-- Column 3 -->
+      <div class="pain-col">
+        <h3>You can&rsquo;t see your own business</h3>
+        <p>The data exists, but you can&rsquo;t get a straight answer without digging through five tools and three people.</p>
+      </div>
+    </div>
+
+    <!-- How Pipeline Works card -->
+    <div class="how-card">
+      <h2>HOW PIPELINE WORKS</h2>
+
+      <div class="step">
+        <span class="step-num">01</span>
+        <!-- <span> = inline element (doesn't create a new line) | used for styled text chunks within a flex container -->
+        <span class="step-title">Connect</span>
+        <span class="step-desc">&mdash; We link your existing tools &mdash; email, spreadsheets, CRM, databases. No ripping anything out.</span>
+      </div>
+
+      <div class="step">
+        <span class="step-num">02</span>
+        <span class="step-title">Organize</span>
+        <span class="step-desc">&mdash; Your business knowledge gets structured and indexed so it&rsquo;s actually searchable.</span>
+      </div>
+
+      <div class="step">
+        <span class="step-num">03</span>
+        <span class="step-title">Ask</span>
+        <span class="step-desc">&mdash; Anyone on your team types a question: &ldquo;What&rsquo;s the status on the Smith job?&rdquo; and gets the answer.</span>
+        <!-- &ldquo; = left double quote (") | &rdquo; = right double quote (") -->
+      </div>
+    </div>
+
+    <!-- What You Get section -->
+    <div class="section-header">WHAT YOU GET</div>
+
+    <div class="benefits">
+      <div class="benefit">
+        <span class="benefit-dash">&mdash;</span>
+        <span class="benefit-text">One hub for all your business data &mdash; no more app-hopping</span>
+      </div>
+      <div class="benefit">
+        <span class="benefit-dash">&mdash;</span>
+        <span class="benefit-text">Plain English search &mdash; no training, no tech skills needed</span>
+      </div>
+      <div class="benefit">
+        <span class="benefit-dash">&mdash;</span>
+        <span class="benefit-text">Named for your business &mdash; Pipeline [YourCompany] &mdash; it&rsquo;s yours</span>
+      </div>
+      <div class="benefit">
+        <span class="benefit-dash">&mdash;</span>
+        <span class="benefit-text">Runs locally on your computer &mdash; your data stays private and secure</span>
+      </div>
+      <div class="benefit">
+        <span class="benefit-dash">&mdash;</span>
+        <span class="benefit-text">Hands-on install at a flat rate &mdash; fixed scope, fixed price, no surprises</span>
+      </div>
+    </div>
+
+    <!-- CTA Card -->
+    <div class="cta-card">
+      <h2>See it in action. 15 minutes. No obligation.</h2>
+      <p class="cta-contact">jacob@truenorthstrategyops.com &nbsp;|&nbsp; 555-555-5555</p>
+      <p class="cta-website">truenorthstrategyops.com</p>
+    </div>
+
+    <!-- Footer -->
+    <div class="footer">
+      <span>TRUE NORTH DATA STRATEGIES LLC &nbsp;|&nbsp; Veteran-Owned Small Business &nbsp;|&nbsp; Turning Data into Direction</span>
+      <span>&copy; 2026 True North Data Strategies</span>
+      <!-- &copy; = copyright symbol (©) -->
+    </div>
+
+    <!-- Bottom teal accent strip -->
+    <div class="accent-bar-bottom"></div>
+
+  </div><!-- end .flyer -->
+
+</body>
+</html>

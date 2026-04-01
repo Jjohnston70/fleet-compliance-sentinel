@@ -1,0 +1,783 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Invoice Extraction Module - Briefing | True North Data Strategies</title>
+<style>
+  :root {
+    --navy: #1A3A5C;
+    --teal: #3D8EB9;
+    --teal-light: #e8f4fa;
+    --navy-light: #f0f3f6;
+    --white: #ffffff;
+    --text: #2d3748;
+    --text-light: #718096;
+    --border: #e2e8f0;
+    --success: #38a169;
+    --warning: #d69e2e;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Segoe UI', Arial, Helvetica, sans-serif;
+    color: var(--text);
+    background: var(--white);
+    line-height: 1.6;
+  }
+
+  /* Header */
+  .header {
+    background: linear-gradient(135deg, var(--navy) 0%, #2a5a8c 100%);
+    color: var(--white);
+    padding: 48px 0 40px;
+    position: relative;
+    overflow: hidden;
+  }
+  .header::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: var(--teal);
+  }
+  .header-inner {
+    max-width: 960px;
+    margin: 0 auto;
+    padding: 0 32px;
+  }
+  .header-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 24px;
+  }
+  .company-name {
+    font-size: 14px;
+    font-weight: 600;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    opacity: 0.85;
+  }
+  .version-badge {
+    display: inline-block;
+    background: var(--teal);
+    color: var(--white);
+    padding: 4px 14px;
+    border-radius: 20px;
+    font-size: 13px;
+    font-weight: 600;
+  }
+  .header h1 {
+    font-size: 36px;
+    font-weight: 700;
+    margin-bottom: 12px;
+    line-height: 1.2;
+  }
+  .header-subtitle {
+    font-size: 18px;
+    opacity: 0.9;
+    max-width: 640px;
+  }
+
+  /* Container */
+  .container {
+    max-width: 960px;
+    margin: 0 auto;
+    padding: 0 32px;
+  }
+
+  /* Section */
+  .section {
+    padding: 40px 0;
+    border-bottom: 1px solid var(--border);
+  }
+  .section:last-child { border-bottom: none; }
+  .section-title {
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--navy);
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .section-title .icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    background: var(--teal-light);
+    color: var(--teal);
+    border-radius: 8px;
+    font-size: 16px;
+  }
+
+  /* Problem / Solution Cards */
+  .card-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+    margin-top: 16px;
+  }
+  @media (max-width: 640px) {
+    .card-grid { grid-template-columns: 1fr; }
+  }
+  .card {
+    background: var(--navy-light);
+    border-radius: 10px;
+    padding: 20px 24px;
+    border-left: 4px solid var(--teal);
+  }
+  .card-label {
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    color: var(--teal);
+    margin-bottom: 6px;
+  }
+  .card h3 {
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--navy);
+    margin-bottom: 6px;
+  }
+  .card p {
+    font-size: 14px;
+    color: var(--text-light);
+  }
+
+  /* Stat blocks */
+  .stats-row {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 16px;
+    margin: 32px 0;
+  }
+  @media (max-width: 640px) {
+    .stats-row { grid-template-columns: repeat(2, 1fr); }
+  }
+  .stat-block {
+    text-align: center;
+    background: var(--navy);
+    color: var(--white);
+    border-radius: 10px;
+    padding: 20px 12px;
+  }
+  .stat-number {
+    font-size: 32px;
+    font-weight: 800;
+    line-height: 1;
+    margin-bottom: 4px;
+  }
+  .stat-label {
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    opacity: 0.8;
+  }
+
+  /* Vendor table */
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 16px;
+    font-size: 14px;
+  }
+  thead th {
+    background: var(--navy);
+    color: var(--white);
+    padding: 10px 14px;
+    text-align: left;
+    font-weight: 600;
+    font-size: 13px;
+  }
+  thead th:first-child { border-radius: 8px 0 0 0; }
+  thead th:last-child { border-radius: 0 8px 0 0; }
+  tbody td {
+    padding: 10px 14px;
+    border-bottom: 1px solid var(--border);
+  }
+  tbody tr:nth-child(even) { background: var(--navy-light); }
+  tbody tr:hover { background: var(--teal-light); }
+  .badge {
+    display: inline-block;
+    padding: 2px 10px;
+    border-radius: 12px;
+    font-size: 12px;
+    font-weight: 600;
+  }
+  .badge-text { background: #c6f6d5; color: #276749; }
+  .badge-ocr { background: #fefcbf; color: #975a16; }
+
+  /* Export comparison */
+  .export-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+    margin-top: 16px;
+  }
+  @media (max-width: 640px) {
+    .export-grid { grid-template-columns: 1fr; }
+  }
+  .export-card {
+    border: 2px solid var(--border);
+    border-radius: 10px;
+    padding: 24px;
+    position: relative;
+  }
+  .export-card.primary { border-color: var(--teal); }
+  .export-card h3 {
+    font-size: 17px;
+    font-weight: 700;
+    color: var(--navy);
+    margin-bottom: 4px;
+  }
+  .export-card .fn-name {
+    font-family: 'Courier New', monospace;
+    font-size: 13px;
+    color: var(--teal);
+    margin-bottom: 12px;
+  }
+  .sheet-list {
+    list-style: none;
+    padding: 0;
+  }
+  .sheet-list li {
+    padding: 6px 0;
+    font-size: 14px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    justify-content: space-between;
+  }
+  .sheet-list li:last-child { border-bottom: none; }
+  .sheet-name { font-weight: 600; color: var(--navy); }
+  .sheet-cols { color: var(--text-light); font-size: 13px; }
+
+  /* Code block */
+  .code-block {
+    background: #1e293b;
+    color: #e2e8f0;
+    border-radius: 8px;
+    padding: 20px 24px;
+    font-family: 'Courier New', monospace;
+    font-size: 13px;
+    line-height: 1.7;
+    overflow-x: auto;
+    margin-top: 12px;
+  }
+  .code-block .kw { color: #7dd3fc; }
+  .code-block .str { color: #86efac; }
+  .code-block .comment { color: #94a3b8; }
+  .code-block .fn { color: #fbbf24; }
+
+  /* Feature list */
+  .feature-row {
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+    padding: 12px 0;
+    border-bottom: 1px solid var(--border);
+  }
+  .feature-row:last-child { border-bottom: none; }
+  .feature-check {
+    flex-shrink: 0;
+    width: 24px;
+    height: 24px;
+    background: var(--teal-light);
+    color: var(--teal);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 14px;
+    margin-top: 2px;
+  }
+  .feature-text h4 {
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--navy);
+    margin-bottom: 2px;
+  }
+  .feature-text p {
+    font-size: 14px;
+    color: var(--text-light);
+  }
+
+  /* Auto-classify section */
+  .classify-flow {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin-top: 16px;
+    padding: 20px;
+    background: var(--navy-light);
+    border-radius: 10px;
+  }
+  .flow-step {
+    background: var(--white);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 12px 16px;
+    text-align: center;
+    flex: 1;
+    min-width: 120px;
+  }
+  .flow-step .step-label {
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--teal);
+    font-weight: 700;
+    margin-bottom: 4px;
+  }
+  .flow-step .step-value {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--navy);
+  }
+  .flow-arrow {
+    font-size: 20px;
+    color: var(--teal);
+    font-weight: 700;
+  }
+
+  /* Footer */
+  .footer {
+    background: var(--navy);
+    color: var(--white);
+    padding: 32px 0;
+    margin-top: 20px;
+  }
+  .footer-inner {
+    max-width: 960px;
+    margin: 0 auto;
+    padding: 0 32px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 16px;
+  }
+  .footer-left {
+    font-size: 14px;
+  }
+  .footer-left strong {
+    display: block;
+    font-size: 16px;
+    margin-bottom: 4px;
+  }
+  .footer-right {
+    font-size: 13px;
+    opacity: 0.7;
+    text-align: right;
+  }
+  .footer a { color: var(--teal); text-decoration: none; }
+  .footer a:hover { text-decoration: underline; }
+
+  /* Print styles */
+  @media print {
+    .header { padding: 24px 0; }
+    .header h1 { font-size: 28px; }
+    .section { padding: 24px 0; }
+    .stat-block { border: 1px solid var(--navy); }
+    body { font-size: 12px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<div class="header">
+  <div class="header-inner">
+    <div class="header-top">
+      <div class="company-name">True North Data Strategies LLC</div>
+      <span class="version-badge">v1.1.0</span>
+    </div>
+    <h1>Invoice Extraction Module</h1>
+    <p class="header-subtitle">Automated PDF extraction for fleet maintenance invoices. Vendor auto-detection, structured data output, SOC2-compliant audit logging, and dual Excel export formats.</p>
+  </div>
+</div>
+
+<!-- KEY METRICS -->
+<div class="container">
+  <div class="stats-row">
+    <div class="stat-block">
+      <div class="stat-number">12</div>
+      <div class="stat-label">Vendors Supported</div>
+    </div>
+    <div class="stat-block">
+      <div class="stat-number">24</div>
+      <div class="stat-label">Tests Passing</div>
+    </div>
+    <div class="stat-block" style="background: var(--teal);">
+      <div class="stat-number">2</div>
+      <div class="stat-label">Export Formats</div>
+    </div>
+    <div class="stat-block">
+      <div class="stat-number">5</div>
+      <div class="stat-label">Public API Functions</div>
+    </div>
+  </div>
+</div>
+
+<!-- WHAT IT DOES -->
+<div class="container">
+  <div class="section">
+    <div class="section-title"><span class="icon">&#9654;</span> What This Module Does</div>
+    <p style="font-size: 15px; margin-bottom: 16px;">
+      The Invoice Extraction Module takes fleet maintenance invoice PDFs and converts them into structured, normalized data. It automatically detects which vendor issued the invoice, applies the correct parser, and outputs clean records to Excel or JSON. Service types and maintenance categories are auto-classified from work descriptions so operations teams don't have to hand-label every invoice.
+    </p>
+    <div class="card-grid">
+      <div class="card">
+        <div class="card-label">Problem</div>
+        <h3>Manual PDF Data Entry</h3>
+        <p>Staff spend hours copying invoice fields from PDFs into spreadsheets, introducing errors and inconsistency across vendors.</p>
+      </div>
+      <div class="card">
+        <div class="card-label">Solution</div>
+        <h3>Automated Extraction</h3>
+        <p>Drop PDFs in, get structured Excel or JSON out. Vendor-specific parsers handle each format automatically with validated field mapping.</p>
+      </div>
+      <div class="card">
+        <div class="card-label">Problem</div>
+        <h3>No Audit Trail</h3>
+        <p>No record of who processed which invoice, when, or what was extracted. Compliance gaps during audits.</p>
+      </div>
+      <div class="card">
+        <div class="card-label">Solution</div>
+        <h3>SOC2-Compliant Logging</h3>
+        <p>Every extraction writes a structured audit entry with operator, timestamp, org scoping, and PII masking. VINs and plate numbers never appear in logs.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SUPPORTED VENDORS -->
+<div class="container">
+  <div class="section">
+    <div class="section-title"><span class="icon">&#9881;</span> Supported Vendors</div>
+    <p style="font-size: 15px; margin-bottom: 8px;">
+      Each vendor has a dedicated parser that handles its unique invoice layout. Ten vendors use native text-based PDF extraction; two require OCR for scanned or image-based documents.
+    </p>
+    <table>
+      <thead>
+        <tr>
+          <th>Vendor</th>
+          <th>Parser Type</th>
+          <th>Default Service Type</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td>Bosselman</td><td><span class="badge badge-text">Text PDF</span></td><td>General Repair</td></tr>
+        <tr><td>Colorado Truck Repair</td><td><span class="badge badge-text">Text PDF</span></td><td>Lube / PM</td></tr>
+        <tr><td>MHC Kenworth</td><td><span class="badge badge-text">Text PDF</span></td><td>DOT Inspection</td></tr>
+        <tr><td>NAPA</td><td><span class="badge badge-text">Text PDF</span></td><td>Parts Purchase</td></tr>
+        <tr><td>PSC Custom</td><td><span class="badge badge-text">Text PDF</span></td><td>DOT Inspection</td></tr>
+        <tr><td>Purcell Tire</td><td><span class="badge badge-text">Text PDF</span></td><td>Tires</td></tr>
+        <tr><td>Randy's Towing</td><td><span class="badge badge-text">Text PDF</span></td><td>Towing / Recovery</td></tr>
+        <tr><td>Rush Truck Centers</td><td><span class="badge badge-text">Text PDF</span></td><td>General Repair</td></tr>
+        <tr><td>Service Auto Glass</td><td><span class="badge badge-text">Text PDF</span></td><td>Glass Repair</td></tr>
+        <tr><td>Southern Tire Mart</td><td><span class="badge badge-text">Text PDF</span></td><td>Tires</td></tr>
+        <tr><td>Bruckners</td><td><span class="badge badge-ocr">OCR (Scanned)</span></td><td>General Repair</td></tr>
+        <tr><td>Arnold Machinery</td><td><span class="badge badge-ocr">OCR (Image)</span></td><td>General Repair</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- AUTO CLASSIFICATION -->
+<div class="container">
+  <div class="section">
+    <div class="section-title"><span class="icon">&#9733;</span> Automatic Service Classification</div>
+    <p style="font-size: 15px; margin-bottom: 8px;">
+      The fleet compliance export auto-classifies each invoice into a service type and category based on work description keywords, with vendor name as fallback. No manual tagging required.
+    </p>
+    <div class="classify-flow">
+      <div class="flow-step">
+        <div class="step-label">Input</div>
+        <div class="step-value">Work Descriptions</div>
+      </div>
+      <div class="flow-arrow">&#8594;</div>
+      <div class="flow-step">
+        <div class="step-label">Match</div>
+        <div class="step-value">Keyword Rules</div>
+      </div>
+      <div class="flow-arrow">&#8594;</div>
+      <div class="flow-step">
+        <div class="step-label">Output</div>
+        <div class="step-value">Service Type</div>
+      </div>
+      <div class="flow-arrow">&#8594;</div>
+      <div class="flow-step">
+        <div class="step-label">Derive</div>
+        <div class="step-value">Category</div>
+      </div>
+    </div>
+    <table style="margin-top: 16px;">
+      <thead>
+        <tr><th>Service Type</th><th>Category</th><th>Keywords Matched</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>DOT Inspection</td><td>Compliance</td><td>dot, inspection, annual</td></tr>
+        <tr><td>Lube / PM</td><td>Preventive Maintenance</td><td>oil, lube, filter, grease</td></tr>
+        <tr><td>Tires</td><td>Tires &amp; Wheels</td><td>tire, mount, balance, flat</td></tr>
+        <tr><td>Towing / Recovery</td><td>Towing</td><td>tow, recovery, haul</td></tr>
+        <tr><td>Glass Repair</td><td>Body &amp; Glass</td><td>glass, windshield, window</td></tr>
+        <tr><td>Transmission</td><td>Drivetrain</td><td>trans, transmission</td></tr>
+        <tr><td>Brakes</td><td>Brakes &amp; Suspension</td><td>brake, drum, rotor, pad</td></tr>
+        <tr><td>Engine Repair</td><td>Engine</td><td>engine, motor, head gasket</td></tr>
+        <tr><td>Electrical</td><td>Electrical</td><td>electrical, battery, alternator, starter</td></tr>
+        <tr><td>HVAC / Cooling</td><td>HVAC</td><td>a/c, hvac, heater, cooling</td></tr>
+        <tr><td>Parts Purchase</td><td>Parts</td><td><em>Vendor fallback: NAPA</em></td></tr>
+        <tr><td>General Repair</td><td>Repair</td><td><em>Default / no match</em></td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- EXPORT FORMATS -->
+<div class="container">
+  <div class="section">
+    <div class="section-title"><span class="icon">&#9776;</span> Excel Export Formats</div>
+    <p style="font-size: 15px; margin-bottom: 8px;">
+      Two export paths support different downstream workflows. Both produce TNDS-branded Excel files with frozen headers, money formatting, and auto-width columns.
+    </p>
+    <div class="export-grid">
+      <div class="export-card">
+        <h3>Original Format</h3>
+        <div class="fn-name">to_xlsx()</div>
+        <ul class="sheet-list">
+          <li><span class="sheet-name">Invoices</span><span class="sheet-cols">23 columns</span></li>
+          <li><span class="sheet-name">Line Items</span><span class="sheet-cols">11 columns</span></li>
+        </ul>
+        <p style="font-size: 13px; color: var(--text-light); margin-top: 10px;">Matches maintenance_import.xlsx schema. Full vehicle detail with VIN, make, model, engine, mileage.</p>
+      </div>
+      <div class="export-card primary">
+        <h3>Fleet Compliance Format</h3>
+        <div class="fn-name">to_fleet_xlsx()</div>
+        <ul class="sheet-list">
+          <li><span class="sheet-name">Invoices</span><span class="sheet-cols">15 columns</span></li>
+          <li><span class="sheet-name">Maintenance Tracker</span><span class="sheet-cols">13 columns</span></li>
+          <li><span class="sheet-name">Line Items</span><span class="sheet-cols">9 columns</span></li>
+        </ul>
+        <p style="font-size: 13px; color: var(--text-light); margin-top: 10px;">Matches fleet-compliance-bulk-upload-template. Auto-derived category, service type, and maintenance IDs.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- API QUICK REFERENCE -->
+<div class="container">
+  <div class="section">
+    <div class="section-title"><span class="icon">&lt;/&gt;</span> API Quick Reference</div>
+    <div class="code-block">
+<span class="comment"># Single invoice extraction</span>
+<span class="kw">from</span> invoice_module <span class="kw">import</span> extract
+result = <span class="fn">extract</span>(<span class="str">"invoices/MHC 83.22 Lubes #571.pdf"</span>)
+
+<span class="comment"># Batch extraction + fleet compliance export</span>
+<span class="kw">from</span> invoice_module <span class="kw">import</span> extract_batch, to_fleet_xlsx
+<span class="kw">import</span> glob
+
+pdfs = glob.<span class="fn">glob</span>(<span class="str">"invoices/*.pdf"</span>)
+results = <span class="fn">extract_batch</span>(pdfs, org_id=<span class="str">"org_acme_fleet"</span>)
+<span class="fn">to_fleet_xlsx</span>(results, <span class="str">"output/fleet_export.xlsx"</span>)
+
+<span class="comment"># JSON output</span>
+<span class="kw">from</span> invoice_module <span class="kw">import</span> to_json
+print(<span class="fn">to_json</span>(result))
+    </div>
+    <table style="margin-top: 20px;">
+      <thead>
+        <tr><th>Function</th><th>Purpose</th><th>Returns</th></tr>
+      </thead>
+      <tbody>
+        <tr><td style="font-family: monospace;">extract()</td><td>Parse a single invoice PDF</td><td>dict</td></tr>
+        <tr><td style="font-family: monospace;">extract_batch()</td><td>Parse multiple PDFs, collect errors</td><td>list[dict]</td></tr>
+        <tr><td style="font-family: monospace;">to_xlsx()</td><td>Export to original format (2 sheets)</td><td>file path</td></tr>
+        <tr><td style="font-family: monospace;">to_fleet_xlsx()</td><td>Export to fleet compliance format (3 sheets)</td><td>file path</td></tr>
+        <tr><td style="font-family: monospace;">to_json()</td><td>Serialize to JSON string</td><td>string</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- COMPLIANCE & SECURITY -->
+<div class="container">
+  <div class="section">
+    <div class="section-title"><span class="icon">&#128274;</span> Compliance &amp; Security</div>
+    <div class="card-grid">
+      <div class="card">
+        <h3>Audit Logging</h3>
+        <p>Every extraction writes a structured JSON entry to audit.jsonl with operator, timestamp, org_id, vendor, and extraction status. No PII in logs.</p>
+      </div>
+      <div class="card">
+        <h3>PII Masking</h3>
+        <p>VINs, plate numbers, customer names, and addresses are masked before any logging or external transmission. Masking is applied via compliance.mask_pii().</p>
+      </div>
+      <div class="card">
+        <h3>Input Validation</h3>
+        <p>PDF files are validated for existence, magic bytes, size limits, and path traversal before processing. Rejects non-PDF files at the gate.</p>
+      </div>
+      <div class="card">
+        <h3>Org Scoping</h3>
+        <p>Multi-tenant isolation via org_id tagging on all extracted records. scoped_extract() enforces org boundaries automatically.</p>
+      </div>
+    </div>
+    <p style="font-size: 14px; color: var(--text-light); margin-top: 16px;">
+      Controls aligned with SOC2 Type II, HIPAA, CCPA/CPRA, and GLBA requirements. Data classification documented in DATA_CLASSIFICATION.md. All client data treated as regulated by default.
+    </p>
+  </div>
+</div>
+
+<!-- TESTING -->
+<div class="container">
+  <div class="section">
+    <div class="section-title"><span class="icon">&#10004;</span> Testing &amp; Validation</div>
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+      <div>
+        <div class="feature-row">
+          <div class="feature-check">&#10003;</div>
+          <div class="feature-text">
+            <h4>24 Automated Tests</h4>
+            <p>Vendor detection, field extraction, line item counts, total accuracy, date formats, PII masking</p>
+          </div>
+        </div>
+        <div class="feature-row">
+          <div class="feature-check">&#10003;</div>
+          <div class="feature-text">
+            <h4>12 Sample Invoices</h4>
+            <p>All supported vendors tested with real invoice PDFs (10 text-based, 2 OCR)</p>
+          </div>
+        </div>
+      </div>
+      <div>
+        <div class="feature-row">
+          <div class="feature-check">&#10003;</div>
+          <div class="feature-text">
+            <h4>Expected Values Baseline</h4>
+            <p>Ground truth defined in expected_values.json for regression testing</p>
+          </div>
+        </div>
+        <div class="feature-row">
+          <div class="feature-check">&#10003;</div>
+          <div class="feature-text">
+            <h4>Standalone Package</h4>
+            <p>pip-installable with setup.py, runs independently from any project</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- PROJECT STRUCTURE -->
+<div class="container">
+  <div class="section">
+    <div class="section-title"><span class="icon">&#128193;</span> Project Structure</div>
+    <div class="code-block" style="font-size: 13px; line-height: 1.8;">
+invoice-module/
+  setup.py                    <span class="comment"># pip install -e . (extras: ocr, dev)</span>
+  requirements.txt            <span class="comment"># Pinned dependencies</span>
+  README.md                   <span class="comment"># Full documentation</span>
+  src/
+    vendor_parsers.py         <span class="comment"># 12 vendor-specific parsers</span>
+    extract_invoice.py        <span class="comment"># CLI wrapper</span>
+    compliance.py             <span class="comment"># SOC2 audit, PII masking, validation</span>
+    DATA_CLASSIFICATION.md    <span class="comment"># Data sensitivity classification</span>
+    invoice_module/
+      __init__.py             <span class="comment"># Public API exports (v1.1.0)</span>
+      api.py                  <span class="comment"># extract, extract_batch, to_xlsx, to_fleet_xlsx, to_json</span>
+  tests/
+    test_invoice_extraction.py <span class="comment"># 24 test cases</span>
+    expected_values.json      <span class="comment"># Ground truth values</span>
+    conftest.py               <span class="comment"># pytest fixtures</span>
+  invoice-samples/            <span class="comment"># 12 sample PDFs</span>
+    </div>
+  </div>
+</div>
+
+<!-- DEPENDENCIES -->
+<div class="container">
+  <div class="section">
+    <div class="section-title"><span class="icon">&#128230;</span> Dependencies</div>
+    <table>
+      <thead>
+        <tr><th>Package</th><th>Version</th><th>Purpose</th><th>Required</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>pdfplumber</td><td>&gt;=0.11.9</td><td>PDF text and table extraction</td><td>Core</td></tr>
+        <tr><td>openpyxl</td><td>&gt;=3.1.5</td><td>Excel file generation</td><td>Core</td></tr>
+        <tr><td>pytesseract</td><td>&gt;=0.3.13</td><td>OCR engine wrapper</td><td>OCR only</td></tr>
+        <tr><td>pdf2image</td><td>&gt;=1.17.0</td><td>PDF page rendering for OCR</td><td>OCR only</td></tr>
+        <tr><td>Pillow</td><td>&gt;=12.1.1</td><td>Image processing</td><td>OCR only</td></tr>
+        <tr><td>pytest</td><td>&gt;=9.0.0</td><td>Test framework</td><td>Dev only</td></tr>
+      </tbody>
+    </table>
+    <p style="font-size: 14px; color: var(--text-light); margin-top: 12px;">
+      OCR dependencies are optional. Install with <code style="background: var(--navy-light); padding: 2px 6px; border-radius: 4px;">pip install -e ".[ocr]"</code> only if processing Bruckners or Arnold Machinery invoices. External tools: Poppler (pdftoppm) and Tesseract OCR required for OCR vendors.
+    </p>
+  </div>
+</div>
+
+<!-- NEXT STEPS -->
+<div class="container">
+  <div class="section">
+    <div class="section-title"><span class="icon">&#9654;</span> Next Steps</div>
+    <div class="feature-row">
+      <div class="feature-check" style="background: var(--teal); color: white;">1</div>
+      <div class="feature-text">
+        <h4>Create Repository</h4>
+        <p>Copy the invoice-module/ directory to a new GitHub repo. All files are standalone and ready for git init.</p>
+      </div>
+    </div>
+    <div class="feature-row">
+      <div class="feature-check" style="background: var(--teal); color: white;">2</div>
+      <div class="feature-text">
+        <h4>Run Test Suite</h4>
+        <p>Install with <code style="background: var(--navy-light); padding: 2px 6px; border-radius: 4px;">pip install -e ".[dev]"</code> and run <code style="background: var(--navy-light); padding: 2px 6px; border-radius: 4px;">pytest tests/ -v</code> to verify all 24 tests pass.</p>
+      </div>
+    </div>
+    <div class="feature-row">
+      <div class="feature-check" style="background: var(--teal); color: white;">3</div>
+      <div class="feature-text">
+        <h4>Integrate into Platform</h4>
+        <p>Import invoice_module into pipelinex-v2 or any Python project. Use extract_batch() + to_fleet_xlsx() for the standard workflow.</p>
+      </div>
+    </div>
+    <div class="feature-row">
+      <div class="feature-check" style="background: var(--teal); color: white;">4</div>
+      <div class="feature-text">
+        <h4>Add New Vendors</h4>
+        <p>Follow the 6-step process in the README to add detection keywords, parser function, registration, and test cases.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- FOOTER -->
+<div class="footer">
+  <div class="footer-inner">
+    <div class="footer-left">
+      <strong>True North Data Strategies LLC</strong>
+      Jacob Johnston | 555-555-5555 | <a href="mailto:jacob@truenorthstrategyops.com">jacob@truenorthstrategyops.com</a><br>
+      SBA-Certified VOSB/SDVOSB | Colorado Springs, CO
+    </div>
+    <div class="footer-right">
+      Invoice Extraction Module v1.1.0<br>
+      Briefing Date: March 26, 2026<br>
+      Turning Data into Direction
+    </div>
+  </div>
+</div>
+
+</body>
+</html>

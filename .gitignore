@@ -92,9 +92,35 @@ tooling/realty-command/
 tooling/sales-command/
 tooling/task-command/
 tooling/training-command/
-tooling/MOD-PAPERSTACK-PP/
-tooling/ML-SIGNAL-STACK-TNCC/
-tooling/ML-EIA-PETROLEUM-INTEL/
+
+# Integrated module payloads: keep source/data, ignore local build artifacts
+tooling/ML-EIA-PETROLEUM-INTEL/.git/
+tooling/ML-EIA-PETROLEUM-INTEL/__pycache__/
+tooling/ML-EIA-PETROLEUM-INTEL/.pytest_cache/
+tooling/ML-EIA-PETROLEUM-INTEL/output/
+
+tooling/ML-SIGNAL-STACK-TNCC/.git/
+tooling/ML-SIGNAL-STACK-TNCC/__pycache__/
+tooling/ML-SIGNAL-STACK-TNCC/.pytest_cache/
+tooling/ML-SIGNAL-STACK-TNCC/.claude/
+tooling/ML-SIGNAL-STACK-TNCC/venv_tnds-signal-engine/
+tooling/ML-SIGNAL-STACK-TNCC/.venv/
+tooling/ML-SIGNAL-STACK-TNCC/venv/
+tooling/ML-SIGNAL-STACK-TNCC/reports/
+tooling/ML-SIGNAL-STACK-TNCC/visuals/
+tooling/ML-SIGNAL-STACK-TNCC/output/
+
+tooling/MOD-PAPERSTACK-PP/.git/
+tooling/MOD-PAPERSTACK-PP/__pycache__/
+tooling/MOD-PAPERSTACK-PP/.pytest_cache/
+tooling/MOD-PAPERSTACK-PP/node_modules/
+tooling/MOD-PAPERSTACK-PP/.venv/
+tooling/MOD-PAPERSTACK-PP/venv/
+tooling/MOD-PAPERSTACK-PP/invoice-samples/
+tooling/MOD-PAPERSTACK-PP/invoice-module/invoice-samples/
+tooling/MOD-PAPERSTACK-PP/*.pdf
+tooling/MOD-PAPERSTACK-PP/*.docx
+tooling/MOD-PAPERSTACK-PP/invoice-module/*.docx
 
 # Sentry Config File
 .env.sentry-build-plugin
