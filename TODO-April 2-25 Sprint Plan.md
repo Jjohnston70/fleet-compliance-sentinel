@@ -561,11 +561,11 @@ This is not a one-off hazmat feature. It's a training platform that starts with 
 
 ## Definition of Done
 
-- [ ] 12 hazmat training markdown files authored with assessments
+- [x] 12 hazmat training markdown files authored with assessments
 - [ ] Deck generation pipeline converts markdown to slide JSON
 - [ ] Web-based deck viewer for employee training delivery
 - [ ] Assessment engine with scoring and retake logic
-- [ ] Training assignment and progress tracking (3 new DB tables)
+- [x] Training assignment and progress tracking (3 new DB tables)
 - [ ] Compliance auto-update on assessment pass
 - [ ] Certificate PDF generation
 - [ ] Penny can query training content and completion status
@@ -578,7 +578,7 @@ This is not a one-off hazmat feature. It's a training platform that starts with 
 **Estimated Effort**: 3-4 days total (split across weeks)
 **Depends On**: Nothing (pure content)
 
-- [ ] Create 12 hazmat training markdown files from existing knowledge base
+- [x] Create 12 hazmat training markdown files from existing knowledge base
 
 **Source Material Already Ingested**:
 
@@ -651,18 +651,18 @@ created: "2026-04-02"
 
 **Files to Create**:
 
-- [ ] `TNDS-HZ-000-hmr-introduction.md`
-- [ ] `TNDS-HZ-001-hazmat-table.md`
-- [ ] `TNDS-HZ-002-shipping-papers.md`
-- [ ] `TNDS-HZ-003-packaging.md`
-- [ ] `TNDS-HZ-004-marking.md`
-- [ ] `TNDS-HZ-005-labeling.md`
-- [ ] `TNDS-HZ-006-placarding.md`
-- [ ] `TNDS-HZ-007a-carrier-highway.md`
-- [ ] `TNDS-HZ-007b-carrier-air.md`
-- [ ] `TNDS-HZ-007c-carrier-rail.md`
-- [ ] `TNDS-HZ-007d-carrier-vessel.md`
-- [ ] `TNDS-HZ-008-security.md`
+- [x] `TNDS-HZ-000-hmr-introduction.md`
+- [x] `TNDS-HZ-001-hazmat-table.md`
+- [x] `TNDS-HZ-002-shipping-papers.md`
+- [x] `TNDS-HZ-003-packaging.md`
+- [x] `TNDS-HZ-004-marking.md`
+- [x] `TNDS-HZ-005-labeling.md`
+- [x] `TNDS-HZ-006-placarding.md`
+- [x] `TNDS-HZ-007a-carrier-highway.md`
+- [x] `TNDS-HZ-007b-carrier-air.md`
+- [x] `TNDS-HZ-007c-carrier-rail.md`
+- [x] `TNDS-HZ-007d-carrier-vessel.md`
+- [x] `TNDS-HZ-008-security.md`
 
 **Location**: `00-FLEET-COMPLIANCE-SENTINEL/knowledge/training-content/hazmat/`
 
@@ -676,7 +676,7 @@ created: "2026-04-02"
 **Estimated Effort**: 0.5 day
 **Depends On**: Nothing
 
-- [ ] Create 3 new tables + seed data
+- [x] Create 3 new tables + seed data
 
 **New Tables**:
 
