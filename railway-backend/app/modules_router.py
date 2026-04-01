@@ -892,6 +892,46 @@ def _collect_ml_signal_artifacts(run: dict[str, Any], stdout_raw: str) -> list[d
     return artifacts
 
 
+def _collect_ml_eia_artifacts(run: dict[str, Any], stdout_raw: str) -> list[dict[str, Any]]:
+    if run["moduleId"] != "ML-EIA-PETROLEUM-INTEL":
+        return []
+
+    artifacts: list[dict[str, Any]] = []
+    seen: set[str] = set()
+    for match in re.finditer(r"->\s+([^\r\n]+)", stdout_raw):
+        raw_path = match.group(1).strip().strip("\"'")
+        if not raw_path:
+            continue
+
+        candidate_path = Path(raw_path)
+        if not candidate_path.is_absolute():
+            candidate_path = (Path(run["cwd"]) / candidate_path).resolve()
+
+        if not candidate_path.exists() or not candidate_path.is_file():
+            continue
+
+        try:
+            relative = candidate_path.relative_to(Path(run["cwd"])).as_posix()
+        except ValueError:
+            relative = str(candidate_path)
+
+        if relative in seen:
+            continue
+        seen.add(relative)
+
+        stat = candidate_path.stat()
+        artifacts.append(
+            {
+                "kind": "file",
+                "path": relative,
+                "sizeBytes": stat.st_size,
+                "modifiedAt": datetime.fromtimestamp(stat.st_mtime, tz=timezone.utc).isoformat(),
+            }
+        )
+
+    return artifacts
+
+
 def _artifact_media_type(file_path: Path) -> str:
     suffix = file_path.suffix.lower()
     if suffix == ".zip":
@@ -938,6 +978,8 @@ def _collect_run_artifacts(run: dict[str, Any], stdout_raw: str) -> list[dict[st
         return _collect_paperstack_artifacts(run)
     if run["moduleId"] == "ML-SIGNAL-STACK-TNCC":
         return _collect_ml_signal_artifacts(run, stdout_raw)
+    if run["moduleId"] == "ML-EIA-PETROLEUM-INTEL":
+        return _collect_ml_eia_artifacts(run, stdout_raw)
     return []
 
 

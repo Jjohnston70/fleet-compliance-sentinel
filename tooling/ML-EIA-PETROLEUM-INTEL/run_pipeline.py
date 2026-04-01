@@ -141,7 +141,7 @@ def _run_analysis_bundle(spot_df: pd.DataFrame, train_years: int) -> dict[str, o
     )
 
     summary = {
-        "generated_at": pd.Timestamp.utcnow().isoformat(),
+        "generated_at": pd.Timestamp.now("UTC").isoformat(),
         "regime": {
             "current_regime": regime.get("current_regime"),
             "days_in_regime": regime.get("days_in_regime"),
@@ -187,7 +187,7 @@ def run_for_product(df: pd.DataFrame, product: str, horizons: list[int], train_y
     }
 
     FORECAST_DIR.mkdir(parents=True, exist_ok=True)
-    date_suffix = pd.Timestamp.utcnow().strftime("%Y%m%d")
+    date_suffix = pd.Timestamp.now("UTC").strftime("%Y%m%d")
     out_path = FORECAST_DIR / f"{_slugify(product)}_{date_suffix}.json"
     out_path.write_text(json.dumps(_to_json_ready(payload), indent=2), encoding="utf-8")
     return out_path

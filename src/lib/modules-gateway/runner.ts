@@ -198,6 +198,26 @@ function getMlSignalArtifactCandidates(run: ModuleRunRecord, stdoutRaw: string):
   return [];
 }
 
+function getMlEiaArtifactCandidates(run: ModuleRunRecord, stdoutRaw: string): string[] {
+  if (run.moduleId !== 'ML-EIA-PETROLEUM-INTEL') {
+    return [];
+  }
+
+  const extractPaths = (pattern: RegExp): string[] => {
+    const matches = Array.from(stdoutRaw.matchAll(pattern));
+    return matches
+      .map((match) => (match[1] ? match[1].trim().replace(/^["']|["']$/g, '') : ''))
+      .filter((value) => value.length > 0);
+  };
+
+  const inferred = extractPaths(/->\s+([^\r\n]+)/g);
+  if (inferred.length > 0) {
+    return inferred;
+  }
+
+  return [];
+}
+
 function resolveArtifactAbsolutePath(run: ModuleRunRecord, candidate: string): string {
   if (path.isAbsolute(candidate)) return candidate;
   return path.resolve(run.cwd, candidate);
@@ -209,6 +229,8 @@ function collectRunArtifacts(run: ModuleRunRecord, stdoutRaw = ''): ModuleRunArt
     candidates = getPaperstackArtifactCandidates(run);
   } else if (run.moduleId === 'ML-SIGNAL-STACK-TNCC') {
     candidates = getMlSignalArtifactCandidates(run, stdoutRaw);
+  } else if (run.moduleId === 'ML-EIA-PETROLEUM-INTEL') {
+    candidates = getMlEiaArtifactCandidates(run, stdoutRaw);
   } else {
     return [];
   }
