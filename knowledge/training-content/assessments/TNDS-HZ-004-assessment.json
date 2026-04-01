@@ -1,0 +1,193 @@
+{
+  "module_code": "TNDS-HZ-004",
+  "title": "Marking Requirements",
+  "category": "hazmat",
+  "cfr_reference": "49 CFR 172.300-338",
+  "phmsa_equivalent": "Module 4.0",
+  "passing_score": 80,
+  "estimated_duration_minutes": 30,
+  "version": "1.0",
+  "question_count": 6,
+  "questions": [
+    {
+      "number": 1,
+      "question_type": "multiple_choice",
+      "question_text": "What is the fundamental difference between a marking and a label on a hazmat package?",
+      "options": [
+        {
+          "label": "A",
+          "text": "Markings are temporary; labels are permanent",
+          "is_correct": false
+        },
+        {
+          "label": "B",
+          "text": "Markings communicate the identity of the material through text and numbers; labels communicate the hazard class through diamond-shaped visual indicators",
+          "is_correct": true
+        },
+        {
+          "label": "C",
+          "text": "Markings are required only for bulk packages; labels are required only for non-bulk packages",
+          "is_correct": false
+        },
+        {
+          "label": "D",
+          "text": "Markings are placed by the carrier; labels are placed by the shipper",
+          "is_correct": false
+        }
+      ],
+      "correct_answer": "B",
+      "explanation": "Markings are printed text and numbers (proper shipping name, UN/NA number, consignee/consignor) that identify what is in the package. Labels are diamond-shaped hazard class indicators that communicate what kind of danger the material poses. Both are placed by the shipper and required on both bulk and non-bulk packages, though the specific requirements differ.",
+      "cfr_reference": "49 CFR 172.300, 172.400"
+    },
+    {
+      "number": 2,
+      "question_type": "multiple_choice",
+      "question_text": "Which of the following must appear on a non-bulk hazmat package per 49 CFR 172.301?",
+      "options": [
+        {
+          "label": "A",
+          "text": "Proper shipping name, UN/NA number, and names and addresses of both consignee and consignor",
+          "is_correct": true
+        },
+        {
+          "label": "B",
+          "text": "Proper shipping name, DOT specification number, and driver's CDL number",
+          "is_correct": false
+        },
+        {
+          "label": "C",
+          "text": "Trade name, emergency response phone number, and total package weight",
+          "is_correct": false
+        },
+        {
+          "label": "D",
+          "text": "UN/NA number, flash point, and the ERG guide number",
+          "is_correct": false
+        }
+      ],
+      "correct_answer": "A",
+      "explanation": "49 CFR 172.301 requires three core marking elements on non-bulk packages: the proper shipping name (from Column 2 of the Hazmat Table), the UN/NA identification number (from Column 4), and the name and address of the consignee and consignor. The trade name, flash point, and ERG guide number are not required markings on the package.",
+      "cfr_reference": "49 CFR 172.301"
+    },
+    {
+      "number": 3,
+      "question_type": "multiple_choice",
+      "question_text": "What is the minimum character height for identification number markings displayed on a bulk package such as a cargo tank?",
+      "options": [
+        {
+          "label": "A",
+          "text": "6 mm (0.25 inches)",
+          "is_correct": false
+        },
+        {
+          "label": "B",
+          "text": "12 mm (0.5 inches)",
+          "is_correct": false
+        },
+        {
+          "label": "C",
+          "text": "50 mm (2 inches)",
+          "is_correct": false
+        },
+        {
+          "label": "D",
+          "text": "100 mm (3.9 inches)",
+          "is_correct": true
+        }
+      ],
+      "correct_answer": "D",
+      "explanation": "Bulk packages require significantly larger markings than non-bulk packages because they need to be readable from a greater distance, especially in emergency situations. The minimum character height for identification numbers on bulk packages is 100 mm (3.9 inches), compared to the 12 mm minimum for non-bulk packages.",
+      "cfr_reference": "49 CFR 172.302(b)"
+    },
+    {
+      "number": 4,
+      "question_type": "multiple_choice",
+      "question_text": "You receive a used 55-gallon drum that previously held acetone (UN1090) and you need to fill it with a Class 8 corrosive liquid. The old \"ACETONE\" and \"UN1090\" markings are still visible. What must you do before shipping the drum with its new contents?",
+      "options": [
+        {
+          "label": "A",
+          "text": "Apply the new markings next to the old ones so both are visible",
+          "is_correct": false
+        },
+        {
+          "label": "B",
+          "text": "Remove or obliterate all old markings before applying the new markings for the current contents",
+          "is_correct": true
+        },
+        {
+          "label": "C",
+          "text": "Leave the old markings in place since they show the drum's history",
+          "is_correct": false
+        },
+        {
+          "label": "D",
+          "text": "Cover the old markings with the new label only",
+          "is_correct": false
+        }
+      ],
+      "correct_answer": "B",
+      "explanation": "49 CFR 172.303 prohibits displaying any marking that could be confused with a required hazmat marking unless it is the correct marking for the current contents. Old markings from a previous use must be completely removed or obliterated before the container is re-marked for its new contents. Leaving conflicting markings creates dangerous confusion for handlers and emergency responders.",
+      "cfr_reference": "49 CFR 172.303"
+    },
+    {
+      "number": 5,
+      "question_type": "multiple_choice",
+      "question_text": "When is the word \"OVERPACK\" required to be displayed on the outside of a consolidated package?",
+      "options": [
+        {
+          "label": "A",
+          "text": "Whenever more than one hazmat package is loaded on the same vehicle",
+          "is_correct": false
+        },
+        {
+          "label": "B",
+          "text": "When hazmat packages are placed inside an outer container or wrapped together and the inner package markings and labels are not visible",
+          "is_correct": true
+        },
+        {
+          "label": "C",
+          "text": "Only when shipping by air",
+          "is_correct": false
+        },
+        {
+          "label": "D",
+          "text": "Only when the overpack exceeds 1,000 pounds gross weight",
+          "is_correct": false
+        }
+      ],
+      "correct_answer": "B",
+      "explanation": "The OVERPACK marking is required when hazmat packages are consolidated into a single outer container (or wrapped on a pallet) and the required markings and labels on the inner packages cannot be seen from the outside. If all inner package markings and labels are still visible through the overpack, the OVERPACK marking is not required.",
+      "cfr_reference": "49 CFR 172.312"
+    },
+    {
+      "number": 6,
+      "question_type": "multiple_choice",
+      "question_text": "A cargo tank is transporting molten sulfur at 135 degrees C (275 degrees F). In addition to the proper shipping name, UN number, and placards, which special marking is required?",
+      "options": [
+        {
+          "label": "A",
+          "text": "POISON INHALATION HAZARD",
+          "is_correct": false
+        },
+        {
+          "label": "B",
+          "text": "DANGEROUS WHEN WET",
+          "is_correct": false
+        },
+        {
+          "label": "C",
+          "text": "HOT",
+          "is_correct": true
+        },
+        {
+          "label": "D",
+          "text": "MARINE POLLUTANT",
+          "is_correct": false
+        }
+      ],
+      "correct_answer": "C",
+      "explanation": "Materials transported at elevated temperatures (above 100 degrees C / 212 degrees F for liquids, above 240 degrees C / 464 degrees F for solids) must display the word \"HOT\" on each side and each end of the bulk package. Molten sulfur at 135 degrees C exceeds the liquid threshold, so the HOT marking is required. This alerts emergency responders that the contents pose a burn hazard in addition to any chemical hazards.",
+      "cfr_reference": "49 CFR 172.325"
+    }
+  ]
+}

@@ -1,0 +1,91 @@
+{
+  "generated_at": "2026-04-01T22:43:06.898265Z",
+  "total_modules": 12,
+  "total_questions": 76,
+  "modules": [
+    {
+      "module_code": "TNDS-HZ-000",
+      "title": "Hazardous Materials Regulations Introduction",
+      "phmsa_equivalent": "Module 0.0",
+      "question_count": 6,
+      "passing_score": 80
+    },
+    {
+      "module_code": "TNDS-HZ-001",
+      "title": "Hazardous Materials Table",
+      "phmsa_equivalent": "Module 1.0",
+      "question_count": 7,
+      "passing_score": 80
+    },
+    {
+      "module_code": "TNDS-HZ-002",
+      "title": "Shipping Papers",
+      "phmsa_equivalent": "Module 2.0",
+      "question_count": 6,
+      "passing_score": 80
+    },
+    {
+      "module_code": "TNDS-HZ-003",
+      "title": "Packaging Requirements",
+      "phmsa_equivalent": "Module 3.0",
+      "question_count": 6,
+      "passing_score": 80
+    },
+    {
+      "module_code": "TNDS-HZ-004",
+      "title": "Marking Requirements",
+      "phmsa_equivalent": "Module 4.0",
+      "question_count": 6,
+      "passing_score": 80
+    },
+    {
+      "module_code": "TNDS-HZ-005",
+      "title": "Labeling Requirements",
+      "phmsa_equivalent": "Module 5.0",
+      "question_count": 7,
+      "passing_score": 80
+    },
+    {
+      "module_code": "TNDS-HZ-006",
+      "title": "Placarding Requirements",
+      "phmsa_equivalent": "Module 6.0",
+      "question_count": 7,
+      "passing_score": 80
+    },
+    {
+      "module_code": "TNDS-HZ-007a",
+      "title": "Carrier Requirements: Highway",
+      "phmsa_equivalent": "Module 7.0a",
+      "question_count": 8,
+      "passing_score": 80
+    },
+    {
+      "module_code": "TNDS-HZ-007b",
+      "title": "Carrier Requirements: Air",
+      "phmsa_equivalent": "Module 7.0b",
+      "question_count": 6,
+      "passing_score": 80
+    },
+    {
+      "module_code": "TNDS-HZ-007c",
+      "title": "Carrier Requirements: Rail",
+      "phmsa_equivalent": "Module 7.0c",
+      "question_count": 5,
+      "passing_score": 80
+    },
+    {
+      "module_code": "TNDS-HZ-007d",
+      "title": "Carrier Requirements: Vessel",
+      "phmsa_equivalent": "Module 7.0d",
+      "question_count": 5,
+      "passing_score": 80
+    },
+    {
+      "module_code": "TNDS-HZ-008",
+      "title": "Security Requirements",
+      "phmsa_equivalent": "Module 8.0",
+      "question_count": 7,
+      "passing_score": 80
+    }
+  ]
+}

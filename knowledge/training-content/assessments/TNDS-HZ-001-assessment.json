@@ -1,0 +1,213 @@
+{
+  "module_code": "TNDS-HZ-001",
+  "title": "Hazardous Materials Table",
+  "category": "hazmat",
+  "cfr_reference": "49 CFR 172.101",
+  "phmsa_equivalent": "Module 1.0",
+  "passing_score": 80,
+  "estimated_duration_minutes": 45,
+  "version": "1.0",
+  "question_count": 7,
+  "questions": [
+    {
+      "number": 1,
+      "question_type": "multiple_choice",
+      "question_text": "You need to prepare shipping papers for a load of gasoline. What is the correct proper shipping name, hazard class, and UN number?",
+      "options": [
+        {
+          "label": "A",
+          "text": "Fuel, Class 3, UN1203",
+          "is_correct": false
+        },
+        {
+          "label": "B",
+          "text": "Gasoline, Class 3, UN1203",
+          "is_correct": true
+        },
+        {
+          "label": "C",
+          "text": "Gasoline, Class 2.1, UN1075",
+          "is_correct": false
+        },
+        {
+          "label": "D",
+          "text": "Petroleum Product, Class 3, NA1993",
+          "is_correct": false
+        }
+      ],
+      "correct_answer": "B",
+      "explanation": "The Hazmat Table lists gasoline under the proper shipping name \"Gasoline,\" hazard class 3 (Flammable Liquid), with identification number UN1203. \"Fuel\" and \"Petroleum Product\" are not proper shipping names. UN1075 is propane (a gas, not a liquid). NA1993 is the ID number for diesel fuel, not gasoline.",
+      "cfr_reference": "49 CFR 172.101"
+    },
+    {
+      "number": 2,
+      "question_type": "multiple_choice",
+      "question_text": "What does Packing Group I indicate about a hazardous material?",
+      "options": [
+        {
+          "label": "A",
+          "text": "The material presents minor danger",
+          "is_correct": false
+        },
+        {
+          "label": "B",
+          "text": "The material presents medium danger",
+          "is_correct": false
+        },
+        {
+          "label": "C",
+          "text": "The material presents great danger",
+          "is_correct": true
+        },
+        {
+          "label": "D",
+          "text": "The material does not require packaging",
+          "is_correct": false
+        }
+      ],
+      "correct_answer": "C",
+      "explanation": "Packing Group I indicates \"great danger\" \u2014 the highest level of hazard within a class. PG I materials require the most robust packaging and strictest handling. PG II is medium danger and PG III is minor danger.",
+      "cfr_reference": "49 CFR 172.101(f)"
+    },
+    {
+      "number": 3,
+      "question_type": "multiple_choice",
+      "question_text": "A \"G\" symbol in Column 1 of the Hazmat Table means:",
+      "options": [
+        {
+          "label": "A",
+          "text": "The material is only regulated when transported as a gas",
+          "is_correct": false
+        },
+        {
+          "label": "B",
+          "text": "The entry is a generic or n.o.s. name and the technical name must be included on shipping papers",
+          "is_correct": true
+        },
+        {
+          "label": "C",
+          "text": "The material is exempt from placarding requirements",
+          "is_correct": false
+        },
+        {
+          "label": "D",
+          "text": "The material is classified as \"Generally Recognized As Safe\"",
+          "is_correct": false
+        }
+      ],
+      "correct_answer": "B",
+      "explanation": "The \"G\" symbol indicates a generic proper shipping name such as \"Flammable liquid, n.o.s.\" When this symbol appears, the shipper must add the technical name of the hazardous constituent(s) in parentheses on shipping papers and package markings. This ensures emergency responders know what the material actually is.",
+      "cfr_reference": "49 CFR 172.101(b)"
+    },
+    {
+      "number": 4,
+      "question_type": "true_false",
+      "question_text": "Diesel fuel and gasoline are both Class 3 flammable liquids, so they always share the same UN identification number and packing group.",
+      "options": [
+        {
+          "label": "True",
+          "text": "True",
+          "is_correct": false
+        },
+        {
+          "label": "False",
+          "text": "False",
+          "is_correct": true
+        }
+      ],
+      "correct_answer": "False",
+      "explanation": "Although both are Class 3 Flammable Liquids, they have different identification numbers (gasoline is UN1203, diesel fuel is NA1993) and different packing groups (gasoline is PG II, diesel fuel is PG III). Each material has its own entry in the Hazmat Table with specific requirements. Never assume two materials in the same class are interchangeable.",
+      "cfr_reference": "49 CFR 172.101"
+    },
+    {
+      "number": 5,
+      "question_type": "multiple_choice",
+      "question_text": "Which hazard class covers materials like lithium batteries, dry ice, and elevated temperature liquids?",
+      "options": [
+        {
+          "label": "A",
+          "text": "Class 4 \u2014 Flammable Solids",
+          "is_correct": false
+        },
+        {
+          "label": "B",
+          "text": "Class 6 \u2014 Toxic Substances",
+          "is_correct": false
+        },
+        {
+          "label": "C",
+          "text": "Class 8 \u2014 Corrosive Materials",
+          "is_correct": false
+        },
+        {
+          "label": "D",
+          "text": "Class 9 \u2014 Miscellaneous Hazardous Materials",
+          "is_correct": true
+        }
+      ],
+      "correct_answer": "D",
+      "explanation": "Class 9 is the miscellaneous hazardous materials class. It covers materials that present a hazard during transportation but do not meet the definitions of Classes 1 through 8. Lithium batteries (UN3481), dry ice/solid carbon dioxide (UN1845), and elevated temperature materials all fall under Class 9.",
+      "cfr_reference": "49 CFR 173.140"
+    },
+    {
+      "number": 6,
+      "question_type": "scenario",
+      "question_text": "A shipper hands you shipping papers for a load described as \"Corrosive liquid, n.o.s., Class 8, UN1760, PG II.\" The Hazmat Table entry for UN1760 has a \"G\" in Column 1. What is wrong with this shipping paper description?",
+      "options": [
+        {
+          "label": "A",
+          "text": "The proper shipping name should be \"Corrosive liquid\" without \"n.o.s.\"",
+          "is_correct": false
+        },
+        {
+          "label": "B",
+          "text": "The packing group is wrong \u2014 it should be PG I",
+          "is_correct": false
+        },
+        {
+          "label": "C",
+          "text": "The technical name of the corrosive constituent must be included in parentheses after the proper shipping name",
+          "is_correct": true
+        },
+        {
+          "label": "D",
+          "text": "Nothing is wrong \u2014 the description is complete as written",
+          "is_correct": false
+        }
+      ],
+      "correct_answer": "C",
+      "explanation": "When a \"G\" symbol appears in Column 1 of the Hazmat Table, the proper shipping name is generic and the shipper must include the technical name of the hazardous constituent(s) in parentheses. The correct description would be something like \"Corrosive liquid, n.o.s. (contains hydrofluoric acid), Class 8, UN1760, PG II.\" Without the technical name, the entry is incomplete and violates 49 CFR 172.203(k).",
+      "cfr_reference": "49 CFR 172.203(k)"
+    },
+    {
+      "number": 7,
+      "question_type": "multiple_choice",
+      "question_text": "Columns 8A, 8B, and 8C of the Hazmat Table provide which type of information?",
+      "options": [
+        {
+          "label": "A",
+          "text": "Emergency response guide numbers",
+          "is_correct": false
+        },
+        {
+          "label": "B",
+          "text": "Packaging authorization references for exceptions, non-bulk, and bulk",
+          "is_correct": true
+        },
+        {
+          "label": "C",
+          "text": "Quantity limitations for passenger and cargo aircraft",
+          "is_correct": false
+        },
+        {
+          "label": "D",
+          "text": "Special provision numbers that modify standard requirements",
+          "is_correct": false
+        }
+      ],
+      "correct_answer": "B",
+      "explanation": "Columns 8A, 8B, and 8C reference the specific sections of 49 CFR Part 173 that authorize packagings. Column 8A covers packaging exceptions, 8B covers non-bulk packaging authorizations, and 8C covers bulk packaging authorizations. Quantity limitations are in Columns 9A and 9B, and special provisions are in Column 6.",
+      "cfr_reference": "49 CFR 172.101(a)"
+    }
+  ]
+}

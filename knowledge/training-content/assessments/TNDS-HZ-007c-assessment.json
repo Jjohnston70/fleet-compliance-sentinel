@@ -1,0 +1,163 @@
+{
+  "module_code": "TNDS-HZ-007c",
+  "title": "Carrier Requirements: Rail",
+  "category": "hazmat",
+  "cfr_reference": "49 CFR Part 174",
+  "phmsa_equivalent": "Module 7.0c",
+  "passing_score": 80,
+  "estimated_duration_minutes": 30,
+  "version": "1.0",
+  "question_count": 5,
+  "questions": [
+    {
+      "number": 1,
+      "question_type": "multiple_choice",
+      "question_text": "What is the approximate capacity range of a standard railroad tank car used for transporting hazardous materials?",
+      "options": [
+        {
+          "label": "A",
+          "text": "5,000 to 9,000 gallons",
+          "is_correct": false
+        },
+        {
+          "label": "B",
+          "text": "10,000 to 15,000 gallons",
+          "is_correct": false
+        },
+        {
+          "label": "C",
+          "text": "20,000 to 34,500 gallons",
+          "is_correct": true
+        },
+        {
+          "label": "D",
+          "text": "50,000 to 75,000 gallons",
+          "is_correct": false
+        }
+      ],
+      "correct_answer": "C",
+      "explanation": "Railroad tank cars typically hold between 20,000 and 34,500 gallons depending on the car's specification and the material being transported. This is roughly four to six times the capacity of a highway cargo tank truck, which typically holds 5,000 to 9,000 gallons.",
+      "cfr_reference": "49 CFR 179.13"
+    },
+    {
+      "number": 2,
+      "question_type": "multiple_choice",
+      "question_text": "Under 49 CFR 174.82-83, what practice is specifically prohibited when handling placarded hazmat rail cars during switching operations?",
+      "options": [
+        {
+          "label": "A",
+          "text": "Flat-switching at controlled speeds",
+          "is_correct": false
+        },
+        {
+          "label": "B",
+          "text": "Humping or kicking the cars over a classification hump",
+          "is_correct": true
+        },
+        {
+          "label": "C",
+          "text": "Coupling at speeds under 4 mph",
+          "is_correct": false
+        },
+        {
+          "label": "D",
+          "text": "Setting hand brakes on standing cars",
+          "is_correct": false
+        }
+      ],
+      "correct_answer": "B",
+      "explanation": "Placarded hazmat cars must not be humped or kicked. Humping involves pushing a car over a hump and letting gravity roll it into a track at uncontrolled speed. Kicking is giving a car a hard shove to roll freely. Both create violent coupling impacts that can damage tank car fittings and valves. Hazmat cars must be flat-switched at controlled speed with the locomotive connected.",
+      "cfr_reference": "49 CFR 174.83"
+    },
+    {
+      "number": 3,
+      "question_type": "multiple_choice",
+      "question_text": "What is the maximum speed for a High-Hazard Flammable Train (HHFT) operating within a high-threat urban area (HTUA) without electronically controlled pneumatic brakes?",
+      "options": [
+        {
+          "label": "A",
+          "text": "25 mph",
+          "is_correct": false
+        },
+        {
+          "label": "B",
+          "text": "40 mph",
+          "is_correct": true
+        },
+        {
+          "label": "C",
+          "text": "50 mph",
+          "is_correct": false
+        },
+        {
+          "label": "D",
+          "text": "60 mph",
+          "is_correct": false
+        }
+      ],
+      "correct_answer": "B",
+      "explanation": "High-Hazard Flammable Trains are limited to 50 mph generally, but in high-threat urban areas the limit is reduced to 40 mph unless the train is equipped with ECP brakes. These speed restrictions were imposed following catastrophic derailments involving unit trains of flammable liquids.",
+      "cfr_reference": "49 CFR 174.310"
+    },
+    {
+      "number": 4,
+      "question_type": "scenario",
+      "question_text": "Your tanker truck arrives at a transload facility to pick up sodium hydroxide (Class 8, Corrosive) from a railroad tank car. After loading, what documentation must your driver prepare before departing on the highway?",
+      "options": [
+        {
+          "label": "A",
+          "text": "The driver can use the railroad waybill as the highway shipping paper since the material is the same",
+          "is_correct": false
+        },
+        {
+          "label": "B",
+          "text": "The driver must prepare a highway bill of lading with proper shipping name, hazard class, UN number, packing group, and quantity \u2014 the rail waybill is not a valid highway shipping paper",
+          "is_correct": true
+        },
+        {
+          "label": "C",
+          "text": "No documentation is required for the highway leg because the transload facility handles all paperwork",
+          "is_correct": false
+        },
+        {
+          "label": "D",
+          "text": "The driver only needs to photograph the rail waybill and keep it in the cab",
+          "is_correct": false
+        }
+      ],
+      "correct_answer": "B",
+      "explanation": "A railroad waybill is not a valid shipping paper for highway transportation under 49 CFR Part 177. The driver or carrier must prepare a highway bill of lading that complies with 49 CFR 172.200-204, including the proper shipping name, hazard class, UN/NA number, packing group, and total quantity. This is a common violation at transload facilities.",
+      "cfr_reference": "49 CFR 177.817"
+    },
+    {
+      "number": 5,
+      "question_type": "multiple_choice",
+      "question_text": "According to the train placement rules in 49 CFR 174.81-85, what must generally be placed between a placarded hazmat car and an occupied locomotive?",
+      "options": [
+        {
+          "label": "A",
+          "text": "A tanker car filled with water for fire suppression",
+          "is_correct": false
+        },
+        {
+          "label": "B",
+          "text": "At least one non-placarded buffer car",
+          "is_correct": true
+        },
+        {
+          "label": "C",
+          "text": "An empty hazmat car serving as a spacer",
+          "is_correct": false
+        },
+        {
+          "label": "D",
+          "text": "No separation is required if the hazmat car contains a non-flammable material",
+          "is_correct": false
+        }
+      ],
+      "correct_answer": "B",
+      "explanation": "Placarded cars generally cannot be placed adjacent to an occupied locomotive. At least one non-placarded buffer car must be positioned between them. The buffer car absorbs impact energy in a collision and creates physical separation. An exception exists for cars displaying only COMBUSTIBLE placards.",
+      "cfr_reference": "49 CFR 174.85"
+    }
+  ]
+}

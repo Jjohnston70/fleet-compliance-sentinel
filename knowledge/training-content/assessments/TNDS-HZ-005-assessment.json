@@ -1,0 +1,223 @@
+{
+  "module_code": "TNDS-HZ-005",
+  "title": "Labeling Requirements",
+  "category": "hazmat",
+  "cfr_reference": "49 CFR 172.400-450",
+  "phmsa_equivalent": "Module 5.0",
+  "passing_score": 80,
+  "estimated_duration_minutes": 30,
+  "version": "1.0",
+  "question_count": 7,
+  "questions": [
+    {
+      "number": 1,
+      "question_type": "multiple_choice",
+      "question_text": "What is the minimum size requirement for a hazmat label placed on a package?",
+      "options": [
+        {
+          "label": "A",
+          "text": "50 mm (2 inches) on each side",
+          "is_correct": false
+        },
+        {
+          "label": "B",
+          "text": "100 mm (3.9 inches) on each side",
+          "is_correct": true
+        },
+        {
+          "label": "C",
+          "text": "150 mm (5.9 inches) on each side",
+          "is_correct": false
+        },
+        {
+          "label": "D",
+          "text": "273 mm (10.75 inches) on each side",
+          "is_correct": false
+        }
+      ],
+      "correct_answer": "B",
+      "explanation": "Hazmat labels must be diamond-shaped (square-on-point) with each side at least 100 mm (3.9 inches) in length. The 273 mm dimension is the minimum for placards, which are the larger vehicle-level hazard indicators. Labels are the smaller package-level indicators.",
+      "cfr_reference": "49 CFR 172.407(c)"
+    },
+    {
+      "number": 2,
+      "question_type": "multiple_choice",
+      "question_text": "A package displays a label with a blue background and a flame symbol. What hazard class does this label represent?",
+      "options": [
+        {
+          "label": "A",
+          "text": "Class 2.1 -- Flammable Gas",
+          "is_correct": false
+        },
+        {
+          "label": "B",
+          "text": "Class 3 -- Flammable Liquid",
+          "is_correct": false
+        },
+        {
+          "label": "C",
+          "text": "Class 4.3 -- Dangerous When Wet",
+          "is_correct": true
+        },
+        {
+          "label": "D",
+          "text": "Class 5.1 -- Oxidizer",
+          "is_correct": false
+        }
+      ],
+      "correct_answer": "C",
+      "explanation": "The blue background is distinctive to Class 4.3, Dangerous When Wet. While several hazard classes use the flame symbol (Classes 2.1, 3, 4.1, 4.2, 4.3), only Class 4.3 uses a blue background. This color was deliberately chosen to contrast with fire-related reds and yellows, signaling that water must NOT be used on these materials -- they react violently with water to produce flammable or toxic gases.",
+      "cfr_reference": "49 CFR 172.411, 172.415"
+    },
+    {
+      "number": 3,
+      "question_type": "multiple_choice",
+      "question_text": "A hazardous material is classified as Class 3 (Flammable Liquid) with a subsidiary hazard of Class 8 (Corrosive) listed in Column 6 of the Hazmat Table. How many labels must be placed on each package?",
+      "options": [
+        {
+          "label": "A",
+          "text": "One -- only the primary Class 3 label is required",
+          "is_correct": false
+        },
+        {
+          "label": "B",
+          "text": "Two -- a Class 3 primary label and a Class 8 subsidiary label",
+          "is_correct": true
+        },
+        {
+          "label": "C",
+          "text": "Two -- a Class 3 label and a DANGEROUS label",
+          "is_correct": false
+        },
+        {
+          "label": "D",
+          "text": "Three -- a Class 3 label, a Class 8 label, and a Class 9 label",
+          "is_correct": false
+        }
+      ],
+      "correct_answer": "B",
+      "explanation": "When a material has a subsidiary hazard listed in Column 6 of the Hazmat Table, a subsidiary label must be applied in addition to the primary label. The primary Class 3 (Flammable Liquid) label indicates the dominant hazard, and the subsidiary Class 8 (Corrosive) label communicates the additional corrosive hazard. Both labels must be placed within 150 mm (6 inches) of each other on the same surface.",
+      "cfr_reference": "49 CFR 172.402"
+    },
+    {
+      "number": 4,
+      "question_type": "multiple_choice",
+      "question_text": "Where must hazmat labels be placed on a package?",
+      "options": [
+        {
+          "label": "A",
+          "text": "On the top of the package for easy visibility during stacking",
+          "is_correct": false
+        },
+        {
+          "label": "B",
+          "text": "On the same surface as the proper shipping name and UN number marking, not on the bottom of the package",
+          "is_correct": true
+        },
+        {
+          "label": "C",
+          "text": "On the bottom of the package to protect the label from weather damage",
+          "is_correct": false
+        },
+        {
+          "label": "D",
+          "text": "On any surface, as long as the label is visible when the package is in storage",
+          "is_correct": false
+        }
+      ],
+      "correct_answer": "B",
+      "explanation": "Labels must be placed on the same surface where the proper shipping name and identification number are marked, so all hazard information is visible together. Labels must not be placed on the bottom of the package because the bottom may rest against the floor, pallet, or other packages, making the label invisible. Labels must remain unobscured throughout transport.",
+      "cfr_reference": "49 CFR 172.406(a)"
+    },
+    {
+      "number": 5,
+      "question_type": "multiple_choice",
+      "question_text": "Which of the following Class 8 (Corrosive) label characteristics is correct?",
+      "options": [
+        {
+          "label": "A",
+          "text": "Yellow background with a flame-over-circle symbol",
+          "is_correct": false
+        },
+        {
+          "label": "B",
+          "text": "Green background with a gas cylinder symbol",
+          "is_correct": false
+        },
+        {
+          "label": "C",
+          "text": "Upper half white, lower half black, with a symbol showing liquid drops destroying skin and metal",
+          "is_correct": true
+        },
+        {
+          "label": "D",
+          "text": "Red background with vertical white stripes and a flame symbol",
+          "is_correct": false
+        }
+      ],
+      "correct_answer": "C",
+      "explanation": "The Class 8 (Corrosive) label has a distinctive design: the upper half is white and the lower half is black, with a graphic showing liquid drops falling from test tubes onto a hand and a metal surface, depicting the material's ability to destroy living tissue and corrode metals. This intentionally graphic image conveys the severity of the corrosive hazard.",
+      "cfr_reference": "49 CFR 172.430"
+    },
+    {
+      "number": 6,
+      "question_type": "multiple_choice",
+      "question_text": "A vehicle is loaded with 1,500 pounds of packages bearing Class 3 (Flammable Liquid) labels. No other hazmat is on board. What placard is required on the vehicle?",
+      "options": [
+        {
+          "label": "A",
+          "text": "DANGEROUS placard on two sides",
+          "is_correct": false
+        },
+        {
+          "label": "B",
+          "text": "FLAMMABLE placard on all four sides",
+          "is_correct": true
+        },
+        {
+          "label": "C",
+          "text": "CLASS 3 placard on the rear only",
+          "is_correct": false
+        },
+        {
+          "label": "D",
+          "text": "No placard is required because the load is under 2,000 pounds",
+          "is_correct": false
+        }
+      ],
+      "correct_answer": "B",
+      "explanation": "Under 49 CFR 172.504, when the aggregate gross weight of hazardous materials in a single hazard class (Table 2) exceeds 1,001 pounds, the vehicle must display the appropriate placard on all four sides (front, rear, and both sides). With 1,500 pounds of Class 3 materials, the FLAMMABLE placard is required on all four sides of the vehicle.",
+      "cfr_reference": "49 CFR 172.504"
+    },
+    {
+      "number": 7,
+      "question_type": "multiple_choice",
+      "question_text": "Which of the following materials requires placarding at ANY quantity, regardless of weight, because it appears on the Table 1 list of high-hazard materials?",
+      "options": [
+        {
+          "label": "A",
+          "text": "Class 3, Packing Group III (Flammable Liquid, minor hazard)",
+          "is_correct": false
+        },
+        {
+          "label": "B",
+          "text": "Class 8, Packing Group II (Corrosive, medium hazard)",
+          "is_correct": false
+        },
+        {
+          "label": "C",
+          "text": "Class 2.3 (Toxic Gas)",
+          "is_correct": true
+        },
+        {
+          "label": "D",
+          "text": "Class 9 (Miscellaneous Hazardous Material)",
+          "is_correct": false
+        }
+      ],
+      "correct_answer": "C",
+      "explanation": "Table 1 of 49 CFR 172.504 lists the highest-hazard categories that require placarding at any quantity: Class 1.1/1.2/1.3 (Explosives), Class 2.3 (Toxic Gas), Class 4.3 (Dangerous When Wet), Class 6.1 PG I Inhalation Hazard, and Class 7 (Radioactive, certain quantities). All other hazard classes fall under Table 2 and require placarding only when the total exceeds 1,001 pounds. Toxic gases are so dangerous that even a single package on a vehicle triggers the placard requirement.",
+      "cfr_reference": "49 CFR 172.504(e), Table 1"
+    }
+  ]
+}

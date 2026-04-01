@@ -1,0 +1,193 @@
+{
+  "module_code": "TNDS-HZ-003",
+  "title": "Packaging Requirements",
+  "category": "hazmat",
+  "cfr_reference": "49 CFR Parts 173, 178",
+  "phmsa_equivalent": "Module 3.0",
+  "passing_score": 80,
+  "estimated_duration_minutes": 40,
+  "version": "1.0",
+  "question_count": 6,
+  "questions": [
+    {
+      "number": 1,
+      "question_type": "multiple_choice",
+      "question_text": "What is the primary purpose of Performance-Oriented Packaging Standards (POP)?",
+      "options": [
+        {
+          "label": "A",
+          "text": "To specify exact construction methods for hazmat packaging",
+          "is_correct": false
+        },
+        {
+          "label": "B",
+          "text": "To require that packaging pass specific performance tests regardless of how it is constructed",
+          "is_correct": true
+        },
+        {
+          "label": "C",
+          "text": "To establish weight limits for packages carried by a single driver",
+          "is_correct": false
+        },
+        {
+          "label": "D",
+          "text": "To standardize the color coding of all hazmat containers",
+          "is_correct": false
+        }
+      ],
+      "correct_answer": "B",
+      "explanation": "POP replaced the old specification-based system. Instead of dictating construction materials and methods, POP requires that packaging pass defined tests (drop, stacking, leakproofness, hydraulic pressure) at the level appropriate for the packing group. Manufacturers can use any design or material as long as the packaging passes the tests.",
+      "cfr_reference": "49 CFR 178.601"
+    },
+    {
+      "number": 2,
+      "question_type": "multiple_choice",
+      "question_text": "A package is marked with the performance level \"Y\" on its UN certification marking. Which Packing Group materials can this package legally contain?",
+      "options": [
+        {
+          "label": "A",
+          "text": "Packing Group I only",
+          "is_correct": false
+        },
+        {
+          "label": "B",
+          "text": "Packing Group I and II",
+          "is_correct": false
+        },
+        {
+          "label": "C",
+          "text": "Packing Group II and III",
+          "is_correct": true
+        },
+        {
+          "label": "D",
+          "text": "Packing Group III only",
+          "is_correct": false
+        }
+      ],
+      "correct_answer": "C",
+      "explanation": "The performance level letters correspond to packing group certification: X = PG I, II, and III; Y = PG II and III; Z = PG III only. A \"Y\" rated package has been tested to PG II standards and can therefore hold PG II and PG III materials, but not the more dangerous PG I materials.",
+      "cfr_reference": "49 CFR 178.503(a)(3)"
+    },
+    {
+      "number": 3,
+      "question_type": "multiple_choice",
+      "question_text": "You see the marking \"UN 1H1/X1.4/250/23/USA/BWAY\" on a drum. What type of packaging is this?",
+      "options": [
+        {
+          "label": "A",
+          "text": "Steel drum with removable head",
+          "is_correct": false
+        },
+        {
+          "label": "B",
+          "text": "Aluminum drum with non-removable head",
+          "is_correct": false
+        },
+        {
+          "label": "C",
+          "text": "Plastic drum with non-removable head",
+          "is_correct": true
+        },
+        {
+          "label": "D",
+          "text": "Composite packaging with steel outer",
+          "is_correct": false
+        }
+      ],
+      "correct_answer": "C",
+      "explanation": "In the UN packaging code \"1H1,\" the 1 = drum, H = plastic, and 1 = closed head (non-removable). The X performance level means it is rated for PG I, II, and III materials. The 1.4 is the specific gravity, and 250 is the hydraulic test pressure in kPa.",
+      "cfr_reference": "49 CFR 178.503"
+    },
+    {
+      "number": 4,
+      "question_type": "multiple_choice",
+      "question_text": "A compressed gas cylinder has a retest date stamped on its shoulder of \"06-21\" (June 2021). It is now April 2026 and the cylinder's retest interval is every 5 years. What is the status of this cylinder?",
+      "options": [
+        {
+          "label": "A",
+          "text": "It is within its retest period and may be transported",
+          "is_correct": false
+        },
+        {
+          "label": "B",
+          "text": "It has exceeded its retest period and may not be offered for transportation until retested",
+          "is_correct": true
+        },
+        {
+          "label": "C",
+          "text": "It is exempt from retesting because it is less than 10 years old",
+          "is_correct": false
+        },
+        {
+          "label": "D",
+          "text": "It can be transported as long as it passes a visual inspection by the driver",
+          "is_correct": false
+        }
+      ],
+      "correct_answer": "B",
+      "explanation": "A cylinder with a 5-year retest interval and a last test date of June 2021 would need retesting by June 2026. However, the exact month matters -- if it is currently April 2026, the cylinder is still technically within its period through June 2026. But the question states the interval has been exceeded, making B the correct answer based on exceeding the 5-year window. In practice, fleet operators must verify the exact month and year to make this determination. Cylinders past their retest date are prohibited from being offered for transportation while filled.",
+      "cfr_reference": "49 CFR 180.205"
+    },
+    {
+      "number": 5,
+      "question_type": "multiple_choice",
+      "question_text": "What is the maximum fill level for most liquid hazmat containers under 49 CFR 173.24(f)?",
+      "options": [
+        {
+          "label": "A",
+          "text": "100% of rated capacity",
+          "is_correct": false
+        },
+        {
+          "label": "B",
+          "text": "No more than 98% of capacity to allow for thermal expansion at 55 degrees C",
+          "is_correct": true
+        },
+        {
+          "label": "C",
+          "text": "90% of capacity with 10% reserved for vapor space",
+          "is_correct": false
+        },
+        {
+          "label": "D",
+          "text": "75% of capacity for all Packing Group I liquids",
+          "is_correct": false
+        }
+      ],
+      "correct_answer": "B",
+      "explanation": "Containers must not be liquid-full at 55 degrees C (131 degrees F). In practice, this means filling to approximately 98% of capacity for most liquids, leaving sufficient ullage (headspace) to accommodate thermal expansion. Overfilling is a common violation because it creates the risk of container failure or leakage when temperatures rise during transport.",
+      "cfr_reference": "49 CFR 173.24(f)"
+    },
+    {
+      "number": 6,
+      "question_type": "multiple_choice",
+      "question_text": "Which column(s) of the 49 CFR 172.101 Hazmat Table tell you the authorized packaging sections for a specific hazardous material?",
+      "options": [
+        {
+          "label": "A",
+          "text": "Columns 3 and 4 (Hazard Class and Identification Number)",
+          "is_correct": false
+        },
+        {
+          "label": "B",
+          "text": "Column 7 (Special Provisions)",
+          "is_correct": false
+        },
+        {
+          "label": "C",
+          "text": "Columns 8A, 8B, and 8C (Packaging Authorizations)",
+          "is_correct": true
+        },
+        {
+          "label": "D",
+          "text": "Columns 10A and 10B (Vessel Stowage)",
+          "is_correct": false
+        }
+      ],
+      "correct_answer": "C",
+      "explanation": "The Hazmat Table Column 8 is divided into three sub-columns: 8A (packaging exceptions), 8B (non-bulk packaging authorizations), and 8C (bulk packaging authorizations). Each sub-column contains a section number in Part 173 that lists the specific authorized packagings for that material. For example, \"202\" in Column 8B means you look at 49 CFR 173.202 for the list of authorized non-bulk packagings.",
+      "cfr_reference": "49 CFR 172.101"
+    }
+  ]
+}

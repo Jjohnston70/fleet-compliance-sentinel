@@ -742,9 +742,9 @@ CREATE TABLE training_progress (
 **Estimated Effort**: 0.5 day
 **Depends On**: B1 (at least 1 module to test against)
 
-- [ ] Create `tools/parse-assessment.py` -- extracts questions from training markdown into assessment JSON
-- [ ] Define `TrainingAssessment` data model
-- [ ] Store assessments alongside deck JSON (one assessment per training module)
+- [x] Create `tools/parse-assessment.py` -- extracts questions from training markdown into assessment JSON
+- [x] Define `TrainingAssessment` data model
+- [x] Store assessments alongside deck JSON (one assessment per training module)
 
 **Question Types**:
 

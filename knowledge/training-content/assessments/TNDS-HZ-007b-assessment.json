@@ -1,0 +1,193 @@
+{
+  "module_code": "TNDS-HZ-007b",
+  "title": "Carrier Requirements: Air",
+  "category": "hazmat",
+  "cfr_reference": "49 CFR Part 175",
+  "phmsa_equivalent": "Module 7.0b",
+  "passing_score": 80,
+  "estimated_duration_minutes": 30,
+  "version": "1.0",
+  "question_count": 6,
+  "questions": [
+    {
+      "number": 1,
+      "question_type": "multiple_choice",
+      "question_text": "A material has \"Forbidden\" in Column 9A and \"60 L\" in Column 9B of the Hazardous Materials Table. What does this mean for air transport?",
+      "options": [
+        {
+          "label": "A",
+          "text": "The material cannot be transported by air under any circumstances",
+          "is_correct": false
+        },
+        {
+          "label": "B",
+          "text": "The material can only be transported on cargo-only aircraft, up to 60 liters net per package",
+          "is_correct": true
+        },
+        {
+          "label": "C",
+          "text": "The material can be transported on passenger aircraft in quantities up to 60 liters",
+          "is_correct": false
+        },
+        {
+          "label": "D",
+          "text": "The material requires a special permit from PHMSA for any air transport",
+          "is_correct": false
+        }
+      ],
+      "correct_answer": "B",
+      "explanation": "Column 9A applies to passenger aircraft and Column 9B applies to cargo aircraft only. \"Forbidden\" in 9A means no passenger flights. A quantity in 9B means the material is allowed on cargo-only aircraft up to that quantity per package. The package must bear a \"Cargo Aircraft Only\" label.",
+      "cfr_reference": "49 CFR 175.75"
+    },
+    {
+      "number": 2,
+      "question_type": "multiple_choice",
+      "question_text": "What is the distinctive label required on packages of hazmat that are forbidden on passenger aircraft but permitted on cargo aircraft?",
+      "options": [
+        {
+          "label": "A",
+          "text": "\"Dangerous Goods\" label (red and white diamond)",
+          "is_correct": false
+        },
+        {
+          "label": "B",
+          "text": "\"Limited Quantity\" label (black and white diamond)",
+          "is_correct": false
+        },
+        {
+          "label": "C",
+          "text": "\"Cargo Aircraft Only\" label (orange and white)",
+          "is_correct": true
+        },
+        {
+          "label": "D",
+          "text": "\"Keep Away From Heat\" label (red border triangle)",
+          "is_correct": false
+        }
+      ],
+      "correct_answer": "C",
+      "explanation": "When Column 9A of the Hazmat Table says \"Forbidden\" but Column 9B allows a quantity, the package must bear the \"Cargo Aircraft Only\" label. This distinctive orange-and-white label ensures the package is never loaded onto a passenger-carrying aircraft.",
+      "cfr_reference": "49 CFR 172.448"
+    },
+    {
+      "number": 3,
+      "question_type": "multiple_choice",
+      "question_text": "What is the maximum state of charge permitted for standalone lithium ion batteries (UN3480) being shipped by cargo aircraft?",
+      "options": [
+        {
+          "label": "A",
+          "text": "10% of rated capacity",
+          "is_correct": false
+        },
+        {
+          "label": "B",
+          "text": "30% of rated capacity",
+          "is_correct": true
+        },
+        {
+          "label": "C",
+          "text": "50% of rated capacity",
+          "is_correct": false
+        },
+        {
+          "label": "D",
+          "text": "100% of rated capacity (no restriction)",
+          "is_correct": false
+        }
+      ],
+      "correct_answer": "B",
+      "explanation": "Standalone lithium ion batteries shipped by cargo aircraft must be at a state of charge not exceeding 30% of their rated capacity. This reduces the energy available to sustain a thermal runaway event. Standalone lithium ion batteries are completely forbidden on passenger aircraft.",
+      "cfr_reference": "49 CFR 173.185"
+    },
+    {
+      "number": 4,
+      "question_type": "multiple_choice",
+      "question_text": "When shipping liquids by air, what must be included inside the outer packaging in addition to the inner containers?",
+      "options": [
+        {
+          "label": "A",
+          "text": "A copy of the Emergency Response Guidebook",
+          "is_correct": false
+        },
+        {
+          "label": "B",
+          "text": "Enough absorbent material to absorb the entire contents of the inner packagings",
+          "is_correct": true
+        },
+        {
+          "label": "C",
+          "text": "A temperature monitoring device",
+          "is_correct": false
+        },
+        {
+          "label": "D",
+          "text": "Secondary containment trays under each inner container",
+          "is_correct": false
+        }
+      ],
+      "correct_answer": "B",
+      "explanation": "Packages containing liquid hazmat for air transport must include sufficient absorbent material to absorb the entire quantity of liquid in all inner packagings. This ensures that if an inner container breaks during flight, no liquid leaks from the outer packaging.",
+      "cfr_reference": "49 CFR 173.27(c)"
+    },
+    {
+      "number": 5,
+      "question_type": "multiple_choice",
+      "question_text": "How many signed copies of the Shipper's Declaration for Dangerous Goods must the shipper provide for an air shipment of hazmat?",
+      "options": [
+        {
+          "label": "A",
+          "text": "One copy only, which travels with the shipment",
+          "is_correct": false
+        },
+        {
+          "label": "B",
+          "text": "At least two copies \u2014 one accompanies the shipment and one is retained by the air carrier at the origin",
+          "is_correct": true
+        },
+        {
+          "label": "C",
+          "text": "Three copies \u2014 one for the shipper, one for the carrier, and one for the consignee",
+          "is_correct": false
+        },
+        {
+          "label": "D",
+          "text": "No physical copies are required if the information is transmitted electronically",
+          "is_correct": false
+        }
+      ],
+      "correct_answer": "B",
+      "explanation": "The shipper must provide at least two signed copies of the Shipper's Declaration for Dangerous Goods. One copy accompanies the shipment throughout its journey, and one is retained by the originating air carrier. The document must be in English for international shipments.",
+      "cfr_reference": "49 CFR 175.30"
+    },
+    {
+      "number": 6,
+      "question_type": "scenario",
+      "question_text": "Your fleet delivers a shipment of corrosive liquid to an air freight forwarder. The air carrier rejects the shipment because the packages do not contain absorbent material and the Shipper's Declaration is missing from the documentation envelope. Who is responsible for correcting these deficiencies?",
+      "options": [
+        {
+          "label": "A",
+          "text": "The air carrier, because they are the final handler before the flight",
+          "is_correct": false
+        },
+        {
+          "label": "B",
+          "text": "Your fleet, because you were the last highway carrier to handle the shipment",
+          "is_correct": false
+        },
+        {
+          "label": "C",
+          "text": "The shipper, because they are responsible for proper packaging and documentation before tendering for air transport",
+          "is_correct": true
+        },
+        {
+          "label": "D",
+          "text": "The consignee, because they are the intended recipient",
+          "is_correct": false
+        }
+      ],
+      "correct_answer": "C",
+      "explanation": "Under the HMR, the shipper (offeror) is responsible for properly classifying, packaging, marking, labeling, and documenting hazardous materials before they are offered for transportation. Absorbent material and the Shipper's Declaration are the shipper's responsibility. However, as a practical matter, the fleet operator who delivered the shipment may need to coordinate the return or correction.",
+      "cfr_reference": "49 CFR 171.2(a)"
+    }
+  ]
+}

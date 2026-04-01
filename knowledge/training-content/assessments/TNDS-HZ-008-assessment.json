@@ -1,0 +1,223 @@
+{
+  "module_code": "TNDS-HZ-008",
+  "title": "Security Requirements",
+  "category": "hazmat",
+  "cfr_reference": "49 CFR 172.800-804",
+  "phmsa_equivalent": "Module 8.0",
+  "passing_score": 80,
+  "estimated_duration_minutes": 35,
+  "version": "1.0",
+  "question_count": 7,
+  "questions": [
+    {
+      "number": 1,
+      "question_type": "multiple_choice",
+      "question_text": "Under 49 CFR 172.800, which of the following operations requires the company to have a written hazmat security plan?",
+      "options": [
+        {
+          "label": "A",
+          "text": "A fleet that delivers non-placarded quantities of Class 9 miscellaneous hazmat",
+          "is_correct": false
+        },
+        {
+          "label": "B",
+          "text": "A fleet that transports placarded quantities of Division 2.1 flammable gas (propane) in bobtail trucks",
+          "is_correct": true
+        },
+        {
+          "label": "C",
+          "text": "A fleet that hauls dry freight with occasional ORM-D consumer commodity shipments",
+          "is_correct": false
+        },
+        {
+          "label": "D",
+          "text": "A fleet that transports limited quantities of Class 3 flammable liquids in non-bulk packaging below placarding thresholds",
+          "is_correct": false
+        }
+      ],
+      "correct_answer": "B",
+      "explanation": "49 CFR 172.800 requires a security plan for any person who offers or transports a quantity of Division 2.1 (flammable gas) requiring placarding. Propane delivered in bobtail trucks is a placarded quantity of Division 2.1, triggering the security plan requirement. The other options describe operations below the security plan threshold.",
+      "cfr_reference": "49 CFR 172.800(b)"
+    },
+    {
+      "number": 2,
+      "question_type": "multiple_choice",
+      "question_text": "What are the three required components of a hazmat security plan under 49 CFR 172.802?",
+      "options": [
+        {
+          "label": "A",
+          "text": "Personnel security, unauthorized access prevention, and en route security",
+          "is_correct": true
+        },
+        {
+          "label": "B",
+          "text": "Fire prevention, spill response, and employee wellness",
+          "is_correct": false
+        },
+        {
+          "label": "C",
+          "text": "Background checks, drug testing, and vehicle inspections",
+          "is_correct": false
+        },
+        {
+          "label": "D",
+          "text": "Risk assessment, insurance coverage, and community notification",
+          "is_correct": false
+        }
+      ],
+      "correct_answer": "A",
+      "explanation": "49 CFR 172.802 requires the security plan to address three specific elements: (1) personnel security \u2014 measures to confirm that persons with access to hazmat are authorized; (2) unauthorized access prevention \u2014 physical security of vehicles, facilities, and cargo; and (3) en route security \u2014 procedures to address security risks during transport.",
+      "cfr_reference": "49 CFR 172.802(c)"
+    },
+    {
+      "number": 3,
+      "question_type": "multiple_choice",
+      "question_text": "Who is required to receive security awareness training under the HMR?",
+      "options": [
+        {
+          "label": "A",
+          "text": "Only drivers who transport TIH (Toxic Inhalation Hazard) materials",
+          "is_correct": false
+        },
+        {
+          "label": "B",
+          "text": "Only employees of companies that have a written security plan",
+          "is_correct": false
+        },
+        {
+          "label": "C",
+          "text": "ALL hazmat employees, regardless of whether their employer has a security plan",
+          "is_correct": true
+        },
+        {
+          "label": "D",
+          "text": "Only hazmat employees who have been with the company for more than 90 days",
+          "is_correct": false
+        }
+      ],
+      "correct_answer": "C",
+      "explanation": "Security awareness training under 49 CFR 172.704(a)(4) is required for ALL hazmat employees \u2014 every person who performs any hazmat function, regardless of whether their employer meets the threshold for a written security plan. In-depth security training is the one that applies only to employees of companies with required security plans.",
+      "cfr_reference": "49 CFR 172.704(a)(4)"
+    },
+    {
+      "number": 4,
+      "question_type": "multiple_choice",
+      "question_text": "What is the key difference between security awareness training and in-depth security training?",
+      "options": [
+        {
+          "label": "A",
+          "text": "Security awareness training covers fire safety; in-depth training covers spill response",
+          "is_correct": false
+        },
+        {
+          "label": "B",
+          "text": "Security awareness training is general awareness of threats and reporting; in-depth training covers the company's specific security plan and each employee's role in implementing it",
+          "is_correct": true
+        },
+        {
+          "label": "C",
+          "text": "Security awareness training is for new employees only; in-depth training is for experienced employees",
+          "is_correct": false
+        },
+        {
+          "label": "D",
+          "text": "There is no difference \u2014 they are the same training with different names",
+          "is_correct": false
+        }
+      ],
+      "correct_answer": "B",
+      "explanation": "Security awareness training provides general knowledge about security threats, methods to enhance security, and how to report suspicious activity. In-depth security training covers the specifics of the company's written security plan and each employee's individual role in implementing that plan. Awareness training is required for all hazmat employees; in-depth training is required only for employees of companies with a mandated security plan.",
+      "cfr_reference": "49 CFR 172.704(a)(4)-(5)"
+    },
+    {
+      "number": 5,
+      "question_type": "scenario",
+      "question_text": "A hazmat driver stops at a truck stop and notices a person examining the valves and fittings on the cargo tank. The person is not wearing any company uniform or identification. What should the driver do?",
+      "options": [
+        {
+          "label": "A",
+          "text": "Confront the person and demand identification",
+          "is_correct": false
+        },
+        {
+          "label": "B",
+          "text": "Ignore it \u2014 truck stops are public places and people are curious",
+          "is_correct": false
+        },
+        {
+          "label": "C",
+          "text": "Return to the cab, lock the doors, and call dispatch or 911 to report the suspicious activity",
+          "is_correct": true
+        },
+        {
+          "label": "D",
+          "text": "Take a photo and post it on social media to warn other drivers",
+          "is_correct": false
+        }
+      ],
+      "correct_answer": "C",
+      "explanation": "The driver should never confront a suspicious person directly \u2014 this could escalate into a dangerous confrontation. The correct procedure is to return to the cab, secure the vehicle, and report the activity to dispatch or law enforcement (911 if there is an immediate threat). The driver should provide a description of the person, the time, the location, and what was observed. This follows the \"See Something, Say Something\" protocol.",
+      "cfr_reference": "49 CFR 172.802(c)"
+    },
+    {
+      "number": 6,
+      "question_type": "multiple_choice",
+      "question_text": "How often must a hazmat security plan be reviewed and updated?",
+      "options": [
+        {
+          "label": "A",
+          "text": "Every 90 days",
+          "is_correct": false
+        },
+        {
+          "label": "B",
+          "text": "Every 6 months",
+          "is_correct": false
+        },
+        {
+          "label": "C",
+          "text": "At least annually",
+          "is_correct": true
+        },
+        {
+          "label": "D",
+          "text": "Every 3 years, at the same interval as recurrent training",
+          "is_correct": false
+        }
+      ],
+      "correct_answer": "C",
+      "explanation": "Under 49 CFR 172.802(b), the security plan must be reviewed and updated at least annually. The annual review should assess whether operations, materials, routes, or threats have changed and whether the plan's procedures are being followed. The review should be documented. This is separate from the 3-year recurrent training cycle.",
+      "cfr_reference": "49 CFR 172.802(b)"
+    },
+    {
+      "number": 7,
+      "question_type": "scenario",
+      "question_text": "During a DOT facility audit, an inspector asks to see your company's hazmat security plan. The plan was written four years ago and has never been reviewed or updated. Two of your five drivers have no record of in-depth security training. What violations is the inspector likely to cite?",
+      "options": [
+        {
+          "label": "A",
+          "text": "Only the missing training records \u2014 the plan itself is not reviewed during audits",
+          "is_correct": false
+        },
+        {
+          "label": "B",
+          "text": "Failure to conduct annual plan review, and failure to provide in-depth security training to all required employees",
+          "is_correct": true
+        },
+        {
+          "label": "C",
+          "text": "No violations \u2014 the plan exists, which satisfies the requirement",
+          "is_correct": false
+        },
+        {
+          "label": "D",
+          "text": "Only the plan review violation \u2014 training records are not checked during facility audits",
+          "is_correct": false
+        }
+      ],
+      "correct_answer": "B",
+      "explanation": "The inspector will likely cite at least two violations: (1) failure to review and update the security plan at least annually as required by 49 CFR 172.802(b) \u2014 a plan that has not been reviewed in four years violates this requirement; and (2) failure to provide in-depth security training to employees as required by 49 CFR 172.704(a)(5) \u2014 two drivers without training records means training was either not provided or not documented, both of which are violations. Each violation carries potential civil penalties.",
+      "cfr_reference": "49 CFR 172.802(b), 49 CFR 172.704(a)(5)"
+    }
+  ]
+}

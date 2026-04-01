@@ -1,0 +1,183 @@
+{
+  "module_code": "TNDS-HZ-002",
+  "title": "Shipping Papers",
+  "category": "hazmat",
+  "cfr_reference": "49 CFR 172.200-205",
+  "phmsa_equivalent": "Module 2.0",
+  "passing_score": 80,
+  "estimated_duration_minutes": 35,
+  "version": "1.0",
+  "question_count": 6,
+  "questions": [
+    {
+      "number": 1,
+      "question_type": "multiple_choice",
+      "question_text": "When a driver leaves the cab of a vehicle transporting hazardous materials, where must the shipping papers be placed?",
+      "options": [
+        {
+          "label": "A",
+          "text": "In the glove compartment",
+          "is_correct": false
+        },
+        {
+          "label": "B",
+          "text": "On the driver's seat or in a holder mounted on the inside of the driver's door",
+          "is_correct": true
+        },
+        {
+          "label": "C",
+          "text": "In the sleeper berth",
+          "is_correct": false
+        },
+        {
+          "label": "D",
+          "text": "In a sealed envelope on the dashboard",
+          "is_correct": false
+        }
+      ],
+      "correct_answer": "B",
+      "explanation": "Under 49 CFR 177.817(e), when the driver is not at the vehicle controls, the shipping papers must be placed on the driver's seat or in a holder mounted to the inside of the driver's door, where they are visible and immediately accessible to emergency responders or inspectors.",
+      "cfr_reference": "49 CFR 177.817(e)"
+    },
+    {
+      "number": 2,
+      "question_type": "multiple_choice",
+      "question_text": "What is the correct sequence for the basic description of a hazardous material on a shipping paper?",
+      "options": [
+        {
+          "label": "A",
+          "text": "Proper shipping name, hazard class, ID number, packing group",
+          "is_correct": false
+        },
+        {
+          "label": "B",
+          "text": "Hazard class, proper shipping name, packing group, ID number",
+          "is_correct": false
+        },
+        {
+          "label": "C",
+          "text": "ID number, proper shipping name, hazard class, packing group",
+          "is_correct": true
+        },
+        {
+          "label": "D",
+          "text": "Packing group, ID number, hazard class, proper shipping name",
+          "is_correct": false
+        }
+      ],
+      "correct_answer": "C",
+      "explanation": "Under 49 CFR 172.202(a), the basic description must appear in this sequence: identification number, proper shipping name, hazard class or division, and packing group. Placing these elements out of order is a violation, even if all the required information is present on the document.",
+      "cfr_reference": "49 CFR 172.202(a)"
+    },
+    {
+      "number": 3,
+      "question_type": "true_false",
+      "question_text": "The emergency response telephone number on a hazmat shipping paper can be a company number that goes to voicemail after business hours, as long as the voicemail greeting includes emergency instructions.",
+      "options": [
+        {
+          "label": "True",
+          "text": "True",
+          "is_correct": false
+        },
+        {
+          "label": "False",
+          "text": "False",
+          "is_correct": true
+        }
+      ],
+      "correct_answer": "False",
+      "explanation": "Under 49 CFR 172.604, the emergency response telephone number must be monitored at all times \u2014 24 hours a day, 7 days a week \u2014 by a person who is knowledgeable about the hazardous material being shipped or who has immediate access to such a person. A voicemail system does not meet this requirement, regardless of the greeting content.",
+      "cfr_reference": "49 CFR 172.604"
+    },
+    {
+      "number": 4,
+      "question_type": "multiple_choice",
+      "question_text": "How long must a motor carrier retain copies of hazmat shipping papers after accepting a hazardous materials shipment?",
+      "options": [
+        {
+          "label": "A",
+          "text": "6 months",
+          "is_correct": false
+        },
+        {
+          "label": "B",
+          "text": "1 year",
+          "is_correct": true
+        },
+        {
+          "label": "C",
+          "text": "2 years",
+          "is_correct": false
+        },
+        {
+          "label": "D",
+          "text": "3 years",
+          "is_correct": false
+        }
+      ],
+      "correct_answer": "B",
+      "explanation": "Under 49 CFR 177.817(f), highway carriers must retain a copy of hazmat shipping papers for at least 1 year after the material was accepted for transport. Shippers have a longer retention requirement of 2 years. Hazardous waste manifests require 3-year retention.",
+      "cfr_reference": "49 CFR 177.817(f)"
+    },
+    {
+      "number": 5,
+      "question_type": "scenario",
+      "question_text": "You are reviewing a shipping paper for a load you are about to accept. The paper lists: \"Gasoline, UN1203, 3, PG II, 5,000 gallons, 1 cargo tank.\" The emergency response phone number is listed as CHEMTREC 1-800-424-9300, and the shipper's certification is printed at the bottom but has no signature. Should you accept this shipment?",
+      "options": [
+        {
+          "label": "A",
+          "text": "Yes \u2014 all the required information is present",
+          "is_correct": false
+        },
+        {
+          "label": "B",
+          "text": "No \u2014 the basic description is in the wrong sequence",
+          "is_correct": false
+        },
+        {
+          "label": "C",
+          "text": "No \u2014 the shipper's certification is unsigned, and the basic description sequence is wrong",
+          "is_correct": true
+        },
+        {
+          "label": "D",
+          "text": "No \u2014 CHEMTREC cannot be used as an emergency response number",
+          "is_correct": false
+        }
+      ],
+      "correct_answer": "C",
+      "explanation": "There are two problems. First, the basic description is out of sequence \u2014 it should read \"UN1203, Gasoline, 3, PG II\" (ID number first, then proper shipping name), not \"Gasoline, UN1203, 3, PG II.\" Second, the shipper's certification must be signed under 49 CFR 172.204. An unsigned certification is incomplete. The driver should request corrections before accepting the shipment. CHEMTREC is a valid emergency response number, so that is not the issue.",
+      "cfr_reference": "49 CFR 172.202(a), 49 CFR 172.204"
+    },
+    {
+      "number": 6,
+      "question_type": "multiple_choice",
+      "question_text": "When a shipping paper lists both hazardous and non-hazardous materials, which of the following is an acceptable method for identifying the hazmat entries?",
+      "options": [
+        {
+          "label": "A",
+          "text": "Printing the hazmat entries in a smaller font size",
+          "is_correct": false
+        },
+        {
+          "label": "B",
+          "text": "Placing the hazmat entries on a separate page stapled to the back",
+          "is_correct": false
+        },
+        {
+          "label": "C",
+          "text": "Entering an \"X\" in a column marked \"HM\" next to each hazmat entry",
+          "is_correct": true
+        },
+        {
+          "label": "D",
+          "text": "Writing \"DANGER\" in red ink next to each hazmat entry",
+          "is_correct": false
+        }
+      ],
+      "correct_answer": "C",
+      "explanation": "Under 49 CFR 172.201(a)(1), hazmat entries must be distinguished from non-hazmat entries by one of three methods: listing them first, highlighting them, or placing an \"X\" in a column marked \"HM.\" Using smaller font, separate pages, or writing \"DANGER\" are not recognized methods under the regulation.",
+      "cfr_reference": "49 CFR 172.201(a)(1)"
+    }
+  ]
+}

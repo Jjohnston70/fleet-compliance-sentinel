@@ -1,0 +1,163 @@
+{
+  "module_code": "TNDS-HZ-007d",
+  "title": "Carrier Requirements: Vessel",
+  "category": "hazmat",
+  "cfr_reference": "49 CFR Part 176",
+  "phmsa_equivalent": "Module 7.0d",
+  "passing_score": 80,
+  "estimated_duration_minutes": 30,
+  "version": "1.0",
+  "question_count": 5,
+  "questions": [
+    {
+      "number": 1,
+      "question_type": "multiple_choice",
+      "question_text": "What regulatory code supplements U.S. domestic rules (49 CFR Part 176) for international shipments of hazardous materials by vessel?",
+      "options": [
+        {
+          "label": "A",
+          "text": "IATA Dangerous Goods Regulations",
+          "is_correct": false
+        },
+        {
+          "label": "B",
+          "text": "International Maritime Dangerous Goods (IMDG) Code",
+          "is_correct": true
+        },
+        {
+          "label": "C",
+          "text": "ICAO Technical Instructions",
+          "is_correct": false
+        },
+        {
+          "label": "D",
+          "text": "NFPA 472 Hazmat Operations Standard",
+          "is_correct": false
+        }
+      ],
+      "correct_answer": "B",
+      "explanation": "The International Maritime Dangerous Goods (IMDG) Code, published by the International Maritime Organization (IMO), is the international standard for transporting hazardous materials by sea. It supplements 49 CFR Part 176 for any shipment moving through international waters or involving a foreign port. IATA rules apply to air transport, and ICAO Technical Instructions also apply to air transport.",
+      "cfr_reference": "49 CFR 176.11"
+    },
+    {
+      "number": 2,
+      "question_type": "multiple_choice",
+      "question_text": "A material with stowage Category C must be stowed in which location on a vessel?",
+      "options": [
+        {
+          "label": "A",
+          "text": "Under deck only, in a mechanically ventilated space",
+          "is_correct": false
+        },
+        {
+          "label": "B",
+          "text": "On deck or under deck, with no restrictions",
+          "is_correct": false
+        },
+        {
+          "label": "C",
+          "text": "On deck only \u2014 no under-deck stowage is permitted",
+          "is_correct": true
+        },
+        {
+          "label": "D",
+          "text": "Under deck only, protected from weather",
+          "is_correct": false
+        }
+      ],
+      "correct_answer": "C",
+      "explanation": "Stowage Category C requires on-deck stowage only. No under-deck stowage is permitted, even with mechanical ventilation. This applies to materials like organic peroxides and certain oxidizers that require both natural ventilation and accessibility in an emergency.",
+      "cfr_reference": "49 CFR 176.76"
+    },
+    {
+      "number": 3,
+      "question_type": "multiple_choice",
+      "question_text": "Under the vessel segregation rules in 49 CFR 176.83, what does \"separated by a complete compartment from\" require?",
+      "options": [
+        {
+          "label": "A",
+          "text": "Materials must be at least 3 meters apart in the same cargo hold",
+          "is_correct": false
+        },
+        {
+          "label": "B",
+          "text": "Materials must be in different compartments with a single shared bulkhead between them",
+          "is_correct": false
+        },
+        {
+          "label": "C",
+          "text": "Materials must have at least one complete intermediate cargo compartment between them, with no shared bulkheads",
+          "is_correct": true
+        },
+        {
+          "label": "D",
+          "text": "Materials must be on different vessels entirely",
+          "is_correct": false
+        }
+      ],
+      "correct_answer": "C",
+      "explanation": "\"Separated by a complete compartment from\" means there must be at least one entire cargo compartment between the two materials. If material A is in Hold 1, there must be an intervening Hold 2 (containing neither material) before material B in Hold 3. On deck, this translates to at least 12 meters horizontal separation. This is the third of four increasingly restrictive segregation levels.",
+      "cfr_reference": "49 CFR 176.83"
+    },
+    {
+      "number": 4,
+      "question_type": "multiple_choice",
+      "question_text": "What mark must be applied to packages containing materials designated as marine pollutants?",
+      "options": [
+        {
+          "label": "A",
+          "text": "A blue diamond with a white anchor symbol",
+          "is_correct": false
+        },
+        {
+          "label": "B",
+          "text": "A diamond (or triangle) showing a fish and tree",
+          "is_correct": true
+        },
+        {
+          "label": "C",
+          "text": "A red circle with the letters \"MP\" in black",
+          "is_correct": false
+        },
+        {
+          "label": "D",
+          "text": "A green square with the word \"MARINE\" in white",
+          "is_correct": false
+        }
+      ],
+      "correct_answer": "B",
+      "explanation": "Marine pollutant packages must display the marine pollutant mark \u2014 a distinctive symbol showing a fish and tree inside a diamond (or triangle for single packagings). This mark is required in addition to any other hazard class labels on the package. It alerts handlers that a release of this material into waterways requires immediate notification and response.",
+      "cfr_reference": "49 CFR 172.322"
+    },
+    {
+      "number": 5,
+      "question_type": "scenario",
+      "question_text": "Your driver arrives at a marine container terminal to deliver a container of hazmat for vessel transport. The terminal security officer asks for a TWIC card, shipping papers, and a container packing certificate. Your driver has the shipping papers but does not have a TWIC card. What happens?",
+      "options": [
+        {
+          "label": "A",
+          "text": "The driver can enter the terminal if escorted by terminal security staff",
+          "is_correct": false
+        },
+        {
+          "label": "B",
+          "text": "The driver can present a CDL with hazmat endorsement as an alternative to the TWIC card",
+          "is_correct": false
+        },
+        {
+          "label": "C",
+          "text": "The driver will be denied entry to the secure area of the terminal \u2014 the delivery cannot be completed without a valid TWIC card",
+          "is_correct": true
+        },
+        {
+          "label": "D",
+          "text": "The driver can enter the terminal but only during daylight hours",
+          "is_correct": false
+        }
+      ],
+      "correct_answer": "C",
+      "explanation": "Marine terminal secure areas require a Transportation Worker Identification Credential (TWIC) issued by TSA. A CDL with hazmat endorsement is not a substitute. Most marine terminals do not offer escort alternatives for drivers without TWIC cards. The delivery cannot be completed, resulting in a failed trip and delayed shipment. Fleet operators who serve port facilities must ensure all port-assigned drivers have current TWIC cards.",
+      "cfr_reference": "49 CFR 1572.5"
+    }
+  ]
+}

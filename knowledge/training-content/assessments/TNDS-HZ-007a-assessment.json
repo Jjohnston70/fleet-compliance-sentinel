@@ -1,0 +1,253 @@
+{
+  "module_code": "TNDS-HZ-007a",
+  "title": "Carrier Requirements: Highway",
+  "category": "hazmat",
+  "cfr_reference": "49 CFR Parts 177, 397",
+  "phmsa_equivalent": "Module 7.0a",
+  "passing_score": 80,
+  "estimated_duration_minutes": 45,
+  "version": "1.0",
+  "question_count": 8,
+  "questions": [
+    {
+      "number": 1,
+      "question_type": "multiple_choice",
+      "question_text": "According to the segregation table in 49 CFR 177.848, what does an \"X\" at the intersection of two hazard classes mean?",
+      "options": [
+        {
+          "label": "A",
+          "text": "The materials may be loaded together without restriction",
+          "is_correct": false
+        },
+        {
+          "label": "B",
+          "text": "The materials may be loaded together if separated by a non-combustible divider",
+          "is_correct": false
+        },
+        {
+          "label": "C",
+          "text": "The materials must not be loaded in the same vehicle",
+          "is_correct": true
+        },
+        {
+          "label": "D",
+          "text": "The materials require special permits to be loaded together",
+          "is_correct": false
+        }
+      ],
+      "correct_answer": "C",
+      "explanation": "An \"X\" in the segregation table means the two materials are incompatible and must not be loaded, transported, or stored together in the same vehicle. They require completely separate transport. An \"O\" means they may share a vehicle only with a non-combustible divider between them.",
+      "cfr_reference": "49 CFR 177.848(d)"
+    },
+    {
+      "number": 2,
+      "question_type": "multiple_choice",
+      "question_text": "A driver hauling hazardous materials parks the vehicle at a truck stop and walks 150 feet away to enter the restaurant, leaving the vehicle unattended. The truck stop is not a designated safe haven. Is this a violation?",
+      "options": [
+        {
+          "label": "A",
+          "text": "No, because truck stops are automatically considered safe havens",
+          "is_correct": false
+        },
+        {
+          "label": "B",
+          "text": "Yes, because the driver is beyond 100 feet from the vehicle and the location is not a safe haven",
+          "is_correct": true
+        },
+        {
+          "label": "C",
+          "text": "No, because the driver can still see the vehicle from inside the restaurant",
+          "is_correct": false
+        },
+        {
+          "label": "D",
+          "text": "Yes, but only if the vehicle is carrying explosives",
+          "is_correct": false
+        }
+      ],
+      "correct_answer": "B",
+      "explanation": "Under 49 CFR 397.5, a hazmat vehicle on a public road must be attended at all times or parked in a safe haven. \"Attended\" requires the driver to be within 100 feet with an unobstructed view. At 150 feet, the driver exceeds the 100-foot limit. A truck stop is not a safe haven unless specifically designated as one.",
+      "cfr_reference": "49 CFR 397.5(a)"
+    },
+    {
+      "number": 3,
+      "question_type": "multiple_choice",
+      "question_text": "How close to a bridge, tunnel, or building may a hazmat vehicle be parked?",
+      "options": [
+        {
+          "label": "A",
+          "text": "No closer than 100 feet",
+          "is_correct": false
+        },
+        {
+          "label": "B",
+          "text": "No closer than 300 feet, unless there is no practicable alternative",
+          "is_correct": true
+        },
+        {
+          "label": "C",
+          "text": "No closer than 500 feet under any circumstances",
+          "is_correct": false
+        },
+        {
+          "label": "D",
+          "text": "There are no parking distance restrictions for hazmat vehicles",
+          "is_correct": false
+        }
+      ],
+      "correct_answer": "B",
+      "explanation": "49 CFR 397.7 prohibits parking a hazmat vehicle within 300 feet of a bridge, tunnel, dwelling, or place where people gather, except when there is no practicable alternative. The \"no practicable alternative\" exception covers operational necessities like making a delivery, but does not apply to convenience stops.",
+      "cfr_reference": "49 CFR 397.7(a)"
+    },
+    {
+      "number": 4,
+      "question_type": "multiple_choice",
+      "question_text": "During loading of hazardous materials, how far from the vehicle is smoking prohibited?",
+      "options": [
+        {
+          "label": "A",
+          "text": "10 feet",
+          "is_correct": false
+        },
+        {
+          "label": "B",
+          "text": "25 feet",
+          "is_correct": true
+        },
+        {
+          "label": "C",
+          "text": "50 feet",
+          "is_correct": false
+        },
+        {
+          "label": "D",
+          "text": "100 feet",
+          "is_correct": false
+        }
+      ],
+      "correct_answer": "B",
+      "explanation": "49 CFR 177.834(c) and 49 CFR 397.13 both establish a 25-foot no-smoking zone around any vehicle being loaded or unloaded with hazardous materials. This also applies to parked hazmat vehicles (loaded or empty uncleaned). The rule covers all persons, not just the driver.",
+      "cfr_reference": "49 CFR 177.834(c), 49 CFR 397.13"
+    },
+    {
+      "number": 5,
+      "question_type": "multiple_choice",
+      "question_text": "A driver discovers a hot tire on a vehicle carrying flammable liquids during a trip inspection. What should the driver do?",
+      "options": [
+        {
+          "label": "A",
+          "text": "Continue driving slowly to the nearest service station",
+          "is_correct": false
+        },
+        {
+          "label": "B",
+          "text": "Stop immediately in a safe location, do not continue driving on the damaged tire, and call for service",
+          "is_correct": true
+        },
+        {
+          "label": "C",
+          "text": "Deflate the tire and continue driving on the rim to the next exit",
+          "is_correct": false
+        },
+        {
+          "label": "D",
+          "text": "Ignore it if the tire is not visibly flat",
+          "is_correct": false
+        }
+      ],
+      "correct_answer": "B",
+      "explanation": "Under 49 CFR 397.17, a driver who discovers a tire that is flat, leaking, or overheated on a hazmat vehicle must stop at the nearest safe location. A hot tire on a vehicle carrying flammable liquids is a fire hazard -- sparks from a rim or a tire fire could ignite the cargo. The driver must not continue driving on the damaged tire.",
+      "cfr_reference": "49 CFR 397.17(b)"
+    },
+    {
+      "number": 6,
+      "question_type": "multiple_choice",
+      "question_text": "Which of the following cargo combinations would violate the hazmat segregation rules?",
+      "options": [
+        {
+          "label": "A",
+          "text": "Corrosive material loaded with non-flammable gas",
+          "is_correct": false
+        },
+        {
+          "label": "B",
+          "text": "Oxidizer loaded with flammable liquid in the same vehicle",
+          "is_correct": true
+        },
+        {
+          "label": "C",
+          "text": "Flammable solid loaded with corrosive material",
+          "is_correct": false
+        },
+        {
+          "label": "D",
+          "text": "Non-flammable gas loaded with Class 9 miscellaneous material",
+          "is_correct": false
+        }
+      ],
+      "correct_answer": "B",
+      "explanation": "The segregation table in 49 CFR 177.848 shows an \"X\" at the intersection of Division 5.1 (Oxidizer) and Division 3 (Flammable Liquid), meaning they must not be loaded together. Oxidizers support combustion, and flammable liquids are fuel -- combining them in the same vehicle creates a severe fire and explosion risk if containers are breached.",
+      "cfr_reference": "49 CFR 177.848(d)"
+    },
+    {
+      "number": 7,
+      "question_type": "multiple_choice",
+      "question_text": "When no designated hazmat route exists, what routing principle must a driver follow?",
+      "options": [
+        {
+          "label": "A",
+          "text": "Always take the shortest route to minimize time the vehicle is on the road",
+          "is_correct": false
+        },
+        {
+          "label": "B",
+          "text": "Always use the interstate highway system regardless of distance",
+          "is_correct": false
+        },
+        {
+          "label": "C",
+          "text": "Use the route that minimizes time through or near populated areas",
+          "is_correct": true
+        },
+        {
+          "label": "D",
+          "text": "Follow the same route used for non-hazmat loads",
+          "is_correct": false
+        }
+      ],
+      "correct_answer": "C",
+      "explanation": "Under 49 CFR 397.67, when no state or local designated route exists, carriers and drivers must use the route that reduces the risk to the public. This means choosing routes that minimize time spent traveling through populated areas, even if those routes are longer in distance.",
+      "cfr_reference": "49 CFR 397.67"
+    },
+    {
+      "number": 8,
+      "question_type": "multiple_choice",
+      "question_text": "A hazmat vehicle is involved in a crash that causes a drum of toxic material to rupture and spill onto the highway. After ensuring personal safety and warning bystanders, what is the driver's NEXT priority?",
+      "options": [
+        {
+          "label": "A",
+          "text": "Begin cleaning up the spill using materials from the truck",
+          "is_correct": false
+        },
+        {
+          "label": "B",
+          "text": "Attempt to patch the leaking drum",
+          "is_correct": false
+        },
+        {
+          "label": "C",
+          "text": "Contact 911, then call the carrier emergency number, and provide shipping papers to responders when they arrive",
+          "is_correct": true
+        },
+        {
+          "label": "D",
+          "text": "Drive the vehicle off the highway to prevent traffic delays",
+          "is_correct": false
+        }
+      ],
+      "correct_answer": "C",
+      "explanation": "After protecting themselves and warning others, the driver's next actions are to call for professional help (911 and the carrier's emergency line) and provide responders with the shipping papers that identify the material. Drivers should not attempt to clean up hazmat spills or handle damaged containers -- that is the job of trained HAZMAT response teams. Moving a damaged vehicle could worsen the release.",
+      "cfr_reference": "49 CFR 171.15, 49 CFR 177.854"
+    }
+  ]
+}

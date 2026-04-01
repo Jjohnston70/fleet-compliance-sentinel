@@ -1,0 +1,223 @@
+{
+  "module_code": "TNDS-HZ-006",
+  "title": "Placarding Requirements",
+  "category": "hazmat",
+  "cfr_reference": "49 CFR 172.500-560",
+  "phmsa_equivalent": "Module 6.0",
+  "passing_score": 80,
+  "estimated_duration_minutes": 35,
+  "version": "1.0",
+  "question_count": 7,
+  "questions": [
+    {
+      "number": 1,
+      "question_type": "multiple_choice",
+      "question_text": "A vehicle is carrying one package weighing 25 lbs of Division 2.3 (Poison Gas). Is placarding required?",
+      "options": [
+        {
+          "label": "A",
+          "text": "No, because the total weight is below the 1,001-lb threshold",
+          "is_correct": false
+        },
+        {
+          "label": "B",
+          "text": "Yes, because Division 2.3 is a Table 1 material requiring placarding at any quantity",
+          "is_correct": true
+        },
+        {
+          "label": "C",
+          "text": "Yes, but only if the vehicle is traveling on an interstate highway",
+          "is_correct": false
+        },
+        {
+          "label": "D",
+          "text": "No, because a single package does not trigger placarding requirements",
+          "is_correct": false
+        }
+      ],
+      "correct_answer": "B",
+      "explanation": "Division 2.3 (Poison Gas) is listed on Table 1 in 49 CFR 172.504. Table 1 materials require placarding regardless of quantity -- there is no weight threshold. Even one small package requires the POISON GAS placard on all four sides.",
+      "cfr_reference": "49 CFR 172.504(e), Table 1"
+    },
+    {
+      "number": 2,
+      "question_type": "multiple_choice",
+      "question_text": "A truck is carrying 600 lbs of flammable liquid (Table 2) and 500 lbs of corrosive material (Table 2). What placarding is required?",
+      "options": [
+        {
+          "label": "A",
+          "text": "No placards required because neither material individually exceeds 1,001 lbs",
+          "is_correct": false
+        },
+        {
+          "label": "B",
+          "text": "FLAMMABLE placards only, since flammable liquid is the greater quantity",
+          "is_correct": false
+        },
+        {
+          "label": "C",
+          "text": "FLAMMABLE and CORROSIVE placards, or a single DANGEROUS placard, because the aggregate exceeds 1,001 lbs",
+          "is_correct": true
+        },
+        {
+          "label": "D",
+          "text": "DANGEROUS placard only, because the driver must always use DANGEROUS for mixed loads",
+          "is_correct": false
+        }
+      ],
+      "correct_answer": "C",
+      "explanation": "The 1,001-lb threshold is based on the aggregate gross weight of all Table 2 materials, not the weight of each individual class. 600 + 500 = 1,100 lbs, which exceeds 1,001 lbs. The driver must display placards for each hazard class present (FLAMMABLE and CORROSIVE), or may substitute a single DANGEROUS placard since neither material reaches 2,205 lbs from one loading point.",
+      "cfr_reference": "49 CFR 172.504(b), Table 2"
+    },
+    {
+      "number": 3,
+      "question_type": "multiple_choice",
+      "question_text": "A driver picks up 2,500 lbs of Class 8 Corrosive material at one warehouse and then picks up 400 lbs of Division 5.1 Oxidizer at a second warehouse. Can the driver use a single DANGEROUS placard for the entire load?",
+      "options": [
+        {
+          "label": "A",
+          "text": "Yes, because the truck carries two different Table 2 materials",
+          "is_correct": false
+        },
+        {
+          "label": "B",
+          "text": "No, because the corrosive material exceeds 2,205 lbs loaded at one facility, requiring a specific CORROSIVE placard",
+          "is_correct": true
+        },
+        {
+          "label": "C",
+          "text": "Yes, because the DANGEROUS placard replaces all Table 2 placards regardless of weight",
+          "is_correct": false
+        },
+        {
+          "label": "D",
+          "text": "No, because the DANGEROUS placard can only be used for Table 1 materials",
+          "is_correct": false
+        }
+      ],
+      "correct_answer": "B",
+      "explanation": "When 1,000 kg (2,205 lbs) or more of a single Table 2 material is loaded at one facility, the specific placard for that material must be displayed. The DANGEROUS placard cannot replace it. The 2,500 lbs of corrosive material loaded at Warehouse A exceeds this threshold, so a CORROSIVE placard is mandatory.",
+      "cfr_reference": "49 CFR 172.504(b)(2)"
+    },
+    {
+      "number": 4,
+      "question_type": "multiple_choice",
+      "question_text": "How many sides of a transport vehicle must display placards?",
+      "options": [
+        {
+          "label": "A",
+          "text": "Two sides (front and rear only)",
+          "is_correct": false
+        },
+        {
+          "label": "B",
+          "text": "Three sides (rear and both sides)",
+          "is_correct": false
+        },
+        {
+          "label": "C",
+          "text": "Four sides (front, rear, and both sides)",
+          "is_correct": true
+        },
+        {
+          "label": "D",
+          "text": "One side (whichever side faces traffic)",
+          "is_correct": false
+        }
+      ],
+      "correct_answer": "C",
+      "explanation": "Under 49 CFR 172.516, placards must be displayed on each end (front and rear) and on each side of the vehicle. This ensures that emergency responders can identify the hazard from any direction of approach.",
+      "cfr_reference": "49 CFR 172.516(c)(1)"
+    },
+    {
+      "number": 5,
+      "question_type": "multiple_choice",
+      "question_text": "After unloading all hazardous materials and cleaning the vehicle, a driver notices the FLAMMABLE placards are still displayed. What should the driver do?",
+      "options": [
+        {
+          "label": "A",
+          "text": "Leave them in place since they will be needed for the next hazmat load",
+          "is_correct": false
+        },
+        {
+          "label": "B",
+          "text": "Remove or cover the placards before operating the vehicle",
+          "is_correct": true
+        },
+        {
+          "label": "C",
+          "text": "Leave them in place because removing placards is the shipper's responsibility",
+          "is_correct": false
+        },
+        {
+          "label": "D",
+          "text": "Cover only the front and rear placards, leaving the side placards visible",
+          "is_correct": false
+        }
+      ],
+      "correct_answer": "B",
+      "explanation": "49 CFR 172.502(a) prohibits displaying a placard on a vehicle that does not contain the corresponding hazardous material (or its residue). Displaying incorrect placards can trigger unnecessary emergency response, restrict the vehicle from tunnels and bridges, and is a federal violation. All four placards must be removed or covered.",
+      "cfr_reference": "49 CFR 172.502(a)"
+    },
+    {
+      "number": 6,
+      "question_type": "multiple_choice",
+      "question_text": "What is the minimum dimension for each side of a standard hazmat placard?",
+      "options": [
+        {
+          "label": "A",
+          "text": "100 mm (3.9 inches)",
+          "is_correct": false
+        },
+        {
+          "label": "B",
+          "text": "250 mm (10.8 inches)",
+          "is_correct": true
+        },
+        {
+          "label": "C",
+          "text": "300 mm (11.8 inches)",
+          "is_correct": false
+        },
+        {
+          "label": "D",
+          "text": "200 mm (7.9 inches)",
+          "is_correct": false
+        }
+      ],
+      "correct_answer": "B",
+      "explanation": "Under 49 CFR 172.519(c), each side of a placard must measure at least 250 mm (10.8 inches). This is distinct from hazmat labels, which are 100 mm (3.9 inches) on a side. The larger size ensures placards are readable from a distance by emergency responders.",
+      "cfr_reference": "49 CFR 172.519(c)"
+    },
+    {
+      "number": 7,
+      "question_type": "multiple_choice",
+      "question_text": "A cargo tank transporting UN 1203 (Gasoline) must display the four-digit identification number. Where can this number be displayed?",
+      "options": [
+        {
+          "label": "A",
+          "text": "Only on the shipping papers, not on the vehicle",
+          "is_correct": false
+        },
+        {
+          "label": "B",
+          "text": "On the placard itself in the center, or on a separate orange panel adjacent to the placard",
+          "is_correct": true
+        },
+        {
+          "label": "C",
+          "text": "On the cab door only",
+          "is_correct": false
+        },
+        {
+          "label": "D",
+          "text": "On a bumper sticker at the rear of the vehicle",
+          "is_correct": false
+        }
+      ],
+      "correct_answer": "B",
+      "explanation": "For bulk shipments such as cargo tanks, the four-digit UN/NA identification number must be displayed either in the center of the placard (replacing the hazard class number) or on a separate orange rectangular panel placed adjacent to the placard. This allows responders to identify the specific material, not just the hazard class.",
+      "cfr_reference": "49 CFR 172.332(a), 172.336"
+    }
+  ]
+}

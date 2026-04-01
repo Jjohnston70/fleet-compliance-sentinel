@@ -1,0 +1,183 @@
+{
+  "module_code": "TNDS-HZ-000",
+  "title": "Hazardous Materials Regulations Introduction",
+  "category": "hazmat",
+  "cfr_reference": "49 CFR Parts 171-180",
+  "phmsa_equivalent": "Module 0.0",
+  "passing_score": 80,
+  "estimated_duration_minutes": 30,
+  "version": "1.0",
+  "question_count": 6,
+  "questions": [
+    {
+      "number": 1,
+      "question_type": "multiple_choice",
+      "question_text": "Which federal agency is responsible for writing and administering the Hazardous Materials Regulations (HMR)?",
+      "options": [
+        {
+          "label": "A",
+          "text": "Federal Motor Carrier Safety Administration (FMCSA)",
+          "is_correct": false
+        },
+        {
+          "label": "B",
+          "text": "Pipeline and Hazardous Materials Safety Administration (PHMSA)",
+          "is_correct": true
+        },
+        {
+          "label": "C",
+          "text": "Environmental Protection Agency (EPA)",
+          "is_correct": false
+        },
+        {
+          "label": "D",
+          "text": "Occupational Safety and Health Administration (OSHA)",
+          "is_correct": false
+        }
+      ],
+      "correct_answer": "B",
+      "explanation": "PHMSA, a division of the U.S. Department of Transportation, writes and administers the HMR (49 CFR Parts 171-180). FMCSA enforces hazmat rules on the highway but does not write them. EPA and OSHA have their own hazmat-related regulations but are not responsible for the HMR.",
+      "cfr_reference": "49 CFR 171.1"
+    },
+    {
+      "number": 2,
+      "question_type": "true_false",
+      "question_text": "A shipping clerk who prepares hazmat shipping papers but never physically handles hazardous materials is NOT considered a hazmat employee under the HMR.",
+      "options": [
+        {
+          "label": "True",
+          "text": "True",
+          "is_correct": false
+        },
+        {
+          "label": "False",
+          "text": "False",
+          "is_correct": true
+        }
+      ],
+      "correct_answer": "False",
+      "explanation": "Under 49 CFR 171.8, anyone who prepares hazardous materials for transportation \u2014 including classifying materials, completing shipping papers, and applying marks and labels \u2014 is a hazmat employee, even if they never physically touch the material.",
+      "cfr_reference": "49 CFR 171.8"
+    },
+    {
+      "number": 3,
+      "question_type": "multiple_choice",
+      "question_text": "How often must hazmat employees receive recurrent training?",
+      "options": [
+        {
+          "label": "A",
+          "text": "Every year",
+          "is_correct": false
+        },
+        {
+          "label": "B",
+          "text": "Every 2 years",
+          "is_correct": false
+        },
+        {
+          "label": "C",
+          "text": "Every 3 years",
+          "is_correct": true
+        },
+        {
+          "label": "D",
+          "text": "Every 5 years",
+          "is_correct": false
+        }
+      ],
+      "correct_answer": "C",
+      "explanation": "Under 49 CFR 172.704(c)(2), hazmat employees must receive recurrent training at least once every 3 years from the date of the most recent training. However, if regulatory changes affect an employee's duties, updated training must be provided sooner.",
+      "cfr_reference": "49 CFR 172.704(c)(2)"
+    },
+    {
+      "number": 4,
+      "question_type": "multiple_choice",
+      "question_text": "Which part of 49 CFR contains the Hazardous Materials Table and requirements for shipping papers, marking, labeling, placarding, and training?",
+      "options": [
+        {
+          "label": "A",
+          "text": "Part 171",
+          "is_correct": false
+        },
+        {
+          "label": "B",
+          "text": "Part 172",
+          "is_correct": true
+        },
+        {
+          "label": "C",
+          "text": "Part 173",
+          "is_correct": false
+        },
+        {
+          "label": "D",
+          "text": "Part 177",
+          "is_correct": false
+        }
+      ],
+      "correct_answer": "B",
+      "explanation": "Part 172 is the largest and most frequently referenced part of the HMR. It contains the Hazardous Materials Table (172.101) and all hazmat communication requirements: shipping papers (Subpart C), marking (Subpart D), labeling (Subpart E), placarding (Subpart F), and training (Subpart H).",
+      "cfr_reference": "49 CFR Part 172"
+    },
+    {
+      "number": 5,
+      "question_type": "scenario",
+      "question_text": "A new driver joins your fleet on March 1. She will be hauling loads that include hazardous materials. By what date must she complete all required hazmat training, and what must happen in the meantime?",
+      "options": [
+        {
+          "label": "A",
+          "text": "She must complete training before her first trip and cannot perform any hazmat functions until then",
+          "is_correct": false
+        },
+        {
+          "label": "B",
+          "text": "She must complete training within 90 days (by May 30) and may perform hazmat duties under direct supervision of a trained employee during that period",
+          "is_correct": true
+        },
+        {
+          "label": "C",
+          "text": "She must complete training within 6 months (by September 1) and may work unsupervised during that period",
+          "is_correct": false
+        },
+        {
+          "label": "D",
+          "text": "She must complete training within 30 days (by March 31) and may work unsupervised during that period",
+          "is_correct": false
+        }
+      ],
+      "correct_answer": "B",
+      "explanation": "Under 49 CFR 172.704(c)(1), a new hazmat employee must complete required training within 90 days of employment or change in job function. During this 90-day window, the employee may perform hazmat duties only under the direct supervision of a properly trained hazmat employee.",
+      "cfr_reference": "49 CFR 172.704(c)(1)"
+    },
+    {
+      "number": 6,
+      "question_type": "multiple_choice",
+      "question_text": "What is the maximum civil penalty per violation per day for a hazmat violation under the HMR?",
+      "options": [
+        {
+          "label": "A",
+          "text": "$10,000",
+          "is_correct": false
+        },
+        {
+          "label": "B",
+          "text": "$25,000",
+          "is_correct": false
+        },
+        {
+          "label": "C",
+          "text": "$89,678",
+          "is_correct": true
+        },
+        {
+          "label": "D",
+          "text": "$500,000",
+          "is_correct": false
+        }
+      ],
+      "correct_answer": "C",
+      "explanation": "Civil penalties for hazmat violations can reach up to $89,678 per violation per day. The $500,000 figure is the maximum fine for criminal prosecution of willful violations, which can also carry up to 10 years imprisonment.",
+      "cfr_reference": "49 CFR 171.1(g)"
+    }
+  ]
+}
