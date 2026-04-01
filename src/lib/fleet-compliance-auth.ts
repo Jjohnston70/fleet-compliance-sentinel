@@ -14,6 +14,12 @@ export class FleetComplianceAuthError extends Error {
 
 type FleetComplianceRole = 'admin' | 'member';
 
+export interface FleetComplianceAuthContext {
+  userId: string;
+  orgId: string;
+  role: FleetComplianceRole;
+}
+
 function assertRequestShape(request: Request) {
   if (!request || typeof request.headers?.get !== 'function') {
     throw new FleetComplianceAuthError(401, 'Unauthorized');
@@ -70,6 +76,29 @@ export async function requireFleetComplianceOrg(
   setSentryRequestContext(userId, orgId);
 
   return { userId, orgId };
+}
+
+export async function requireFleetComplianceOrgContext(
+  request: Request,
+  options: { allowCanceled?: boolean } = {},
+): Promise<FleetComplianceAuthContext> {
+  assertRequestShape(request);
+  const { userId, orgId, sessionClaims } = await auth();
+
+  if (!userId) {
+    throw new FleetComplianceAuthError(401, 'Unauthorized');
+  }
+  if (!orgId) {
+    throw new FleetComplianceAuthError(403, 'Forbidden');
+  }
+  const plan = await getOrgPlan(orgId);
+  if (!options.allowCanceled && plan.accessState === 'canceled') {
+    throw new FleetComplianceAuthError(403, 'Organization access is canceled');
+  }
+
+  const role = resolveOrgRole(sessionClaims);
+  setSentryRequestContext(userId, orgId);
+  return { userId, orgId, role };
 }
 
 export async function requireFleetComplianceOrgWithRole(

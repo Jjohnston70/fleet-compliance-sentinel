@@ -1085,7 +1085,16 @@ const MODULE_REGISTRY: ModuleDefinition[] = [
       bridgeAction(
         'discover.modules',
         'Discover and list registered modules with status and metadata',
-        EMPTY_ARGS_SCHEMA,
+        {
+          type: 'object',
+          properties: {
+            acl: {
+              type: 'object',
+              description: 'Internal ACL filter payload with allowedModuleIds/allowedQualifiedNames',
+              default: {},
+            },
+          },
+        },
       ),
       bridgeAction(
         'discover.tools',
@@ -1117,6 +1126,11 @@ const MODULE_REGISTRY: ModuleDefinition[] = [
               default: 12,
               description: 'Maximum number of tools to return (cap 15)',
             },
+            acl: {
+              type: 'object',
+              description: 'Internal ACL filter payload with allowedModuleIds/allowedQualifiedNames',
+              default: {},
+            },
           },
         },
       ),
@@ -1145,6 +1159,11 @@ const MODULE_REGISTRY: ModuleDefinition[] = [
               max: 15,
               default: 12,
               description: 'Maximum number of results to return (cap 15)',
+            },
+            acl: {
+              type: 'object',
+              description: 'Internal ACL filter payload with allowedModuleIds/allowedQualifiedNames',
+              default: {},
             },
           },
           required: ['query'],
@@ -1177,6 +1196,11 @@ const MODULE_REGISTRY: ModuleDefinition[] = [
             parameters: {
               type: 'object',
               description: 'Tool parameters object forwarded to command-center router',
+              default: {},
+            },
+            acl: {
+              type: 'object',
+              description: 'Internal ACL filter payload with allowedModuleIds/allowedQualifiedNames',
               default: {},
             },
           },

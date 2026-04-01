@@ -5,7 +5,7 @@ import {
   requireFleetComplianceOrgWithRole,
 } from '@/lib/fleet-compliance-auth';
 import { fetchRemoteModuleArtifact, shouldUseRemoteModuleGateway } from '@/lib/modules-gateway/remote';
-import { resolveModuleRunArtifact } from '@/lib/modules-gateway/runner';
+import { getModuleRun, resolveModuleRunArtifact } from '@/lib/modules-gateway/runner';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -37,8 +37,10 @@ function parseQuery(request: Request): { runId: string; artifactPath: string } |
 }
 
 export async function GET(request: Request) {
+  let orgId = '';
   try {
-    await requireFleetComplianceOrgWithRole(request, 'admin');
+    const authContext = await requireFleetComplianceOrgWithRole(request, 'admin');
+    orgId = authContext.orgId;
   } catch (error: unknown) {
     const authResponse = fleetComplianceAuthErrorResponse(error);
     if (authResponse) return authResponse;
@@ -96,6 +98,19 @@ export async function GET(request: Request) {
     }
   }
 
+  const run = getModuleRun(parsed.runId);
+  if (run && run.orgId !== orgId) {
+    return Response.json(
+      {
+        ok: false,
+        error: {
+          code: 'TENANT_ISOLATION_VIOLATION',
+          message: `Artifact '${parsed.artifactPath}' is not accessible for this organization`,
+        },
+      },
+      { status: 403 },
+    );
+  }
   const absolutePath = resolveModuleRunArtifact(parsed.runId, parsed.artifactPath);
   if (!absolutePath) {
     return Response.json(

@@ -1,12 +1,25 @@
 # Fleet-Compliance Sentinel — Status
 
-Last Updated: 2026-04-01 (Workstream A tasks A0-A1 complete)
+Last Updated: 2026-04-01 (Workstream A tasks A0-A2 complete)
 Current Phase: April 2-25 sprint active (Workstream A + B)
-Overall Completion: SOC 2 action plan 100%; module integration sprint 6/6 phases complete; hardening sprint A0-A1 complete
+Overall Completion: SOC 2 action plan 100%; module integration sprint 6/6 phases complete; hardening sprint A0-A2 complete
 Open Findings: 0 blockers; remaining items are accepted non-blocking hardening items
 SOC 2 Observation Window Start: 2026-03-24
 SOC 2 Type I Earliest Eligibility: 2026-06-22
 Days Until Type I Eligible: 83
+
+## 2026-04-01 Workstream A - Task A2 Layer 7 Tenant Tool Isolation Outcome
+
+| Workstream | Result |
+|-----------|--------|
+| ACL persistence model | Complete - added durable `module_gateway_acl_rules` table with org/user/scope (`module`, `action`, `tool`) permissions for view + execute |
+| Deny-by-default evaluator | Complete - execution/visibility checks now resolve ACL decisions per org/user and reject missing permissions |
+| Run execution enforcement | Complete - `/api/modules/run` now enforces ACL before action execution and blocks disallowed command-center tool routing |
+| Catalog visibility filtering | Complete - `/api/modules/catalog` now returns ACL-filtered module actions by org/user context |
+| Command-center tool visibility | Complete - `/api/modules/command-center/tools` now filters discovered tool rows with ACL checks |
+| In-process command-center ACL wiring | Complete - ACL payload now passes to `discover.modules`, `discover.tools`, `search.tools`, and `route.tool_call` handlers for defense-in-depth filtering |
+| Tenant run ownership checks | Complete - status/artifact retrieval paths now deny cross-org run access (`TENANT_ISOLATION_VIOLATION`) |
+| Verification | `npm --prefix tooling/command-center run build` pass; `npm --prefix tooling/command-center run test` pass (32/32); `npx tsc --noEmit` pass; `npm run lint` pass (pre-existing a11y warnings only) |
 
 ## 2026-04-01 Workstream A - Task A1 Layer 1 Tool Registry Outcome
 

@@ -89,6 +89,55 @@ export class DiscoveryService {
             },
         ],
     };
+    parseAclFilter(raw) {
+        if (!raw || typeof raw !== 'object' || Array.isArray(raw))
+            return undefined;
+        const acl = raw;
+        const allowedModuleIds = Array.isArray(acl.allowedModuleIds)
+            ? acl.allowedModuleIds.filter((entry) => typeof entry === 'string' && entry.trim().length > 0)
+            : undefined;
+        const allowedQualifiedNames = Array.isArray(acl.allowedQualifiedNames)
+            ? acl.allowedQualifiedNames.filter((entry) => typeof entry === 'string' && entry.trim().length > 0)
+            : undefined;
+        if ((!allowedModuleIds || allowedModuleIds.length === 0) && (!allowedQualifiedNames || allowedQualifiedNames.length === 0)) {
+            return undefined;
+        }
+        return {
+            allowedModuleIds,
+            allowedQualifiedNames,
+        };
+    }
+    isQualifiedToolAllowed(moduleId, toolName, acl) {
+        if (!acl)
+            return true;
+        const qualifiedName = `${moduleId}.${toolName}`;
+        const moduleSet = acl.allowedModuleIds && acl.allowedModuleIds.length > 0
+            ? new Set(acl.allowedModuleIds)
+            : null;
+        const qualifiedSet = acl.allowedQualifiedNames && acl.allowedQualifiedNames.length > 0
+            ? new Set(acl.allowedQualifiedNames)
+            : null;
+        if (qualifiedSet && qualifiedSet.has(qualifiedName))
+            return true;
+        if (moduleSet && moduleSet.has(moduleId))
+            return true;
+        return false;
+    }
+    isModuleAllowed(moduleId, acl) {
+        if (!acl)
+            return true;
+        if (acl.allowedModuleIds && acl.allowedModuleIds.includes(moduleId))
+            return true;
+        if (acl.allowedQualifiedNames) {
+            return acl.allowedQualifiedNames.some((qualifiedName) => qualifiedName.startsWith(`${moduleId}.`));
+        }
+        return false;
+    }
+    filterToolsByAcl(tools, acl) {
+        if (!acl)
+            return tools;
+        return tools.filter((tool) => this.isQualifiedToolAllowed(tool.moduleId, tool.name, acl));
+    }
     getFallbackTools(moduleId) {
         const fallback = this.fallbackTools[moduleId];
         if (!fallback || fallback.length === 0)

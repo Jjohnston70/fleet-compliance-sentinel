@@ -20,10 +20,11 @@ function clampToolSelectionCap(value) {
 /**
  * List all registered modules
  */
-export async function handleListModules() {
+export async function handleListModules(input) {
+    const modules = registryService.listModules().filter((moduleEntry) => discoveryService.isModuleAllowed(moduleEntry.id, input?.acl));
     return {
         success: true,
-        data: registryService.listModules(),
+        data: modules,
     };
 }
 /**
@@ -60,7 +61,8 @@ export async function handleListAllToolsFiltered(input) {
         },
     });
     const byQualifiedName = new Map(registry.listAllTools().map((entry) => [`${entry.moduleId}.${entry.tool.name}`, entry]));
-    const tools = selected
+    const aclFiltered = selected.filter((item) => discoveryService.isQualifiedToolAllowed(item.moduleId, item.toolName, input.acl));
+    const tools = aclFiltered
         .map((item) => byQualifiedName.get(item.qualifiedName))
         .filter((entry) => Boolean(entry));
     return {
@@ -87,14 +89,15 @@ export async function handleSearchTools(query, filters) {
         moduleId: filters?.moduleId,
         classification: filters?.classification,
     });
+    const aclFiltered = results.filter((result) => discoveryService.isQualifiedToolAllowed(result.moduleId, result.toolName, filters?.acl));
     return {
         success: true,
         meta: {
             cap,
-            returned: Math.min(results.length, cap),
+            returned: Math.min(aclFiltered.length, cap),
             query,
         },
-        data: results.slice(0, cap),
+        data: aclFiltered.slice(0, cap),
     };
 }
 /**
@@ -120,12 +123,18 @@ export async function handleGetToolSchema(qualifiedName) {
 /**
  * Route and execute a tool call
  */
-export async function handleRouteToolCall(qualifiedName, params) {
+export async function handleRouteToolCall(qualifiedName, params, acl) {
     const route = routerService.route(qualifiedName);
     if (!route.success) {
         return {
             success: false,
             error: route.error,
+        };
+    }
+    if (!discoveryService.isQualifiedToolAllowed(route.moduleId, route.tool.name, acl)) {
+        return {
+            success: false,
+            error: `Permission denied for tool '${qualifiedName}'`,
         };
     }
     const tool = route.tool;

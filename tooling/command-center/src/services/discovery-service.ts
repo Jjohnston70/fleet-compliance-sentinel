@@ -18,6 +18,11 @@ export interface DiscoveryResult {
   failed: Array<{ moduleId: string; error: string }>;
 }
 
+export interface ToolAclFilter {
+  allowedModuleIds?: string[];
+  allowedQualifiedNames?: string[];
+}
+
 export class DiscoveryService {
   private readonly serviceDir = path.dirname(fileURLToPath(import.meta.url));
   private readonly commandCenterRoot = path.resolve(this.serviceDir, '..', '..');
@@ -100,6 +105,55 @@ export class DiscoveryService {
       },
     ],
   };
+
+  parseAclFilter(raw: unknown): ToolAclFilter | undefined {
+    if (!raw || typeof raw !== 'object' || Array.isArray(raw)) return undefined;
+    const acl = raw as Record<string, unknown>;
+    const allowedModuleIds = Array.isArray(acl.allowedModuleIds)
+      ? acl.allowedModuleIds.filter((entry): entry is string => typeof entry === 'string' && entry.trim().length > 0)
+      : undefined;
+    const allowedQualifiedNames = Array.isArray(acl.allowedQualifiedNames)
+      ? acl.allowedQualifiedNames.filter((entry): entry is string => typeof entry === 'string' && entry.trim().length > 0)
+      : undefined;
+
+    if ((!allowedModuleIds || allowedModuleIds.length === 0) && (!allowedQualifiedNames || allowedQualifiedNames.length === 0)) {
+      return undefined;
+    }
+
+    return {
+      allowedModuleIds,
+      allowedQualifiedNames,
+    };
+  }
+
+  isQualifiedToolAllowed(moduleId: string, toolName: string, acl?: ToolAclFilter): boolean {
+    if (!acl) return true;
+    const qualifiedName = `${moduleId}.${toolName}`;
+    const moduleSet = acl.allowedModuleIds && acl.allowedModuleIds.length > 0
+      ? new Set(acl.allowedModuleIds)
+      : null;
+    const qualifiedSet = acl.allowedQualifiedNames && acl.allowedQualifiedNames.length > 0
+      ? new Set(acl.allowedQualifiedNames)
+      : null;
+
+    if (qualifiedSet && qualifiedSet.has(qualifiedName)) return true;
+    if (moduleSet && moduleSet.has(moduleId)) return true;
+    return false;
+  }
+
+  isModuleAllowed(moduleId: string, acl?: ToolAclFilter): boolean {
+    if (!acl) return true;
+    if (acl.allowedModuleIds && acl.allowedModuleIds.includes(moduleId)) return true;
+    if (acl.allowedQualifiedNames) {
+      return acl.allowedQualifiedNames.some((qualifiedName) => qualifiedName.startsWith(`${moduleId}.`));
+    }
+    return false;
+  }
+
+  filterToolsByAcl<T extends { moduleId: string; name: string }>(tools: T[], acl?: ToolAclFilter): T[] {
+    if (!acl) return tools;
+    return tools.filter((tool) => this.isQualifiedToolAllowed(tool.moduleId, tool.name, acl));
+  }
 
   private getFallbackTools(moduleId: string): ToolDefinition[] | null {
     const fallback = this.fallbackTools[moduleId];

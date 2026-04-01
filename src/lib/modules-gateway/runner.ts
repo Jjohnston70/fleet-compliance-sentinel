@@ -764,7 +764,11 @@ async function waitForRunCompletion(runId: string, timeoutMs: number): Promise<M
   return runs.get(runId) || null;
 }
 
-export function startModuleRun(input: ModuleRunRequest, requestedBy: string): ModuleRunStartResult {
+export function startModuleRun(
+  input: ModuleRunRequest,
+  requestedBy: string,
+  orgId: string,
+): ModuleRunStartResult {
   const moduleDef = getModuleDefinition(input.moduleId);
   if (!moduleDef) {
     return {
@@ -853,6 +857,7 @@ export function startModuleRun(input: ModuleRunRequest, requestedBy: string): Mo
     moduleId: input.moduleId,
     actionId: input.actionId,
     status: dryRun ? 'success' : 'queued',
+    orgId,
     args: validation.normalizedArgs,
     requestedBy,
     correlationId: input.correlationId,
@@ -889,8 +894,9 @@ export function startModuleRun(input: ModuleRunRequest, requestedBy: string): Mo
 export async function startModuleRunAndWait(
   input: ModuleRunRequest,
   requestedBy: string,
+  orgId: string,
 ): Promise<ModuleRunStartResult> {
-  const started = startModuleRun(input, requestedBy);
+  const started = startModuleRun(input, requestedBy, orgId);
   if (!started.ok) return started;
 
   if (started.run.status === 'queued' || started.run.status === 'running') {

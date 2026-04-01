@@ -12,10 +12,21 @@ export interface DiscoveryResult {
         error: string;
     }>;
 }
+export interface ToolAclFilter {
+    allowedModuleIds?: string[];
+    allowedQualifiedNames?: string[];
+}
 export declare class DiscoveryService {
     private readonly serviceDir;
     private readonly commandCenterRoot;
     private readonly fallbackTools;
+    parseAclFilter(raw: unknown): ToolAclFilter | undefined;
+    isQualifiedToolAllowed(moduleId: string, toolName: string, acl?: ToolAclFilter): boolean;
+    isModuleAllowed(moduleId: string, acl?: ToolAclFilter): boolean;
+    filterToolsByAcl<T extends {
+        moduleId: string;
+        name: string;
+    }>(tools: T[], acl?: ToolAclFilter): T[];
     private getFallbackTools;
     private resolveModuleToolSourcePath;
     private readBalancedBraces;

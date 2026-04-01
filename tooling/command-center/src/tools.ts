@@ -46,7 +46,12 @@ export const COMMAND_CENTER_TOOLS: Tool[] = [
       'List all registered TNDS command modules with their status, classification, and tool counts. Returns module metadata including display name, version, description, and current health status.',
     inputSchema: {
       type: 'object',
-      properties: {},
+      properties: {
+        acl: {
+          type: 'object',
+          description: 'Optional ACL filter payload with allowedModuleIds/allowedQualifiedNames',
+        },
+      },
     },
   },
   {
@@ -77,6 +82,10 @@ export const COMMAND_CENTER_TOOLS: Tool[] = [
           type: 'number',
           description: 'Optional cap for returned tools (1-15, default 12)',
         },
+        acl: {
+          type: 'object',
+          description: 'Optional ACL filter payload with allowedModuleIds/allowedQualifiedNames',
+        },
       },
     },
   },
@@ -102,6 +111,10 @@ export const COMMAND_CENTER_TOOLS: Tool[] = [
         maxTools: {
           type: 'number',
           description: 'Optional cap for returned results (1-15, default 12)',
+        },
+        acl: {
+          type: 'object',
+          description: 'Optional ACL filter payload with allowedModuleIds/allowedQualifiedNames',
         },
       },
       required: ['query'],
@@ -136,6 +149,10 @@ export const COMMAND_CENTER_TOOLS: Tool[] = [
         parameters: {
           type: 'object',
           description: 'Tool parameters as key-value pairs',
+        },
+        acl: {
+          type: 'object',
+          description: 'Optional ACL filter payload with allowedModuleIds/allowedQualifiedNames',
         },
       },
       required: ['qualifiedName', 'parameters'],
@@ -198,8 +215,10 @@ export const COMMAND_CENTER_TOOLS: Tool[] = [
  * Tool handlers map
  */
 export const toolHandlers: Record<string, ToolHandlerType> = {
-  discover_modules: async () => {
-    return handleListModules();
+  discover_modules: async (params) => {
+    return handleListModules({
+      acl: discoveryService.parseAclFilter(params.acl),
+    });
   },
 
   discover_tools: async (params) => {
@@ -209,6 +228,7 @@ export const toolHandlers: Record<string, ToolHandlerType> = {
       query: params.query,
       intent: params.intent,
       maxTools: params.maxTools,
+      acl: discoveryService.parseAclFilter(params.acl),
     });
   },
 
@@ -217,6 +237,7 @@ export const toolHandlers: Record<string, ToolHandlerType> = {
       moduleId: params.moduleId,
       classification: params.classification,
       maxTools: params.maxTools,
+      acl: discoveryService.parseAclFilter(params.acl),
     });
   },
 
@@ -225,7 +246,11 @@ export const toolHandlers: Record<string, ToolHandlerType> = {
   },
 
   route_tool_call: async (params) => {
-    return handleRouteToolCall(params.qualifiedName, params.parameters || {});
+    return handleRouteToolCall(
+      params.qualifiedName,
+      params.parameters || {},
+      discoveryService.parseAclFilter(params.acl),
+    );
   },
 
   get_system_status: async () => {

@@ -2,6 +2,28 @@ export type ModuleRuntime = 'python' | 'node';
 
 export type ModuleRunStatus = 'queued' | 'running' | 'success' | 'fail';
 
+export type ModuleGatewayAclScopeType = 'module' | 'action' | 'tool';
+
+export type ModuleGatewayAclPermission = 'view' | 'execute';
+
+export interface ModuleGatewayAclRule {
+  orgId: string;
+  userId: string;
+  scopeType: ModuleGatewayAclScopeType;
+  scopeKey: string;
+  canView: boolean;
+  canExecute: boolean;
+  updatedAt: string;
+}
+
+export interface ModuleGatewayAclDecision {
+  allowed: boolean;
+  permission: ModuleGatewayAclPermission;
+  scopeType?: ModuleGatewayAclScopeType;
+  scopeKey?: string;
+  principal?: string;
+}
+
 export type ModuleRunErrorCode =
   | 'VALIDATION_ERROR'
   | 'PERMISSION_DENIED'
@@ -153,6 +175,7 @@ export interface ModuleRunRecord {
   moduleId: string;
   actionId: string;
   status: ModuleRunStatus;
+  orgId: string;
   args: ModuleRunArgs;
   requestedBy: string;
   correlationId?: string;

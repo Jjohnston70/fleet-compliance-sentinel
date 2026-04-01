@@ -1,9 +1,10 @@
 import {
   fleetComplianceAuthErrorResponse,
-  requireFleetComplianceOrgWithRole,
+  requireFleetComplianceOrgContext,
 } from '@/lib/fleet-compliance-auth';
 import { fetchRemoteModuleCatalog, shouldUseRemoteModuleGateway } from '@/lib/modules-gateway/remote';
 import { listModuleCatalog } from '@/lib/modules-gateway/runner';
+import { filterModuleCatalogByAcl } from '@/lib/modules-gateway/persistence';
 import type { ModuleCatalogEntry } from '@/lib/modules-gateway/types';
 
 export const runtime = 'nodejs';
@@ -43,8 +44,18 @@ function mergeCatalogEntries(
 }
 
 export async function GET(request: Request) {
+  let userId = '';
+  let orgId = '';
   try {
-    await requireFleetComplianceOrgWithRole(request, 'admin');
+    const authContext = await requireFleetComplianceOrgContext(request);
+    if (authContext.role !== 'admin') {
+      return Response.json(
+        { ok: false, error: { code: 'PERMISSION_DENIED', message: 'Forbidden' } },
+        { status: 403 },
+      );
+    }
+    userId = authContext.userId;
+    orgId = authContext.orgId;
   } catch (error: unknown) {
     const authResponse = fleetComplianceAuthErrorResponse(error);
     if (authResponse) return authResponse;
@@ -60,7 +71,12 @@ export async function GET(request: Request) {
 
       const localCatalog = listModuleCatalog();
       const mergedCatalog = mergeCatalogEntries(body.catalog, localCatalog);
-      return Response.json({ ...body, catalog: mergedCatalog }, { status: res.status });
+      const filteredCatalog = await filterModuleCatalogByAcl({
+        orgId,
+        userId,
+        catalog: mergedCatalog,
+      });
+      return Response.json({ ...body, catalog: filteredCatalog }, { status: res.status });
     } catch (error: unknown) {
       return Response.json(
         {
@@ -76,6 +92,11 @@ export async function GET(request: Request) {
   }
 
   const catalog = listModuleCatalog();
-  return Response.json({ ok: true, catalog }, { status: 200 });
+  const filteredCatalog = await filterModuleCatalogByAcl({
+    orgId,
+    userId,
+    catalog,
+  });
+  return Response.json({ ok: true, catalog: filteredCatalog }, { status: 200 });
 }
 

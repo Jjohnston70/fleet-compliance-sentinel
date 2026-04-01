@@ -13,7 +13,12 @@ export const COMMAND_CENTER_TOOLS = [
         description: 'List all registered TNDS command modules with their status, classification, and tool counts. Returns module metadata including display name, version, description, and current health status.',
         inputSchema: {
             type: 'object',
-            properties: {},
+            properties: {
+                acl: {
+                    type: 'object',
+                    description: 'Optional ACL filter payload with allowedModuleIds/allowedQualifiedNames',
+                },
+            },
         },
     },
     {
@@ -42,6 +47,10 @@ export const COMMAND_CENTER_TOOLS = [
                     type: 'number',
                     description: 'Optional cap for returned tools (1-15, default 12)',
                 },
+                acl: {
+                    type: 'object',
+                    description: 'Optional ACL filter payload with allowedModuleIds/allowedQualifiedNames',
+                },
             },
         },
     },
@@ -66,6 +75,10 @@ export const COMMAND_CENTER_TOOLS = [
                 maxTools: {
                     type: 'number',
                     description: 'Optional cap for returned results (1-15, default 12)',
+                },
+                acl: {
+                    type: 'object',
+                    description: 'Optional ACL filter payload with allowedModuleIds/allowedQualifiedNames',
                 },
             },
             required: ['query'],
@@ -98,6 +111,10 @@ export const COMMAND_CENTER_TOOLS = [
                 parameters: {
                     type: 'object',
                     description: 'Tool parameters as key-value pairs',
+                },
+                acl: {
+                    type: 'object',
+                    description: 'Optional ACL filter payload with allowedModuleIds/allowedQualifiedNames',
                 },
             },
             required: ['qualifiedName', 'parameters'],
@@ -154,8 +171,10 @@ export const COMMAND_CENTER_TOOLS = [
  * Tool handlers map
  */
 export const toolHandlers = {
-    discover_modules: async () => {
-        return handleListModules();
+    discover_modules: async (params) => {
+        return handleListModules({
+            acl: discoveryService.parseAclFilter(params.acl),
+        });
     },
     discover_tools: async (params) => {
         return handleListAllToolsFiltered({
@@ -164,6 +183,7 @@ export const toolHandlers = {
             query: params.query,
             intent: params.intent,
             maxTools: params.maxTools,
+            acl: discoveryService.parseAclFilter(params.acl),
         });
     },
     search_tools: async (params) => {
@@ -171,13 +191,14 @@ export const toolHandlers = {
             moduleId: params.moduleId,
             classification: params.classification,
             maxTools: params.maxTools,
+            acl: discoveryService.parseAclFilter(params.acl),
         });
     },
     get_tool_schema: async (params) => {
         return handleGetToolSchema(params.qualifiedName);
     },
     route_tool_call: async (params) => {
-        return handleRouteToolCall(params.qualifiedName, params.parameters || {});
+        return handleRouteToolCall(params.qualifiedName, params.parameters || {}, discoveryService.parseAclFilter(params.acl));
     },
     get_system_status: async () => {
         return handleGetSystemHealth();

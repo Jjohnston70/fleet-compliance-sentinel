@@ -1,6 +1,6 @@
 import {
   fleetComplianceAuthErrorResponse,
-  requireFleetComplianceOrgWithRole,
+  requireFleetComplianceOrgContext,
 } from '@/lib/fleet-compliance-auth';
 import { shouldUseRemoteModuleGateway, startRemoteModuleRun } from '@/lib/modules-gateway/remote';
 import {
@@ -9,7 +9,12 @@ import {
   startModuleRun,
   startModuleRunAndWait,
 } from '@/lib/modules-gateway/runner';
-import { maybePersistModuleRunInsights } from '@/lib/modules-gateway/persistence';
+import {
+  buildCommandCenterAclPayload,
+  evaluateCommandCenterToolAcl,
+  evaluateModuleGatewayAcl,
+  maybePersistModuleRunInsights,
+} from '@/lib/modules-gateway/persistence';
 import type { ModuleRunRecord, ModuleRunRequest } from '@/lib/modules-gateway/types';
 import { readFile } from 'node:fs/promises';
 
@@ -90,7 +95,13 @@ export async function POST(request: Request) {
   let userId = 'system';
   let orgId = '';
   try {
-    const authContext = await requireFleetComplianceOrgWithRole(request, 'admin');
+    const authContext = await requireFleetComplianceOrgContext(request);
+    if (authContext.role !== 'admin') {
+      return Response.json(
+        { ok: false, error: { code: 'PERMISSION_DENIED', message: 'Forbidden' } },
+        { status: 403 },
+      );
+    }
     userId = authContext.userId;
     orgId = authContext.orgId;
   } catch (error: unknown) {
@@ -111,6 +122,89 @@ export async function POST(request: Request) {
   if (!parsed.ok) {
     const error = buildValidationError(parsed.error);
     return Response.json({ ok: false, error }, { status: 400 });
+  }
+
+  const actionDecision = await evaluateModuleGatewayAcl({
+    orgId,
+    userId,
+    moduleId: parsed.data.moduleId,
+    actionId: parsed.data.actionId,
+    permission: 'execute',
+  });
+  if (!actionDecision.allowed) {
+    return Response.json(
+      {
+        ok: false,
+        error: {
+          code: 'PERMISSION_DENIED',
+          message: `Action '${parsed.data.actionId}' is not permitted for module '${parsed.data.moduleId}'`,
+          details: ['Module/tool ACL denied this action for the current org/user context.'],
+        },
+      },
+      { status: 403 },
+    );
+  }
+
+  if (parsed.data.moduleId === 'command-center' && parsed.data.actionId === 'route.tool_call') {
+    const qualifiedName = typeof parsed.data.args.qualifiedName === 'string'
+      ? parsed.data.args.qualifiedName.trim()
+      : '';
+    if (!qualifiedName) {
+      return Response.json(
+        {
+          ok: false,
+          error: {
+            code: 'VALIDATION_ERROR',
+            message: 'route.tool_call requires args.qualifiedName',
+          },
+        },
+        { status: 400 },
+      );
+    }
+
+    const toolDecision = await evaluateCommandCenterToolAcl({
+      orgId,
+      userId,
+      qualifiedName,
+      permission: 'execute',
+    });
+    if (!toolDecision.allowed) {
+      return Response.json(
+        {
+          ok: false,
+          error: {
+            code: 'PERMISSION_DENIED',
+            message: `Tool '${qualifiedName}' is not permitted in this org/user context`,
+            details: ['Module/tool ACL denied command-center route.tool_call execution.'],
+          },
+        },
+        { status: 403 },
+      );
+    }
+  }
+
+  if (
+    parsed.data.moduleId === 'command-center'
+    && (
+      parsed.data.actionId === 'discover.modules'
+      || parsed.data.actionId === 'discover.tools'
+      || parsed.data.actionId === 'search.tools'
+      || parsed.data.actionId === 'route.tool_call'
+    )
+  ) {
+    const permission = parsed.data.actionId === 'route.tool_call' ? 'execute' : 'view';
+    const aclPayload = await buildCommandCenterAclPayload({
+      orgId,
+      userId,
+      permission,
+    });
+    parsed.data.args = {
+      ...parsed.data.args,
+      acl: {
+        allowedModuleIds: aclPayload.allowedModuleIds,
+        allowedQualifiedNames: aclPayload.allowedQualifiedNames,
+      },
+    };
   }
   
   const shouldExecuteLocally = parsed.data.moduleId === 'command-center';
@@ -134,8 +228,8 @@ export async function POST(request: Request) {
   }
 
   const result = shouldExecuteLocally
-    ? await startModuleRunAndWait(parsed.data, userId)
-    : startModuleRun(parsed.data, userId);
+    ? await startModuleRunAndWait(parsed.data, userId, orgId)
+    : startModuleRun(parsed.data, userId, orgId);
   if (!result.ok) {
     return Response.json({ ok: false, error: result.error }, { status: result.httpStatus });
   }

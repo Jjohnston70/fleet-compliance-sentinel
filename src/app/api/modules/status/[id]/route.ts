@@ -82,13 +82,26 @@ export async function GET(request: Request, context: { params: Promise<{ id: str
       const { res, body } = await fetchRemoteModuleRun(runId);
       if (res.status !== 404) {
         if (res.ok && body?.ok && body?.run && orgId) {
-          await persistRunInsights(orgId, body.run as ModuleRunRecord, true);
+          const run = body.run as ModuleRunRecord;
+          if (typeof run.orgId === 'string' && run.orgId.length > 0 && run.orgId !== orgId) {
+            return Response.json(
+              { ok: false, error: { code: 'TENANT_ISOLATION_VIOLATION', message: 'Run belongs to another organization' } },
+              { status: 403 },
+            );
+          }
+          await persistRunInsights(orgId, run, true);
         }
         return Response.json(body, { status: res.status });
       }
 
       const localRun = getModuleRun(runId);
       if (localRun) {
+        if (localRun.orgId !== orgId) {
+          return Response.json(
+            { ok: false, error: { code: 'TENANT_ISOLATION_VIOLATION', message: 'Run belongs to another organization' } },
+            { status: 403 },
+          );
+        }
         if (orgId) {
           await persistRunInsights(orgId, localRun, false);
         }
@@ -115,6 +128,13 @@ export async function GET(request: Request, context: { params: Promise<{ id: str
     return Response.json(
       { ok: false, error: { code: 'MODULE_NOT_FOUND', message: `Run '${runId}' was not found` } },
       { status: 404 },
+    );
+  }
+
+  if (run.orgId !== orgId) {
+    return Response.json(
+      { ok: false, error: { code: 'TENANT_ISOLATION_VIOLATION', message: 'Run belongs to another organization' } },
+      { status: 403 },
     );
   }
 

@@ -72,7 +72,7 @@ These workstreams are complementary, not competing. The hardening secures the or
 - [ ] Layer 4: Retry manager with cap=3 and escalation
 - [ ] Layer 5: Token/cost attribution with budget alerts
 - [ ] Layer 6: Durable append-only audit logging for all tool calls
-- [ ] Layer 7: Strict tenant/user tool isolation (visibility + execution)
+- [x] Layer 7: Strict tenant/user tool isolation (visibility + execution)
 - [ ] Integration tests pass and go/no-go report published
 
 ---
@@ -192,7 +192,7 @@ At task end:
 **Estimated Effort**: 1-2 days
 **Depends On**: A0
 
-- [ ] Enforce explicit per-org/per-user tool ACL at both selection and execution
+- [x] Enforce explicit per-org/per-user tool ACL at both selection and execution
 
 **File Targets**:
 

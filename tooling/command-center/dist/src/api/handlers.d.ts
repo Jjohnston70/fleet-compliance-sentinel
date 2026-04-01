@@ -2,10 +2,13 @@
  * API Handlers
  * REST-style handlers for all registry operations
  */
+import { type ToolAclFilter } from '../services/discovery-service.js';
 /**
  * List all registered modules
  */
-export declare function handleListModules(): Promise<{
+export declare function handleListModules(input?: {
+    acl?: ToolAclFilter;
+}): Promise<{
     success: boolean;
     data: {
         status: "error" | "active" | "inactive" | "maintenance";
@@ -102,6 +105,7 @@ export declare function handleListAllToolsFiltered(input: {
     query?: string;
     intent?: string;
     maxTools?: number;
+    acl?: ToolAclFilter;
 }): Promise<{
     success: boolean;
     meta: {
@@ -129,6 +133,7 @@ export declare function handleSearchTools(query: string, filters?: {
     moduleId?: string;
     classification?: string;
     maxTools?: number;
+    acl?: ToolAclFilter;
 }): Promise<{
     success: boolean;
     meta: {
@@ -165,7 +170,7 @@ export declare function handleGetToolSchema(qualifiedName: string): Promise<{
 /**
  * Route and execute a tool call
  */
-export declare function handleRouteToolCall(qualifiedName: string, params: Record<string, any>): Promise<{
+export declare function handleRouteToolCall(qualifiedName: string, params: Record<string, any>, acl?: ToolAclFilter): Promise<{
     success: boolean;
     error: string | undefined;
     details?: undefined;

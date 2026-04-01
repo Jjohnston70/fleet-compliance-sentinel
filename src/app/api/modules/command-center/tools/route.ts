@@ -1,8 +1,12 @@
 import {
   fleetComplianceAuthErrorResponse,
-  requireFleetComplianceOrgWithRole,
+  requireFleetComplianceOrgContext,
 } from '@/lib/fleet-compliance-auth';
-import { listCommandCenterCatalog, type CommandCenterCatalogRow } from '@/lib/modules-gateway/persistence';
+import {
+  evaluateCommandCenterToolAcl,
+  listCommandCenterCatalog,
+  type CommandCenterCatalogRow,
+} from '@/lib/modules-gateway/persistence';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -36,9 +40,17 @@ function scoreToolMatch(row: CommandCenterCatalogRow, query: string): number {
 
 export async function GET(request: Request) {
   let orgId = '';
+  let userId = '';
   try {
-    const authContext = await requireFleetComplianceOrgWithRole(request, 'admin');
+    const authContext = await requireFleetComplianceOrgContext(request);
+    if (authContext.role !== 'admin') {
+      return Response.json(
+        { ok: false, error: { code: 'PERMISSION_DENIED', message: 'Forbidden' } },
+        { status: 403 },
+      );
+    }
     orgId = authContext.orgId;
+    userId = authContext.userId;
   } catch (error: unknown) {
     const authResponse = fleetComplianceAuthErrorResponse(error);
     if (authResponse) return authResponse;
@@ -51,7 +63,20 @@ export async function GET(request: Request) {
   const limit = clampLimit(url.searchParams.get('limit'));
 
   const rows = await listCommandCenterCatalog(orgId);
-  const filtered = rows.filter((row) => (moduleId ? row.moduleId === moduleId : true));
+  const aclRows: CommandCenterCatalogRow[] = [];
+  for (const row of rows) {
+    const decision = await evaluateCommandCenterToolAcl({
+      orgId,
+      userId,
+      qualifiedName: row.qualifiedName,
+      permission: 'view',
+    });
+    if (decision.allowed) {
+      aclRows.push(row);
+    }
+  }
+
+  const filtered = aclRows.filter((row) => (moduleId ? row.moduleId === moduleId : true));
   const scored = filtered
     .map((row) => ({
       row,
@@ -74,6 +99,8 @@ export async function GET(request: Request) {
         query: query || null,
         limit,
         totalAvailable: filtered.length,
+        totalBeforeAcl: rows.length,
+        totalAfterAcl: aclRows.length,
         returned: scored.length,
       },
     },
