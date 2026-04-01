@@ -508,17 +508,6 @@ export function startModuleRun(input: ModuleRunRequest, requestedBy: string): Mo
     };
   }
 
-  if (!moduleDirectoryExists(moduleDef)) {
-    return {
-      ok: false,
-      httpStatus: 404,
-      error: {
-        code: 'MODULE_NOT_FOUND',
-        message: `Module working directory not found for '${input.moduleId}'`,
-      },
-    };
-  }
-
   const action = getModuleAction(input.moduleId, input.actionId);
   if (!action) {
     return {
@@ -527,6 +516,18 @@ export function startModuleRun(input: ModuleRunRequest, requestedBy: string): Mo
       error: {
         code: 'ACTION_NOT_ALLOWED',
         message: `Action '${input.actionId}' is not allowlisted for module '${input.moduleId}'`,
+      },
+    };
+  }
+
+  // Bridge/in-process actions do not require a module working directory on disk.
+  if (action.buildCommand && !moduleDirectoryExists(moduleDef)) {
+    return {
+      ok: false,
+      httpStatus: 404,
+      error: {
+        code: 'MODULE_NOT_FOUND',
+        message: `Module working directory not found for '${input.moduleId}'`,
       },
     };
   }
