@@ -102,6 +102,19 @@ curl -X GET "http://localhost:3000/api/modules/status/<run_id>" \
    - `run.stdoutPreview`: bridge message summary
    - `run.stderrPreview`: bridge error text (if present)
 3. `route.tool_call` confirms routing/invocation metadata; it does not deep-execute downstream business side effects inside command-center itself.
+4. Bridge failure responses may include `errorCode` (`VALIDATION_ERROR`, `PERMISSION_DENIED`, `MODULE_NOT_FOUND`, etc.), which the gateway uses to classify retryable vs non-retryable failures.
+
+## Retry and Escalation
+
+1. Module gateway retries retryable bridge/process failures up to a hard cap of 3 attempts.
+2. Retry metadata is attached to run status payload:
+   - `attemptCount`
+   - `maxAttempts`
+   - `retryHistory[]` (attempt status, duration, error code/message)
+3. When retryable failures still fail at cap, the run is marked with:
+   - `error.code = RETRY_EXHAUSTED`
+   - `escalation.reason = retry_exhausted`
+4. Escalations are persisted in `module_gateway_retry_escalations` for operator handoff.
 
 ## Troubleshooting
 

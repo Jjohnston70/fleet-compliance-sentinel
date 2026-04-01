@@ -1,4 +1,9 @@
-import type { ModuleActionExecutionResult, ModuleRunArgs } from '@/lib/modules-gateway/types';
+import {
+  MODULE_RUN_ERROR_TAXONOMY,
+  type ModuleActionExecutionResult,
+  type ModuleRunArgs,
+  type ModuleRunErrorCode,
+} from '@/lib/modules-gateway/types';
 
 type CommandCenterHandler = (params: Record<string, unknown>) => Promise<unknown>;
 
@@ -50,11 +55,18 @@ function normalizeDetails(value: unknown): string[] | undefined {
   return undefined;
 }
 
+function asErrorCode(value: unknown): ModuleRunErrorCode | undefined {
+  if (typeof value !== 'string') return undefined;
+  if (!(value in MODULE_RUN_ERROR_TAXONOMY)) return undefined;
+  return value as ModuleRunErrorCode;
+}
+
 function normalizeBridgeResult(toolName: string, raw: unknown): ModuleActionExecutionResult {
   const result = asPlainObject(raw);
   const success = Boolean(result.success);
   const data = Object.prototype.hasOwnProperty.call(result, 'data') ? result.data : raw;
   const errorValue = result.error;
+  const errorCode = asErrorCode(result.errorCode);
   const details = normalizeDetails(
     result.details || result.fieldErrors,
   );
@@ -70,6 +82,7 @@ function normalizeBridgeResult(toolName: string, raw: unknown): ModuleActionExec
   return {
     ok: false,
     message: `command-center tool '${toolName}' failed`,
+    errorCode: errorCode || 'EXEC_FAILED',
     stderr: typeof errorValue === 'string' ? errorValue : 'Unknown command-center bridge error',
     details,
     data,
@@ -106,6 +119,7 @@ export async function executeCommandCenterAction(
       return {
         ok: false,
         message: `Unsupported command-center action '${actionId}'`,
+        errorCode: 'ACTION_NOT_ALLOWED',
       };
     }
 
@@ -114,6 +128,7 @@ export async function executeCommandCenterAction(
       return {
         ok: false,
         message: `Handler not found for command-center tool '${toolName}'`,
+        errorCode: 'INTERNAL_ERROR',
       };
     }
 
@@ -124,6 +139,7 @@ export async function executeCommandCenterAction(
     return {
       ok: false,
       message: 'command-center bridge execution failed',
+      errorCode: 'INTERNAL_ERROR',
       stderr: error instanceof Error ? error.message : String(error),
     };
   }

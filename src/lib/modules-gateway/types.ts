@@ -149,6 +149,7 @@ export interface ResolvedModuleCommand {
 export interface ModuleActionExecutionResult {
   ok: boolean;
   message: string;
+  errorCode?: ModuleRunErrorCode;
   stderr?: string;
   details?: string[];
   data?: unknown;
@@ -206,6 +207,24 @@ export interface ModuleRunArtifact {
   modifiedAt: string;
 }
 
+export interface ModuleRunAttempt {
+  attempt: number;
+  startedAt: string;
+  endedAt: string;
+  durationMs: number;
+  status: ModuleRunStatus;
+  errorCode?: ModuleRunErrorCode;
+  errorMessage?: string;
+}
+
+export interface ModuleRunEscalation {
+  escalatedAt: string;
+  reason: 'retry_exhausted';
+  attempts: number;
+  lastErrorCode?: ModuleRunErrorCode;
+  lastErrorMessage?: string;
+}
+
 export interface ModuleRunRecord {
   id: string;
   moduleId: string;
@@ -223,6 +242,9 @@ export interface ModuleRunRecord {
   startedAt: string | null;
   endedAt: string | null;
   durationMs: number | null;
+  attemptCount: number;
+  maxAttempts: number;
+  retryHistory: ModuleRunAttempt[];
   exitCode: number | null;
   stdoutPreview: string;
   stderrPreview: string;
@@ -230,6 +252,7 @@ export interface ModuleRunRecord {
   stderrTruncated: boolean;
   artifacts: ModuleRunArtifact[];
   result?: unknown;
+  escalation?: ModuleRunEscalation | null;
   error?: ModuleRunError;
 }
 

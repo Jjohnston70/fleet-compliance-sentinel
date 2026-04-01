@@ -12,22 +12,30 @@ import {
   validateActionArgs,
   validateActionOutput,
 } from '@/lib/modules-gateway/registry';
-import { recordModuleGatewaySandboxEvent } from '@/lib/modules-gateway/persistence';
+import {
+  recordModuleGatewayRetryEscalation,
+  recordModuleGatewaySandboxEvent,
+} from '@/lib/modules-gateway/persistence';
 import type {
+  ModuleRunAttempt,
   ModuleActionDefinition,
   ModuleCatalogEntry,
   ModuleDefinition,
   ModuleRunArtifact,
   ModuleRunError,
+  ModuleRunErrorCode,
   ModuleRunRecord,
   ModuleRunRequest,
   ModuleRunStartResult,
   ModuleValidationIssue,
 } from '@/lib/modules-gateway/types';
+import { MODULE_RUN_ERROR_TAXONOMY } from '@/lib/modules-gateway/types';
 
 const runs = new Map<string, ModuleRunRecord>();
+const suppressedFailureAlerts = new Set<string>();
 const FAILURE_ALERT_WEBHOOK_URL = process.env.MODULE_GATEWAY_FAILURE_WEBHOOK_URL;
 const PATH_ARG_KEY_PATTERN = /(path|file|dir|output|input|out)$/i;
+const MAX_RETRY_ATTEMPTS = Math.min(moduleGatewayLimits.retryMaxAttempts, 3);
 
 type ModuleRateLimitBucket = {
   windowStart: number;
@@ -220,6 +228,27 @@ function persistSandboxEvent(input: {
   });
 }
 
+function isRetryableErrorCode(code: ModuleRunErrorCode | undefined): boolean {
+  if (!code) return false;
+  return Boolean(MODULE_RUN_ERROR_TAXONOMY[code]?.retryable);
+}
+
+function buildAttemptSnapshot(run: ModuleRunRecord, attempt: number): ModuleRunAttempt {
+  return {
+    attempt,
+    startedAt: run.startedAt || run.createdAt,
+    endedAt: run.endedAt || nowIso(),
+    durationMs: typeof run.durationMs === 'number' ? run.durationMs : 0,
+    status: run.status,
+    errorCode: run.error?.code,
+    errorMessage: run.error?.message,
+  };
+}
+
+function retryBackoffMs(attempt: number): number {
+  return Math.min(250 * (2 ** Math.max(attempt - 1, 0)), 2_000);
+}
+
 function appendWithLimit(current: string, chunk: string, maxChars: number): { next: string; truncated: boolean } {
   if (current.length >= maxChars) {
     return { next: current, truncated: true };
@@ -251,7 +280,7 @@ function updateRun(runId: string, updater: (run: ModuleRunRecord) => ModuleRunRe
 
 function updateFailedRun(runId: string, updater: (run: ModuleRunRecord) => ModuleRunRecord): void {
   const failedRun = updateRun(runId, updater);
-  if (failedRun) {
+  if (failedRun && !suppressedFailureAlerts.has(runId)) {
     void emitModuleRunFailureAlert(failedRun);
   }
 }
@@ -802,7 +831,7 @@ async function executeRun(runId: string): Promise<void> {
         artifacts,
         result: bridgeResult.data,
         error: {
-          code: 'EXEC_FAILED',
+          code: bridgeResult.errorCode || 'EXEC_FAILED',
           message: bridgeResult.message || 'Bridge action failed',
           details: bridgeResult.details,
         },
@@ -973,13 +1002,121 @@ async function executeRun(runId: string): Promise<void> {
   }
 }
 
+async function executeRunWithRetry(runId: string): Promise<void> {
+  const initialRun = runs.get(runId);
+  if (!initialRun) return;
+  suppressedFailureAlerts.add(runId);
+
+  const maxAttempts = Math.min(
+    Math.max(initialRun.maxAttempts || MAX_RETRY_ATTEMPTS, 1),
+    MAX_RETRY_ATTEMPTS,
+  );
+
+  for (let attempt = 1; attempt <= maxAttempts; attempt += 1) {
+    await executeRun(runId);
+    const afterAttempt = runs.get(runId);
+    if (!afterAttempt) {
+      suppressedFailureAlerts.delete(runId);
+      return;
+    }
+
+    const attemptSnapshot = buildAttemptSnapshot(afterAttempt, attempt);
+    const runWithHistory = updateRun(runId, (current) => ({
+      ...current,
+      attemptCount: attempt,
+      maxAttempts,
+      retryHistory: [...current.retryHistory, attemptSnapshot],
+    })) || afterAttempt;
+
+    if (runWithHistory.status === 'success') {
+      suppressedFailureAlerts.delete(runId);
+      return;
+    }
+
+    const lastErrorCode = runWithHistory.error?.code;
+    if (!isRetryableErrorCode(lastErrorCode)) {
+      suppressedFailureAlerts.delete(runId);
+      void emitModuleRunFailureAlert(runWithHistory);
+      return;
+    }
+
+    if (attempt >= maxAttempts) {
+      const escalatedAt = nowIso();
+      const escalation = {
+        escalatedAt,
+        reason: 'retry_exhausted' as const,
+        attempts: maxAttempts,
+        lastErrorCode: runWithHistory.error?.code,
+        lastErrorMessage: runWithHistory.error?.message,
+      };
+
+      updateFailedRun(runId, (current) => ({
+        ...current,
+        status: 'fail',
+        escalation,
+        error: {
+          code: 'RETRY_EXHAUSTED',
+          message: `Retry cap reached (${maxAttempts}) for '${current.moduleId}:${current.actionId}'`,
+          details: [
+            `lastErrorCode=${runWithHistory.error?.code || 'unknown'}`,
+            `lastErrorMessage=${runWithHistory.error?.message || 'unknown'}`,
+          ],
+        },
+      }));
+
+      void recordModuleGatewayRetryEscalation({
+        runId,
+        orgId: runWithHistory.orgId,
+        userId: runWithHistory.requestedBy,
+        moduleId: runWithHistory.moduleId,
+        actionId: runWithHistory.actionId,
+        attempts: maxAttempts,
+        lastErrorCode: runWithHistory.error?.code || null,
+        lastErrorMessage: runWithHistory.error?.message || null,
+        metadata: {
+          retryHistory: runWithHistory.retryHistory,
+        },
+      });
+      const escalatedRun = runs.get(runId);
+      suppressedFailureAlerts.delete(runId);
+      if (escalatedRun) {
+        void emitModuleRunFailureAlert(escalatedRun);
+      }
+      return;
+    }
+
+    updateRun(runId, (current) => ({
+      ...current,
+      status: 'queued',
+      startedAt: null,
+      endedAt: null,
+      durationMs: null,
+      exitCode: null,
+      error: undefined,
+    }));
+
+    await new Promise((resolve) => setTimeout(resolve, retryBackoffMs(attempt)));
+  }
+  suppressedFailureAlerts.delete(runId);
+}
+
 async function waitForRunCompletion(runId: string, timeoutMs: number): Promise<ModuleRunRecord | null> {
   const deadline = Date.now() + timeoutMs;
   while (Date.now() <= deadline) {
     const run = runs.get(runId);
     if (!run) return null;
-    if (run.status === 'success' || run.status === 'fail') {
+    if (run.status === 'success') {
       return run;
+    }
+    if (run.status === 'fail') {
+      const retryPending = isRetryableErrorCode(run.error?.code)
+        && run.attemptCount < run.maxAttempts
+        && !run.escalation;
+      if (!retryPending) {
+        return run;
+      }
+      await new Promise((resolve) => setTimeout(resolve, 100));
+      continue;
     }
     await new Promise((resolve) => setTimeout(resolve, 100));
   }
@@ -1256,19 +1393,31 @@ export function startModuleRun(
     startedAt: dryRun ? createdAt : null,
     endedAt: dryRun ? createdAt : null,
     durationMs: dryRun ? 0 : null,
+    attemptCount: dryRun ? 1 : 0,
+    maxAttempts: dryRun ? 1 : MAX_RETRY_ATTEMPTS,
+    retryHistory: dryRun
+      ? [{
+        attempt: 1,
+        startedAt: createdAt,
+        endedAt: createdAt,
+        durationMs: 0,
+        status: 'success',
+      }]
+      : [],
     exitCode: dryRun ? 0 : null,
     stdoutPreview: dryRunMessage,
     stderrPreview: '',
     stdoutTruncated: false,
     stderrTruncated: false,
     artifacts: [],
+    escalation: null,
   };
 
   runs.set(runId, runRecord);
 
   if (!dryRun) {
     setTimeout(() => {
-      void executeRun(runId);
+      void executeRunWithRetry(runId);
     }, 0);
   }
 

@@ -83,6 +83,18 @@ export interface ModuleGatewaySandboxEventInput {
   metadata?: Record<string, unknown> | null;
 }
 
+export interface ModuleGatewayRetryEscalationInput {
+  runId: string;
+  orgId: string;
+  userId?: string | null;
+  moduleId: string;
+  actionId: string;
+  attempts: number;
+  lastErrorCode?: string | null;
+  lastErrorMessage?: string | null;
+  metadata?: Record<string, unknown> | null;
+}
+
 async function ensureModuleGatewayPersistenceTables(): Promise<void> {
   if (ensured) return;
   const sql = getSQL();
@@ -168,6 +180,25 @@ async function ensureModuleGatewayPersistenceTables(): Promise<void> {
   await sql`
     CREATE INDEX IF NOT EXISTS idx_module_gateway_sandbox_events_scope
     ON module_gateway_sandbox_events (org_id, module_id, action_id, created_at DESC)
+  `;
+
+  await sql`
+    CREATE TABLE IF NOT EXISTS module_gateway_retry_escalations (
+      run_id TEXT PRIMARY KEY,
+      org_id TEXT NOT NULL,
+      user_id TEXT,
+      module_id TEXT NOT NULL,
+      action_id TEXT NOT NULL,
+      attempts INTEGER NOT NULL,
+      last_error_code TEXT,
+      last_error_message TEXT,
+      metadata JSONB NOT NULL DEFAULT '{}'::jsonb,
+      escalated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+    )
+  `;
+  await sql`
+    CREATE INDEX IF NOT EXISTS idx_module_gateway_retry_escalations_org_time
+    ON module_gateway_retry_escalations (org_id, escalated_at DESC)
   `;
 
   ensured = true;
@@ -857,6 +888,56 @@ export async function recordModuleGatewaySandboxEvent(input: ModuleGatewaySandbo
       moduleId: input.moduleId,
       actionId: input.actionId,
       eventType: input.eventType,
+      message: error instanceof Error ? error.message : String(error),
+    });
+  }
+}
+
+export async function recordModuleGatewayRetryEscalation(
+  input: ModuleGatewayRetryEscalationInput,
+): Promise<void> {
+  try {
+    await ensureModuleGatewayPersistenceTables();
+    const sql = getSQL();
+    await sql`
+      INSERT INTO module_gateway_retry_escalations (
+        run_id,
+        org_id,
+        user_id,
+        module_id,
+        action_id,
+        attempts,
+        last_error_code,
+        last_error_message,
+        metadata
+      ) VALUES (
+        ${input.runId},
+        ${input.orgId},
+        ${input.userId || null},
+        ${input.moduleId},
+        ${input.actionId},
+        ${input.attempts},
+        ${input.lastErrorCode || null},
+        ${input.lastErrorMessage || null},
+        ${JSON.stringify(input.metadata || {})}::jsonb
+      )
+      ON CONFLICT (run_id) DO UPDATE SET
+        org_id = EXCLUDED.org_id,
+        user_id = EXCLUDED.user_id,
+        module_id = EXCLUDED.module_id,
+        action_id = EXCLUDED.action_id,
+        attempts = EXCLUDED.attempts,
+        last_error_code = EXCLUDED.last_error_code,
+        last_error_message = EXCLUDED.last_error_message,
+        metadata = EXCLUDED.metadata,
+        escalated_at = NOW()
+    `;
+  } catch (error) {
+    console.error('[module-gateway] failed to persist retry escalation', {
+      runId: input.runId,
+      orgId: input.orgId,
+      moduleId: input.moduleId,
+      actionId: input.actionId,
       message: error instanceof Error ? error.message : String(error),
     });
   }

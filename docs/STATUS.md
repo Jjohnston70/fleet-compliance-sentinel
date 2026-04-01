@@ -1,12 +1,24 @@
 # Fleet-Compliance Sentinel — Status
 
-Last Updated: 2026-04-01 (Workstream A tasks A0-A4 complete)
+Last Updated: 2026-04-01 (Workstream A tasks A0-A5 complete)
 Current Phase: April 2-25 sprint active (Workstream A + B)
-Overall Completion: SOC 2 action plan 100%; module integration sprint 6/6 phases complete; hardening sprint A0-A4 complete
+Overall Completion: SOC 2 action plan 100%; module integration sprint 6/6 phases complete; hardening sprint A0-A5 complete
 Open Findings: 0 blockers; remaining items are accepted non-blocking hardening items
 SOC 2 Observation Window Start: 2026-03-24
 SOC 2 Type I Earliest Eligibility: 2026-06-22
 Days Until Type I Eligible: 83
+
+## 2026-04-01 Workstream A - Task A5 Layer 4 Retry Outcome
+
+| Workstream | Result |
+|-----------|--------|
+| Retry engine (cap=3) | Complete - runner now applies structured retry attempts for retryable failures with hard cap at 3 |
+| Error-class retry policy | Complete - retry decisions now map from canonical error taxonomy (`retryable` vs non-retryable) |
+| Retry status visibility | Complete - run payload now includes `attemptCount`, `maxAttempts`, and `retryHistory[]` |
+| Escalation persistence | Complete - retry exhaustion now records durable escalation rows in `module_gateway_retry_escalations` |
+| Bridge error normalization | Complete - command-center handlers/bridge now return typed `errorCode` values to prevent retrying non-retryable validation/permission failures |
+| Contract docs | Updated - `docs/integration/COMMAND_CENTER_BRIDGE.md` documents retry cap and escalation semantics |
+| Verification | `npm --prefix tooling/command-center run build` pass; `npm --prefix tooling/command-center run test` pass; `npx tsc --noEmit` pass; `npm run lint` pass (pre-existing a11y warnings only) |
 
 ## 2026-04-01 Workstream A - Task A4 Layer 3 Sandbox Outcome
 

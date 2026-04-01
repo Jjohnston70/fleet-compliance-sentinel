@@ -43,6 +43,7 @@ export declare function handleListModules(input?: {
  */
 export declare function handleGetModule(moduleId: string): Promise<{
     success: boolean;
+    errorCode: string;
     error: string;
     data?: undefined;
 } | {
@@ -74,6 +75,7 @@ export declare function handleGetModule(moduleId: string): Promise<{
         updatedAt: number;
         baseUrl?: string | undefined;
     };
+    errorCode?: undefined;
     error?: undefined;
 }>;
 /**
@@ -148,6 +150,7 @@ export declare function handleSearchTools(query: string, filters?: {
  */
 export declare function handleGetToolSchema(qualifiedName: string): Promise<{
     success: boolean;
+    errorCode: string;
     error: string | undefined;
     data?: undefined;
 } | {
@@ -165,6 +168,7 @@ export declare function handleGetToolSchema(qualifiedName: string): Promise<{
             };
         } | undefined;
     };
+    errorCode?: undefined;
     error?: undefined;
 }>;
 /**
@@ -172,12 +176,14 @@ export declare function handleGetToolSchema(qualifiedName: string): Promise<{
  */
 export declare function handleRouteToolCall(qualifiedName: string, params: Record<string, any>, acl?: ToolAclFilter): Promise<{
     success: boolean;
+    errorCode: string;
     error: string | undefined;
     details?: undefined;
     fieldErrors?: undefined;
     data?: undefined;
 } | {
     success: boolean;
+    errorCode: string;
     error: string;
     details: string[] | undefined;
     fieldErrors: import("../services/router-service.js").RouterValidationIssue[] | undefined;
@@ -190,6 +196,7 @@ export declare function handleRouteToolCall(qualifiedName: string, params: Recor
         invocationId: string;
         message: string;
     };
+    errorCode?: undefined;
     error?: undefined;
     details?: undefined;
     fieldErrors?: undefined;
@@ -206,6 +213,7 @@ export declare function handleGetSystemHealth(): Promise<{
  */
 export declare function handleGetModuleDetail(moduleId: string): Promise<{
     success: boolean;
+    errorCode: string;
     error: string;
     data?: undefined;
 } | {
@@ -252,6 +260,7 @@ export declare function handleGetModuleDetail(moduleId: string): Promise<{
             };
         }[];
     };
+    errorCode?: undefined;
     error?: undefined;
 }>;
 /**

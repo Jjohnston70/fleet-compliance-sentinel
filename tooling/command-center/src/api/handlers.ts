@@ -41,6 +41,7 @@ export async function handleGetModule(moduleId: string) {
   if (!module) {
     return {
       success: false,
+      errorCode: 'MODULE_NOT_FOUND',
       error: `Module not found: ${moduleId}`,
     };
   }
@@ -137,6 +138,7 @@ export async function handleGetToolSchema(qualifiedName: string) {
   if (!result.success) {
     return {
       success: false,
+      errorCode: 'VALIDATION_ERROR',
       error: result.error,
     };
   }
@@ -162,6 +164,7 @@ export async function handleRouteToolCall(
   if (!route.success) {
     return {
       success: false,
+      errorCode: 'VALIDATION_ERROR',
       error: route.error,
     };
   }
@@ -169,6 +172,7 @@ export async function handleRouteToolCall(
   if (!discoveryService.isQualifiedToolAllowed(route.moduleId!, route.tool!.name, acl)) {
     return {
       success: false,
+      errorCode: 'PERMISSION_DENIED',
       error: `Permission denied for tool '${qualifiedName}'`,
     };
   }
@@ -180,6 +184,7 @@ export async function handleRouteToolCall(
   if (!validation.valid) {
     return {
       success: false,
+      errorCode: 'VALIDATION_ERROR',
       error: 'Parameter validation failed',
       details: validation.errors,
       fieldErrors: validation.fieldErrors,
@@ -230,6 +235,7 @@ export async function handleGetModuleDetail(moduleId: string) {
   if (!module) {
     return {
       success: false,
+      errorCode: 'MODULE_NOT_FOUND',
       error: `Module not found: ${moduleId}`,
     };
   }

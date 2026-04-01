@@ -47,6 +47,7 @@ const DEFAULT_RATE_LIMIT_WINDOW_SECONDS = 60;
 const DEFAULT_MAX_CONCURRENT_RUNS_PER_ACTION = 2;
 const DEFAULT_MAX_CONCURRENT_RUNS_PER_ORG = 6;
 const DEFAULT_MAX_ARG_STRING_LENGTH = 4_096;
+const DEFAULT_MAX_RETRY_ATTEMPTS = 3;
 
 function parsePositiveInt(
   rawValue: string | undefined,
@@ -1696,6 +1697,11 @@ export const moduleGatewayLimits = {
     process.env.MODULE_GATEWAY_MAX_ARG_STRING_LENGTH,
     DEFAULT_MAX_ARG_STRING_LENGTH,
     { min: 128, max: 100_000 },
+  ),
+  retryMaxAttempts: parsePositiveInt(
+    process.env.MODULE_GATEWAY_MAX_RETRY_ATTEMPTS,
+    DEFAULT_MAX_RETRY_ATTEMPTS,
+    { min: 1, max: 3 },
   ),
 };
 

@@ -69,7 +69,7 @@ These workstreams are complementary, not competing. The hardening secures the or
 - [x] Layer 1: Context-aware tool registry with capped tool exposure
 - [x] Layer 2: Bidirectional schema validation with coercion + structured correction errors
 - [x] Layer 3: Execution sandbox with permission checks, rate limits, sanitization, timeout enforcement
-- [ ] Layer 4: Retry manager with cap=3 and escalation
+- [x] Layer 4: Retry manager with cap=3 and escalation
 - [ ] Layer 5: Token/cost attribution with budget alerts
 - [ ] Layer 6: Durable append-only audit logging for all tool calls
 - [x] Layer 7: Strict tenant/user tool isolation (visibility + execution)
@@ -354,7 +354,7 @@ At task end:
 **Estimated Effort**: 1 day
 **Depends On**: A3 (needs structured error codes for retry classification)
 
-- [ ] Implement structured retry orchestration with hard cap and escalation queue
+- [x] Implement structured retry orchestration with hard cap and escalation queue
 
 **File Targets**:
 
