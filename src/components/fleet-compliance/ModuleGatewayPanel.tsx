@@ -129,6 +129,50 @@ function statusClassName(status: ModuleRunStatus): string {
   return 'fleet-compliance-pill fleet-compliance-pill-queued';
 }
 
+interface RunGuidance {
+  heading: string;
+  bullets: string[];
+}
+
+function buildRunGuidance(run: ModuleRunRecord): RunGuidance | null {
+  if (run.status !== 'success' || run.dryRun) return null;
+
+  if (run.moduleId === 'ML-EIA-PETROLEUM-INTEL' && (run.actionId === 'pipeline.all' || run.actionId === 'pipeline.product')) {
+    return {
+      heading: 'What to do with these ML-EIA outputs',
+      bullets: [
+        'Open analysis_snapshot.json first to review regime/strategy context and model snapshot details.',
+        'Open active_alerts.json to see actionable alert conditions to route into compliance/ops workflows.',
+        'Use forecast JSON files as machine-readable inputs for pricing dashboards, downstream automations, or exports.',
+      ],
+    };
+  }
+
+  if (run.moduleId === 'ML-SIGNAL-STACK-TNCC' && run.actionId === 'workflow.delivery') {
+    return {
+      heading: 'What to do with this SignalStack delivery',
+      bullets: [
+        'Open the generated HTML artifact for a human-readable executive report.',
+        'Download the ZIP artifact for client handoff or archive retention.',
+        'Use JSON artifacts as structured inputs for internal dashboards and follow-on analysis.',
+      ],
+    };
+  }
+
+  if (run.moduleId === 'MOD-PAPERSTACK-PP' && (run.actionId === 'invoice.extract' || run.actionId === 'invoice.extract_batch')) {
+    return {
+      heading: 'What to do with these PaperStack outputs',
+      bullets: [
+        'Open/download the JSON artifact for programmatic ingestion into your invoice workflows.',
+        'Download the XLSX artifact for finance/operator review and reconciliation.',
+        'Store outputs per run as your audit trail for extracted vendor invoice data.',
+      ],
+    };
+  }
+
+  return null;
+}
+
 async function safeJson<T>(res: Response): Promise<T | null> {
   try {
     return (await res.json()) as T;
@@ -171,6 +215,7 @@ export default function ModuleGatewayPanel() {
     () => runs.find((run) => run.id === selectedRunId) || null,
     [runs, selectedRunId],
   );
+  const selectedRunGuidance = useMemo(() => (selectedRun ? buildRunGuidance(selectedRun) : null), [selectedRun]);
 
   const quickRunPresets = useMemo<QuickRunPreset[]>(() => {
     const moduleById = new Map(catalog.map((entry) => [entry.moduleId, entry]));
@@ -764,6 +809,17 @@ export default function ModuleGatewayPanel() {
                     </div>
                   </dl>
 
+                  {selectedRunGuidance && (
+                    <div className="fleet-compliance-info-banner">
+                      <strong>{selectedRunGuidance.heading}</strong>
+                      <ul style={{ marginTop: '0.5rem', paddingLeft: '1rem' }}>
+                        {selectedRunGuidance.bullets.map((item) => (
+                          <li key={item}>{item}</li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
+
                   {selectedRun.error && (
                     <div className="fleet-compliance-info-banner" style={{ borderColor: '#fca5a5', background: '#fef2f2', color: '#991b1b' }}>
                       <strong>{selectedRun.error.code}</strong>: {selectedRun.error.message}
@@ -799,10 +855,13 @@ export default function ModuleGatewayPanel() {
                   {selectedRun.artifacts.length > 0 && (
                     <>
                       <h3 style={{ marginTop: '1rem' }}>Artifacts</h3>
-                      <ul style={{ marginTop: '0.5rem', paddingLeft: '1rem' }}>
+                      <ul className="fleet-compliance-artifact-list">
                         {selectedRun.artifacts.map((artifact) => (
-                          <li key={`${artifact.path}-${artifact.modifiedAt}`}>
-                            <code>{artifact.path}</code> ({artifact.sizeBytes} bytes, {formatLocalDate(artifact.modifiedAt)})
+                          <li key={`${artifact.path}-${artifact.modifiedAt}`} className="fleet-compliance-artifact-item">
+                            <code className="fleet-compliance-artifact-path">{artifact.path}</code>
+                            <div className="fleet-compliance-table-note">
+                              ({artifact.sizeBytes} bytes, {formatLocalDate(artifact.modifiedAt)})
+                            </div>
                             <div className="fleet-compliance-table-note" style={{ marginTop: '0.2rem' }}>
                               {canOpenInline(artifact.path) ? (
                                 <>

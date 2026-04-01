@@ -2046,6 +2046,7 @@ a.penny-source-pill:hover {
   border-radius: 12px;
   background: var(--white);
   padding: 1rem;
+  min-width: 0;
 }
 
 .fleet-compliance-stat-label,
@@ -2142,6 +2143,24 @@ a.penny-source-pill:hover {
 .fleet-compliance-list-card ul {
   margin-top: 0.75rem;
   padding-left: 1rem;
+}
+
+.fleet-compliance-artifact-list {
+  margin-top: 0.5rem;
+  padding-left: 1rem;
+}
+
+.fleet-compliance-artifact-item {
+  margin-bottom: 0.55rem;
+  min-width: 0;
+}
+
+.fleet-compliance-artifact-path {
+  display: block;
+  max-width: 100%;
+  white-space: normal;
+  overflow-wrap: anywhere;
+  word-break: break-word;
 }
 
 .fleet-compliance-list-card a {
