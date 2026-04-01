@@ -291,6 +291,22 @@ This feature directly competes with J.J. Keller Encompass ($25-59/vehicle/month)
 
 ---
 
+## RELATED: training-command MODULE
+
+This feature spec covers the **admin/compliance tracking side** of hazmat training. A companion module -- `training-command` -- is planned as the **driver-facing training delivery system**. See `todo-04-02-2026.md` for the full sprint plan.
+
+The training-command module will:
+- Deliver self-contained training content (authored from ERG, CFR, and PHMSA source material)
+- Present training as slide decks generated from markdown via the Electron deck engine
+- Include built-in assessments with pass/fail scoring
+- Auto-update the compliance records defined in this spec when an employee passes
+- Generate certificates for audit readiness
+- Support future expansion beyond hazmat (DQF, HOS, Drug/Alcohol, etc.)
+
+When training-command is built, the `credit_pathway` field in `hazmat_training_records` will include a new value: `"fcs_training"` -- indicating the employee completed TNDS-authored training within FCS rather than through OTIS or classroom instruction.
+
+---
+
 ## REFERENCES
 
 - 49 CFR 172 Subpart H (Training Requirements)
