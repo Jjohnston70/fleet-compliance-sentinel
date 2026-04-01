@@ -81,6 +81,13 @@ export interface ModuleRunRequest {
   dryRun?: boolean;
 }
 
+export interface ModuleRunArtifact {
+  kind: 'file';
+  path: string;
+  sizeBytes: number;
+  modifiedAt: string;
+}
+
 export interface ModuleRunRecord {
   id: string;
   moduleId: string;
@@ -102,6 +109,7 @@ export interface ModuleRunRecord {
   stderrPreview: string;
   stdoutTruncated: boolean;
   stderrTruncated: boolean;
+  artifacts: ModuleRunArtifact[];
   error?: ModuleRunError;
 }
 
