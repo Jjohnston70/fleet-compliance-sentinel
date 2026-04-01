@@ -143,11 +143,11 @@ const SECTIONS: { id: string; title: string; content: string[] }[] = [
     id: 'penny',
     title: 'Pipeline Penny (AI Assistant)',
     content: [
-      'Pipeline Penny is a document-grounded AI compliance assistant trained on 13 CFR parts (040, 360, 365, 367, 382, 383, 384, 387, 391, 395, 396, 397) with over 1,100 indexed document chunks. Ask Penny questions about DOT regulations and get source-cited answers grounded in your fleet\'s actual data.',
+      'Pipeline Penny is a document-grounded assistant that now searches the live CFR corpus (including Part 172 and Part 397), ERG handbook content, and indexed demo knowledge folders (Realty Command, HubSpot, Tenstreet, JJ Keller, and other local categories discovered at build time).',
       'Penny automatically receives server-side context about your fleet: active drivers, assets, permits, and open suspense items. This means Penny can answer questions like "Which of my drivers have medical cards expiring this month?" or "What are my current high-severity compliance gaps?"',
       'Choose your preferred LLM provider from the chat interface: Anthropic Claude (default), OpenAI GPT-4o-mini, Google Gemini 2.5 Flash, or Ollama for fully local/private processing. Each provider offers multiple model options.',
       'Penny includes security hardening: 6 injection defense rules on every query, keyword-based fast-reject filtering, sanitized markdown output, and OWASP LLM Top 10 compliance. Driver data is anonymized (IDs only, no PII sent to LLM providers).',
-      'Penny only answers DOT/FMCSA/CFR compliance questions. Non-compliance queries are politely refused. A backend health indicator shows connection status (online/offline/checking). Rate limiting is set at 20 queries per 60 seconds per user.',
+      'The Penny sidebar shows the currently indexed catalog with category counts and document titles, and each response still includes sources so operators can verify answers. A backend health indicator shows connection status (online/offline/checking). Rate limiting is set at 20 queries per 60 seconds per user.',
       'Use the helper question buttons for quick starts, or type your own question. Penny cites source documents in every response so you can verify answers against the original CFR text.',
     ],
   },

@@ -1,12 +1,22 @@
 # Fleet-Compliance Sentinel — Status
 
-Last Updated: 2026-03-31 (SOC 2 controls remain stable; module integration sprint Phase 6 UI/E2E hardening complete)
+Last Updated: 2026-04-01 (Penny catalog + retrieval expanded for ERG/demo corpora visibility)
 Current Phase: Module integration sprint complete (Phase 6 complete)
 Overall Completion: SOC 2 action plan 100%; module integration sprint 6/6 phases complete
 Open Findings: 0 blockers; remaining items are accepted non-blocking hardening items
 SOC 2 Observation Window Start: 2026-03-24
 SOC 2 Type I Earliest Eligibility: 2026-06-22
 Days Until Type I Eligible: 83
+
+## 2026-04-01 Penny Knowledge Catalog Expansion
+
+| Workstream | Result |
+|-----------|--------|
+| Local catalog source | Complete - replaced hardcoded CFR fallback with dynamic catalog built from `knowledge/cfr-docs` and `knowledge/data/original_content/*` |
+| Sidebar catalog visibility | Complete - Penny sidebar now lists merged categories/documents from local + backend catalog, including ERG and new demo folders |
+| Retrieval coverage | Complete - Penny retrieval now includes demo index by default (`PENNY_INCLUDE_DEMO_KNOWLEDGE=true` default) so newly indexed corpora are queryable without keyword gating |
+| Demo index discovery | Complete - `scripts/build-demo-index.mjs` now discovers all top-level categories automatically (no hardcoded list), including `erg-hazmat` and `jj-keller` |
+| Large doc ingestion | Complete - demo build file-size cap raised to 8 MB to allow large pre-chunked corpus files like `hubspot/llms-full.txt` |
 
 ## 2026-03-31 Module Integration Sprint - Phase 6 Outcome
 

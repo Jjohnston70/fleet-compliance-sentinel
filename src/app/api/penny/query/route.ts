@@ -9,6 +9,7 @@ import { canAccessPenny, canBypassPennyRoleByEmail, resolvePennyRole } from '@/l
 import { buildPennyContext } from '@/lib/penny-ingest';
 import { buildOrgContext } from '@/lib/penny-context';
 import { checkPennyRateLimit } from '@/lib/penny-rate-limit';
+import { buildMergedPennyCatalog } from '@/lib/penny-catalog';
 import { auditLog } from '@/lib/audit-logger';
 import { setSentryRequestContext } from '@/lib/sentry-context';
 
@@ -66,9 +67,14 @@ function isKnowledgeCatalogQuery(query: string): boolean {
     q.includes('knowledge items') ||
     q.includes('knowledge base items') ||
     q.includes('what knowledge') ||
+    q.includes("what's available") ||
+    q.includes('whats available') ||
+    q.includes('what is available') ||
     q.includes('what docs') ||
     q.includes('what documents do you have') ||
-    q.includes('show knowledge')
+    q.includes('show knowledge') ||
+    q.includes('show sources') ||
+    q.includes('list sources')
   );
 }
 
@@ -324,43 +330,42 @@ export async function POST(request: NextRequest) {
     // --- END CFR RETRIEVAL ---
 
     if (isKnowledgeCatalogQuery(query)) {
-      const catalogRes = await fetch(`${PENNY_API_URL}/catalog?limit=40`, {
-        headers: PENNY_API_KEY ? { 'X-Penny-Api-Key': PENNY_API_KEY } : {},
+      const catalog = await buildMergedPennyCatalog({
+        limit: 200,
+        pennyApiUrl: PENNY_API_URL,
+        pennyApiKey: PENNY_API_KEY,
       });
-      if (catalogRes.ok) {
-        const catalog = await catalogRes.json();
-        const categories = Array.isArray(catalog?.categories) ? catalog.categories : [];
-        const documents = Array.isArray(catalog?.documents) ? catalog.documents : [];
-        const total = typeof catalog?.knowledge_docs === 'number' ? catalog.knowledge_docs : documents.length;
-        if (documents.length > 0) {
-          const responseMs = Date.now() - startedAt;
-          auditLog({
-            action: 'penny.query',
-            userId,
-            orgId: auditOrgId,
-            resourceType: 'penny.query',
-            metadata: {
-              provider: 'catalog',
-              kbHit: true,
-              fallbackUsed: false,
-              responseMs,
-              contextMode,
-              orgContextIncluded: orgContext.length > 0,
-              orgContextChars: orgContext.length,
-              orgContextPreview,
-            },
-          });
-          const categoryLine = categories.slice(0, 10).map((cat: any) => `${cat.name} (${cat.count})`).join(', ');
-          const docList = documents.slice(0, 20).map((doc: any, idx: number) => `${idx + 1}. ${doc.title}`).join('\n');
-          return NextResponse.json({
-            answer:
-              `I currently have ${total} indexed knowledge documents.` +
-              (categoryLine ? `\n\nTop categories: ${categoryLine}` : '') +
-              `\n\nSample documents:\n${docList}\n\nAsk me to summarize any listed document by name.`,
-            sources: documents.slice(0, 8).map((doc: any) => doc.title),
-            mode: 'catalog',
-          });
-        }
+      const categories = Array.isArray(catalog?.categories) ? catalog.categories : [];
+      const documents = Array.isArray(catalog?.documents) ? catalog.documents : [];
+      const total = typeof catalog?.knowledge_docs === 'number' ? catalog.knowledge_docs : documents.length;
+      if (documents.length > 0) {
+        const responseMs = Date.now() - startedAt;
+        auditLog({
+          action: 'penny.query',
+          userId,
+          orgId: auditOrgId,
+          resourceType: 'penny.query',
+          metadata: {
+            provider: 'catalog',
+            kbHit: true,
+            fallbackUsed: false,
+            responseMs,
+            contextMode,
+            orgContextIncluded: orgContext.length > 0,
+            orgContextChars: orgContext.length,
+            orgContextPreview,
+          },
+        });
+        const categoryLine = categories.slice(0, 12).map((cat) => `${cat.name} (${cat.count})`).join(', ');
+        const docList = documents.slice(0, 25).map((doc, idx) => `${idx + 1}. ${doc.title}`).join('\n');
+        return NextResponse.json({
+          answer:
+            `I currently have ${total} indexed knowledge documents available.` +
+            (categoryLine ? `\n\nCategories: ${categoryLine}` : '') +
+            `\n\nSample documents:\n${docList}\n\nAsk me to summarize any listed document by name.`,
+          sources: documents.slice(0, 10).map((doc) => doc.title),
+          mode: 'catalog',
+        });
       }
     }
 

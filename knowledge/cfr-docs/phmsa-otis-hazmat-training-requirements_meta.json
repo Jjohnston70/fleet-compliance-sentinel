@@ -1,0 +1,17 @@
+{
+  "title": "PHMSA Hazardous Materials Training Requirements (OTIS Platform)",
+  "source": "PHMSA OTIS Platform (HSI by OSM)",
+  "source_url": "https://otis.osmanager4.com",
+  "category": "05_FMCSA-DOT",
+  "subcategory": "hazmat-training",
+  "content_type": "regulatory_reference",
+  "cfr_references": ["49 CFR 172 Subpart H", "49 CFR 172.704", "49 CFR 172.800-804", "49 CFR Parts 171-180"],
+  "related_documents": ["erg-hazmat/ERG2024-full.md", "cfr-part-382-controlled-substances.md", "cfr-part-391-driver-qualifications.md"],
+  "tags": ["phmsa", "hazmat", "training", "otis", "hsi", "scorm", "nfpa-472", "erg", "compliance", "dot"],
+  "capture_date": "2026-04-01",
+  "last_updated": "2026-04-01",
+  "modules_covered": 12,
+  "supplemental_courses": 19,
+  "training_window": "2026-04-01 to 2027-02-14",
+  "recurrence_cycle_years": 3
+}

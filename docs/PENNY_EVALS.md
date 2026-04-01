@@ -28,6 +28,7 @@ That is why Penny now uses:
 - CFR section chunking instead of whole-part retrieval
 - query enrichment for common compliance phrasing
 - retrieval ranking tuned toward exact CFR parts and section citations
+- merged catalog retrieval across CFR + demo corpora (ERG, HubSpot, Realty Command, Tenstreet, JJ Keller)
 - a gold-question eval set with pass/fail checks
 
 ## Current Eval Scope
@@ -78,6 +79,7 @@ Once the current retrieval quality is stable, the next best-practice upgrades ar
 3. Add a judge-based groundedness pass for final answers.
 4. Evaluate sampled production traffic, not just hand-written tests.
 5. Add missing CFR coverage, especially Part 397 for hazmat routing questions.
+6. Add corpus-specific eval questions for ERG handbook and non-CFR demo docs (e.g., HubSpot / JJ Keller).
 
 ## What Is Not Implemented Yet
 

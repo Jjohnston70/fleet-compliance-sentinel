@@ -62,6 +62,7 @@ true-north-github-setup/
 
 # TNDS Knowledge Runtime (generated at build/runtime, not committed)
 knowledge/cfr-index/
+knowledge/demo-index/
 knowledge/org-data/
 knowledge/timeline/
 

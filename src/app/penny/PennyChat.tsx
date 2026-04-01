@@ -58,7 +58,9 @@ function defaultModelFor(provider: LlmProvider): string {
 }
 
 const HELPER_QUESTIONS = [
-  'List the CFR parts you can answer from right now.',
+  "What's available in your knowledge base right now?",
+  'Summarize the ERG 2024 handbook for initial hazmat response.',
+  'What documents should a hazmat driver carry in the truck?',
   'What is the 150 air-mile radius exemption under DOT rules?',
   'Summarize driver qualification requirements in Part 391.',
   'What does Part 395 say about hours of service recordkeeping?',
@@ -75,7 +77,7 @@ export default function PennyChat({ userName, userRole }: PennyChatProps) {
     {
       id: 'welcome',
       role: 'penny',
-      content: `Hey ${userName}! I'm Pipeline Penny. Ask me about the current CFR and DOT compliance corpus and I'll answer from the indexed documents when it's available.`,
+      content: `Hey ${userName}! I'm Pipeline Penny. Ask me about CFR, ERG, and your indexed demo/company docs and I'll answer from the current knowledge catalog.`,
       timestamp: new Date(),
     },
   ]);
@@ -142,8 +144,12 @@ export default function PennyChat({ userName, userRole }: PennyChatProps) {
       if (!res.ok) return;
       const data = await res.json();
       const docs: CatalogDocument[] = Array.isArray(data?.documents) ? data.documents : [];
-      // Sort descending so higher CFR parts (396, 397) appear first, Part 40 at bottom
-      docs.sort((a, b) => b.title.localeCompare(a.title));
+      docs.sort((a, b) => {
+        const catA = (a.category || 'General').toLowerCase();
+        const catB = (b.category || 'General').toLowerCase();
+        if (catA !== catB) return catA.localeCompare(catB);
+        return a.title.toLowerCase().localeCompare(b.title.toLowerCase());
+      });
       setKnowledgeDocs(docs);
       setKnowledgeCategories(Array.isArray(data?.categories) ? data.categories : []);
       setKnowledgeDocCount(typeof data?.knowledge_docs === 'number' ? data.knowledge_docs : 0);
@@ -246,7 +252,7 @@ export default function PennyChat({ userName, userRole }: PennyChatProps) {
               <span>Penny AI</span>
             </div>
             <h1>Pipeline Penny</h1>
-            <p>Ask questions about the current CFR and DOT compliance knowledge base</p>
+            <p>Ask questions across CFR, ERG, and all indexed knowledge sources in your catalog.</p>
             <div className="penny-status">
               <span
                 className={`penny-status-dot ${

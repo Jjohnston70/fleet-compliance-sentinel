@@ -27,6 +27,9 @@ const CFR_DOCS_DIR = path.join(process.cwd(), 'knowledge', 'cfr-docs')
 const CFR_INDEX_FILE = path.join(process.cwd(), 'knowledge', 'cfr-index', 'chunks.json')
 const DEMO_INDEX_FILE = path.join(process.cwd(), 'knowledge', 'demo-index', 'chunks.json')
 const DEMO_DOMAIN = 'demo-docs'
+const INCLUDE_DEMO_KNOWLEDGE_ALWAYS = ['1', 'true', 'yes', 'on'].includes(
+  (process.env.PENNY_INCLUDE_DEMO_KNOWLEDGE || 'true').trim().toLowerCase(),
+)
 
 // Per-org document chunks — built when orgs upload compliance docs
 const ORG_DATA_ROOT = path.join(process.cwd(), 'knowledge', 'org-data')
@@ -136,7 +139,7 @@ export async function buildPennyContext(params: {
   topK?: number
 }): Promise<{ groundedPrompt: string; sources: string[] }> {
   const topK = params.topK ?? 5
-  const includeDemoKnowledge = shouldSearchDemoKnowledge(params.query)
+  const includeDemoKnowledge = INCLUDE_DEMO_KNOWLEDGE_ALWAYS || shouldSearchDemoKnowledge(params.query)
 
   // Search CFR knowledge base
   const cfrIndex = new JsonChunkIndex(CFR_INDEX_FILE)

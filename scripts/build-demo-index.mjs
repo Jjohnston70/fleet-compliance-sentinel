@@ -25,8 +25,7 @@ const { JsonChunkIndex } = await import(retrievalUrl)
 const DEMO_ROOT = path.join(ROOT, 'knowledge', 'data', 'original_content')
 const DEMO_INDEX_FILE = path.join(ROOT, 'knowledge', 'demo-index', 'chunks.json')
 const DEMO_DOMAIN = 'demo-docs'
-const DEMO_CATEGORIES = ['01_realty-command', 'hubspot', 'tenstreet']
-const MAX_FILE_BYTES = 2_000_000
+const MAX_FILE_BYTES = 8_000_000
 
 function walkDocs(rootDir) {
   const out = []
@@ -68,7 +67,14 @@ if (!existsSync(DEMO_ROOT)) {
 
 const files = []
 const skippedFiles = []
-for (const category of DEMO_CATEGORIES) {
+const categoryDirs = existsSync(DEMO_ROOT)
+  ? readdirSync(DEMO_ROOT, { withFileTypes: true })
+      .filter((entry) => entry.isDirectory() && !entry.name.startsWith('.'))
+      .map((entry) => entry.name)
+      .sort()
+  : []
+
+for (const category of categoryDirs) {
   const categoryPath = path.join(DEMO_ROOT, category)
   if (!existsSync(categoryPath)) {
     console.warn(`[build-demo-index] Missing category: ${categoryPath}`)
@@ -94,6 +100,8 @@ if (files.length === 0) {
   console.warn('[build-demo-index] No demo files found. Index cleared.')
   process.exit(0)
 }
+
+console.log(`[build-demo-index] Categories discovered: ${categoryDirs.join(', ')}`)
 
 let chunksWritten = 0
 
