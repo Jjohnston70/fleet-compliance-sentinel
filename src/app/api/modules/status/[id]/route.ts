@@ -28,6 +28,15 @@ export async function GET(request: Request, context: { params: Promise<{ id: str
   if (shouldUseRemoteModuleGateway()) {
     try {
       const { res, body } = await fetchRemoteModuleRun(runId);
+      if (res.status !== 404) {
+        return Response.json(body, { status: res.status });
+      }
+
+      const localRun = getModuleRun(runId);
+      if (localRun) {
+        return Response.json({ ok: true, run: localRun }, { status: 200 });
+      }
+
       return Response.json(body, { status: res.status });
     } catch (error: unknown) {
       return Response.json(

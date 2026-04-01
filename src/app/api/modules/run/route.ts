@@ -75,7 +75,9 @@ export async function POST(request: Request) {
     return Response.json({ ok: false, error }, { status: 400 });
   }
   
-  if (shouldUseRemoteModuleGateway()) {
+  const shouldExecuteLocally = parsed.data.moduleId === 'command-center';
+
+  if (shouldUseRemoteModuleGateway() && !shouldExecuteLocally) {
     try {
       const { res, body } = await startRemoteModuleRun(parsed.data);
       return Response.json(body, { status: res.status });
