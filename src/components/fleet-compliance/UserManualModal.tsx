@@ -12,7 +12,7 @@ const SECTIONS: { id: string; title: string; content: string[] }[] = [
     content: [
       'Fleet-Compliance Sentinel is your single-pane-of-glass for DOT/FMCSA fleet compliance. It tracks drivers, vehicles, permits, inspections, maintenance, invoices, and regulatory deadlines so nothing falls through the cracks.',
       'After signing in through the secure Clerk portal, new organizations are guided through a one-time onboarding wizard that sets your company name, primary contact, and initial fleet data. Once onboarding completes you land on the Dashboard.',
-      'The sidebar on the left is your primary navigation. It lists every module: Dashboard, Assets, Compliance, Suspense, Alerts, Invoices, Spend Dashboard, FMCSA Lookup, Telematics, Module Tools, Employees, Import Data, Penny AI, and Settings. On mobile, tap "Menu" to expand the sidebar.',
+      'The sidebar on the left is your primary navigation. It lists every module: Dashboard, Assets, Compliance, Suspense, Alerts, Invoices, Spend Dashboard, FMCSA Lookup, Telematics, Module Tools, Command Center Catalog, Employees, Import Data, Penny AI, and Settings. On mobile, tap "Menu" to expand the sidebar.',
     ],
   },
   {
@@ -126,6 +126,7 @@ const SECTIONS: { id: string; title: string; content: string[] }[] = [
       'Available modules: ML-EIA Petroleum Intel (energy market analysis and price forecasting), ML-Signal Stack (multi-source business signal processing), PaperStack (document generation, conversion, and inspection), and Command Center (tool discovery and routing hub).',
       'To run a module action: select the module from the catalog dropdown, choose an action, configure arguments using the JSON editor, set a timeout, choose dry-run or live mode, and click Execute. Each run gets a unique correlation ID for tracking.',
       'The run history panel shows all recent executions with status (queued, running, success, fail), output preview (stdout/stderr), error detail, result payload, and generated artifacts.',
+      'For non-technical users, use the Command Center Catalog page to browse discovered tools in a simple table without JSON payload handling.',
       'All module actions are restricted to a fixed allowlist — no arbitrary shell execution is possible. Admin role authentication is required for all Module Tools operations.',
     ],
   },

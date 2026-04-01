@@ -36,6 +36,17 @@ export interface CommandCenterDiscoveredTool {
   parameters: Record<string, unknown>;
 }
 
+export interface CommandCenterCatalogRow {
+  qualifiedName: string;
+  moduleId: string;
+  toolName: string;
+  description: string | null;
+  parameters: Record<string, unknown>;
+  discoveredRunId: string | null;
+  discoveredAt: string;
+  updatedAt: string;
+}
+
 let ensured = false;
 
 async function ensureModuleGatewayPersistenceTables(): Promise<void> {
@@ -250,6 +261,36 @@ export async function upsertCommandCenterCatalog(input: {
         updated_at = NOW()
     `;
   }
+}
+
+export async function listCommandCenterCatalog(orgId: string): Promise<CommandCenterCatalogRow[]> {
+  await ensureModuleGatewayPersistenceTables();
+  const sql = getSQL();
+  const rows = await sql`
+    SELECT
+      qualified_name,
+      module_id,
+      tool_name,
+      description,
+      parameters,
+      discovered_run_id,
+      discovered_at,
+      updated_at
+    FROM module_gateway_command_center_tools
+    WHERE org_id = ${orgId}
+    ORDER BY discovered_at DESC, qualified_name ASC
+  `;
+
+  return rows.map((row) => ({
+    qualifiedName: String(row.qualified_name),
+    moduleId: String(row.module_id),
+    toolName: String(row.tool_name),
+    description: typeof row.description === 'string' ? row.description : null,
+    parameters: asObject(row.parameters) || {},
+    discoveredRunId: typeof row.discovered_run_id === 'string' ? row.discovered_run_id : null,
+    discoveredAt: String(row.discovered_at),
+    updatedAt: String(row.updated_at),
+  }));
 }
 
 function normalizeCommandCenterTools(run: ModuleRunRecord): CommandCenterDiscoveredTool[] {

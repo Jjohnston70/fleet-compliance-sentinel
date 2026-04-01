@@ -33,6 +33,12 @@ const modules = [
     status: 'Live — admin',
   },
   {
+    href: '/fleet-compliance/command-center',
+    title: 'Command Center Catalog',
+    description: 'Simple catalog of discovered command-center tools for non-technical operators.',
+    status: 'Live — admin',
+  },
+  {
     href: '/fleet-compliance/assets',
     title: 'Assets',
     description: 'Fleet units, equipment, fuel cubes, skid tanks, and storage assets.',

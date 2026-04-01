@@ -16,6 +16,7 @@ const NAV_ITEMS = [
   { label: 'FMCSA Lookup', href: '/fleet-compliance/fmcsa' },
   { label: 'Telematics', href: '/fleet-compliance/telematics' },
   { label: 'Module Tools', href: '/fleet-compliance/tools' },
+  { label: 'Command Center', href: '/fleet-compliance/command-center' },
   { label: 'Employees', href: '/fleet-compliance/employees' },
   { label: 'Import Data', href: '/fleet-compliance/import' },
   { label: 'Penny AI', href: '/penny' },
