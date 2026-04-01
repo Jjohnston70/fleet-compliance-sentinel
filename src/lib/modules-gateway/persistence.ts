@@ -6,6 +6,7 @@ import type {
   ModuleGatewayAclPermission,
   ModuleGatewayAclRule,
   ModuleGatewayAclScopeType,
+  ModuleGatewaySandboxEventType,
   ModuleRunRecord,
 } from '@/lib/modules-gateway/types';
 
@@ -71,6 +72,17 @@ export interface ModuleGatewayAclRuleInput {
   canExecute?: boolean;
 }
 
+export interface ModuleGatewaySandboxEventInput {
+  orgId: string;
+  userId?: string | null;
+  moduleId: string;
+  actionId: string;
+  eventType: ModuleGatewaySandboxEventType;
+  errorCode: string;
+  message: string;
+  metadata?: Record<string, unknown> | null;
+}
+
 async function ensureModuleGatewayPersistenceTables(): Promise<void> {
   if (ensured) return;
   const sql = getSQL();
@@ -132,6 +144,30 @@ async function ensureModuleGatewayPersistenceTables(): Promise<void> {
   await sql`
     CREATE INDEX IF NOT EXISTS idx_module_gateway_acl_rules_org_user
     ON module_gateway_acl_rules (org_id, user_id, scope_type, scope_key)
+  `;
+
+  await sql`
+    CREATE TABLE IF NOT EXISTS module_gateway_sandbox_events (
+      id BIGSERIAL PRIMARY KEY,
+      org_id TEXT NOT NULL,
+      user_id TEXT,
+      module_id TEXT NOT NULL,
+      action_id TEXT NOT NULL,
+      event_type TEXT NOT NULL,
+      error_code TEXT NOT NULL,
+      message TEXT NOT NULL,
+      metadata JSONB NOT NULL DEFAULT '{}'::jsonb,
+      created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+      CHECK (event_type IN ('rate_limit', 'concurrency_limit', 'sanitization', 'timeout'))
+    )
+  `;
+  await sql`
+    CREATE INDEX IF NOT EXISTS idx_module_gateway_sandbox_events_org_created
+    ON module_gateway_sandbox_events (org_id, created_at DESC)
+  `;
+  await sql`
+    CREATE INDEX IF NOT EXISTS idx_module_gateway_sandbox_events_scope
+    ON module_gateway_sandbox_events (org_id, module_id, action_id, created_at DESC)
   `;
 
   ensured = true;
@@ -788,4 +824,40 @@ export async function maybePersistModuleRunInsights(input: {
       forecastDocs.filter((doc): doc is Record<string, unknown> => Boolean(doc)),
     ),
   });
+}
+
+export async function recordModuleGatewaySandboxEvent(input: ModuleGatewaySandboxEventInput): Promise<void> {
+  try {
+    await ensureModuleGatewayPersistenceTables();
+    const sql = getSQL();
+    await sql`
+      INSERT INTO module_gateway_sandbox_events (
+        org_id,
+        user_id,
+        module_id,
+        action_id,
+        event_type,
+        error_code,
+        message,
+        metadata
+      ) VALUES (
+        ${input.orgId},
+        ${input.userId || null},
+        ${input.moduleId},
+        ${input.actionId},
+        ${input.eventType},
+        ${input.errorCode},
+        ${input.message},
+        ${JSON.stringify(input.metadata || {})}::jsonb
+      )
+    `;
+  } catch (error) {
+    console.error('[module-gateway] failed to persist sandbox event', {
+      orgId: input.orgId,
+      moduleId: input.moduleId,
+      actionId: input.actionId,
+      eventType: input.eventType,
+      message: error instanceof Error ? error.message : String(error),
+    });
+  }
 }

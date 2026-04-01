@@ -1,12 +1,24 @@
 # Fleet-Compliance Sentinel — Status
 
-Last Updated: 2026-04-01 (Workstream A tasks A0-A3 complete)
+Last Updated: 2026-04-01 (Workstream A tasks A0-A4 complete)
 Current Phase: April 2-25 sprint active (Workstream A + B)
-Overall Completion: SOC 2 action plan 100%; module integration sprint 6/6 phases complete; hardening sprint A0-A3 complete
+Overall Completion: SOC 2 action plan 100%; module integration sprint 6/6 phases complete; hardening sprint A0-A4 complete
 Open Findings: 0 blockers; remaining items are accepted non-blocking hardening items
 SOC 2 Observation Window Start: 2026-03-24
 SOC 2 Type I Earliest Eligibility: 2026-06-22
 Days Until Type I Eligible: 83
+
+## 2026-04-01 Workstream A - Task A4 Layer 3 Sandbox Outcome
+
+| Workstream | Result |
+|-----------|--------|
+| Per-org/per-action rate limit | Complete - gateway now enforces configurable throttle windows with deterministic `RATE_LIMITED` errors |
+| In-flight concurrency guardrails | Complete - org-level and action-level concurrent run caps enforced before run queueing |
+| Unified path sanitization | Complete - file/path-like args are sanitized at runner boundary and traversal/out-of-root attempts fail with `SANITIZATION_ERROR` |
+| Timeout hardening | Complete - timeout failures now emit sandbox events alongside existing run-failure alerts |
+| Durable sandbox telemetry | Complete - new `module_gateway_sandbox_events` persistence table captures throttle/sanitization/timeout events with org/user scope |
+| Runbook updates | Updated - `docs/integration/OPERATIONS_RUNBOOK.md` now includes throttling defaults and triage guidance |
+| Verification | `npm --prefix tooling/command-center run build` pass; `npm --prefix tooling/command-center run test` pass; `npx tsc --noEmit` pass; `npm run lint` pass (pre-existing a11y warnings only) |
 
 ## 2026-04-01 Workstream A - Task A3 Layer 2 Validation Outcome
 

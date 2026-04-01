@@ -5,6 +5,7 @@ import {
 import { shouldUseRemoteModuleGateway, startRemoteModuleRun } from '@/lib/modules-gateway/remote';
 import {
   buildValidationError,
+  enforceModuleRunRateLimit,
   resolveModuleRunArtifact,
   startModuleRun,
   startModuleRunAndWait,
@@ -210,6 +211,16 @@ export async function POST(request: Request) {
   const shouldExecuteLocally = parsed.data.moduleId === 'command-center';
 
   if (shouldUseRemoteModuleGateway() && !shouldExecuteLocally) {
+    const rateLimitDecision = enforceModuleRunRateLimit({
+      orgId,
+      userId,
+      moduleId: parsed.data.moduleId,
+      actionId: parsed.data.actionId,
+    });
+    if (!rateLimitDecision.ok) {
+      return Response.json({ ok: false, error: rateLimitDecision.error }, { status: rateLimitDecision.httpStatus });
+    }
+
     try {
       const { res, body } = await startRemoteModuleRun(parsed.data);
       return Response.json(body, { status: res.status });

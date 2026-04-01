@@ -1,4 +1,4 @@
-# Module Gateway Operations Runbook (Phase 6)
+# Module Gateway Operations Runbook (Phase 8)
 
 Date: 2026-03-31  
 Audience: Fleet-Compliance operators and on-call maintainers
@@ -36,7 +36,9 @@ Operate integrated module runs from Fleet-Compliance with consistent execution c
 1. Allowlist-only action execution (`moduleId + actionId`).
 2. Timeout clamp enforced by gateway max (`900000 ms`).
 3. Output capture limits and preview truncation applied for API safety.
-4. PaperStack path safety guardrails block traversal/out-of-root paths.
+4. Command-arg sanitization enforces per-module root constraints for file/path-like args.
+5. Per-org/per-action throttling enforces request window limits with deterministic `RATE_LIMITED` failures.
+6. Concurrent run guardrails enforce both org-level and action-level in-flight limits.
 
 ## Failure Logging and Alerts
 
@@ -46,6 +48,10 @@ Operate integrated module runs from Fleet-Compliance with consistent execution c
    - Set `MODULE_GATEWAY_FAILURE_WEBHOOK_URL`
    - Gateway POSTs JSON payload for each failed run.
 3. Webhook timeout is 5s; webhook failure does not change run status.
+4. Sandbox control failures are persisted in `module_gateway_sandbox_events` with:
+   - `event_type` (`rate_limit`, `concurrency_limit`, `sanitization`, `timeout`)
+   - `org_id`, `user_id`, `module_id`, `action_id`
+   - `error_code`, `message`, and JSON metadata
 
 ## Failure Triage Sequence
 
@@ -58,11 +64,21 @@ Operate integrated module runs from Fleet-Compliance with consistent execution c
    - Missing module dependencies
    - Missing env vars/secrets
    - Invalid enum/path args
+   - Rate limits or in-flight concurrency limits reached
    - Timeout threshold too low
 4. Re-run with:
    - Corrected args
+   - Backoff based on throttle retry window
    - Increased `timeoutMs` (if safe)
    - `dryRun` for validation before live retry
+
+## Throttling and Concurrency Defaults
+
+1. `MODULE_GATEWAY_RATE_LIMIT_PER_WINDOW` default: `20`
+2. `MODULE_GATEWAY_RATE_LIMIT_WINDOW_SECONDS` default: `60`
+3. `MODULE_GATEWAY_MAX_CONCURRENT_PER_ACTION` default: `2`
+4. `MODULE_GATEWAY_MAX_CONCURRENT_PER_ORG` default: `6`
+5. `MODULE_GATEWAY_MAX_ARG_STRING_LENGTH` default: `4096`
 
 ## Command-center Bridge Notes
 

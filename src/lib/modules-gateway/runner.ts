@@ -3,6 +3,7 @@ import { spawn } from 'node:child_process';
 import { existsSync, mkdirSync, readFileSync, statSync, writeFileSync, type Stats } from 'node:fs';
 import path from 'node:path';
 import {
+  getActionSandboxPolicy,
   getCatalog,
   getModuleAction,
   getModuleDefinition,
@@ -11,8 +12,11 @@ import {
   validateActionArgs,
   validateActionOutput,
 } from '@/lib/modules-gateway/registry';
+import { recordModuleGatewaySandboxEvent } from '@/lib/modules-gateway/persistence';
 import type {
+  ModuleActionDefinition,
   ModuleCatalogEntry,
+  ModuleDefinition,
   ModuleRunArtifact,
   ModuleRunError,
   ModuleRunRecord,
@@ -23,6 +27,21 @@ import type {
 
 const runs = new Map<string, ModuleRunRecord>();
 const FAILURE_ALERT_WEBHOOK_URL = process.env.MODULE_GATEWAY_FAILURE_WEBHOOK_URL;
+const PATH_ARG_KEY_PATTERN = /(path|file|dir|output|input|out)$/i;
+
+type ModuleRateLimitBucket = {
+  windowStart: number;
+  count: number;
+};
+
+const moduleRateLimitBuckets = new Map<string, ModuleRateLimitBucket>();
+
+interface ModuleRateLimitDecision {
+  allowed: boolean;
+  retryAfterSeconds: number;
+  remaining: number;
+  limit: number;
+}
 
 function nowIso(): string {
   return new Date().toISOString();
@@ -34,6 +53,171 @@ function clampTimeout(requestedTimeoutMs: number | undefined, actionDefaultMs: n
   const timeoutMs = Number.isFinite(base) ? Number(base) : fallback;
   if (timeoutMs <= 0) return fallback;
   return Math.min(timeoutMs, moduleGatewayLimits.maxTimeoutMs);
+}
+
+function isWithinRoot(rootPath: string, targetPath: string): boolean {
+  const relative = path.relative(rootPath, targetPath);
+  return relative === '' || (!relative.startsWith('..') && !path.isAbsolute(relative));
+}
+
+function isPathLikeArg(action: ModuleActionDefinition, key: string): boolean {
+  if (PATH_ARG_KEY_PATTERN.test(key)) return true;
+  const description = action.argsSchema?.properties?.[key]?.description;
+  if (typeof description !== 'string') return false;
+  const normalized = description.toLowerCase();
+  return normalized.includes(' path') || normalized.includes(' directory') || normalized.includes(' file');
+}
+
+function sanitizeActionArgs(
+  moduleDef: ModuleDefinition,
+  action: ModuleActionDefinition,
+  args: Record<string, unknown>,
+): ModuleValidationIssue[] {
+  if (!action.buildCommand) return [];
+  const sandboxPolicy = getActionSandboxPolicy(action);
+  if (!sandboxPolicy.enforcePathSanitization) return [];
+
+  const issues: ModuleValidationIssue[] = [];
+  for (const [key, value] of Object.entries(args)) {
+    if (typeof value !== 'string') continue;
+    if (value.length > moduleGatewayLimits.maxArgStringLength) {
+      issues.push({
+        path: `args.${key}`,
+        code: 'coercion',
+        message: `args.${key} exceeds max length of ${moduleGatewayLimits.maxArgStringLength} characters`,
+        expected: `<= ${moduleGatewayLimits.maxArgStringLength} chars`,
+        received: value.length,
+      });
+      continue;
+    }
+    if (value.includes('\0')) {
+      issues.push({
+        path: `args.${key}`,
+        code: 'coercion',
+        message: `args.${key} contains invalid null byte`,
+      });
+      continue;
+    }
+
+    if (!isPathLikeArg(action, key)) continue;
+
+    const trimmed = value.trim();
+    if (!trimmed) continue;
+    if (/[\r\n]/.test(trimmed)) {
+      issues.push({
+        path: `args.${key}`,
+        code: 'coercion',
+        message: `args.${key} contains invalid newline characters`,
+      });
+      continue;
+    }
+
+    const normalizedInput = trimmed.replace(/\\/g, '/');
+    if (normalizedInput.split('/').some((segment) => segment === '..')) {
+      issues.push({
+        path: `args.${key}`,
+        code: 'coercion',
+        message: `args.${key} contains path traversal segments`,
+      });
+      continue;
+    }
+
+    const absolutePath = path.isAbsolute(trimmed)
+      ? path.resolve(trimmed)
+      : path.resolve(moduleDef.workingDirectory, trimmed);
+    if (!isWithinRoot(moduleDef.workingDirectory, absolutePath)) {
+      issues.push({
+        path: `args.${key}`,
+        code: 'coercion',
+        message: `args.${key} must resolve within module working directory`,
+      });
+    }
+  }
+
+  return issues;
+}
+
+function countInFlightRuns(orgId: string, moduleId: string, actionId: string): { orgCount: number; actionCount: number } {
+  let orgCount = 0;
+  let actionCount = 0;
+  for (const run of runs.values()) {
+    if (run.orgId !== orgId) continue;
+    if (run.status !== 'queued' && run.status !== 'running') continue;
+    orgCount += 1;
+    if (run.moduleId === moduleId && run.actionId === actionId) {
+      actionCount += 1;
+    }
+  }
+  return { orgCount, actionCount };
+}
+
+function cleanExpiredRateLimitBuckets(now: number): void {
+  const maxRetentionMs = moduleGatewayLimits.rateLimitWindowSeconds * 4 * 1_000;
+  for (const [key, bucket] of moduleRateLimitBuckets.entries()) {
+    if (now - bucket.windowStart >= maxRetentionMs) {
+      moduleRateLimitBuckets.delete(key);
+    }
+  }
+}
+
+function checkAndConsumeRateLimit(
+  orgId: string,
+  moduleId: string,
+  actionId: string,
+  action: ModuleActionDefinition,
+): ModuleRateLimitDecision {
+  const policy = getActionSandboxPolicy(action);
+  const limit = policy.rateLimitPerWindow;
+  const windowMs = policy.rateLimitWindowSeconds * 1_000;
+  const now = Date.now();
+  cleanExpiredRateLimitBuckets(now);
+
+  const key = `${orgId}:${moduleId}:${actionId}`;
+  const current = moduleRateLimitBuckets.get(key);
+  const isExpired = !current || now - current.windowStart >= windowMs;
+  const bucket = isExpired ? { windowStart: now, count: 0 } : { ...current };
+
+  if (bucket.count >= limit) {
+    const retryAfterSeconds = Math.max(1, Math.ceil((windowMs - (now - bucket.windowStart)) / 1_000));
+    moduleRateLimitBuckets.set(key, bucket);
+    return {
+      allowed: false,
+      retryAfterSeconds,
+      remaining: 0,
+      limit,
+    };
+  }
+
+  bucket.count += 1;
+  moduleRateLimitBuckets.set(key, bucket);
+  return {
+    allowed: true,
+    retryAfterSeconds: 0,
+    remaining: Math.max(limit - bucket.count, 0),
+    limit,
+  };
+}
+
+function persistSandboxEvent(input: {
+  orgId: string;
+  userId: string;
+  moduleId: string;
+  actionId: string;
+  eventType: 'rate_limit' | 'concurrency_limit' | 'sanitization' | 'timeout';
+  errorCode: string;
+  message: string;
+  metadata?: Record<string, unknown>;
+}): void {
+  void recordModuleGatewaySandboxEvent({
+    orgId: input.orgId,
+    userId: input.userId,
+    moduleId: input.moduleId,
+    actionId: input.actionId,
+    eventType: input.eventType,
+    errorCode: input.errorCode,
+    message: input.message,
+    metadata: input.metadata || null,
+  });
 }
 
 function appendWithLimit(current: string, chunk: string, maxChars: number): { next: string; truncated: boolean } {
@@ -687,6 +871,19 @@ async function executeRun(runId: string): Promise<void> {
     const artifacts = collectRunArtifacts(run, stdout);
 
     if (timedOut) {
+      persistSandboxEvent({
+        orgId: run.orgId,
+        userId: run.requestedBy,
+        moduleId: run.moduleId,
+        actionId: run.actionId,
+        eventType: 'timeout',
+        errorCode: 'EXEC_TIMEOUT',
+        message: `Process exceeded timeout of ${run.timeoutMs}ms`,
+        metadata: {
+          timeoutMs: run.timeoutMs,
+          runId: run.id,
+        },
+      });
       updateFailedRun(runId, (current) => ({
         ...current,
         status: 'fail',
@@ -790,6 +987,51 @@ async function waitForRunCompletion(runId: string, timeoutMs: number): Promise<M
   return runs.get(runId) || null;
 }
 
+export function enforceModuleRunRateLimit(input: {
+  orgId: string;
+  userId: string;
+  moduleId: string;
+  actionId: string;
+}): { ok: true } | { ok: false; httpStatus: number; error: ModuleRunError } {
+  const action = getModuleAction(input.moduleId, input.actionId);
+  if (!action) {
+    return { ok: true };
+  }
+
+  const rateLimit = checkAndConsumeRateLimit(input.orgId, input.moduleId, input.actionId, action);
+  if (rateLimit.allowed) {
+    return { ok: true };
+  }
+
+  const message = `Rate limit exceeded for '${input.moduleId}:${input.actionId}'`;
+  persistSandboxEvent({
+    orgId: input.orgId,
+    userId: input.userId,
+    moduleId: input.moduleId,
+    actionId: input.actionId,
+    eventType: 'rate_limit',
+    errorCode: 'RATE_LIMITED',
+    message,
+    metadata: {
+      retryAfterSeconds: rateLimit.retryAfterSeconds,
+      limit: rateLimit.limit,
+    },
+  });
+
+  return {
+    ok: false,
+    httpStatus: 429,
+    error: {
+      code: 'RATE_LIMITED',
+      message,
+      details: [
+        `retryAfterSeconds=${rateLimit.retryAfterSeconds}`,
+        `limit=${rateLimit.limit}`,
+      ],
+    },
+  };
+}
+
 export function startModuleRun(
   input: ModuleRunRequest,
   requestedBy: string,
@@ -845,6 +1087,122 @@ export function startModuleRun(
     };
   }
 
+  const sanitizationIssues = sanitizeActionArgs(moduleDef, action, validation.normalizedArgs);
+  if (sanitizationIssues.length > 0) {
+    const details = sanitizationIssues.map((issue) => issue.message);
+    persistSandboxEvent({
+      orgId,
+      userId: requestedBy,
+      moduleId: input.moduleId,
+      actionId: input.actionId,
+      eventType: 'sanitization',
+      errorCode: 'SANITIZATION_ERROR',
+      message: details.join('; '),
+      metadata: {
+        issues: sanitizationIssues,
+      },
+    });
+    return {
+      ok: false,
+      httpStatus: 400,
+      error: {
+        code: 'SANITIZATION_ERROR',
+        message: 'Action args failed sanitization checks',
+        details,
+        fieldErrors: sanitizationIssues,
+      },
+    };
+  }
+
+  const dryRun = Boolean(input.dryRun);
+  if (!dryRun) {
+    const rateLimit = checkAndConsumeRateLimit(orgId, input.moduleId, input.actionId, action);
+    if (!rateLimit.allowed) {
+      const message = `Rate limit exceeded for '${input.moduleId}:${input.actionId}'`;
+      persistSandboxEvent({
+        orgId,
+        userId: requestedBy,
+        moduleId: input.moduleId,
+        actionId: input.actionId,
+        eventType: 'rate_limit',
+        errorCode: 'RATE_LIMITED',
+        message,
+        metadata: {
+          retryAfterSeconds: rateLimit.retryAfterSeconds,
+          limit: rateLimit.limit,
+        },
+      });
+      return {
+        ok: false,
+        httpStatus: 429,
+        error: {
+          code: 'RATE_LIMITED',
+          message,
+          details: [
+            `retryAfterSeconds=${rateLimit.retryAfterSeconds}`,
+            `limit=${rateLimit.limit}`,
+          ],
+        },
+      };
+    }
+
+    const inFlight = countInFlightRuns(orgId, input.moduleId, input.actionId);
+    if (inFlight.orgCount >= moduleGatewayLimits.maxConcurrentRunsPerOrg) {
+      const message = `Concurrent run limit reached for org '${orgId}'`;
+      persistSandboxEvent({
+        orgId,
+        userId: requestedBy,
+        moduleId: input.moduleId,
+        actionId: input.actionId,
+        eventType: 'concurrency_limit',
+        errorCode: 'RATE_LIMITED',
+        message,
+        metadata: {
+          currentInFlight: inFlight.orgCount,
+          maxConcurrentRunsPerOrg: moduleGatewayLimits.maxConcurrentRunsPerOrg,
+        },
+      });
+      return {
+        ok: false,
+        httpStatus: 429,
+        error: {
+          code: 'RATE_LIMITED',
+          message,
+          details: [
+            `maxConcurrentRunsPerOrg=${moduleGatewayLimits.maxConcurrentRunsPerOrg}`,
+          ],
+        },
+      };
+    }
+
+    const actionSandboxPolicy = getActionSandboxPolicy(action);
+    if (inFlight.actionCount >= actionSandboxPolicy.maxConcurrentRuns) {
+      const message = `Concurrent run limit reached for action '${input.moduleId}:${input.actionId}'`;
+      persistSandboxEvent({
+        orgId,
+        userId: requestedBy,
+        moduleId: input.moduleId,
+        actionId: input.actionId,
+        eventType: 'concurrency_limit',
+        errorCode: 'RATE_LIMITED',
+        message,
+        metadata: {
+          currentInFlight: inFlight.actionCount,
+          maxConcurrentRuns: actionSandboxPolicy.maxConcurrentRuns,
+        },
+      });
+      return {
+        ok: false,
+        httpStatus: 429,
+        error: {
+          code: 'RATE_LIMITED',
+          message,
+          details: [`maxConcurrentRuns=${actionSandboxPolicy.maxConcurrentRuns}`],
+        },
+      };
+    }
+  }
+
   let command: string[];
   if (action.buildCommand) {
     try {
@@ -876,7 +1234,6 @@ export function startModuleRun(
   const timeoutMs = clampTimeout(input.timeoutMs, action.defaultTimeoutMs);
   const createdAt = nowIso();
   const runId = `run_${randomUUID()}`;
-  const dryRun = Boolean(input.dryRun);
   const coercionSummary = validation.coercions.length > 0
     ? `\nCoercions: ${validation.coercions.map((entry) => entry.path).join(', ')}`
     : '';

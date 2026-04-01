@@ -99,6 +99,19 @@ export interface ModuleRunError {
   fieldErrors?: ModuleValidationIssue[];
 }
 
+export type ModuleGatewaySandboxEventType =
+  | 'rate_limit'
+  | 'concurrency_limit'
+  | 'sanitization'
+  | 'timeout';
+
+export interface ModuleActionSandboxPolicy {
+  rateLimitPerWindow?: number;
+  rateLimitWindowSeconds?: number;
+  maxConcurrentRuns?: number;
+  enforcePathSanitization?: boolean;
+}
+
 export interface ModuleActionArgSpec {
   type: 'string' | 'number' | 'boolean' | 'object';
   description?: string;
@@ -147,6 +160,7 @@ export interface ModuleActionDefinition {
   description: string;
   argsSchema?: ModuleActionArgsSchema;
   outputSchema?: ModuleActionArgsSchema;
+  sandbox?: ModuleActionSandboxPolicy;
   defaultTimeoutMs?: number;
   commandPreview: string[];
   buildCommand?: (args: ModuleRunArgs) => ResolvedModuleCommand;

@@ -5,6 +5,7 @@ import type {
   ModuleActionExecutionResult,
   ModuleActionDefinition,
   ModuleActionArgsSchema,
+  ModuleActionSandboxPolicy,
   ModuleCatalogEntry,
   ModuleDefinition,
   ModuleRunArgs,
@@ -41,6 +42,23 @@ const COMMAND_CENTER_CLASSIFICATIONS = [
   'Infrastructure',
   'Logistics',
 ];
+const DEFAULT_RATE_LIMIT_PER_WINDOW = 20;
+const DEFAULT_RATE_LIMIT_WINDOW_SECONDS = 60;
+const DEFAULT_MAX_CONCURRENT_RUNS_PER_ACTION = 2;
+const DEFAULT_MAX_CONCURRENT_RUNS_PER_ORG = 6;
+const DEFAULT_MAX_ARG_STRING_LENGTH = 4_096;
+
+function parsePositiveInt(
+  rawValue: string | undefined,
+  fallback: number,
+  options: { min?: number; max?: number } = {},
+): number {
+  const min = options.min ?? 1;
+  const max = options.max ?? Number.MAX_SAFE_INTEGER;
+  const parsed = Number.parseInt(String(rawValue || ''), 10);
+  if (!Number.isFinite(parsed) || parsed < min) return fallback;
+  return Math.min(parsed, max);
+}
 
 const EMPTY_ARGS_SCHEMA: ModuleActionArgsSchema = {
   type: 'object',
@@ -1654,5 +1672,39 @@ export const moduleGatewayLimits = {
   maxTimeoutMs: 900_000,
   outputPreviewChars: 4_000,
   outputCaptureChars: 20_000,
+  rateLimitPerWindow: parsePositiveInt(
+    process.env.MODULE_GATEWAY_RATE_LIMIT_PER_WINDOW,
+    DEFAULT_RATE_LIMIT_PER_WINDOW,
+    { min: 1, max: 1_000 },
+  ),
+  rateLimitWindowSeconds: parsePositiveInt(
+    process.env.MODULE_GATEWAY_RATE_LIMIT_WINDOW_SECONDS,
+    DEFAULT_RATE_LIMIT_WINDOW_SECONDS,
+    { min: 10, max: 3_600 },
+  ),
+  maxConcurrentRunsPerAction: parsePositiveInt(
+    process.env.MODULE_GATEWAY_MAX_CONCURRENT_PER_ACTION,
+    DEFAULT_MAX_CONCURRENT_RUNS_PER_ACTION,
+    { min: 1, max: 50 },
+  ),
+  maxConcurrentRunsPerOrg: parsePositiveInt(
+    process.env.MODULE_GATEWAY_MAX_CONCURRENT_PER_ORG,
+    DEFAULT_MAX_CONCURRENT_RUNS_PER_ORG,
+    { min: 1, max: 200 },
+  ),
+  maxArgStringLength: parsePositiveInt(
+    process.env.MODULE_GATEWAY_MAX_ARG_STRING_LENGTH,
+    DEFAULT_MAX_ARG_STRING_LENGTH,
+    { min: 128, max: 100_000 },
+  ),
 };
+
+export function getActionSandboxPolicy(action: ModuleActionDefinition): Required<ModuleActionSandboxPolicy> {
+  return {
+    rateLimitPerWindow: action.sandbox?.rateLimitPerWindow ?? moduleGatewayLimits.rateLimitPerWindow,
+    rateLimitWindowSeconds: action.sandbox?.rateLimitWindowSeconds ?? moduleGatewayLimits.rateLimitWindowSeconds,
+    maxConcurrentRuns: action.sandbox?.maxConcurrentRuns ?? moduleGatewayLimits.maxConcurrentRunsPerAction,
+    enforcePathSanitization: action.sandbox?.enforcePathSanitization ?? true,
+  };
+}
 

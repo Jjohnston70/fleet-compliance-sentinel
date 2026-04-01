@@ -68,7 +68,7 @@ These workstreams are complementary, not competing. The hardening secures the or
 
 - [x] Layer 1: Context-aware tool registry with capped tool exposure
 - [x] Layer 2: Bidirectional schema validation with coercion + structured correction errors
-- [ ] Layer 3: Execution sandbox with permission checks, rate limits, sanitization, timeout enforcement
+- [x] Layer 3: Execution sandbox with permission checks, rate limits, sanitization, timeout enforcement
 - [ ] Layer 4: Retry manager with cap=3 and escalation
 - [ ] Layer 5: Token/cost attribution with budget alerts
 - [ ] Layer 6: Durable append-only audit logging for all tool calls
@@ -301,7 +301,7 @@ At task end:
 **Estimated Effort**: 1-2 days
 **Depends On**: A2
 
-- [ ] Add full sandbox controls around every tool execution path
+- [x] Add full sandbox controls around every tool execution path
 
 **File Targets**:
 
