@@ -118,8 +118,22 @@ function buildArtifactUrl(runId: string, artifactPath: string): string {
   return `/api/modules/artifact?runId=${encodeURIComponent(runId)}&path=${encodeURIComponent(artifactPath)}`;
 }
 
+function buildMlEiaDashboardUrl(runId: string): string {
+  return `/api/modules/dashboard/ml-eia?runId=${encodeURIComponent(runId)}`;
+}
+
 function canOpenInline(artifactPath: string): boolean {
   return /\.(html?|txt|json|log)$/i.test(artifactPath);
+}
+
+function hasMlEiaDashboardInputs(run: ModuleRunRecord): boolean {
+  if (run.moduleId !== 'ML-EIA-PETROLEUM-INTEL') return false;
+  if (run.status !== 'success') return false;
+  const artifactPaths = run.artifacts.map((artifact) => artifact.path);
+  const hasSnapshot = artifactPaths.some((artifactPath) => /analysis_snapshot\.json$/i.test(artifactPath));
+  const hasAlerts = artifactPaths.some((artifactPath) => /active_alerts\.json$/i.test(artifactPath));
+  const hasForecasts = artifactPaths.some((artifactPath) => /[\\/]+forecasts[\\/].+\.json$/i.test(artifactPath));
+  return hasSnapshot && hasAlerts && hasForecasts;
 }
 
 function statusClassName(status: ModuleRunStatus): string {
@@ -216,6 +230,10 @@ export default function ModuleGatewayPanel() {
     [runs, selectedRunId],
   );
   const selectedRunGuidance = useMemo(() => (selectedRun ? buildRunGuidance(selectedRun) : null), [selectedRun]);
+  const showMlEiaDashboardLink = useMemo(
+    () => (selectedRun ? hasMlEiaDashboardInputs(selectedRun) : false),
+    [selectedRun],
+  );
 
   const quickRunPresets = useMemo<QuickRunPreset[]>(() => {
     const moduleById = new Map(catalog.map((entry) => [entry.moduleId, entry]));
@@ -817,6 +835,27 @@ export default function ModuleGatewayPanel() {
                           <li key={item}>{item}</li>
                         ))}
                       </ul>
+                    </div>
+                  )}
+                  {showMlEiaDashboardLink && (
+                    <div className="fleet-compliance-info-banner">
+                      <strong>ML-EIA dashboard view</strong>
+                      <p className="fleet-compliance-table-note" style={{ marginTop: '0.35rem' }}>
+                        Open a rendered HTML dashboard from this run&apos;s JSON artifacts.
+                      </p>
+                      <p className="fleet-compliance-table-note" style={{ marginTop: '0.45rem' }}>
+                        <a
+                          href={buildMlEiaDashboardUrl(selectedRun.id)}
+                          target="_blank"
+                          rel="noreferrer"
+                        >
+                          Open dashboard
+                        </a>
+                        {' · '}
+                        <a href={buildMlEiaDashboardUrl(selectedRun.id)} download>
+                          Download HTML
+                        </a>
+                      </p>
                     </div>
                   )}
 
