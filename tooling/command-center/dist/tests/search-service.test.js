@@ -95,5 +95,30 @@ describe('SearchService', () => {
         const ops = classifications.find((c) => c.classification === 'Operations');
         expect(ops?.count).toBe(2);
     });
+    it('should select relevant tools with capped output', () => {
+        regService.registerModule('asset-command', 'Asset Command', '1.0.0', 'Fleet asset workflows', 'Logistics', [
+            {
+                name: 'list_assets',
+                description: 'List tracked assets with filters',
+                parameters: { type: 'object', properties: {} },
+            },
+            {
+                name: 'create_maintenance_event',
+                description: 'Create maintenance records for an asset',
+                parameters: { type: 'object', properties: {} },
+            },
+            {
+                name: 'inspect_asset',
+                description: 'Run inspection workflow for one asset',
+                parameters: { type: 'object', properties: {} },
+            },
+        ]);
+        const selected = search.selectRelevantTools({
+            query: 'asset inspection workflow',
+            maxTools: 2,
+        });
+        expect(selected).toHaveLength(2);
+        expect(selected.every((entry) => entry.matchScore > 0)).toBe(true);
+    });
 });
 //# sourceMappingURL=search-service.test.js.map

@@ -1,12 +1,33 @@
 # Fleet-Compliance Sentinel — Status
 
-Last Updated: 2026-04-01 (Penny catalog + retrieval expanded for ERG/demo corpora visibility)
-Current Phase: Module integration sprint complete (Phase 6 complete)
-Overall Completion: SOC 2 action plan 100%; module integration sprint 6/6 phases complete
+Last Updated: 2026-04-01 (Workstream A tasks A0-A1 complete)
+Current Phase: April 2-25 sprint active (Workstream A + B)
+Overall Completion: SOC 2 action plan 100%; module integration sprint 6/6 phases complete; hardening sprint A0-A1 complete
 Open Findings: 0 blockers; remaining items are accepted non-blocking hardening items
 SOC 2 Observation Window Start: 2026-03-24
 SOC 2 Type I Earliest Eligibility: 2026-06-22
 Days Until Type I Eligible: 83
+
+## 2026-04-01 Workstream A - Task A1 Layer 1 Tool Registry Outcome
+
+| Workstream | Result |
+|-----------|--------|
+| Real tool ingestion | Complete - command-center now ingests concrete tool definitions from module `src/tools.ts` files instead of `discover_<module>` stubs |
+| Context-aware selection | Complete - relevance-scored selection path added with deterministic hard cap (`maxTools`, default 12, max 15) |
+| Discovery/search caps | Complete - `discover.tools` and `search.tools` now enforce capped responses and return selection metadata |
+| Registry caching | Complete - command-center catalog snapshots cached in gateway persistence layer (30s TTL with org-level invalidation on upsert) |
+| Missing module fallback | Complete - `asset-command` uses explicit semantic fallback tools (`list_assets`, `get_asset_detail`, `list_maintenance_events`) when source file is absent in this repo snapshot |
+| Verification | `npm --prefix tooling/command-center run build` pass; `npm --prefix tooling/command-center run test` pass (32/32); `npx tsc --noEmit` pass; `npm run lint` pass (pre-existing a11y warnings only) |
+
+## 2026-04-01 Workstream A - Task A0 Contract Freeze Outcome
+
+| Workstream | Result |
+|-----------|--------|
+| Canonical call envelope | Complete - frozen contract documented in `docs/integration/ENTERPRISE_FUNCTION_CALLING_HARDENING.md` (`requestId`, `orgId`, `userId`, `qualifiedName`, `args`, `attempt`, `status`, `errorCode`) |
+| Error code taxonomy | Complete - retryable/non-retryable classes frozen in docs and typed in `src/lib/modules-gateway/types.ts` |
+| Layer boundaries (1-7) | Complete - ownership and non-overlap boundaries documented and locked |
+| API compatibility guardrail | Complete - existing module endpoints explicitly frozen as additive-only during hardening implementation |
+| Verification | `npm run lint` pass (pre-existing a11y warnings only); `npx tsc --noEmit` pass |
 
 ## 2026-04-01 Penny Knowledge Catalog Expansion
 

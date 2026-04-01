@@ -6,7 +6,7 @@
 import { discoveryService } from './services/discovery-service.js';
 import {
   handleListModules,
-  handleListAllTools,
+  handleListAllToolsFiltered,
   handleSearchTools,
   handleGetToolSchema,
   handleRouteToolCall,
@@ -65,6 +65,18 @@ export const COMMAND_CENTER_TOOLS: Tool[] = [
           description:
             'Optional: Filter by classification (Operations, Finance, Intelligence, Planning, Infrastructure, Logistics)',
         },
+        query: {
+          type: 'string',
+          description: 'Optional: user request query for relevance ranking and tool selection',
+        },
+        intent: {
+          type: 'string',
+          description: 'Optional: short task intent used to rank the most relevant tools',
+        },
+        maxTools: {
+          type: 'number',
+          description: 'Optional cap for returned tools (1-15, default 12)',
+        },
       },
     },
   },
@@ -86,6 +98,10 @@ export const COMMAND_CENTER_TOOLS: Tool[] = [
         classification: {
           type: 'string',
           description: 'Optional: Filter to classification',
+        },
+        maxTools: {
+          type: 'number',
+          description: 'Optional cap for returned results (1-15, default 12)',
         },
       },
       required: ['query'],
@@ -187,13 +203,20 @@ export const toolHandlers: Record<string, ToolHandlerType> = {
   },
 
   discover_tools: async (params) => {
-    return handleListAllTools();
+    return handleListAllToolsFiltered({
+      moduleId: params.moduleId,
+      classification: params.classification,
+      query: params.query,
+      intent: params.intent,
+      maxTools: params.maxTools,
+    });
   },
 
   search_tools: async (params) => {
     return handleSearchTools(params.query, {
       moduleId: params.moduleId,
       classification: params.classification,
+      maxTools: params.maxTools,
     });
   },
 

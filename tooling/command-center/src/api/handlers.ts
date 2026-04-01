@@ -12,6 +12,14 @@ import { systemDashboard } from '../reporting/system-dashboard.js';
 import { toolUsageReport } from '../reporting/tool-usage-report.js';
 import { registry } from '../data/in-memory-registry.js';
 
+const DEFAULT_TOOL_SELECTION_CAP = 12;
+const MAX_TOOL_SELECTION_CAP = 15;
+
+function clampToolSelectionCap(value: unknown): number {
+  if (typeof value !== 'number' || Number.isNaN(value)) return DEFAULT_TOOL_SELECTION_CAP;
+  return Math.max(1, Math.min(MAX_TOOL_SELECTION_CAP, Math.floor(value)));
+}
+
 /**
  * List all registered modules
  */
@@ -43,9 +51,42 @@ export async function handleGetModule(moduleId: string) {
  * List all tools across all modules
  */
 export async function handleListAllTools() {
-  const tools = registry.listAllTools();
+  return handleListAllToolsFiltered({});
+}
+
+export async function handleListAllToolsFiltered(input: {
+  moduleId?: string;
+  classification?: string;
+  query?: string;
+  intent?: string;
+  maxTools?: number;
+}) {
+  const cap = clampToolSelectionCap(input.maxTools);
+  const selected = searchService.selectRelevantTools({
+    query: input.query,
+    intent: input.intent,
+    maxTools: cap,
+    filters: {
+      moduleId: input.moduleId,
+      classification: input.classification as any,
+    },
+  });
+
+  const byQualifiedName = new Map(
+    registry.listAllTools().map((entry) => [`${entry.moduleId}.${entry.tool.name}`, entry]),
+  );
+  const tools = selected
+    .map((item) => byQualifiedName.get(item.qualifiedName))
+    .filter((entry): entry is NonNullable<typeof entry> => Boolean(entry));
+
   return {
     success: true,
+    meta: {
+      cap,
+      returned: tools.length,
+      query: input.query || null,
+      intent: input.intent || null,
+    },
     data: tools.map((t) => ({
       qualifiedName: `${t.moduleId}.${t.tool.name}`,
       moduleId: t.moduleId,
@@ -59,15 +100,21 @@ export async function handleListAllTools() {
  */
 export async function handleSearchTools(
   query: string,
-  filters?: { moduleId?: string; classification?: string },
+  filters?: { moduleId?: string; classification?: string; maxTools?: number },
 ) {
+  const cap = clampToolSelectionCap(filters?.maxTools);
   const results = searchService.search(query, {
     moduleId: filters?.moduleId,
     classification: filters?.classification as any,
   });
   return {
     success: true,
-    data: results,
+    meta: {
+      cap,
+      returned: Math.min(results.length, cap),
+      query,
+    },
+    data: results.slice(0, cap),
   };
 }
 

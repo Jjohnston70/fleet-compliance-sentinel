@@ -30,6 +30,12 @@ describe('DiscoveryService', () => {
         expect(result.found).toBe(14); // All 14 modules in manifest
         expect(result.registered).toBe(14);
         expect(result.failed).toHaveLength(0);
+        const modules = registry.listModules();
+        expect(modules.length).toBe(14);
+        const totalTools = modules.reduce((sum, moduleEntry) => sum + moduleEntry.toolCount, 0);
+        expect(totalTools).toBeGreaterThan(14);
+        const hasStubToolName = modules.some((moduleEntry) => moduleEntry.tools.some((tool) => tool.name.startsWith('discover_')));
+        expect(hasStubToolName).toBe(false);
     });
     it('should not duplicate on re-discovery', async () => {
         let result = await discovery.discoverModules();

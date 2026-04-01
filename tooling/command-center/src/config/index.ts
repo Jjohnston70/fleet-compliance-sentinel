@@ -2,6 +2,21 @@
  * Central configuration for Command Center
  * Branding, module paths, health check intervals, timeouts
  */
+import { existsSync } from 'node:fs';
+import path from 'node:path';
+
+function resolveModulesBasePath(): string {
+  const configured = (process.env.MODULES_BASE_PATH || '').trim();
+  if (configured) return configured;
+
+  const workspaceToolingPath = path.resolve(process.cwd(), 'tooling');
+  if (existsSync(workspaceToolingPath)) return workspaceToolingPath;
+
+  const siblingModulesPath = path.resolve(process.cwd(), '..');
+  if (existsSync(siblingModulesPath)) return siblingModulesPath;
+
+  return '/sessions/admiring-nifty-cannon/mnt/MODULES-TNDS';
+}
 
 export const BRANDING = {
   name: 'TNDS Command Center',
@@ -12,7 +27,7 @@ export const BRANDING = {
 
 export const SERVICE_CONFIG = {
   // Module discovery
-  modulesBasePath: process.env.MODULES_BASE_PATH || '/sessions/admiring-nifty-cannon/mnt/MODULES-TNDS',
+  modulesBasePath: resolveModulesBasePath(),
   
   // Auto-discovery
   autoDiscoveryEnabled: process.env.AUTO_DISCOVERY_ENABLED === 'true',

@@ -78,6 +78,38 @@ export declare function handleGetModule(moduleId: string): Promise<{
  */
 export declare function handleListAllTools(): Promise<{
     success: boolean;
+    meta: {
+        cap: number;
+        returned: number;
+        query: string | null;
+        intent: string | null;
+    };
+    data: {
+        name: string;
+        description: string;
+        parameters: {
+            type: "object";
+            properties: Record<string, any>;
+            required?: string[] | undefined;
+        };
+        qualifiedName: string;
+        moduleId: string;
+    }[];
+}>;
+export declare function handleListAllToolsFiltered(input: {
+    moduleId?: string;
+    classification?: string;
+    query?: string;
+    intent?: string;
+    maxTools?: number;
+}): Promise<{
+    success: boolean;
+    meta: {
+        cap: number;
+        returned: number;
+        query: string | null;
+        intent: string | null;
+    };
     data: {
         name: string;
         description: string;
@@ -96,8 +128,14 @@ export declare function handleListAllTools(): Promise<{
 export declare function handleSearchTools(query: string, filters?: {
     moduleId?: string;
     classification?: string;
+    maxTools?: number;
 }): Promise<{
     success: boolean;
+    meta: {
+        cap: number;
+        returned: number;
+        query: string;
+    };
     data: import("../services/search-service.js").SearchResult[];
 }>;
 /**

@@ -1,7 +1,3 @@
-/**
- * Central configuration for Command Center
- * Branding, module paths, health check intervals, timeouts
- */
 export declare const BRANDING: {
     name: string;
     navy: string;

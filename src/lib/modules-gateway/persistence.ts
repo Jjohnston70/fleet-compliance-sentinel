@@ -48,6 +48,8 @@ export interface CommandCenterCatalogRow {
 }
 
 let ensured = false;
+const COMMAND_CENTER_CATALOG_CACHE_TTL_MS = 30_000;
+const commandCenterCatalogCache = new Map<string, { expiresAt: number; rows: CommandCenterCatalogRow[] }>();
 
 async function ensureModuleGatewayPersistenceTables(): Promise<void> {
   if (ensured) return;
@@ -261,9 +263,17 @@ export async function upsertCommandCenterCatalog(input: {
         updated_at = NOW()
     `;
   }
+
+  commandCenterCatalogCache.delete(input.orgId);
 }
 
 export async function listCommandCenterCatalog(orgId: string): Promise<CommandCenterCatalogRow[]> {
+  const now = Date.now();
+  const cached = commandCenterCatalogCache.get(orgId);
+  if (cached && cached.expiresAt > now) {
+    return cached.rows;
+  }
+
   await ensureModuleGatewayPersistenceTables();
   const sql = getSQL();
   const rows = await sql`
@@ -281,7 +291,7 @@ export async function listCommandCenterCatalog(orgId: string): Promise<CommandCe
     ORDER BY discovered_at DESC, qualified_name ASC
   `;
 
-  return rows.map((row) => ({
+  const normalized = rows.map((row) => ({
     qualifiedName: String(row.qualified_name),
     moduleId: String(row.module_id),
     toolName: String(row.tool_name),
@@ -291,6 +301,13 @@ export async function listCommandCenterCatalog(orgId: string): Promise<CommandCe
     discoveredAt: String(row.discovered_at),
     updatedAt: String(row.updated_at),
   }));
+
+  commandCenterCatalogCache.set(orgId, {
+    expiresAt: now + COMMAND_CENTER_CATALOG_CACHE_TTL_MS,
+    rows: normalized,
+  });
+
+  return normalized;
 }
 
 function normalizeCommandCenterTools(run: ModuleRunRecord): CommandCenterDiscoveredTool[] {

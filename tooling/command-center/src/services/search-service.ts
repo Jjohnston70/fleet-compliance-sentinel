@@ -15,17 +15,124 @@ export interface SearchResult {
   matchScore: number;
 }
 
+interface ToolSelectionFilters {
+  moduleId?: string;
+  classification?: RegisteredModule['classification'];
+}
+
+interface ToolSelectionOptions {
+  query?: string;
+  intent?: string;
+  filters?: ToolSelectionFilters;
+  maxTools?: number;
+}
+
+const DEFAULT_TOOL_SELECTION_CAP = 12;
+const MAX_TOOL_SELECTION_CAP = 15;
+const SELECTION_CACHE_TTL_MS = 60_000;
+
 export class SearchService {
+  private selectionCache = new Map<string, { expiresAt: number; results: SearchResult[] }>();
+
+  private clampSelectionCap(value: number | undefined): number {
+    const fallback = DEFAULT_TOOL_SELECTION_CAP;
+    if (typeof value !== 'number' || Number.isNaN(value)) return fallback;
+    return Math.max(1, Math.min(MAX_TOOL_SELECTION_CAP, Math.floor(value)));
+  }
+
+  private tokenize(value: string): string[] {
+    const tokens = value
+      .toLowerCase()
+      .split(/[^a-z0-9_]+/g)
+      .map((token) => token.trim())
+      .filter(Boolean);
+    return Array.from(new Set(tokens));
+  }
+
+  private scoreCandidate(candidate: SearchResult, contextLower: string, tokens: string[]): number {
+    const toolNameLower = candidate.toolName.toLowerCase();
+    const descriptionLower = candidate.toolDescription.toLowerCase();
+    const moduleNameLower = candidate.moduleName.toLowerCase();
+    const qualifiedLower = candidate.qualifiedName.toLowerCase();
+
+    let score = 0;
+
+    if (contextLower) {
+      if (qualifiedLower === contextLower || toolNameLower === contextLower) {
+        score += 240;
+      }
+      if (qualifiedLower.includes(contextLower) || toolNameLower.includes(contextLower)) {
+        score += 120;
+      }
+      if (descriptionLower.includes(contextLower)) {
+        score += 40;
+      }
+    }
+
+    for (const token of tokens) {
+      if (token.length === 0) continue;
+      if (toolNameLower === token) score += 80;
+      if (toolNameLower.includes(token)) score += 25;
+      if (qualifiedLower.includes(token)) score += 20;
+      if (moduleNameLower.includes(token)) score += 10;
+      if (descriptionLower.includes(token)) score += 8;
+    }
+
+    return score;
+  }
+
+  private buildSelectionCacheKey(options: ToolSelectionOptions, cap: number): string {
+    const query = (options.query || '').trim().toLowerCase();
+    const intent = (options.intent || '').trim().toLowerCase();
+    const moduleId = (options.filters?.moduleId || '').trim().toLowerCase();
+    const classification = (options.filters?.classification || '').trim().toLowerCase();
+    return [query, intent, moduleId, classification, cap].join('|');
+  }
+
+  selectRelevantTools(options: ToolSelectionOptions): SearchResult[] {
+    const cap = this.clampSelectionCap(options.maxTools);
+    const cacheKey = this.buildSelectionCacheKey(options, cap);
+    const now = Date.now();
+    const cached = this.selectionCache.get(cacheKey);
+    if (cached && cached.expiresAt > now) {
+      return cached.results;
+    }
+
+    const context = `${options.query || ''} ${options.intent || ''}`.trim();
+    const contextLower = context.toLowerCase();
+    const tokens = this.tokenize(contextLower);
+
+    const candidates = this.filter(options.filters || {}).map((candidate) => ({
+      ...candidate,
+      matchScore: this.scoreCandidate(candidate, contextLower, tokens),
+    }));
+
+    const scored = context
+      ? candidates.filter((candidate) => candidate.matchScore > 0)
+      : candidates;
+    const pool = scored.length > 0 ? scored : candidates;
+
+    const selected = pool
+      .sort((a, b) => {
+        if (b.matchScore !== a.matchScore) return b.matchScore - a.matchScore;
+        return a.qualifiedName.localeCompare(b.qualifiedName);
+      })
+      .slice(0, cap);
+
+    this.selectionCache.set(cacheKey, {
+      expiresAt: now + SELECTION_CACHE_TTL_MS,
+      results: selected,
+    });
+    return selected;
+  }
+
   /**
    * Search tools by keyword
    * Ranks by relevance (name match > description match)
    */
   search(
     query: string,
-    filters?: {
-      moduleId?: string;
-      classification?: RegisteredModule['classification'];
-    },
+    filters?: ToolSelectionFilters,
   ): SearchResult[] {
     const queryLower = query.toLowerCase();
     const results: SearchResult[] = [];
@@ -78,10 +185,7 @@ export class SearchService {
   /**
    * Get all tools matching a filter
    */
-  filter(filters: {
-    moduleId?: string;
-    classification?: RegisteredModule['classification'];
-  }): SearchResult[] {
+  filter(filters: ToolSelectionFilters): SearchResult[] {
     const results: SearchResult[] = [];
 
     const modules = registry.listModules();

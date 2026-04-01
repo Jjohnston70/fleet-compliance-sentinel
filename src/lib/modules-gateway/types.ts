@@ -4,12 +4,51 @@ export type ModuleRunStatus = 'queued' | 'running' | 'success' | 'fail';
 
 export type ModuleRunErrorCode =
   | 'VALIDATION_ERROR'
+  | 'PERMISSION_DENIED'
   | 'MODULE_NOT_FOUND'
   | 'ACTION_NOT_ALLOWED'
+  | 'TENANT_ISOLATION_VIOLATION'
   | 'MISSING_ENV'
+  | 'SANITIZATION_ERROR'
+  | 'RATE_LIMITED'
+  | 'RETRY_EXHAUSTED'
+  | 'BUDGET_EXCEEDED'
   | 'EXEC_TIMEOUT'
   | 'EXEC_FAILED'
   | 'INTERNAL_ERROR';
+
+export type ModuleRunErrorClass =
+  | 'validation'
+  | 'authorization'
+  | 'isolation'
+  | 'sandbox'
+  | 'throttle'
+  | 'retry'
+  | 'budget'
+  | 'execution'
+  | 'system';
+
+export interface ModuleRunErrorPolicy {
+  class: ModuleRunErrorClass;
+  retryable: boolean;
+  defaultHttpStatus: number;
+}
+
+export const MODULE_RUN_ERROR_TAXONOMY: Readonly<Record<ModuleRunErrorCode, ModuleRunErrorPolicy>> = {
+  VALIDATION_ERROR: { class: 'validation', retryable: false, defaultHttpStatus: 400 },
+  PERMISSION_DENIED: { class: 'authorization', retryable: false, defaultHttpStatus: 403 },
+  MODULE_NOT_FOUND: { class: 'validation', retryable: false, defaultHttpStatus: 404 },
+  ACTION_NOT_ALLOWED: { class: 'validation', retryable: false, defaultHttpStatus: 400 },
+  TENANT_ISOLATION_VIOLATION: { class: 'isolation', retryable: false, defaultHttpStatus: 403 },
+  MISSING_ENV: { class: 'system', retryable: false, defaultHttpStatus: 500 },
+  SANITIZATION_ERROR: { class: 'sandbox', retryable: false, defaultHttpStatus: 400 },
+  RATE_LIMITED: { class: 'throttle', retryable: true, defaultHttpStatus: 429 },
+  RETRY_EXHAUSTED: { class: 'retry', retryable: false, defaultHttpStatus: 503 },
+  BUDGET_EXCEEDED: { class: 'budget', retryable: false, defaultHttpStatus: 429 },
+  EXEC_TIMEOUT: { class: 'execution', retryable: true, defaultHttpStatus: 504 },
+  EXEC_FAILED: { class: 'execution', retryable: true, defaultHttpStatus: 502 },
+  INTERNAL_ERROR: { class: 'system', retryable: true, defaultHttpStatus: 500 },
+};
 
 export interface ModuleRunError {
   code: ModuleRunErrorCode;
@@ -34,6 +73,17 @@ export interface ModuleActionArgsSchema {
 }
 
 export type ModuleRunArgs = Record<string, unknown>;
+
+export interface ModuleCallEnvelope {
+  requestId: string;
+  orgId: string;
+  userId: string;
+  qualifiedName: string;
+  args: ModuleRunArgs;
+  attempt: number;
+  status: ModuleRunStatus;
+  errorCode?: ModuleRunErrorCode;
+}
 
 export interface ResolvedModuleCommand {
   executable: string;

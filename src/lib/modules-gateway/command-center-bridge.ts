@@ -78,53 +78,6 @@ async function ensureInitialized(moduleRef: CommandCenterToolsModule): Promise<v
   initialized = true;
 }
 
-async function applyDiscoverToolsFilters(
-  moduleRef: CommandCenterToolsModule,
-  rawResult: unknown,
-  args: ModuleRunArgs,
-): Promise<unknown> {
-  const result = asPlainObject(rawResult);
-  if (!result.success || !Array.isArray(result.data)) {
-    return rawResult;
-  }
-
-  let filtered = [...result.data];
-  const moduleFilter = typeof args.moduleId === 'string' ? args.moduleId : null;
-  if (moduleFilter) {
-    filtered = filtered.filter((entry) => asPlainObject(entry).moduleId === moduleFilter);
-  }
-
-  const classificationFilter = typeof args.classification === 'string' ? args.classification : null;
-  if (classificationFilter) {
-    const discoverModules = moduleRef.toolHandlers.discover_modules;
-    if (discoverModules) {
-      const moduleResult = asPlainObject(await discoverModules({}));
-      if (moduleResult.success && Array.isArray(moduleResult.data)) {
-        const classificationByModule = new Map<string, string>();
-        for (const moduleEntry of moduleResult.data) {
-          const item = asPlainObject(moduleEntry);
-          const moduleId = typeof item.id === 'string' ? item.id : null;
-          const classification = typeof item.classification === 'string' ? item.classification : null;
-          if (moduleId && classification) {
-            classificationByModule.set(moduleId, classification);
-          }
-        }
-        filtered = filtered.filter((entry) => {
-          const item = asPlainObject(entry);
-          const moduleId = typeof item.moduleId === 'string' ? item.moduleId : null;
-          if (!moduleId) return false;
-          return classificationByModule.get(moduleId) === classificationFilter;
-        });
-      }
-    }
-  }
-
-  return {
-    ...result,
-    data: filtered,
-  };
-}
-
 export async function executeCommandCenterAction(
   actionId: string,
   args: ModuleRunArgs,
@@ -162,11 +115,7 @@ export async function executeCommandCenterAction(
 
     const inputArgs = asPlainObject(args);
     const rawResult = await handler(inputArgs);
-    const processedResult =
-      actionId === 'discover.tools'
-        ? await applyDiscoverToolsFilters(moduleRef, rawResult, inputArgs)
-        : rawResult;
-    return normalizeBridgeResult(toolName, processedResult);
+    return normalizeBridgeResult(toolName, rawResult);
   } catch (error) {
     return {
       ok: false,

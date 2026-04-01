@@ -3,7 +3,7 @@
  * LLM-facing tools for discovering and routing to other modules
  */
 import { discoveryService } from './services/discovery-service.js';
-import { handleListModules, handleListAllTools, handleSearchTools, handleGetToolSchema, handleRouteToolCall, handleGetSystemHealth, handleGetModuleDetail, handleGetClassifications, handleGetSystemDashboard, handleGetToolUsageStats, } from './api/handlers.js';
+import { handleListModules, handleListAllToolsFiltered, handleSearchTools, handleGetToolSchema, handleRouteToolCall, handleGetSystemHealth, handleGetModuleDetail, handleGetClassifications, handleGetSystemDashboard, handleGetToolUsageStats, } from './api/handlers.js';
 /**
  * Meta-tools that the LLM can use to navigate the TNDS ecosystem
  */
@@ -30,6 +30,18 @@ export const COMMAND_CENTER_TOOLS = [
                     type: 'string',
                     description: 'Optional: Filter by classification (Operations, Finance, Intelligence, Planning, Infrastructure, Logistics)',
                 },
+                query: {
+                    type: 'string',
+                    description: 'Optional: user request query for relevance ranking and tool selection',
+                },
+                intent: {
+                    type: 'string',
+                    description: 'Optional: short task intent used to rank the most relevant tools',
+                },
+                maxTools: {
+                    type: 'number',
+                    description: 'Optional cap for returned tools (1-15, default 12)',
+                },
             },
         },
     },
@@ -50,6 +62,10 @@ export const COMMAND_CENTER_TOOLS = [
                 classification: {
                     type: 'string',
                     description: 'Optional: Filter to classification',
+                },
+                maxTools: {
+                    type: 'number',
+                    description: 'Optional cap for returned results (1-15, default 12)',
                 },
             },
             required: ['query'],
@@ -142,12 +158,19 @@ export const toolHandlers = {
         return handleListModules();
     },
     discover_tools: async (params) => {
-        return handleListAllTools();
+        return handleListAllToolsFiltered({
+            moduleId: params.moduleId,
+            classification: params.classification,
+            query: params.query,
+            intent: params.intent,
+            maxTools: params.maxTools,
+        });
     },
     search_tools: async (params) => {
         return handleSearchTools(params.query, {
             moduleId: params.moduleId,
             classification: params.classification,
+            maxTools: params.maxTools,
         });
     },
     get_tool_schema: async (params) => {

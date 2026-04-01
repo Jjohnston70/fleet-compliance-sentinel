@@ -10,6 +10,13 @@ import { discoveryService } from '../services/discovery-service.js';
 import { systemDashboard } from '../reporting/system-dashboard.js';
 import { toolUsageReport } from '../reporting/tool-usage-report.js';
 import { registry } from '../data/in-memory-registry.js';
+const DEFAULT_TOOL_SELECTION_CAP = 12;
+const MAX_TOOL_SELECTION_CAP = 15;
+function clampToolSelectionCap(value) {
+    if (typeof value !== 'number' || Number.isNaN(value))
+        return DEFAULT_TOOL_SELECTION_CAP;
+    return Math.max(1, Math.min(MAX_TOOL_SELECTION_CAP, Math.floor(value)));
+}
 /**
  * List all registered modules
  */
@@ -39,9 +46,31 @@ export async function handleGetModule(moduleId) {
  * List all tools across all modules
  */
 export async function handleListAllTools() {
-    const tools = registry.listAllTools();
+    return handleListAllToolsFiltered({});
+}
+export async function handleListAllToolsFiltered(input) {
+    const cap = clampToolSelectionCap(input.maxTools);
+    const selected = searchService.selectRelevantTools({
+        query: input.query,
+        intent: input.intent,
+        maxTools: cap,
+        filters: {
+            moduleId: input.moduleId,
+            classification: input.classification,
+        },
+    });
+    const byQualifiedName = new Map(registry.listAllTools().map((entry) => [`${entry.moduleId}.${entry.tool.name}`, entry]));
+    const tools = selected
+        .map((item) => byQualifiedName.get(item.qualifiedName))
+        .filter((entry) => Boolean(entry));
     return {
         success: true,
+        meta: {
+            cap,
+            returned: tools.length,
+            query: input.query || null,
+            intent: input.intent || null,
+        },
         data: tools.map((t) => ({
             qualifiedName: `${t.moduleId}.${t.tool.name}`,
             moduleId: t.moduleId,
@@ -53,13 +82,19 @@ export async function handleListAllTools() {
  * Search for tools
  */
 export async function handleSearchTools(query, filters) {
+    const cap = clampToolSelectionCap(filters?.maxTools);
     const results = searchService.search(query, {
         moduleId: filters?.moduleId,
         classification: filters?.classification,
     });
     return {
         success: true,
-        data: results,
+        meta: {
+            cap,
+            returned: Math.min(results.length, cap),
+            query,
+        },
+        data: results.slice(0, cap),
     };
 }
 /**

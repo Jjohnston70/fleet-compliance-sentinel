@@ -66,7 +66,7 @@ These workstreams are complementary, not competing. The hardening secures the or
 
 ## Definition of Done
 
-- [ ] Layer 1: Context-aware tool registry with capped tool exposure
+- [x] Layer 1: Context-aware tool registry with capped tool exposure
 - [ ] Layer 2: Bidirectional schema validation with coercion + structured correction errors
 - [ ] Layer 3: Execution sandbox with permission checks, rate limits, sanitization, timeout enforcement
 - [ ] Layer 4: Retry manager with cap=3 and escalation
@@ -82,7 +82,7 @@ These workstreams are complementary, not competing. The hardening secures the or
 **Priority**: BLOCKING (all layers depend on this)
 **Estimated Effort**: 2-3 hours
 
-- [ ] Freeze orchestration contract and non-negotiable controls before implementation
+- [x] Freeze orchestration contract and non-negotiable controls before implementation
 
 **File Targets**:
 
@@ -134,7 +134,7 @@ At task end:
 **Estimated Effort**: 1-2 days
 **Depends On**: A0
 
-- [ ] Implement smart tool selection so model sees only relevant tools per request (cap 10-15)
+- [x] Implement smart tool selection so model sees only relevant tools per request (cap 10-15)
 
 **File Targets**:
 
