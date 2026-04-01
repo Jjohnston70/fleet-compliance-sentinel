@@ -38,6 +38,7 @@ cd tooling/ML-SIGNAL-STACK-TNCC && python -m pip install -r requirements.txt
 | `pipeline.all` | Run pipeline for all sources | `skipSearch?: boolean` |
 | `report.generate` | Build SignalStack DOCX report | `source?: sales|ops_pulse|cash_flow_compass|pipeline_pulse|team_tempo|all`, `out?: string` |
 | `package.output` | Build delivery ZIP package | `source?: sales|ops_pulse|cash_flow_compass|pipeline_pulse|team_tempo|all`, `noCode?: boolean`, `outDir?: string` |
+| `workflow.delivery` | One-shot export -> pipeline -> report -> package workflow | `source?: sales|ops_pulse|cash_flow_compass|pipeline_pulse|team_tempo|all`, `skipSearch?: boolean`, `skipRootFix?: boolean`, `noCode?: boolean`, `outDir?: string` |
 
 ## Example API Payloads
 
@@ -104,6 +105,7 @@ curl -X GET "http://localhost:3000/api/modules/status/<run_id>" \
 7. Report/package files are not visible on your laptop after cloud runs:
    - Runs triggered from deployed app execute on Railway, not your local machine.
    - Check run details `Artifacts` list and `Output Preview` path lines for generated file locations.
+   - Download/view artifacts via `GET /api/modules/artifact?runId=<run_id>&path=<artifact_path>`.
 
 ## Operational Notes
 

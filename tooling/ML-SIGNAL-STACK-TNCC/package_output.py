@@ -62,6 +62,7 @@ CODE_FILES = [
     "export_to_csv.py",
     "generate_report.py",
     "package_output.py",
+    "run_delivery.py",
     "config.py",
 ]
 
@@ -433,6 +434,8 @@ Examples:
     output_dir.mkdir(parents=True, exist_ok=True)
     zip_path = output_dir / f"SignalStack_Delivery_{iso_week}.zip"
     zip_path.write_bytes(zip_bytes)
+    html_path = output_dir / f"SignalStack_Report_{iso_week}.html"
+    html_path.write_text(html_str, encoding="utf-8")
 
     # Summary
     with zipfile.ZipFile(io.BytesIO(zip_bytes)) as zf:
@@ -440,6 +443,7 @@ Examples:
     size_mb = len(zip_bytes) / (1024 * 1024)
 
     print(f"[package] Delivered: {zip_path}")
+    print(f"[package] HTML: {html_path}")
     print(f"[package] Contents: {file_count} files, {size_mb:.1f} MB")
 
 

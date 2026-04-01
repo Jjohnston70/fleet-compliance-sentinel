@@ -103,6 +103,10 @@ function buildDefaultArgs(action: ModuleCatalogAction | null): Record<string, un
   return defaults;
 }
 
+function buildArtifactUrl(runId: string, artifactPath: string): string {
+  return `/api/modules/artifact?runId=${encodeURIComponent(runId)}&path=${encodeURIComponent(artifactPath)}`;
+}
+
 function statusClassName(status: ModuleRunStatus): string {
   if (status === 'success') return 'fleet-compliance-pill fleet-compliance-pill-active';
   if (status === 'fail') return 'fleet-compliance-pill fleet-compliance-pill-fail';
@@ -132,6 +136,10 @@ export default function ModuleGatewayPanel() {
   const [submitError, setSubmitError] = useState<string | null>(null);
   const [runs, setRuns] = useState<ModuleRunRecord[]>([]);
   const [selectedRunId, setSelectedRunId] = useState<string>('');
+  const [quickSource, setQuickSource] = useState('all');
+  const [quickDryRun, setQuickDryRun] = useState(false);
+  const [quickSubmitState, setQuickSubmitState] = useState<'idle' | 'submitting'>('idle');
+  const [quickSubmitError, setQuickSubmitError] = useState<string | null>(null);
 
   const selectedModule = useMemo(
     () => catalog.find((entry) => entry.moduleId === moduleId) || null,
@@ -147,6 +155,22 @@ export default function ModuleGatewayPanel() {
     () => runs.find((run) => run.id === selectedRunId) || null,
     [runs, selectedRunId],
   );
+
+  const signalModule = useMemo(
+    () => catalog.find((entry) => entry.moduleId === 'ML-SIGNAL-STACK-TNCC') || null,
+    [catalog],
+  );
+
+  const signalWorkflowAction = useMemo(
+    () => signalModule?.actions.find((entry) => entry.actionId === 'workflow.delivery') || null,
+    [signalModule],
+  );
+
+  const signalSourceOptions = useMemo(() => {
+    const values = signalWorkflowAction?.argsSchema?.properties?.source?.enum || [];
+    const normalized = values.filter((value): value is string => typeof value === 'string');
+    return normalized.length > 0 ? normalized : ['all'];
+  }, [signalWorkflowAction]);
 
   const activeRunIds = useMemo(
     () => runs.filter((run) => run.status === 'queued' || run.status === 'running').map((run) => run.id),
@@ -187,10 +211,13 @@ export default function ModuleGatewayPanel() {
       setCatalog(body.catalog);
       setCatalogLoading(false);
       if (body.catalog.length > 0) {
-        const firstModule = body.catalog[0];
-        const firstAction = firstModule.actions[0];
-        setModuleId(firstModule.moduleId);
-        setActionId(firstAction?.actionId || '');
+        const preferredModule =
+          body.catalog.find((entry) => entry.moduleId === 'ML-SIGNAL-STACK-TNCC') || body.catalog[0];
+        const preferredAction =
+          preferredModule.actions.find((entry) => entry.actionId === 'workflow.delivery')
+          || preferredModule.actions[0];
+        setModuleId(preferredModule.moduleId);
+        setActionId(preferredAction?.actionId || '');
       }
     }
 
@@ -213,6 +240,10 @@ export default function ModuleGatewayPanel() {
     setArgsJson(JSON.stringify(defaults, null, 2));
     setTimeoutMs(selectedAction ? String(selectedAction.timeoutMs) : '');
   }, [selectedAction]);
+
+  useEffect(() => {
+    setQuickSource(signalSourceOptions.includes('all') ? 'all' : signalSourceOptions[0] || 'all');
+  }, [signalSourceOptions]);
 
   useEffect(() => {
     if (activeRunIds.length === 0) return;
@@ -300,6 +331,51 @@ export default function ModuleGatewayPanel() {
     }
   }
 
+  async function handleQuickSignalRun(event: React.FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    setQuickSubmitError(null);
+
+    if (!signalWorkflowAction) {
+      setQuickSubmitError('SignalStack workflow action is not available in catalog.');
+      return;
+    }
+
+    const source = signalSourceOptions.includes(quickSource) ? quickSource : 'all';
+    setQuickSubmitState('submitting');
+    try {
+      const res = await fetch('/api/modules/run', {
+        method: 'POST',
+        credentials: 'include',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          moduleId: 'ML-SIGNAL-STACK-TNCC',
+          actionId: 'workflow.delivery',
+          args: {
+            source,
+            skipSearch: true,
+            skipRootFix: false,
+            noCode: false,
+          },
+          dryRun: quickDryRun,
+          timeoutMs: 900000,
+          correlationId: `tools-ui-workflow-${Date.now()}`,
+        }),
+      });
+
+      const body = await safeJson<{ ok?: boolean; run?: ModuleRunRecord } & ApiFailure>(res);
+      if (!res.ok || !body?.ok || !body.run) {
+        setQuickSubmitError(getErrorMessage(body, `Run request failed (HTTP ${res.status})`));
+        return;
+      }
+
+      upsertRun(body.run);
+      setModuleId('ML-SIGNAL-STACK-TNCC');
+      setActionId('workflow.delivery');
+    } finally {
+      setQuickSubmitState('idle');
+    }
+  }
+
   return (
     <>
       <section className="fleet-compliance-section">
@@ -324,87 +400,138 @@ export default function ModuleGatewayPanel() {
             <p style={{ color: '#b91c1c' }}>{catalogError}</p>
           </div>
         ) : (
-          <form className="fleet-compliance-filter-bar" onSubmit={handleRunSubmit}>
-            <div className="fleet-compliance-filter-grid fleet-compliance-filter-grid-wide">
-              <label className="fleet-compliance-field-stack">
-                <span>Module</span>
-                <select value={moduleId} onChange={(event) => setModuleId(event.target.value)}>
-                  {catalog.map((entry) => (
-                    <option key={entry.moduleId} value={entry.moduleId}>
-                      {entry.displayName} ({entry.runtime})
-                    </option>
-                  ))}
-                </select>
-              </label>
-
-              <label className="fleet-compliance-field-stack">
-                <span>Action</span>
-                <select value={actionId} onChange={(event) => setActionId(event.target.value)}>
-                  {(selectedModule?.actions || []).map((entry) => (
-                    <option key={entry.actionId} value={entry.actionId}>
-                      {entry.actionId}
-                    </option>
-                  ))}
-                </select>
-              </label>
-
-              <label className="fleet-compliance-field-stack">
-                <span>Timeout (ms)</span>
-                <input
-                  value={timeoutMs}
-                  onChange={(event) => setTimeoutMs(event.target.value)}
-                  inputMode="numeric"
-                  placeholder={selectedAction ? String(selectedAction.timeoutMs) : '300000'}
-                />
-              </label>
-
-              <label className="fleet-compliance-field-stack">
-                <span>Correlation ID</span>
-                <input
-                  value={correlationId}
-                  onChange={(event) => setCorrelationId(event.target.value)}
-                  placeholder="tools-ui-<timestamp>"
-                />
-              </label>
-
-              <label className="fleet-compliance-field-stack">
-                <span>Mode</span>
-                <select value={dryRun ? 'dry' : 'live'} onChange={(event) => setDryRun(event.target.value === 'dry')}>
-                  <option value="dry">Dry Run</option>
-                  <option value="live">Live Run</option>
-                </select>
-              </label>
-            </div>
-
-            <label className="fleet-compliance-field-stack" style={{ marginTop: '0.85rem' }}>
-              <span>Args JSON</span>
-              <textarea
-                className="fleet-compliance-textarea"
-                rows={8}
-                value={argsJson}
-                onChange={(event) => setArgsJson(event.target.value)}
-                spellCheck={false}
-              />
-            </label>
-
-            <div className="fleet-compliance-action-row">
-              <button className="btn-primary" type="submit" disabled={submitState === 'submitting'}>
-                {submitState === 'submitting' ? 'Submitting…' : `Run ${actionId || 'Action'}`}
-              </button>
-            </div>
-
-            {selectedAction && (
-              <p className="fleet-compliance-table-note">
-                {selectedAction.description} | Command preview: <code>{selectedAction.commandPreview.join(' ')}</code>
-              </p>
+          <>
+            {signalWorkflowAction && (
+              <form className="fleet-compliance-filter-bar" onSubmit={handleQuickSignalRun} style={{ marginBottom: '0.9rem' }}>
+                <p className="fleet-compliance-eyebrow">Quick Run (Recommended)</p>
+                <h3 style={{ marginTop: '0.2rem' }}>SignalStack full delivery workflow</h3>
+                <p className="fleet-compliance-table-note" style={{ marginTop: '0.35rem' }}>
+                  One click runs CSV export, pipeline, report generation, and packaging for operators.
+                </p>
+                <div className="fleet-compliance-filter-grid fleet-compliance-filter-grid-wide">
+                  <label className="fleet-compliance-field-stack">
+                    <span>Module</span>
+                    <input value="ML-SIGNAL-STACK-TNCC" readOnly />
+                  </label>
+                  <label className="fleet-compliance-field-stack">
+                    <span>Source</span>
+                    <select value={quickSource} onChange={(event) => setQuickSource(event.target.value)}>
+                      {signalSourceOptions.map((sourceOption) => (
+                        <option key={sourceOption} value={sourceOption}>
+                          {sourceOption}
+                        </option>
+                      ))}
+                    </select>
+                  </label>
+                  <label className="fleet-compliance-field-stack">
+                    <span>Mode</span>
+                    <select
+                      value={quickDryRun ? 'dry' : 'live'}
+                      onChange={(event) => setQuickDryRun(event.target.value === 'dry')}
+                    >
+                      <option value="live">Live Run</option>
+                      <option value="dry">Dry Run</option>
+                    </select>
+                  </label>
+                </div>
+                <div className="fleet-compliance-action-row">
+                  <button className="btn-primary" type="submit" disabled={quickSubmitState === 'submitting'}>
+                    {quickSubmitState === 'submitting' ? 'Submitting…' : 'Run full workflow'}
+                  </button>
+                </div>
+                {quickSubmitError && (
+                  <div className="fleet-compliance-empty-state" style={{ marginTop: '0.85rem' }}>
+                    <p style={{ color: '#b91c1c' }}>{quickSubmitError}</p>
+                  </div>
+                )}
+              </form>
             )}
 
-            {submitError && (
-              <div className="fleet-compliance-empty-state" style={{ marginTop: '0.85rem' }}>
-                <p style={{ color: '#b91c1c' }}>{submitError}</p>
-              </div>
-            )}
-          </form>
+            <details>
+              <summary style={{ cursor: 'pointer', fontWeight: 700, color: '#1a3a5c' }}>Advanced module controls</summary>
+              <form className="fleet-compliance-filter-bar" onSubmit={handleRunSubmit} style={{ marginTop: '0.75rem' }}>
+                <div className="fleet-compliance-filter-grid fleet-compliance-filter-grid-wide">
+                  <label className="fleet-compliance-field-stack">
+                    <span>Module</span>
+                    <select value={moduleId} onChange={(event) => setModuleId(event.target.value)}>
+                      {catalog.map((entry) => (
+                        <option key={entry.moduleId} value={entry.moduleId}>
+                          {entry.displayName} ({entry.runtime})
+                        </option>
+                      ))}
+                    </select>
+                  </label>
+
+                  <label className="fleet-compliance-field-stack">
+                    <span>Action</span>
+                    <select value={actionId} onChange={(event) => setActionId(event.target.value)}>
+                      {(selectedModule?.actions || []).map((entry) => (
+                        <option key={entry.actionId} value={entry.actionId}>
+                          {entry.actionId}
+                        </option>
+                      ))}
+                    </select>
+                  </label>
+
+                  <label className="fleet-compliance-field-stack">
+                    <span>Timeout (ms)</span>
+                    <input
+                      value={timeoutMs}
+                      onChange={(event) => setTimeoutMs(event.target.value)}
+                      inputMode="numeric"
+                      placeholder={selectedAction ? String(selectedAction.timeoutMs) : '300000'}
+                    />
+                  </label>
+
+                  <label className="fleet-compliance-field-stack">
+                    <span>Correlation ID</span>
+                    <input
+                      value={correlationId}
+                      onChange={(event) => setCorrelationId(event.target.value)}
+                      placeholder="tools-ui-<timestamp>"
+                    />
+                  </label>
+
+                  <label className="fleet-compliance-field-stack">
+                    <span>Mode</span>
+                    <select value={dryRun ? 'dry' : 'live'} onChange={(event) => setDryRun(event.target.value === 'dry')}>
+                      <option value="dry">Dry Run</option>
+                      <option value="live">Live Run</option>
+                    </select>
+                  </label>
+                </div>
+
+                <label className="fleet-compliance-field-stack" style={{ marginTop: '0.85rem' }}>
+                  <span>Args JSON</span>
+                  <textarea
+                    className="fleet-compliance-textarea"
+                    rows={8}
+                    value={argsJson}
+                    onChange={(event) => setArgsJson(event.target.value)}
+                    spellCheck={false}
+                  />
+                </label>
+
+                <div className="fleet-compliance-action-row">
+                  <button className="btn-primary" type="submit" disabled={submitState === 'submitting'}>
+                    {submitState === 'submitting' ? 'Submitting…' : `Run ${actionId || 'Action'}`}
+                  </button>
+                </div>
+
+                {selectedAction && (
+                  <p className="fleet-compliance-table-note">
+                    {selectedAction.description} | Command preview: <code>{selectedAction.commandPreview.join(' ')}</code>
+                  </p>
+                )}
+
+                {submitError && (
+                  <div className="fleet-compliance-empty-state" style={{ marginTop: '0.85rem' }}>
+                    <p style={{ color: '#b91c1c' }}>{submitError}</p>
+                  </div>
+                )}
+              </form>
+            </details>
+          </>
         )}
       </section>
 
@@ -545,6 +672,19 @@ export default function ModuleGatewayPanel() {
                         {selectedRun.artifacts.map((artifact) => (
                           <li key={`${artifact.path}-${artifact.modifiedAt}`}>
                             <code>{artifact.path}</code> ({artifact.sizeBytes} bytes, {formatLocalDate(artifact.modifiedAt)})
+                            <div className="fleet-compliance-table-note" style={{ marginTop: '0.2rem' }}>
+                              <a
+                                href={buildArtifactUrl(selectedRun.id, artifact.path)}
+                                target="_blank"
+                                rel="noreferrer"
+                              >
+                                Open
+                              </a>
+                              {' · '}
+                              <a href={buildArtifactUrl(selectedRun.id, artifact.path)} download>
+                                Download
+                              </a>
+                            </div>
                           </li>
                         ))}
                       </ul>

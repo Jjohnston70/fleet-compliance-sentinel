@@ -86,3 +86,15 @@ export async function fetchRemoteModuleRun(runId: string) {
   const body = await res.json();
   return { res, body };
 }
+
+export async function fetchRemoteModuleArtifact(runId: string, artifactPath: string) {
+  const encodedRunId = encodeURIComponent(runId);
+  const encodedPath = encodeURIComponent(artifactPath);
+  const res = await fetch(buildRemoteUrl(`/modules/artifact/${encodedRunId}?path=${encodedPath}`), {
+    method: 'GET',
+    headers: headersWithAuth(false),
+    cache: 'no-store',
+    signal: AbortSignal.timeout(60_000),
+  });
+  return { res };
+}

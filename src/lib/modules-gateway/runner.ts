@@ -177,21 +177,22 @@ function getMlSignalArtifactCandidates(run: ModuleRunRecord, stdoutRaw: string):
     return [];
   }
 
-  const extractPath = (pattern: RegExp): string | null => {
-    const match = stdoutRaw.match(pattern);
-    if (!match || !match[1]) return null;
-    const extracted = match[1].trim().replace(/^["']|["']$/g, '');
-    return extracted.length > 0 ? extracted : null;
+  const extractPaths = (pattern: RegExp): string[] => {
+    const matches = Array.from(stdoutRaw.matchAll(pattern));
+    return matches
+      .map((match) => (match[1] ? match[1].trim().replace(/^["']|["']$/g, '') : ''))
+      .filter((value) => value.length > 0);
   };
 
   if (run.actionId === 'report.generate') {
-    const savedPath = extractPath(/\[report\]\s+Saved:\s+(.+)/);
-    return savedPath ? [savedPath] : [];
+    return extractPaths(/\[report\]\s+Saved:\s+(.+)/g);
   }
 
-  if (run.actionId === 'package.output') {
-    const deliveredPath = extractPath(/\[package\]\s+Delivered:\s+(.+)/);
-    return deliveredPath ? [deliveredPath] : [];
+  if (run.actionId === 'package.output' || run.actionId === 'workflow.delivery') {
+    return [
+      ...extractPaths(/\[package\]\s+Delivered:\s+(.+)/g),
+      ...extractPaths(/\[package\]\s+HTML:\s+(.+)/g),
+    ];
   }
 
   return [];
@@ -617,6 +618,26 @@ export function startModuleRun(input: ModuleRunRequest, requestedBy: string): Mo
 
 export function getModuleRun(runId: string): ModuleRunRecord | null {
   return runs.get(runId) || null;
+}
+
+export function resolveModuleRunArtifact(runId: string, artifactPath: string): string | null {
+  const run = runs.get(runId);
+  if (!run) return null;
+  const artifact = run.artifacts.find((entry) => entry.path === artifactPath);
+  if (!artifact) return null;
+
+  const absolutePath = resolveArtifactAbsolutePath(run, artifact.path);
+  if (!existsSync(absolutePath)) return null;
+
+  let stats: Stats;
+  try {
+    stats = statSync(absolutePath);
+  } catch {
+    return null;
+  }
+
+  if (!stats.isFile()) return null;
+  return absolutePath;
 }
 
 export function listModuleCatalog(): ModuleCatalogEntry[] {

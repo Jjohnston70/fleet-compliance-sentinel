@@ -5,6 +5,7 @@ Applies to planned endpoints:
 - `POST /api/modules/run`
 - `GET /api/modules/status/:id`
 - `GET /api/modules/catalog`
+- `GET /api/modules/artifact?runId=<id>&path=<artifact_path>`
 
 ## Design Constraints (Locked)
 
@@ -19,7 +20,7 @@ Applies to planned endpoints:
 | Module ID | Action IDs (frozen namespace) |
 | --- | --- |
 | `ML-EIA-PETROLEUM-INTEL` | `tests`, `ingest.all`, `ingest.source`, `ingest.api_update`, `pipeline.product`, `pipeline.all`, `export.report`, `export.skip_docx`, `export.json_only` |
-| `ML-SIGNAL-STACK-TNCC` | `pipeline.source`, `pipeline.all`, `export.csv`, `export.csv_all`, `export.csv_source`, `report.generate`, `package.output` |
+| `ML-SIGNAL-STACK-TNCC` | `pipeline.source`, `pipeline.all`, `export.csv`, `export.csv_all`, `export.csv_source`, `report.generate`, `package.output`, `workflow.delivery` |
 | `MOD-PAPERSTACK-PP` | `list`, `check`, `generate`, `convert`, `reverse`, `inspect`, `scan`, `tools.list`, `tools.check`, `generate.pdf`, `generate.docx` |
 | `command-center` | `startup.initialize`, `discover.modules`, `discover.tools`, `search.tools`, `schema.tool`, `route.tool_call`, `status.system`, `detail.module`, `classifications.list`, `dashboard.system`, `usage.tools`, `tests`, `build` |
 
@@ -363,7 +364,7 @@ curl -X GET "http://localhost:3000/api/modules/status/<run_id>" \
 ### Current Allowlist (Phase 5)
 
 - `ML-EIA-PETROLEUM-INTEL`: `tests`, `ingest.all`, `ingest.source`, `ingest.api_update`, `pipeline.product`, `pipeline.all`, `export.report`, `export.skip_docx`, `export.json_only`
-- `ML-SIGNAL-STACK-TNCC`: `pipeline.source`, `pipeline.all`, `export.csv`, `export.csv_all`, `export.csv_source`, `report.generate`, `package.output`
+- `ML-SIGNAL-STACK-TNCC`: `pipeline.source`, `pipeline.all`, `export.csv`, `export.csv_all`, `export.csv_source`, `report.generate`, `package.output`, `workflow.delivery`
 - `MOD-PAPERSTACK-PP`: `list`, `check`, `generate`, `convert`, `reverse`, `inspect`, `scan`, `tools.list`, `tools.check`, `generate.pdf`, `generate.docx`
 - `command-center`: `startup.initialize`, `discover.modules`, `discover.tools`, `search.tools`, `schema.tool`, `route.tool_call`, `status.system`, `detail.module`, `classifications.list`, `dashboard.system`, `usage.tools`, `tests`, `build`
 
@@ -392,3 +393,12 @@ curl -X GET "http://localhost:3000/api/modules/status/<run_id>" \
 3. Failed run hooks now emit:
    - structured server log event (`[module-gateway] run failed`)
    - optional webhook notification when `MODULE_GATEWAY_FAILURE_WEBHOOK_URL` is configured.
+
+## Phase 7 Additions
+
+1. Artifact retrieval endpoint added:
+   - `GET /api/modules/artifact?runId=<id>&path=<artifact_path>`
+   - supports browser-open for `.html` and download for ZIP/DOCX/other files.
+2. ML-SIGNAL packaging now writes both ZIP and standalone HTML to the output directory and returns both as run artifacts.
+3. New ML-SIGNAL one-click operator action:
+   - `workflow.delivery` runs export -> pipeline -> report -> package in a single run.

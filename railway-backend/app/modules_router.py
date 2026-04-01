@@ -9,8 +9,8 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Optional
 
-from fastapi import APIRouter, Header, HTTPException
-from fastapi.responses import JSONResponse
+from fastapi import APIRouter, Header, HTTPException, Query
+from fastapi.responses import FileResponse, JSONResponse
 from pydantic import BaseModel, ConfigDict, Field
 
 modules_router = APIRouter()
@@ -529,6 +529,44 @@ def _build_registry() -> dict[str, dict[str, Any]]:
                         *(["--out-dir", str(args["outDir"]).strip()] if isinstance(args.get("outDir"), str) and str(args["outDir"]).strip() else []),
                     ],
                 },
+                "workflow.delivery": {
+                    **_catalog_action(
+                        "workflow.delivery",
+                        "Run full SignalStack operator workflow (export -> pipeline -> report -> package)",
+                        [
+                            "python",
+                            "run_delivery.py",
+                            "--source",
+                            "<source|all>",
+                            "--skip-search?",
+                            "--skip-root-fix?",
+                            "--no-code?",
+                            "--out-dir?",
+                            "<outDir>",
+                        ],
+                        {
+                            "type": "object",
+                            "properties": {
+                                "source": {"type": "string", "enum": SIGNAL_SOURCE_OPTIONS, "default": "all"},
+                                "skipSearch": {"type": "boolean", "default": True},
+                                "skipRootFix": {"type": "boolean", "default": False},
+                                "noCode": {"type": "boolean", "default": False},
+                                "outDir": {"type": "string"},
+                            },
+                        },
+                        900_000,
+                    ),
+                    "buildCommand": lambda args: [
+                        PYTHON_EXECUTABLE,
+                        "run_delivery.py",
+                        "--source",
+                        str(args.get("source", "all")),
+                        *(["--skip-search"] if args.get("skipSearch") else []),
+                        *(["--skip-root-fix"] if args.get("skipRootFix") else []),
+                        *(["--no-code"] if args.get("noCode") else []),
+                        *(["--out-dir", str(args["outDir"]).strip()] if isinstance(args.get("outDir"), str) and str(args["outDir"]).strip() else []),
+                    ],
+                },
             },
         },
         "MOD-PAPERSTACK-PP": {
@@ -802,39 +840,97 @@ def _collect_ml_signal_artifacts(run: dict[str, Any], stdout_raw: str) -> list[d
         return []
 
     action_id = run["actionId"]
-    match: Optional[re.Match[str]] = None
+    patterns: list[str] = []
     if action_id == "report.generate":
-        match = re.search(r"\[report\]\s+Saved:\s+(.+)", stdout_raw)
-    elif action_id == "package.output":
-        match = re.search(r"\[package\]\s+Delivered:\s+(.+)", stdout_raw)
-    if not match:
+        patterns.append(r"\[report\]\s+Saved:\s+(.+)")
+    elif action_id in {"package.output", "workflow.delivery"}:
+        patterns.extend(
+            [
+                r"\[package\]\s+Delivered:\s+(.+)",
+                r"\[package\]\s+HTML:\s+(.+)",
+            ]
+        )
+
+    if not patterns:
         return []
 
-    raw_path = match.group(1).strip().strip("\"'")
-    if not raw_path:
-        return []
+    artifacts: list[dict[str, Any]] = []
+    seen: set[str] = set()
 
-    candidate_path = Path(raw_path)
-    if not candidate_path.is_absolute():
-        candidate_path = (Path(run["cwd"]) / candidate_path).resolve()
+    for pattern in patterns:
+        for match in re.finditer(pattern, stdout_raw):
+            raw_path = match.group(1).strip().strip("\"'")
+            if not raw_path:
+                continue
 
-    if not candidate_path.exists() or not candidate_path.is_file():
-        return []
+            candidate_path = Path(raw_path)
+            if not candidate_path.is_absolute():
+                candidate_path = (Path(run["cwd"]) / candidate_path).resolve()
 
-    try:
-        relative = candidate_path.relative_to(Path(run["cwd"])).as_posix()
-    except ValueError:
-        relative = str(candidate_path)
+            if not candidate_path.exists() or not candidate_path.is_file():
+                continue
 
-    stat = candidate_path.stat()
-    return [
-        {
-            "kind": "file",
-            "path": relative,
-            "sizeBytes": stat.st_size,
-            "modifiedAt": datetime.fromtimestamp(stat.st_mtime, tz=timezone.utc).isoformat(),
-        }
-    ]
+            try:
+                relative = candidate_path.relative_to(Path(run["cwd"])).as_posix()
+            except ValueError:
+                relative = str(candidate_path)
+
+            if relative in seen:
+                continue
+            seen.add(relative)
+
+            stat = candidate_path.stat()
+            artifacts.append(
+                {
+                    "kind": "file",
+                    "path": relative,
+                    "sizeBytes": stat.st_size,
+                    "modifiedAt": datetime.fromtimestamp(stat.st_mtime, tz=timezone.utc).isoformat(),
+                }
+            )
+
+    return artifacts
+
+
+def _artifact_media_type(file_path: Path) -> str:
+    suffix = file_path.suffix.lower()
+    if suffix == ".zip":
+        return "application/zip"
+    if suffix == ".html":
+        return "text/html; charset=utf-8"
+    if suffix == ".docx":
+        return "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+    if suffix == ".json":
+        return "application/json; charset=utf-8"
+    if suffix == ".txt":
+        return "text/plain; charset=utf-8"
+    return "application/octet-stream"
+
+
+def _resolve_artifact_path(run: dict[str, Any], artifact_path: str) -> Optional[Path]:
+    artifacts = run.get("artifacts") or []
+    if not isinstance(artifacts, list):
+        return None
+
+    selected = next(
+        (
+            artifact
+            for artifact in artifacts
+            if isinstance(artifact, dict) and artifact.get("path") == artifact_path
+        ),
+        None,
+    )
+    if not selected:
+        return None
+
+    candidate = Path(artifact_path)
+    if not candidate.is_absolute():
+        candidate = (Path(run["cwd"]) / candidate).resolve()
+
+    if not candidate.exists() or not candidate.is_file():
+        return None
+
+    return candidate
 
 
 def _collect_run_artifacts(run: dict[str, Any], stdout_raw: str) -> list[dict[str, Any]]:
@@ -1071,3 +1167,29 @@ async def modules_status(run_id: str, x_penny_api_key: Optional[str] = Header(de
         body, status = _fail_response("MODULE_NOT_FOUND", f"Run '{run_id}' was not found", 404)
         return JSONResponse(body, status_code=status)
     return {"ok": True, "run": run}
+
+
+@modules_router.get("/modules/artifact/{run_id}")
+async def modules_artifact(
+    run_id: str,
+    artifact_path: str = Query(..., alias="path"),
+    x_penny_api_key: Optional[str] = Header(default=None),
+):
+    _verify_api_key(x_penny_api_key)
+
+    run = RUNS.get(run_id)
+    if run is None:
+        body, status = _fail_response("MODULE_NOT_FOUND", f"Run '{run_id}' was not found", 404)
+        return JSONResponse(body, status_code=status)
+
+    resolved = _resolve_artifact_path(run, artifact_path)
+    if not resolved:
+        body, status = _fail_response(
+            "MODULE_NOT_FOUND",
+            f"Artifact '{artifact_path}' was not found for run '{run_id}'",
+            404,
+        )
+        return JSONResponse(body, status_code=status)
+
+    media_type = _artifact_media_type(resolved)
+    return FileResponse(str(resolved), media_type=media_type, filename=resolved.name)

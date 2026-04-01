@@ -1,0 +1,122 @@
+import path from 'node:path';
+import { readFile } from 'node:fs/promises';
+import {
+  fleetComplianceAuthErrorResponse,
+  requireFleetComplianceOrgWithRole,
+} from '@/lib/fleet-compliance-auth';
+import { fetchRemoteModuleArtifact, shouldUseRemoteModuleGateway } from '@/lib/modules-gateway/remote';
+import { resolveModuleRunArtifact } from '@/lib/modules-gateway/runner';
+
+export const runtime = 'nodejs';
+export const dynamic = 'force-dynamic';
+
+function mediaTypeForArtifactPath(artifactPath: string): string {
+  const ext = path.extname(artifactPath).toLowerCase();
+  if (ext === '.zip') return 'application/zip';
+  if (ext === '.html' || ext === '.htm') return 'text/html; charset=utf-8';
+  if (ext === '.docx') return 'application/vnd.openxmlformats-officedocument.wordprocessingml.document';
+  if (ext === '.json') return 'application/json; charset=utf-8';
+  if (ext === '.txt' || ext === '.log') return 'text/plain; charset=utf-8';
+  return 'application/octet-stream';
+}
+
+function dispositionForArtifactPath(artifactPath: string): 'inline' | 'attachment' {
+  const ext = path.extname(artifactPath).toLowerCase();
+  if (ext === '.html' || ext === '.htm' || ext === '.json' || ext === '.txt' || ext === '.log') {
+    return 'inline';
+  }
+  return 'attachment';
+}
+
+function parseQuery(request: Request): { runId: string; artifactPath: string } | null {
+  const url = new URL(request.url);
+  const runId = (url.searchParams.get('runId') || '').trim();
+  const artifactPath = (url.searchParams.get('path') || '').trim();
+  if (!runId || !artifactPath) return null;
+  return { runId, artifactPath };
+}
+
+export async function GET(request: Request) {
+  try {
+    await requireFleetComplianceOrgWithRole(request, 'admin');
+  } catch (error: unknown) {
+    const authResponse = fleetComplianceAuthErrorResponse(error);
+    if (authResponse) return authResponse;
+    return Response.json({ ok: false, error: { code: 'VALIDATION_ERROR', message: 'Unauthorized' } }, { status: 401 });
+  }
+
+  const parsed = parseQuery(request);
+  if (!parsed) {
+    return Response.json(
+      { ok: false, error: { code: 'VALIDATION_ERROR', message: 'runId and path are required' } },
+      { status: 400 },
+    );
+  }
+
+  const fileName = path.basename(parsed.artifactPath);
+  const fallbackContentType = mediaTypeForArtifactPath(parsed.artifactPath);
+  const disposition = dispositionForArtifactPath(parsed.artifactPath);
+
+  if (shouldUseRemoteModuleGateway()) {
+    try {
+      const { res } = await fetchRemoteModuleArtifact(parsed.runId, parsed.artifactPath);
+      if (!res.ok) {
+        let body: unknown = null;
+        try {
+          body = await res.json();
+        } catch {
+          body = null;
+        }
+        return Response.json(
+          body || { ok: false, error: { code: 'MODULE_NOT_FOUND', message: 'Artifact was not found' } },
+          { status: res.status },
+        );
+      }
+
+      const data = await res.arrayBuffer();
+      return new Response(data, {
+        status: 200,
+        headers: {
+          'Content-Type': res.headers.get('content-type') || fallbackContentType,
+          'Content-Disposition': `${disposition}; filename="${fileName}"`,
+          'Cache-Control': 'no-store',
+        },
+      });
+    } catch (error: unknown) {
+      return Response.json(
+        {
+          ok: false,
+          error: {
+            code: 'INTERNAL_ERROR',
+            message: error instanceof Error ? error.message : 'Remote module gateway unavailable',
+          },
+        },
+        { status: 502 },
+      );
+    }
+  }
+
+  const absolutePath = resolveModuleRunArtifact(parsed.runId, parsed.artifactPath);
+  if (!absolutePath) {
+    return Response.json(
+      {
+        ok: false,
+        error: {
+          code: 'MODULE_NOT_FOUND',
+          message: `Artifact '${parsed.artifactPath}' was not found for run '${parsed.runId}'`,
+        },
+      },
+      { status: 404 },
+    );
+  }
+
+  const buffer = await readFile(absolutePath);
+  return new Response(buffer, {
+    status: 200,
+    headers: {
+      'Content-Type': fallbackContentType,
+      'Content-Disposition': `${disposition}; filename="${fileName}"`,
+      'Cache-Control': 'no-store',
+    },
+  });
+}

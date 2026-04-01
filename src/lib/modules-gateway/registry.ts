@@ -576,6 +576,69 @@ const MODULE_REGISTRY: ModuleDefinition[] = [
         },
         300_000,
       ),
+      pythonAction(
+        'workflow.delivery',
+        'Run full SignalStack operator workflow (export -> pipeline -> report -> package)',
+        [
+          'python',
+          'run_delivery.py',
+          '--source',
+          '<source|all>',
+          '--skip-search?',
+          '--skip-root-fix?',
+          '--no-code?',
+          '--out-dir?',
+          '<outDir>',
+        ],
+        (args) => {
+          const source = typeof args.source === 'string' ? args.source : 'all';
+          const commandArgs = ['run_delivery.py', '--source', source];
+          if (Boolean(args.skipSearch)) {
+            commandArgs.push('--skip-search');
+          }
+          if (Boolean(args.skipRootFix)) {
+            commandArgs.push('--skip-root-fix');
+          }
+          if (Boolean(args.noCode)) {
+            commandArgs.push('--no-code');
+          }
+          if (typeof args.outDir === 'string' && args.outDir.trim().length > 0) {
+            commandArgs.push('--out-dir', args.outDir.trim());
+          }
+          return commandArgs;
+        },
+        {
+          type: 'object',
+          properties: {
+            source: {
+              type: 'string',
+              enum: SIGNAL_SOURCE_OPTIONS,
+              default: 'all',
+              description: 'Signal source to process through full delivery workflow',
+            },
+            skipSearch: {
+              type: 'boolean',
+              default: true,
+              description: 'Skip SARIMA grid search and use saved manual params',
+            },
+            skipRootFix: {
+              type: 'boolean',
+              default: false,
+              description: 'Skip workbook normalization before CSV export',
+            },
+            noCode: {
+              type: 'boolean',
+              default: false,
+              description: 'Omit code folder from packaged ZIP artifact',
+            },
+            outDir: {
+              type: 'string',
+              description: 'Optional output directory for delivery ZIP/HTML artifacts',
+            },
+          },
+        },
+        900_000,
+      ),
     ],
   },
   {
