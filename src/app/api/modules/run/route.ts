@@ -3,12 +3,48 @@ import {
   requireFleetComplianceOrgWithRole,
 } from '@/lib/fleet-compliance-auth';
 import { shouldUseRemoteModuleGateway, startRemoteModuleRun } from '@/lib/modules-gateway/remote';
-import { buildValidationError, startModuleRun, startModuleRunAndWait } from '@/lib/modules-gateway/runner';
-import type { ModuleRunRequest } from '@/lib/modules-gateway/types';
+import {
+  buildValidationError,
+  resolveModuleRunArtifact,
+  startModuleRun,
+  startModuleRunAndWait,
+} from '@/lib/modules-gateway/runner';
+import { maybePersistModuleRunInsights } from '@/lib/modules-gateway/persistence';
+import type { ModuleRunRecord, ModuleRunRequest } from '@/lib/modules-gateway/types';
+import { readFile } from 'node:fs/promises';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
 export const maxDuration = 300;
+
+async function readLocalArtifactJson(runId: string, artifactPath: string): Promise<Record<string, unknown> | null> {
+  const absolutePath = resolveModuleRunArtifact(runId, artifactPath);
+  if (!absolutePath) return null;
+  try {
+    const raw = await readFile(absolutePath, 'utf8');
+    return JSON.parse(raw) as Record<string, unknown>;
+  } catch {
+    return null;
+  }
+}
+
+async function persistRunInsights(orgId: string, run: ModuleRunRecord): Promise<void> {
+  try {
+    await maybePersistModuleRunInsights({
+      orgId,
+      run,
+      readArtifactJson: (artifactPath: string) => readLocalArtifactJson(run.id, artifactPath),
+    });
+  } catch (error) {
+    console.error('[module-gateway] failed to persist run insights from run endpoint', {
+      orgId,
+      runId: run.id,
+      moduleId: run.moduleId,
+      actionId: run.actionId,
+      message: error instanceof Error ? error.message : String(error),
+    });
+  }
+}
 
 function isPlainObject(value: unknown): value is Record<string, unknown> {
   return Boolean(value) && typeof value === 'object' && !Array.isArray(value);
@@ -52,9 +88,11 @@ function parseRunRequest(body: unknown): { ok: true; data: ModuleRunRequest } | 
 
 export async function POST(request: Request) {
   let userId = 'system';
+  let orgId = '';
   try {
     const authContext = await requireFleetComplianceOrgWithRole(request, 'admin');
     userId = authContext.userId;
+    orgId = authContext.orgId;
   } catch (error: unknown) {
     const authResponse = fleetComplianceAuthErrorResponse(error);
     if (authResponse) return authResponse;
@@ -100,6 +138,10 @@ export async function POST(request: Request) {
     : startModuleRun(parsed.data, userId);
   if (!result.ok) {
     return Response.json({ ok: false, error: result.error }, { status: result.httpStatus });
+  }
+
+  if (orgId && result.run.status !== 'queued') {
+    await persistRunInsights(orgId, result.run);
   }
 
   const responseStatus = result.run.status === 'queued' ? 202 : 200;
