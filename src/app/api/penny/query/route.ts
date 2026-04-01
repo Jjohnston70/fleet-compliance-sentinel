@@ -72,6 +72,33 @@ function isKnowledgeCatalogQuery(query: string): boolean {
   );
 }
 
+function shouldIncludeOrgContext(query: string): boolean {
+  const q = query.toLowerCase();
+  const fleetSignals = [
+    'my fleet',
+    'our fleet',
+    'my company',
+    'our company',
+    'my drivers',
+    'our drivers',
+    'my assets',
+    'our assets',
+    'my permits',
+    'our permits',
+    'my invoices',
+    'our invoices',
+    'suspense',
+    'telematics',
+    'asset id',
+    'unit ',
+    'employee',
+    'driver id',
+    'for us',
+    'for my operation',
+  ];
+  return fleetSignals.some((signal) => q.includes(signal));
+}
+
 function enrichComplianceQuery(query: string): string {
   const q = query.toLowerCase();
   const extras: string[] = [];
@@ -104,6 +131,27 @@ function enrichComplianceQuery(query: string): string {
     (q.includes('route') || q.includes('delivery address') || q.includes('address') || q.includes('deviat'))
   ) {
     extras.push('397.67', '49 CFR Part 397', 'hazardous materials routing', 'route deviation', 'delivery destination');
+  }
+  if (
+    (q.includes('hazmat') || q.includes('hazardous material')) &&
+    (q.includes('manual') || q.includes('on truck') || q.includes('carry') || q.includes('required document'))
+  ) {
+    extras.push(
+      '49 CFR Part 172',
+      '172.602',
+      'shipping papers',
+      'emergency response information',
+      'emergency response guidebook',
+      'ERG'
+    );
+  }
+  if (q.includes('part 397') || q.includes('transportation of hazardous materials')) {
+    extras.push(
+      'cfr-part-397-hazardous-materials-driving',
+      'driving and parking rules',
+      'attendance and parking',
+      'hazmat routing'
+    );
   }
   if (
     (q.includes('maintenance') || q.includes('inspection report') || q.includes('vehicle records')) &&
@@ -244,7 +292,8 @@ export async function POST(request: NextRequest) {
     }
 
     const effectiveQuery = enrichComplianceQuery(query);
-    orgContext = orgId ? await buildOrgContext(orgId) : '';
+    const includeOrgContext = orgId ? shouldIncludeOrgContext(query) : false;
+    orgContext = orgId && includeOrgContext ? await buildOrgContext(orgId) : '';
     orgContextPreview = buildOrgContextPreview(orgContext);
 
     const fallbackUsedCount = parseGeneralFallbackUsed(
