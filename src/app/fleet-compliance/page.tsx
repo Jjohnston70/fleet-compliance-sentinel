@@ -187,6 +187,22 @@ export default async function FleetCompliancePage() {
             </ul>
           </div>
           <div className="fleet-compliance-list-card">
+            <h3>ML-EIA Signal</h3>
+            {data.mlEiaInsight ? (
+              <ul>
+                <li>Latest regime: {data.mlEiaInsight.regime || 'unknown'}.</li>
+                <li>Strategy: {data.mlEiaInsight.strategy || 'not set'}.</li>
+                <li>{data.mlEiaInsight.alertCount} active petroleum alerts now feed suspense.</li>
+              </ul>
+            ) : (
+              <ul>
+                <li>No persisted ML-EIA run snapshot yet.</li>
+                <li>Run `pipeline.all` in Module Tools to populate this card.</li>
+                <li>Once synced, alerts are included in Suspense and Alerts routes.</li>
+              </ul>
+            )}
+          </div>
+          <div className="fleet-compliance-list-card">
             <h3>Live Links</h3>
             <ul>
               {fleetComplianceResourceLinks.map((item) => (

@@ -5,6 +5,7 @@
  * All pages are server components so they can await these functions.
  */
 import { getSQL } from '@/lib/fleet-compliance-db';
+import { loadLatestMlEiaInsight } from '@/lib/modules-gateway/persistence';
 
 // ── Re-export interfaces (same shapes as fleet-compliance-demo-data.ts) ──────────────
 
@@ -108,6 +109,28 @@ export interface FleetComplianceModuleSummary {
   pennyCorpus: string;
 }
 
+export interface FleetComplianceMlEiaInsight {
+  runId: string;
+  generatedAt: string | null;
+  regime: string | null;
+  strategy: string | null;
+  alertCount: number;
+  alerts: Array<{
+    severity: string;
+    product: string;
+    type: string;
+    message: string;
+    date: string;
+  }>;
+  forecasts: Array<{
+    product: string;
+    lastDate: string | null;
+    point: number | null;
+    ci80Low: number | null;
+    ci80High: number | null;
+  }>;
+}
+
 export interface FleetComplianceDocumentLink {
   label: string;
   note: string;
@@ -200,6 +223,14 @@ function normalizeAssetCategory(category: string | null | undefined): string {
   if (n === 'tank' || n.includes('tank')) return 'tank';
   if (n === 'trailer') return 'trailer';
   return n;
+}
+
+function normalizeDateLike(value: string | null | undefined): string {
+  if (!value) return '';
+  if (/^\d{4}-\d{2}-\d{2}$/.test(value)) return value;
+  const parsed = new Date(value);
+  if (Number.isNaN(parsed.getTime())) return '';
+  return parsed.toISOString().slice(0, 10);
 }
 
 function addOneYear(dateText: string | null | undefined): string {
@@ -539,6 +570,52 @@ function generateSuspenseFromAssets(assets: FleetComplianceAssetRecord[]): Fleet
   return items;
 }
 
+function normalizeAlertSeverity(severity: string | null | undefined): string {
+  const normalized = (severity || '').trim().toLowerCase();
+  if (normalized === 'high' || normalized === 'medium' || normalized === 'low') return normalized;
+  if (normalized === 'critical') return 'high';
+  return 'medium';
+}
+
+function buildMlEiaAlertTitle(alert: FleetComplianceMlEiaInsight['alerts'][number]): string {
+  const message = (alert.message || '').trim();
+  if (message) return `[ML-EIA] ${message}`;
+  const product = alert.product || 'petroleum product';
+  const type = alert.type || 'alert';
+  return `[ML-EIA] ${type} for ${product}`;
+}
+
+function generateSuspenseFromMlEiaInsight(mlEiaInsight: FleetComplianceMlEiaInsight | null): FleetComplianceSuspenseRecord[] {
+  if (!mlEiaInsight || mlEiaInsight.alerts.length === 0) return [];
+
+  const items: FleetComplianceSuspenseRecord[] = [];
+  const baseDate = normalizeDateLike(mlEiaInsight.generatedAt) || new Date().toISOString().slice(0, 10);
+
+  mlEiaInsight.alerts.slice(0, 50).forEach((alert, index) => {
+    const dueDate = normalizeDateLike(alert.date) || baseDate;
+    const days = daysUntil(dueDate);
+    const alertState = days < 0 ? 'overdue' : 'scheduled';
+    const productSeed = slugId(alert.product || 'product');
+    const typeSeed = slugId(alert.type || 'alert');
+    const dateSeed = slugId(dueDate || String(index));
+    const suspenseItemId = `susp-ml-eia-${productSeed}-${typeSeed}-${dateSeed}-${index + 1}`;
+
+    items.push({
+      suspenseItemId,
+      sourceType: 'ml_eia_alert',
+      sourceId: `${alert.product || 'product'}:${alert.type || 'alert'}`,
+      title: buildMlEiaAlertTitle(alert),
+      ownerEmail: 'fuelops@company.com',
+      dueDate,
+      alertState,
+      severity: normalizeAlertSeverity(alert.severity),
+      status: 'open',
+    });
+  });
+
+  return items;
+}
+
 // ── Main data loader ──────────────────────────────────────────────────────
 
 export interface FleetComplianceData {
@@ -547,6 +624,7 @@ export interface FleetComplianceData {
   drivers: FleetComplianceDriverComplianceRecord[];
   permits: FleetCompliancePermitRecord[];
   suspense: FleetComplianceSuspenseRecord[];
+  mlEiaInsight: FleetComplianceMlEiaInsight | null;
   activityLogs: FleetComplianceActivityLogRecord[];
   maintenanceEvents: FleetComplianceMaintenanceEventRecord[];
   assetCategories: string[];
@@ -561,7 +639,7 @@ export interface FleetComplianceData {
 export async function loadFleetComplianceData(orgId: string): Promise<FleetComplianceData> {
   const [
     rawAssets, rawTanks, rawVehicles, rawDrivers, rawEmployees,
-    rawPermits, rawActivity, rawMaintenance, rawSchedule,
+    rawPermits, rawActivity, rawMaintenance, rawSchedule, latestMlEiaInsight,
   ] = await Promise.all([
     loadCollection('assets_master', orgId),
     loadCollection('storage_tanks', orgId),
@@ -572,7 +650,20 @@ export async function loadFleetComplianceData(orgId: string): Promise<FleetCompl
     loadCollection('activity_log', orgId),
     loadCollection('maintenance_tracker', orgId),
     loadCollection('maintenance_schedule', orgId),
+    loadLatestMlEiaInsight(orgId),
   ]);
+
+  const mlEiaInsight: FleetComplianceMlEiaInsight | null = latestMlEiaInsight
+    ? {
+        runId: latestMlEiaInsight.runId,
+        generatedAt: latestMlEiaInsight.generatedAt,
+        regime: latestMlEiaInsight.regime,
+        strategy: latestMlEiaInsight.strategy,
+        alertCount: latestMlEiaInsight.alertCount,
+        alerts: latestMlEiaInsight.alerts,
+        forecasts: latestMlEiaInsight.forecasts,
+      }
+    : null;
 
   // Assets = assets_master + tanks + vehicles (deduped)
   const assetRecords = transformAssets(rawAssets);
@@ -610,6 +701,7 @@ export async function loadFleetComplianceData(orgId: string): Promise<FleetCompl
       ...generateSuspenseFromDrivers(allDrivers),
       ...generateSuspenseFromPermits(allPermits),
       ...generateSuspenseFromAssets(allAssets),
+      ...generateSuspenseFromMlEiaInsight(mlEiaInsight),
     ],
     (r) => r.dueDate
   );
@@ -628,6 +720,7 @@ export async function loadFleetComplianceData(orgId: string): Promise<FleetCompl
     drivers: allDrivers,
     permits: allPermits,
     suspense: allSuspense,
+    mlEiaInsight,
     activityLogs: allActivity,
     maintenanceEvents: allMaintenance,
     assetCategories: uniqueValues(allAssets.map((a) => a.category)),

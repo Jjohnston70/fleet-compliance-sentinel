@@ -2,15 +2,67 @@ import {
   fleetComplianceAuthErrorResponse,
   requireFleetComplianceOrgWithRole,
 } from '@/lib/fleet-compliance-auth';
+import { readFile } from 'node:fs/promises';
 import { fetchRemoteModuleRun, shouldUseRemoteModuleGateway } from '@/lib/modules-gateway/remote';
-import { getModuleRun } from '@/lib/modules-gateway/runner';
+import { getModuleRun, resolveModuleRunArtifact } from '@/lib/modules-gateway/runner';
+import { fetchRemoteModuleArtifact } from '@/lib/modules-gateway/remote';
+import { maybePersistModuleRunInsights } from '@/lib/modules-gateway/persistence';
+import type { ModuleRunRecord } from '@/lib/modules-gateway/types';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
 
-export async function GET(request: Request, context: { params: Promise<{ id: string }> }) {
+async function readLocalArtifactJson(runId: string, artifactPath: string): Promise<Record<string, unknown> | null> {
+  const absolutePath = resolveModuleRunArtifact(runId, artifactPath);
+  if (!absolutePath) return null;
   try {
-    await requireFleetComplianceOrgWithRole(request, 'admin');
+    const raw = await readFile(absolutePath, 'utf8');
+    return JSON.parse(raw) as Record<string, unknown>;
+  } catch {
+    return null;
+  }
+}
+
+async function readRemoteArtifactJson(runId: string, artifactPath: string): Promise<Record<string, unknown> | null> {
+  const { res } = await fetchRemoteModuleArtifact(runId, artifactPath);
+  if (!res.ok) return null;
+  try {
+    return (await res.json()) as Record<string, unknown>;
+  } catch {
+    return null;
+  }
+}
+
+async function persistRunInsights(
+  orgId: string,
+  run: ModuleRunRecord,
+  useRemoteArtifacts: boolean,
+): Promise<void> {
+  try {
+    await maybePersistModuleRunInsights({
+      orgId,
+      run,
+      readArtifactJson: (artifactPath: string) =>
+        useRemoteArtifacts
+          ? readRemoteArtifactJson(run.id, artifactPath)
+          : readLocalArtifactJson(run.id, artifactPath),
+    });
+  } catch (error) {
+    console.error('[module-gateway] failed to persist run insights', {
+      orgId,
+      runId: run.id,
+      moduleId: run.moduleId,
+      actionId: run.actionId,
+      message: error instanceof Error ? error.message : String(error),
+    });
+  }
+}
+
+export async function GET(request: Request, context: { params: Promise<{ id: string }> }) {
+  let orgId = '';
+  try {
+    const authContext = await requireFleetComplianceOrgWithRole(request, 'admin');
+    orgId = authContext.orgId;
   } catch (error: unknown) {
     const authResponse = fleetComplianceAuthErrorResponse(error);
     if (authResponse) return authResponse;
@@ -29,11 +81,17 @@ export async function GET(request: Request, context: { params: Promise<{ id: str
     try {
       const { res, body } = await fetchRemoteModuleRun(runId);
       if (res.status !== 404) {
+        if (res.ok && body?.ok && body?.run && orgId) {
+          await persistRunInsights(orgId, body.run as ModuleRunRecord, true);
+        }
         return Response.json(body, { status: res.status });
       }
 
       const localRun = getModuleRun(runId);
       if (localRun) {
+        if (orgId) {
+          await persistRunInsights(orgId, localRun, false);
+        }
         return Response.json({ ok: true, run: localRun }, { status: 200 });
       }
 
@@ -58,6 +116,10 @@ export async function GET(request: Request, context: { params: Promise<{ id: str
       { ok: false, error: { code: 'MODULE_NOT_FOUND', message: `Run '${runId}' was not found` } },
       { status: 404 },
     );
+  }
+
+  if (orgId) {
+    await persistRunInsights(orgId, run, false);
   }
 
   return Response.json({ ok: true, run }, { status: 200 });
