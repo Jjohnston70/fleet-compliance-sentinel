@@ -13,16 +13,33 @@ function mergeCatalogEntries(
   remoteCatalog: ModuleCatalogEntry[],
   localCatalog: ModuleCatalogEntry[],
 ): ModuleCatalogEntry[] {
-  const byModuleId = new Map<string, ModuleCatalogEntry>();
-  for (const entry of remoteCatalog) {
-    byModuleId.set(entry.moduleId, entry);
-  }
-  for (const entry of localCatalog) {
-    if (!byModuleId.has(entry.moduleId)) {
-      byModuleId.set(entry.moduleId, entry);
+  const localById = new Map(localCatalog.map((entry) => [entry.moduleId, entry]));
+  const merged: ModuleCatalogEntry[] = remoteCatalog.map((remoteEntry) => {
+    const localEntry = localById.get(remoteEntry.moduleId);
+    if (!localEntry) return remoteEntry;
+
+    const actionById = new Map(remoteEntry.actions.map((action) => [action.actionId, action]));
+    for (const localAction of localEntry.actions) {
+      if (!actionById.has(localAction.actionId)) {
+        actionById.set(localAction.actionId, localAction);
+      }
+    }
+
+    return {
+      ...localEntry,
+      ...remoteEntry,
+      actions: Array.from(actionById.values()),
+    };
+  });
+
+  const mergedById = new Map(merged.map((entry) => [entry.moduleId, entry]));
+  for (const localEntry of localCatalog) {
+    if (!mergedById.has(localEntry.moduleId)) {
+      merged.push(localEntry);
     }
   }
-  return Array.from(byModuleId.values());
+
+  return merged;
 }
 
 export async function GET(request: Request) {

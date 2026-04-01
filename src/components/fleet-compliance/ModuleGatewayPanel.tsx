@@ -219,19 +219,56 @@ export default function ModuleGatewayPanel() {
       'Runs petroleum forecasting pipeline across all default products.',
       { trainYears: 10 },
     );
-    registerPreset(
-      'MOD-PAPERSTACK-PP',
-      'invoice.extract_batch',
-      'PaperStack invoice batch extraction',
-      'Parses vendor invoice PDFs and exports fleet-ready JSON + XLSX artifacts.',
-      { inputDir: 'invoice-samples', pattern: '*.pdf', format: 'fleet' },
-    );
-    registerPreset(
-      'command-center',
-      'discover.tools',
-      'Command-center tool catalog',
-      'Discovers currently registered command-center tools.',
-    );
+    const paperstackEntry = moduleById.get('MOD-PAPERSTACK-PP');
+    const paperstackActionIds = new Set(paperstackEntry?.actions.map((entry) => entry.actionId) || []);
+    if (paperstackActionIds.has('invoice.extract_batch')) {
+      registerPreset(
+        'MOD-PAPERSTACK-PP',
+        'invoice.extract_batch',
+        'PaperStack invoice batch extraction',
+        'Parses vendor invoice PDFs and exports fleet-ready JSON + XLSX artifacts.',
+        { inputDir: 'invoice-samples', pattern: '*.pdf', format: 'fleet' },
+      );
+    } else if (paperstackActionIds.has('generate.pdf')) {
+      registerPreset(
+        'MOD-PAPERSTACK-PP',
+        'generate.pdf',
+        'PaperStack generate PDF',
+        'Generates the default PaperStack PDF output.',
+      );
+    } else if (paperstackActionIds.has('tools.list')) {
+      registerPreset(
+        'MOD-PAPERSTACK-PP',
+        'tools.list',
+        'PaperStack tool check',
+        'Lists available PaperStack capabilities and readiness.',
+      );
+    } else if (paperstackActionIds.has('list')) {
+      registerPreset(
+        'MOD-PAPERSTACK-PP',
+        'list',
+        'PaperStack tool check',
+        'Lists available PaperStack capabilities and readiness.',
+      );
+    }
+
+    const commandCenterEntry = moduleById.get('command-center');
+    const commandCenterActionIds = new Set(commandCenterEntry?.actions.map((entry) => entry.actionId) || []);
+    if (commandCenterActionIds.has('discover.tools')) {
+      registerPreset(
+        'command-center',
+        'discover.tools',
+        'Command-center tool catalog',
+        'Discovers currently registered command-center tools.',
+      );
+    } else if (commandCenterActionIds.has('discover.modules')) {
+      registerPreset(
+        'command-center',
+        'discover.modules',
+        'Command-center module catalog',
+        'Discovers currently registered command-center modules.',
+      );
+    }
 
     return presets;
   }, [catalog]);
