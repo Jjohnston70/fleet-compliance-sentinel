@@ -25,9 +25,24 @@ const CFR_DOCS_DIR = path.join(process.cwd(), 'knowledge', 'cfr-docs')
 
 // CFR chunk index — built by scripts/build-cfr-index.mjs
 const CFR_INDEX_FILE = path.join(process.cwd(), 'knowledge', 'cfr-index', 'chunks.json')
+const DEMO_INDEX_FILE = path.join(process.cwd(), 'knowledge', 'demo-index', 'chunks.json')
+const DEMO_DOMAIN = 'demo-docs'
 
 // Per-org document chunks — built when orgs upload compliance docs
 const ORG_DATA_ROOT = path.join(process.cwd(), 'knowledge', 'org-data')
+
+function shouldSearchDemoKnowledge(query: string): boolean {
+  const q = query.toLowerCase()
+  return (
+    q.includes('hubspot') ||
+    q.includes('tenstreet') ||
+    q.includes('realty command') ||
+    q.includes('realty-command') ||
+    q.includes('crm') ||
+    q.includes('applicant tracking') ||
+    q.includes('driver recruiting')
+  )
+}
 
 /**
  * Builds the CFR chunk index from markdown files in knowledge/cfr-docs/.
@@ -121,6 +136,7 @@ export async function buildPennyContext(params: {
   topK?: number
 }): Promise<{ groundedPrompt: string; sources: string[] }> {
   const topK = params.topK ?? 5
+  const includeDemoKnowledge = shouldSearchDemoKnowledge(params.query)
 
   // Search CFR knowledge base
   const cfrIndex = new JsonChunkIndex(CFR_INDEX_FILE)
@@ -145,8 +161,22 @@ export async function buildPennyContext(params: {
     }
   }
 
+  let demoChunks: typeof cfrChunks = []
+  if (includeDemoKnowledge) {
+    try {
+      const demoIndex = new JsonChunkIndex(DEMO_INDEX_FILE)
+      demoChunks = await demoIndex.search({
+        query: params.query,
+        topK: 4,
+        domainSlug: DEMO_DOMAIN,
+      })
+    } catch {
+      // Demo index not built yet — continue with org + CFR only
+    }
+  }
+
   // Org-specific chunks first (more relevant), CFR chunks second (regulatory context)
-  const allChunks = [...orgChunks, ...cfrChunks].slice(0, topK + 3)
+  const allChunks = [...orgChunks, ...demoChunks, ...cfrChunks].slice(0, topK + 4)
 
   const groundedPrompt = buildGroundedPrompt({
     question: params.query,
@@ -154,7 +184,7 @@ export async function buildPennyContext(params: {
     instruction:
       'You are Pipeline Penny, a DOT compliance assistant for True North Data Strategies. ' +
       'Answer ONLY from the context chunks provided. ' +
-      'Cite the specific CFR part and section when referencing regulations. ' +
+      'Cite the specific CFR part and section when referencing regulations, and cite source IDs for non-regulatory docs. ' +
       'If the answer is not in the context, say clearly: ' +
       "'I don't have that information in the current knowledge base.'",
   })

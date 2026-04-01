@@ -258,7 +258,7 @@ export async function POST(request: NextRequest) {
     // Build grounded context from the local CFR index before hitting Railway.
     // Falls back gracefully if index is empty or not yet built.
     let groundedContext: string | null = null;
-    let cfrSources: string[] = [];
+    let groundedSources: string[] = [];
     try {
       const { groundedPrompt, sources } = await buildPennyContext({
         query: effectiveQuery,
@@ -267,7 +267,7 @@ export async function POST(request: NextRequest) {
       });
       if (groundedPrompt && sources.length > 0) {
         groundedContext = groundedPrompt;
-        cfrSources = sources;
+        groundedSources = sources;
       }
     } catch {
       // Index not built yet or empty — continue with Railway's own knowledge store
@@ -374,8 +374,8 @@ export async function POST(request: NextRequest) {
     const data = await res.json();
     const rawSources = Array.isArray(data?.sources) ? (data.sources as BackendSource[]) : [];
     const backendSources = rawSources.map(normalizeSource).filter((item): item is string => Boolean(item));
-    // Merge CFR sources (from local index) with any sources Railway returned
-    const sources = [...new Set([...cfrSources, ...backendSources])];
+    // Merge locally grounded sources with any sources Railway returned
+    const sources = [...new Set([...groundedSources, ...backendSources])];
     const generalFallbackUsed = Boolean(data?.general_fallback_used) && allowGeneralFallback;
     const nextFallbackUsedCount = generalFallbackUsed
       ? Math.min(GENERAL_FALLBACK_SESSION_LIMIT, fallbackUsedCount + 1)
@@ -414,7 +414,7 @@ export async function POST(request: NextRequest) {
           ? `${data.answer}${fallbackLimitNotice}`
           : "I couldn't find an answer to that in the knowledge base.",
       sources,
-      mode: groundedContext ? 'cfr-grounded' : (typeof data?.mode === 'string' ? data.mode : 'rag'),
+      mode: groundedContext ? 'grounded' : (typeof data?.mode === 'string' ? data.mode : 'rag'),
       processing_ms: typeof data?.processing_ms === 'number' ? data.processing_ms : undefined,
       general_fallback_used: generalFallbackUsed,
       general_fallback_remaining: fallbackRemainingAfter,
