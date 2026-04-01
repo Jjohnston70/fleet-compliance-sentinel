@@ -166,6 +166,34 @@ async function executeRun(runId: string): Promise<void> {
 
   const run = runs.get(runId);
   if (!run) return;
+  const action = getModuleAction(run.moduleId, run.actionId);
+  if (!action) {
+    updateRun(runId, (current) => ({
+      ...current,
+      status: 'fail',
+      endedAt: nowIso(),
+      durationMs: 0,
+      error: {
+        code: 'ACTION_NOT_ALLOWED',
+        message: `Action '${current.actionId}' is not allowlisted for module '${current.moduleId}'`,
+      },
+    }));
+    return;
+  }
+
+  if (!action.execute && !action.buildCommand) {
+    updateRun(runId, (current) => ({
+      ...current,
+      status: 'fail',
+      endedAt: nowIso(),
+      durationMs: 0,
+      error: {
+        code: 'INTERNAL_ERROR',
+        message: `No execution strategy configured for '${current.moduleId}:${current.actionId}'`,
+      },
+    }));
+    return;
+  }
 
   let stdout = '';
   let stderr = '';
@@ -174,6 +202,70 @@ async function executeRun(runId: string): Promise<void> {
   let timedOut = false;
 
   const startedAtEpoch = Date.now();
+
+  if (action.execute) {
+    try {
+      const bridgeResult = await action.execute(run.args);
+      const endedAt = nowIso();
+      const durationMs = Date.now() - startedAtEpoch;
+      const stdoutPreview = previewOutput(bridgeResult.message || '', false);
+      const stderrPreview = previewOutput(bridgeResult.stderr || '', false);
+      const artifacts = bridgeResult.artifacts || collectRunArtifacts(run);
+
+      if (bridgeResult.ok) {
+        updateRun(runId, (current) => ({
+          ...current,
+          status: 'success',
+          endedAt,
+          durationMs,
+          exitCode: 0,
+          stdoutPreview: stdoutPreview.preview,
+          stderrPreview: stderrPreview.preview,
+          stdoutTruncated: stdoutPreview.wasPreviewTruncated,
+          stderrTruncated: stderrPreview.wasPreviewTruncated,
+          artifacts,
+          result: bridgeResult.data,
+        }));
+        return;
+      }
+
+      updateRun(runId, (current) => ({
+        ...current,
+        status: 'fail',
+        endedAt,
+        durationMs,
+        exitCode: 1,
+        stdoutPreview: stdoutPreview.preview,
+        stderrPreview: stderrPreview.preview,
+        stdoutTruncated: stdoutPreview.wasPreviewTruncated,
+        stderrTruncated: stderrPreview.wasPreviewTruncated,
+        artifacts,
+        result: bridgeResult.data,
+        error: {
+          code: 'EXEC_FAILED',
+          message: bridgeResult.message || 'Bridge action failed',
+          details: bridgeResult.details,
+        },
+      }));
+      return;
+    } catch (error) {
+      const endedAt = nowIso();
+      const durationMs = Date.now() - startedAtEpoch;
+      const unknownError = error instanceof Error ? error.message : 'Unexpected bridge runner failure';
+      updateRun(runId, (current) => ({
+        ...current,
+        status: 'fail',
+        endedAt,
+        durationMs,
+        exitCode: 1,
+        error: {
+          code: 'INTERNAL_ERROR',
+          message: unknownError,
+        },
+      }));
+      return;
+    }
+  }
 
   try {
     const result = await new Promise<{ exitCode: number | null; spawnError?: Error }>((resolve) => {
@@ -358,16 +450,29 @@ export function startModuleRun(input: ModuleRunRequest, requestedBy: string): Mo
   }
 
   let command: string[];
-  try {
-    const resolved = action.buildCommand(validation.normalizedArgs);
-    command = [resolved.executable, ...resolved.args];
-  } catch (error) {
+  if (action.buildCommand) {
+    try {
+      const resolved = action.buildCommand(validation.normalizedArgs);
+      command = [resolved.executable, ...resolved.args];
+    } catch (error) {
+      return {
+        ok: false,
+        httpStatus: 400,
+        error: {
+          code: 'VALIDATION_ERROR',
+          message: error instanceof Error ? error.message : 'Unable to resolve command arguments',
+        },
+      };
+    }
+  } else if (action.execute) {
+    command = [...action.commandPreview];
+  } else {
     return {
       ok: false,
-      httpStatus: 400,
+      httpStatus: 500,
       error: {
-        code: 'VALIDATION_ERROR',
-        message: error instanceof Error ? error.message : 'Unable to resolve command arguments',
+        code: 'INTERNAL_ERROR',
+        message: `No execution strategy configured for '${input.moduleId}:${input.actionId}'`,
       },
     };
   }

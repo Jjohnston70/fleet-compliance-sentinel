@@ -1,12 +1,23 @@
 # Fleet-Compliance Sentinel — Status
 
-Last Updated: 2026-03-31 (SOC 2 controls remain stable; module integration sprint Phase 4 PaperStack integration complete)
-Current Phase: Module integration sprint in progress (Phase 4 complete)
-Overall Completion: SOC 2 action plan 100%; module integration sprint 4/6 phases complete
+Last Updated: 2026-03-31 (SOC 2 controls remain stable; module integration sprint Phase 5 command-center bridge complete)
+Current Phase: Module integration sprint in progress (Phase 5 complete)
+Overall Completion: SOC 2 action plan 100%; module integration sprint 5/6 phases complete
 Open Findings: 0 blockers; remaining items are accepted non-blocking hardening items
 SOC 2 Observation Window Start: 2026-03-24
 SOC 2 Type I Earliest Eligibility: 2026-06-22
 Days Until Type I Eligible: 83
+
+## 2026-03-31 Module Integration Sprint - Phase 5 Outcome
+
+| Workstream | Result |
+|-----------|--------|
+| command-center bridge adapter | Complete - added in-process bridge (`src/lib/modules-gateway/command-center-bridge.ts`) loading command-center tool handlers from dist runtime |
+| command-center gateway actions | Complete - registered startup/discovery/search/schema/route/status/dashboard/usage actions plus existing `tests` and `build` |
+| Result normalization | Complete - command-center handler responses are normalized into gateway run status/output with `run.result` payload capture |
+| Runner execution strategy | Complete - gateway runner now supports both process-spawn actions and in-process bridge actions under one run lifecycle |
+| Contract and runbook docs | Complete - `docs/integration/COMMAND_CENTER_BRIDGE.md` added and gateway contract updated with Phase 5 allowlist/examples |
+| Verification | `npm run lint` pass (pre-existing unrelated warnings only); `npx tsc --noEmit` still fails on pre-existing workspace typing issues in unrelated tooling modules |
 
 ## 2026-03-31 Module Integration Sprint - Phase 4 Outcome
 

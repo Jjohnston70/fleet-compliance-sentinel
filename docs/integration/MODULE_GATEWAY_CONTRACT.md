@@ -21,7 +21,7 @@ Applies to planned endpoints:
 | `ML-EIA-PETROLEUM-INTEL` | `tests`, `ingest.all`, `ingest.source`, `ingest.api_update`, `pipeline.product`, `pipeline.all`, `export.report`, `export.skip_docx`, `export.json_only` |
 | `ML-SIGNAL-STACK-TNCC` | `pipeline.source`, `pipeline.all`, `export.csv`, `export.csv_all`, `export.csv_source`, `report.generate`, `package.output` |
 | `MOD-PAPERSTACK-PP` | `list`, `check`, `generate`, `convert`, `reverse`, `inspect`, `scan`, `tools.list`, `tools.check`, `generate.pdf`, `generate.docx` |
-| `command-center` | `tests`, `build` |
+| `command-center` | `startup.initialize`, `discover.modules`, `discover.tools`, `search.tools`, `schema.tool`, `route.tool_call`, `status.system`, `detail.module`, `classifications.list`, `dashboard.system`, `usage.tools`, `tests`, `build` |
 
 ## `POST /api/modules/run`
 
@@ -319,6 +319,40 @@ curl -X POST "http://localhost:3000/api/modules/run" \
   }'
 ```
 
+### Run (Execute command-center discovery)
+
+```bash
+curl -X POST "http://localhost:3000/api/modules/run" \
+  -H "Content-Type: application/json" \
+  -H "Cookie: __session=<clerk-session-token>" \
+  -d '{
+    "moduleId": "command-center",
+    "actionId": "discover.modules",
+    "args": {},
+    "correlationId": "phase5-cc-discover-modules-001"
+  }'
+```
+
+### Run (Route command-center qualified tool call)
+
+```bash
+curl -X POST "http://localhost:3000/api/modules/run" \
+  -H "Content-Type: application/json" \
+  -H "Cookie: __session=<clerk-session-token>" \
+  -d '{
+    "moduleId": "command-center",
+    "actionId": "route.tool_call",
+    "args": {
+      "qualifiedName": "asset-command.list_assets",
+      "parameters": {
+        "page": 1,
+        "pageSize": 25
+      }
+    },
+    "correlationId": "phase5-cc-route-tool-001"
+  }'
+```
+
 ### Status Poll
 
 ```bash
@@ -326,12 +360,12 @@ curl -X GET "http://localhost:3000/api/modules/status/<run_id>" \
   -H "Cookie: __session=<clerk-session-token>"
 ```
 
-### Current Allowlist (Phase 4)
+### Current Allowlist (Phase 5)
 
 - `ML-EIA-PETROLEUM-INTEL`: `tests`, `ingest.all`, `ingest.source`, `ingest.api_update`, `pipeline.product`, `pipeline.all`, `export.report`, `export.skip_docx`, `export.json_only`
 - `ML-SIGNAL-STACK-TNCC`: `pipeline.source`, `pipeline.all`, `export.csv`, `export.csv_all`, `export.csv_source`, `report.generate`, `package.output`
 - `MOD-PAPERSTACK-PP`: `list`, `check`, `generate`, `convert`, `reverse`, `inspect`, `scan`, `tools.list`, `tools.check`, `generate.pdf`, `generate.docx`
-- `command-center`: `tests`, `build`
+- `command-center`: `startup.initialize`, `discover.modules`, `discover.tools`, `search.tools`, `schema.tool`, `route.tool_call`, `status.system`, `detail.module`, `classifications.list`, `dashboard.system`, `usage.tools`, `tests`, `build`
 
 ## Phase 4 Additions
 
@@ -341,3 +375,12 @@ curl -X GET "http://localhost:3000/api/modules/status/<run_id>" \
    - `reverse.inputPath`: `.docx`
    - `inspect.inputPath`/`scan.inputPath`: `.pdf`
 3. Run status now includes PaperStack artifact metadata (`artifacts[]`) for generator/converter/reverse actions with path, size, and modified timestamp.
+
+## Phase 5 Additions
+
+1. `command-center` bridge actions now execute through an in-process adapter, preserving command-center discovery/routing semantics without shelling out.
+2. `route.tool_call` and discovery/status actions are normalized into the gateway run shape:
+   - success/failure mapped to `run.status`
+   - handler `data` returned as `run.result`
+   - bridge message/error surfaced via `stdoutPreview`/`stderrPreview`
+3. `discover.tools` supports optional `moduleId` and `classification` filtering through gateway-side post-filtering.
