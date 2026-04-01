@@ -70,7 +70,7 @@ These workstreams are complementary, not competing. The hardening secures the or
 - [x] Layer 2: Bidirectional schema validation with coercion + structured correction errors
 - [x] Layer 3: Execution sandbox with permission checks, rate limits, sanitization, timeout enforcement
 - [x] Layer 4: Retry manager with cap=3 and escalation
-- [ ] Layer 5: Token/cost attribution with budget alerts
+- [x] Layer 5: Token/cost attribution with budget alerts
 - [ ] Layer 6: Durable append-only audit logging for all tool calls
 - [x] Layer 7: Strict tenant/user tool isolation (visibility + execution)
 - [ ] Integration tests pass and go/no-go report published
@@ -405,7 +405,7 @@ At task end:
 **Estimated Effort**: 1 day
 **Depends On**: A4 (needs sandbox to gate cost recording)
 
-- [ ] Add durable token/cost accounting and threshold alerting by org/user/use-case
+- [x] Add durable token/cost accounting and threshold alerting by org/user/use-case
 
 **File Targets**:
 

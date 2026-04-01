@@ -269,3 +269,33 @@ export interface ModuleRunFailure {
 
 export type ModuleRunStartResult = ModuleRunResult | ModuleRunFailure;
 
+export type AiUsageFeature =
+  | 'penny.query'
+  | 'module.gateway'
+  | 'command-center';
+
+export interface AiUsageCostRecord {
+  requestId: string;
+  orgId: string;
+  userId: string;
+  feature: AiUsageFeature;
+  provider: string;
+  model: string;
+  promptTokens: number;
+  completionTokens: number;
+  totalTokens: number;
+  estimatedCostUsd: number;
+  metadata?: Record<string, unknown> | null;
+}
+
+export type AiBudgetAlertLevel = 'warning' | 'critical';
+
+export interface AiBudgetAlertRecord {
+  orgId: string;
+  level: AiBudgetAlertLevel;
+  periodStart: string;
+  periodEnd: string;
+  spendUsd: number;
+  thresholdUsd: number;
+}
+

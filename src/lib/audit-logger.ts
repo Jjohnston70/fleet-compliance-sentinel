@@ -13,6 +13,8 @@ export type AuditAction =
   | 'cron.run'
   | 'cron.failed'
   | 'penny.query'
+  | 'ai.usage.recorded'
+  | 'budget.alert'
   | 'admin.action'
   | 'rate_limit.exceeded';
 

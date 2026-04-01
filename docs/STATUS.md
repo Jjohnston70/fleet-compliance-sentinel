@@ -1,12 +1,24 @@
 # Fleet-Compliance Sentinel — Status
 
-Last Updated: 2026-04-01 (Workstream A tasks A0-A5 complete)
+Last Updated: 2026-04-01 (Workstream A tasks A0-A6 complete)
 Current Phase: April 2-25 sprint active (Workstream A + B)
-Overall Completion: SOC 2 action plan 100%; module integration sprint 6/6 phases complete; hardening sprint A0-A5 complete
+Overall Completion: SOC 2 action plan 100%; module integration sprint 6/6 phases complete; hardening sprint A0-A6 complete
 Open Findings: 0 blockers; remaining items are accepted non-blocking hardening items
 SOC 2 Observation Window Start: 2026-03-24
 SOC 2 Type I Earliest Eligibility: 2026-06-22
 Days Until Type I Eligible: 83
+
+## 2026-04-01 Workstream A - Task A6 Layer 5 Cost Tracking Outcome
+
+| Workstream | Result |
+|-----------|--------|
+| Durable usage/cost storage | Complete - added `ai_usage_cost_events` table with org/user/request/model/provider/token/cost attribution |
+| Penny query attribution | Complete - `/api/penny/query` now persists usage telemetry from backend response (`prompt`, `completion`, `total`, cost) |
+| Budget threshold alerts | Complete - monthly warning/critical thresholds now emit durable rows in `ai_usage_budget_alerts` and `budget.alert` audit events |
+| Queryability by org/period | Complete - added persistence helper to list usage records by org and bounded period windows |
+| Governance defaults | Complete - configurable budget envs (`AI_BUDGET_WARNING_USD`, `AI_BUDGET_CRITICAL_USD`) with documented defaults |
+| Runbook updates | Updated - `docs/integration/OPERATIONS_RUNBOOK.md` includes Penny cost governance + alerting flow |
+| Verification | `npm --prefix tooling/command-center run build` pass; `npm --prefix tooling/command-center run test` pass; `npx tsc --noEmit` pass; `npm run lint` pass (pre-existing a11y warnings only) |
 
 ## 2026-04-01 Workstream A - Task A5 Layer 4 Retry Outcome
 

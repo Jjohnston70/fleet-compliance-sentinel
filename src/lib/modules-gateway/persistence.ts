@@ -1,6 +1,8 @@
 import { getSQL } from '@/lib/fleet-compliance-db';
 import { getCatalog } from '@/lib/modules-gateway/registry';
 import type {
+  AiBudgetAlertRecord,
+  AiUsageCostRecord,
   ModuleCatalogEntry,
   ModuleGatewayAclDecision,
   ModuleGatewayAclPermission,
@@ -60,6 +62,8 @@ let ensured = false;
 const COMMAND_CENTER_CATALOG_CACHE_TTL_MS = 30_000;
 const MODULE_GATEWAY_ACL_CACHE_TTL_MS = 30_000;
 const ORG_WIDE_ACL_USER_ID = '*';
+const DEFAULT_AI_BUDGET_WARNING_USD = 50;
+const DEFAULT_AI_BUDGET_CRITICAL_USD = 150;
 const commandCenterCatalogCache = new Map<string, { expiresAt: number; rows: CommandCenterCatalogRow[] }>();
 const moduleGatewayAclCache = new Map<string, { expiresAt: number; rules: ModuleGatewayAclRule[] }>();
 
@@ -93,6 +97,15 @@ export interface ModuleGatewayRetryEscalationInput {
   lastErrorCode?: string | null;
   lastErrorMessage?: string | null;
   metadata?: Record<string, unknown> | null;
+}
+
+export interface AiUsageBudgetConfig {
+  warningUsd: number;
+  criticalUsd: number;
+}
+
+export interface RecordAiUsageCostInput extends AiUsageCostRecord {
+  budgetConfig?: Partial<AiUsageBudgetConfig>;
 }
 
 async function ensureModuleGatewayPersistenceTables(): Promise<void> {
@@ -201,6 +214,58 @@ async function ensureModuleGatewayPersistenceTables(): Promise<void> {
     ON module_gateway_retry_escalations (org_id, escalated_at DESC)
   `;
 
+  await sql`
+    CREATE TABLE IF NOT EXISTS ai_usage_cost_events (
+      id BIGSERIAL PRIMARY KEY,
+      request_id TEXT NOT NULL UNIQUE,
+      org_id TEXT NOT NULL,
+      user_id TEXT NOT NULL,
+      feature TEXT NOT NULL,
+      provider TEXT NOT NULL,
+      model TEXT NOT NULL,
+      prompt_tokens INTEGER NOT NULL DEFAULT 0,
+      completion_tokens INTEGER NOT NULL DEFAULT 0,
+      total_tokens INTEGER NOT NULL DEFAULT 0,
+      estimated_cost_usd NUMERIC(14, 6) NOT NULL DEFAULT 0,
+      metadata JSONB NOT NULL DEFAULT '{}'::jsonb,
+      created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+    )
+  `;
+  await sql`
+    CREATE INDEX IF NOT EXISTS idx_ai_usage_cost_events_org_created
+    ON ai_usage_cost_events (org_id, created_at DESC)
+  `;
+  await sql`
+    CREATE INDEX IF NOT EXISTS idx_ai_usage_cost_events_user_created
+    ON ai_usage_cost_events (user_id, created_at DESC)
+  `;
+  await sql`
+    CREATE INDEX IF NOT EXISTS idx_ai_usage_cost_events_feature_created
+    ON ai_usage_cost_events (feature, created_at DESC)
+  `;
+
+  await sql`
+    CREATE TABLE IF NOT EXISTS ai_usage_budget_alerts (
+      id BIGSERIAL PRIMARY KEY,
+      org_id TEXT NOT NULL,
+      level TEXT NOT NULL,
+      period_start TIMESTAMPTZ NOT NULL,
+      period_end TIMESTAMPTZ NOT NULL,
+      spend_usd NUMERIC(14, 6) NOT NULL,
+      threshold_usd NUMERIC(14, 6) NOT NULL,
+      request_id TEXT NOT NULL,
+      feature TEXT NOT NULL,
+      metadata JSONB NOT NULL DEFAULT '{}'::jsonb,
+      created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+      CHECK (level IN ('warning', 'critical')),
+      UNIQUE (org_id, level, period_start, period_end)
+    )
+  `;
+  await sql`
+    CREATE INDEX IF NOT EXISTS idx_ai_usage_budget_alerts_org_created
+    ON ai_usage_budget_alerts (org_id, created_at DESC)
+  `;
+
   ensured = true;
 }
 
@@ -215,6 +280,39 @@ function parseIsoDate(value: unknown): string {
   const parsed = new Date(value);
   if (Number.isNaN(parsed.getTime())) return '';
   return parsed.toISOString();
+}
+
+function parsePositiveNumber(rawValue: string | undefined, fallback: number): number {
+  const parsed = Number.parseFloat(String(rawValue || ''));
+  if (!Number.isFinite(parsed) || parsed < 0) return fallback;
+  return parsed;
+}
+
+function resolveAiBudgetConfig(overrides?: Partial<AiUsageBudgetConfig>): AiUsageBudgetConfig {
+  const warningEnv = parsePositiveNumber(process.env.AI_BUDGET_WARNING_USD, DEFAULT_AI_BUDGET_WARNING_USD);
+  const criticalEnv = parsePositiveNumber(process.env.AI_BUDGET_CRITICAL_USD, DEFAULT_AI_BUDGET_CRITICAL_USD);
+  const warning = typeof overrides?.warningUsd === 'number' && overrides.warningUsd >= 0
+    ? overrides.warningUsd
+    : warningEnv;
+  const critical = typeof overrides?.criticalUsd === 'number' && overrides.criticalUsd >= 0
+    ? overrides.criticalUsd
+    : criticalEnv;
+
+  if (critical < warning) {
+    return { warningUsd: warning, criticalUsd: warning };
+  }
+  return { warningUsd: warning, criticalUsd: critical };
+}
+
+function getCurrentUtcMonthRange(now: Date): { periodStart: string; periodEnd: string } {
+  const year = now.getUTCFullYear();
+  const month = now.getUTCMonth();
+  const start = new Date(Date.UTC(year, month, 1, 0, 0, 0, 0));
+  const end = new Date(Date.UTC(year, month + 1, 1, 0, 0, 0, 0));
+  return {
+    periodStart: start.toISOString(),
+    periodEnd: end.toISOString(),
+  };
 }
 
 function normalizeAclUserId(userId: string | null | undefined): string {
@@ -941,4 +1039,161 @@ export async function recordModuleGatewayRetryEscalation(
       message: error instanceof Error ? error.message : String(error),
     });
   }
+}
+
+export async function recordAiUsageCostAndBudgetAlerts(
+  input: RecordAiUsageCostInput,
+): Promise<{ alerts: AiBudgetAlertRecord[] }> {
+  await ensureModuleGatewayPersistenceTables();
+  const sql = getSQL();
+
+  const promptTokens = Math.max(0, Math.floor(input.promptTokens || 0));
+  const completionTokens = Math.max(0, Math.floor(input.completionTokens || 0));
+  const totalTokens = Math.max(
+    0,
+    Math.floor(input.totalTokens || promptTokens + completionTokens),
+  );
+  const estimatedCostUsd = Math.max(0, Number(input.estimatedCostUsd || 0));
+
+  await sql`
+    INSERT INTO ai_usage_cost_events (
+      request_id,
+      org_id,
+      user_id,
+      feature,
+      provider,
+      model,
+      prompt_tokens,
+      completion_tokens,
+      total_tokens,
+      estimated_cost_usd,
+      metadata
+    ) VALUES (
+      ${input.requestId},
+      ${input.orgId},
+      ${input.userId},
+      ${input.feature},
+      ${input.provider},
+      ${input.model},
+      ${promptTokens},
+      ${completionTokens},
+      ${totalTokens},
+      ${estimatedCostUsd},
+      ${JSON.stringify(input.metadata || {})}::jsonb
+    )
+    ON CONFLICT (request_id) DO NOTHING
+  `;
+
+  const { periodStart, periodEnd } = getCurrentUtcMonthRange(new Date());
+  const spendRows = await sql`
+    SELECT COALESCE(SUM(estimated_cost_usd), 0)::text AS spend_usd
+    FROM ai_usage_cost_events
+    WHERE org_id = ${input.orgId}
+      AND created_at >= ${periodStart}
+      AND created_at < ${periodEnd}
+  `;
+  const spendUsd = Number.parseFloat(String(spendRows[0]?.spend_usd || '0')) || 0;
+  const budget = resolveAiBudgetConfig(input.budgetConfig);
+  const thresholds: Array<{ level: AiBudgetAlertRecord['level']; thresholdUsd: number }> = [
+    { level: 'warning', thresholdUsd: budget.warningUsd },
+    { level: 'critical', thresholdUsd: budget.criticalUsd },
+  ];
+
+  const alerts: AiBudgetAlertRecord[] = [];
+  for (const threshold of thresholds) {
+    if (threshold.thresholdUsd <= 0 || spendUsd < threshold.thresholdUsd) continue;
+
+    const inserted = await sql`
+      INSERT INTO ai_usage_budget_alerts (
+        org_id,
+        level,
+        period_start,
+        period_end,
+        spend_usd,
+        threshold_usd,
+        request_id,
+        feature,
+        metadata
+      ) VALUES (
+        ${input.orgId},
+        ${threshold.level},
+        ${periodStart},
+        ${periodEnd},
+        ${spendUsd},
+        ${threshold.thresholdUsd},
+        ${input.requestId},
+        ${input.feature},
+        ${JSON.stringify(input.metadata || {})}::jsonb
+      )
+      ON CONFLICT (org_id, level, period_start, period_end) DO NOTHING
+      RETURNING
+        level,
+        period_start,
+        period_end,
+        spend_usd::text AS spend_usd,
+        threshold_usd::text AS threshold_usd
+    `;
+
+    const row = inserted[0];
+    if (!row) continue;
+    alerts.push({
+      orgId: input.orgId,
+      level: String(row.level) as AiBudgetAlertRecord['level'],
+      periodStart: String(row.period_start),
+      periodEnd: String(row.period_end),
+      spendUsd: Number.parseFloat(String(row.spend_usd || '0')) || 0,
+      thresholdUsd: Number.parseFloat(String(row.threshold_usd || '0')) || 0,
+    });
+  }
+
+  return { alerts };
+}
+
+export async function listAiUsageCostsByOrgPeriod(input: {
+  orgId: string;
+  periodStartIso: string;
+  periodEndIso: string;
+  limit?: number;
+}): Promise<AiUsageCostRecord[]> {
+  await ensureModuleGatewayPersistenceTables();
+  const sql = getSQL();
+
+  const periodStartIso = parseIsoDate(input.periodStartIso) || getCurrentUtcMonthRange(new Date()).periodStart;
+  const periodEndIso = parseIsoDate(input.periodEndIso) || getCurrentUtcMonthRange(new Date()).periodEnd;
+  const limit = Math.max(1, Math.min(500, Math.floor(input.limit || 200)));
+
+  const rows = await sql`
+    SELECT
+      request_id,
+      org_id,
+      user_id,
+      feature,
+      provider,
+      model,
+      prompt_tokens,
+      completion_tokens,
+      total_tokens,
+      estimated_cost_usd::text AS estimated_cost_usd,
+      metadata
+    FROM ai_usage_cost_events
+    WHERE org_id = ${input.orgId}
+      AND created_at >= ${periodStartIso}
+      AND created_at < ${periodEndIso}
+    ORDER BY created_at DESC
+    LIMIT ${limit}
+  `;
+
+  return rows.map((row) => ({
+    requestId: String(row.request_id),
+    orgId: String(row.org_id),
+    userId: String(row.user_id),
+    feature: String(row.feature) as AiUsageCostRecord['feature'],
+    provider: String(row.provider),
+    model: String(row.model),
+    promptTokens: Number(row.prompt_tokens || 0),
+    completionTokens: Number(row.completion_tokens || 0),
+    totalTokens: Number(row.total_tokens || 0),
+    estimatedCostUsd: Number.parseFloat(String(row.estimated_cost_usd || '0')) || 0,
+    metadata: asObject(row.metadata),
+  }));
 }

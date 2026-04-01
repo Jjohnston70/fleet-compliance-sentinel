@@ -12,6 +12,8 @@ import { checkPennyRateLimit } from '@/lib/penny-rate-limit';
 import { buildMergedPennyCatalog } from '@/lib/penny-catalog';
 import { auditLog } from '@/lib/audit-logger';
 import { setSentryRequestContext } from '@/lib/sentry-context';
+import { recordAiUsageCostAndBudgetAlerts } from '@/lib/modules-gateway/persistence';
+import { randomUUID } from 'node:crypto';
 
 const PENNY_API_URL = process.env.PENNY_API_URL || 'http://localhost:8000';
 const PENNY_API_KEY = process.env.PENNY_API_KEY || '';
@@ -35,6 +37,9 @@ const GENERAL_FALLBACK_SESSION_LIMIT = (() => {
 const RAILWAY_ORG_CONTEXT_MAX_CHARS = 7900;
 const ORG_CONTEXT_BUDGET_CHARS = 5200;
 const GROUNDED_CONTEXT_BUDGET_CHARS = 2400;
+const PENNY_COST_PROMPT_PER_1K_USD = Number.parseFloat(process.env.PENNY_COST_PROMPT_PER_1K_USD || '0');
+const PENNY_COST_COMPLETION_PER_1K_USD = Number.parseFloat(process.env.PENNY_COST_COMPLETION_PER_1K_USD || '0');
+const PENNY_COST_TOTAL_PER_1K_USD = Number.parseFloat(process.env.PENNY_COST_TOTAL_PER_1K_USD || '0');
 
 type BackendSource =
   | string
@@ -228,8 +233,102 @@ function buildCombinedContext(options: { orgContext: string; groundedContext: st
   return '';
 }
 
+function asRecord(value: unknown): Record<string, unknown> {
+  return value && typeof value === 'object' && !Array.isArray(value)
+    ? (value as Record<string, unknown>)
+    : {};
+}
+
+function parseNonNegativeNumber(value: unknown): number | null {
+  if (typeof value === 'number' && Number.isFinite(value) && value >= 0) {
+    return value;
+  }
+  if (typeof value === 'string' && value.trim().length > 0) {
+    const parsed = Number.parseFloat(value);
+    if (Number.isFinite(parsed) && parsed >= 0) return parsed;
+  }
+  return null;
+}
+
+function normalizeBudgetNumber(value: number): number {
+  if (!Number.isFinite(value) || value < 0) return 0;
+  return Number(value.toFixed(6));
+}
+
+function extractUsageTelemetry(
+  rawData: unknown,
+  options: { llmProvider?: string; llmModel?: string },
+): {
+  promptTokens: number;
+  completionTokens: number;
+  totalTokens: number;
+  estimatedCostUsd: number;
+  provider: string;
+  model: string;
+} | null {
+  const data = asRecord(rawData);
+  const usage = asRecord(data.usage || data.token_usage || data.usage_metrics);
+
+  const promptTokens = parseNonNegativeNumber(
+    usage.prompt_tokens ?? usage.input_tokens ?? data.prompt_tokens ?? data.input_tokens,
+  ) || 0;
+  const completionTokens = parseNonNegativeNumber(
+    usage.completion_tokens ?? usage.output_tokens ?? data.completion_tokens ?? data.output_tokens,
+  ) || 0;
+  const totalTokens = parseNonNegativeNumber(
+    usage.total_tokens ?? data.total_tokens,
+  ) || (promptTokens + completionTokens);
+
+  if (totalTokens <= 0) {
+    return null;
+  }
+
+  const backendCost = parseNonNegativeNumber(
+    usage.cost_usd
+    ?? usage.total_cost_usd
+    ?? usage.estimated_cost_usd
+    ?? data.cost_usd
+    ?? data.total_cost_usd
+    ?? data.estimated_cost_usd,
+  );
+
+  let estimatedCostUsd = backendCost ?? 0;
+  if (backendCost === null) {
+    if (PENNY_COST_PROMPT_PER_1K_USD > 0 || PENNY_COST_COMPLETION_PER_1K_USD > 0) {
+      estimatedCostUsd =
+        ((promptTokens / 1000) * Math.max(PENNY_COST_PROMPT_PER_1K_USD, 0))
+        + ((completionTokens / 1000) * Math.max(PENNY_COST_COMPLETION_PER_1K_USD, 0));
+    } else if (PENNY_COST_TOTAL_PER_1K_USD > 0) {
+      estimatedCostUsd = (totalTokens / 1000) * Math.max(PENNY_COST_TOTAL_PER_1K_USD, 0);
+    }
+  }
+
+  const providerRaw = (
+    (typeof data.llm_provider === 'string' && data.llm_provider)
+    || (typeof data.provider === 'string' && data.provider)
+    || options.llmProvider
+    || 'default'
+  ).trim();
+  const modelRaw = (
+    (typeof data.llm_model === 'string' && data.llm_model)
+    || (typeof data.model === 'string' && data.model)
+    || options.llmModel
+    || 'default'
+  ).trim();
+
+  return {
+    promptTokens: Math.floor(promptTokens),
+    completionTokens: Math.floor(completionTokens),
+    totalTokens: Math.floor(totalTokens),
+    estimatedCostUsd: normalizeBudgetNumber(estimatedCostUsd),
+    provider: providerRaw.slice(0, 64) || 'default',
+    model: modelRaw.slice(0, 120) || 'default',
+  };
+}
+
 export async function POST(request: NextRequest) {
   const startedAt = Date.now();
+  const requestId = request.headers.get('x-request-id')?.trim() || `penny_${randomUUID()}`;
   const hasClerk = isClerkEnabled();
   if (!hasClerk) {
     return NextResponse.json({ error: 'Authentication is not configured' }, { status: 503 });
@@ -461,6 +560,74 @@ export async function POST(request: NextRequest) {
         orgContextPreview,
       },
     });
+
+    const usageTelemetry = extractUsageTelemetry(data, {
+      llmProvider: typeof llmProvider === 'string' ? llmProvider.trim().toLowerCase() : undefined,
+      llmModel: typeof llmModel === 'string' ? llmModel.trim() : undefined,
+    });
+
+    if (usageTelemetry) {
+      try {
+        const usageResult = await recordAiUsageCostAndBudgetAlerts({
+          requestId,
+          orgId: auditOrgId,
+          userId,
+          feature: 'penny.query',
+          provider: usageTelemetry.provider,
+          model: usageTelemetry.model,
+          promptTokens: usageTelemetry.promptTokens,
+          completionTokens: usageTelemetry.completionTokens,
+          totalTokens: usageTelemetry.totalTokens,
+          estimatedCostUsd: usageTelemetry.estimatedCostUsd,
+          metadata: {
+            responseMs,
+            contextMode,
+            kbHit: sources.length > 0,
+            fallbackUsed: generalFallbackUsed,
+          },
+        });
+
+        auditLog({
+          action: 'ai.usage.recorded',
+          userId,
+          orgId: auditOrgId,
+          resourceType: 'penny.query',
+          metadata: {
+            requestId,
+            provider: usageTelemetry.provider,
+            model: usageTelemetry.model,
+            promptTokens: usageTelemetry.promptTokens,
+            completionTokens: usageTelemetry.completionTokens,
+            totalTokens: usageTelemetry.totalTokens,
+            estimatedCostUsd: usageTelemetry.estimatedCostUsd,
+          },
+        });
+
+        for (const alert of usageResult.alerts) {
+          auditLog({
+            action: 'budget.alert',
+            userId,
+            orgId: auditOrgId,
+            resourceType: 'penny.query',
+            severity: alert.level === 'critical' ? 'error' : 'warn',
+            metadata: {
+              level: alert.level,
+              spendUsd: alert.spendUsd,
+              thresholdUsd: alert.thresholdUsd,
+              periodStart: alert.periodStart,
+              periodEnd: alert.periodEnd,
+            },
+          });
+        }
+      } catch (usageError) {
+        console.error('[penny.query] failed to persist usage cost record', {
+          requestId,
+          orgId: auditOrgId,
+          userId,
+          message: usageError instanceof Error ? usageError.message : String(usageError),
+        });
+      }
+    }
 
     const response = NextResponse.json({
       answer:

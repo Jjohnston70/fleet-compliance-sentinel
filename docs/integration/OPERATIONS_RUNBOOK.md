@@ -80,6 +80,19 @@ Operate integrated module runs from Fleet-Compliance with consistent execution c
 4. `MODULE_GATEWAY_MAX_CONCURRENT_PER_ORG` default: `6`
 5. `MODULE_GATEWAY_MAX_ARG_STRING_LENGTH` default: `4096`
 
+## Penny Cost Governance
+
+1. Every successful Penny query with token usage metadata writes a durable row in `ai_usage_cost_events`.
+2. Attribution keys persisted per request:
+   - `request_id`, `org_id`, `user_id`
+   - `feature` (`penny.query`)
+   - `provider`, `model`
+   - `prompt_tokens`, `completion_tokens`, `total_tokens`, `estimated_cost_usd`
+3. Monthly budget thresholds:
+   - `AI_BUDGET_WARNING_USD` default: `50`
+   - `AI_BUDGET_CRITICAL_USD` default: `150`
+4. First threshold crossing per org/month emits durable alert rows in `ai_usage_budget_alerts` (`warning`/`critical`) and structured audit logs via `budget.alert`.
+
 ## Command-center Bridge Notes
 
 1. Bridge actions execute in-process, not as spawned shell commands.
