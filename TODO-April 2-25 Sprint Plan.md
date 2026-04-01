@@ -563,8 +563,8 @@ This is not a one-off hazmat feature. It's a training platform that starts with 
 
 - [x] 12 hazmat training markdown files authored with assessments
 - [x] Deck generation pipeline converts markdown to slide JSON
-- [ ] Web-based deck viewer for employee training delivery
-- [ ] Assessment engine with scoring and retake logic
+- [x] Web-based deck viewer for employee training delivery
+- [x] Assessment engine with scoring and retake logic
 - [x] Training assignment and progress tracking (3 new DB tables)
 - [ ] Compliance auto-update on assessment pass
 - [ ] Certificate PDF generation
@@ -785,7 +785,7 @@ CREATE TABLE training_progress (
 **Estimated Effort**: 2-3 days
 **Depends On**: B4 (needs deck JSON), B3 (needs assessment schema)
 
-- [ ] Build `TrainingDeckViewer.tsx`
+- [x] Build `TrainingDeckViewer.tsx`
   - Reads deck JSON from API
   - Slide navigation with prev/next/progress bar
   - Tracks time spent per slide (compliance reporting)
@@ -794,7 +794,7 @@ CREATE TABLE training_progress (
   - Mobile-responsive (drivers use phones/tablets)
   - View-only for trainees
 
-- [ ] Build `TrainingAssessment.tsx`
+- [x] Build `TrainingAssessment.tsx`
   - Presented after trainee completes all slides
   - Randomizes question order
   - One question at a time, no back-navigation
@@ -804,7 +804,7 @@ CREATE TABLE training_progress (
   - Records attempt history for audit trail
   - Configurable retake cooldown (default: 24 hours)
 
-- [ ] Assessment API endpoints:
+- [x] Assessment API endpoints:
   ```
   POST   /api/v1/training/{module_code}/assessment/submit
   GET    /api/v1/training/{module_code}/assessment/attempts
