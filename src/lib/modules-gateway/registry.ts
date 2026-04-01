@@ -12,6 +12,20 @@ const PYTHON_EXECUTABLE = process.env.MODULE_GATEWAY_PYTHON_BIN || 'python';
 const NPM_EXECUTABLE = process.platform === 'win32' ? 'npm.cmd' : 'npm';
 const TOOLING_ROOT = path.join(process.cwd(), 'tooling');
 const DEFAULT_ACTION_TIMEOUT_MS = 300_000;
+const EIA_PRODUCTS = ['crude', 'diesel', 'gasoline', 'heating_oil'];
+const EIA_INGEST_SOURCES = [
+  'spot_prices',
+  'futures',
+  'colorado_retail',
+  'rocky_mountain_retail',
+  'residential_standard_errors',
+  'fountain_opis_prices',
+  'client_average_inventory',
+  'weather_colorado_springs',
+  'traffic_cdot',
+];
+const SIGNAL_SOURCES = ['sales', 'ops_pulse', 'cash_flow_compass', 'pipeline_pulse', 'team_tempo'];
+const SIGNAL_SOURCE_OPTIONS = [...SIGNAL_SOURCES, 'all'];
 
 const EMPTY_ARGS_SCHEMA: ModuleActionArgsSchema = {
   type: 'object',
@@ -89,6 +103,8 @@ const MODULE_REGISTRY: ModuleDefinition[] = [
           String(args.product),
           '--horizon',
           String(args.horizon),
+          '--train-years',
+          String(args.trainYears),
         ],
         {
           type: 'object',
@@ -96,7 +112,7 @@ const MODULE_REGISTRY: ModuleDefinition[] = [
             product: {
               type: 'string',
               description: 'Petroleum product alias',
-              enum: ['crude', 'diesel', 'gasoline', 'heating_oil'],
+              enum: EIA_PRODUCTS,
             },
             horizon: {
               type: 'number',
@@ -104,13 +120,167 @@ const MODULE_REGISTRY: ModuleDefinition[] = [
               enum: [30, 60, 90],
               default: 30,
             },
+            trainYears: {
+              type: 'number',
+              description: 'Rolling training window in years',
+              min: 1,
+              max: 20,
+              default: 10,
+            },
           },
           required: ['product'],
         },
         600_000,
       ),
       pythonAction(
+        'ingest.all',
+        'Run ingest for all configured petroleum data sources',
+        ['python', 'run_ingest.py', '--all', '--api-update?', '--force-api?'],
+        (args) => {
+          const commandArgs = ['run_ingest.py', '--all'];
+          if (Boolean(args.apiUpdate)) {
+            commandArgs.push('--api-update');
+          }
+          if (Boolean(args.forceApi)) {
+            commandArgs.push('--force-api');
+          }
+          return commandArgs;
+        },
+        {
+          type: 'object',
+          properties: {
+            apiUpdate: {
+              type: 'boolean',
+              default: false,
+              description: 'Fetch latest EIA API data before ingest output write',
+            },
+            forceApi: {
+              type: 'boolean',
+              default: false,
+              description: 'Bypass API cache when apiUpdate is enabled',
+            },
+          },
+        },
+        300_000,
+      ),
+      pythonAction(
+        'ingest.source',
+        'Run ingest for one configured petroleum data source',
+        ['python', 'run_ingest.py', '--source', '<source>', '--api-update?', '--force-api?'],
+        (args) => {
+          const commandArgs = ['run_ingest.py', '--source', String(args.source)];
+          if (Boolean(args.apiUpdate)) {
+            commandArgs.push('--api-update');
+          }
+          if (Boolean(args.forceApi)) {
+            commandArgs.push('--force-api');
+          }
+          return commandArgs;
+        },
+        {
+          type: 'object',
+          properties: {
+            source: {
+              type: 'string',
+              enum: EIA_INGEST_SOURCES,
+              description: 'Configured ingest source id from ML-EIA',
+            },
+            apiUpdate: {
+              type: 'boolean',
+              default: false,
+              description: 'Fetch latest EIA API data before source ingest',
+            },
+            forceApi: {
+              type: 'boolean',
+              default: false,
+              description: 'Bypass API cache when apiUpdate is enabled',
+            },
+          },
+          required: ['source'],
+        },
+        300_000,
+      ),
+      pythonAction(
+        'ingest.api_update',
+        'Fetch latest EIA API series and merge into processed outputs',
+        ['python', 'run_ingest.py', '--api-update', '--force-api?'],
+        (args) => {
+          const commandArgs = ['run_ingest.py', '--api-update'];
+          if (Boolean(args.forceApi)) {
+            commandArgs.push('--force-api');
+          }
+          return commandArgs;
+        },
+        {
+          type: 'object',
+          properties: {
+            forceApi: {
+              type: 'boolean',
+              default: false,
+              description: 'Bypass API cache and force live fetch',
+            },
+          },
+        },
+        300_000,
+      ),
+      pythonAction(
+        'pipeline.all',
+        'Run petroleum pipeline for all default products',
+        ['python', 'run_pipeline.py', '--all', '--horizon?', '--train-years?'],
+        (args) => {
+          const commandArgs = ['run_pipeline.py', '--all'];
+          if (typeof args.horizon === 'number') {
+            commandArgs.push('--horizon', String(args.horizon));
+          }
+          commandArgs.push('--train-years', String(args.trainYears));
+          return commandArgs;
+        },
+        {
+          type: 'object',
+          properties: {
+            horizon: {
+              type: 'number',
+              enum: [30, 60, 90],
+              description: 'Optional single horizon to apply to all products',
+            },
+            trainYears: {
+              type: 'number',
+              description: 'Rolling training window in years',
+              min: 1,
+              max: 20,
+              default: 10,
+            },
+          },
+        },
+        900_000,
+      ),
+      pythonAction(
+        'export.report',
+        'Generate executive DOCX report and API payload exports',
+        ['python', 'export_reports.py', '--format', 'docx', '--period', '<period>'],
+        (args) => ['export_reports.py', '--format', 'docx', '--period', String(args.period)],
+        {
+          type: 'object',
+          properties: {
+            period: {
+              type: 'string',
+              description: 'Report period label injected into report title',
+              default: 'monthly',
+            },
+          },
+        },
+        300_000,
+      ),
+      pythonAction(
         'export.skip_docx',
+        'Export API payloads and Penny context without DOCX generation',
+        ['python', 'export_reports.py', '--skip-docx'],
+        () => ['export_reports.py', '--skip-docx'],
+        EMPTY_ARGS_SCHEMA,
+        300_000,
+      ),
+      pythonAction(
+        'export.json_only',
         'Export API payloads and Penny context without DOCX generation',
         ['python', 'export_reports.py', '--skip-docx'],
         () => ['export_reports.py', '--skip-docx'],
@@ -141,7 +311,7 @@ const MODULE_REGISTRY: ModuleDefinition[] = [
           properties: {
             source: {
               type: 'string',
-              enum: ['sales', 'ops_pulse', 'cash_flow_compass', 'pipeline_pulse', 'team_tempo', 'all'],
+              enum: SIGNAL_SOURCE_OPTIONS,
               description: 'SignalStack source name',
             },
             skipSearch: {
@@ -151,6 +321,29 @@ const MODULE_REGISTRY: ModuleDefinition[] = [
             },
           },
           required: ['source'],
+        },
+        900_000,
+      ),
+      pythonAction(
+        'pipeline.all',
+        'Run SignalStack pipeline across all sources',
+        ['python', 'run_pipeline.py', '--source', 'all', '--skip-search?'],
+        (args) => {
+          const commandArgs = ['run_pipeline.py', '--source', 'all'];
+          if (Boolean(args.skipSearch)) {
+            commandArgs.push('--skip-search');
+          }
+          return commandArgs;
+        },
+        {
+          type: 'object',
+          properties: {
+            skipSearch: {
+              type: 'boolean',
+              default: true,
+              description: 'Skip SARIMA grid search and use saved manual params',
+            },
+          },
         },
         900_000,
       ),
@@ -171,7 +364,7 @@ const MODULE_REGISTRY: ModuleDefinition[] = [
           properties: {
             source: {
               type: 'string',
-              enum: ['sales', 'ops_pulse', 'cash_flow_compass', 'pipeline_pulse', 'team_tempo', 'all'],
+              enum: SIGNAL_SOURCE_OPTIONS,
               default: 'all',
               description: 'Workbook export target source',
             },
@@ -183,6 +376,116 @@ const MODULE_REGISTRY: ModuleDefinition[] = [
           },
         },
         180_000,
+      ),
+      pythonAction(
+        'export.csv_all',
+        'Export all SignalStack workbook data to CSV',
+        ['python', 'export_to_csv.py', '--source', 'all', '--skip-root-fix?'],
+        (args) => {
+          const commandArgs = ['export_to_csv.py', '--source', 'all'];
+          if (Boolean(args.skipRootFix)) {
+            commandArgs.push('--skip-root-fix');
+          }
+          return commandArgs;
+        },
+        {
+          type: 'object',
+          properties: {
+            skipRootFix: {
+              type: 'boolean',
+              default: false,
+              description: 'Skip workbook integrity normalization pass',
+            },
+          },
+        },
+        180_000,
+      ),
+      pythonAction(
+        'export.csv_source',
+        'Export one SignalStack workbook source to CSV',
+        ['python', 'export_to_csv.py', '--source', '<source>', '--skip-root-fix?'],
+        (args) => {
+          const commandArgs = ['export_to_csv.py', '--source', String(args.source)];
+          if (Boolean(args.skipRootFix)) {
+            commandArgs.push('--skip-root-fix');
+          }
+          return commandArgs;
+        },
+        {
+          type: 'object',
+          properties: {
+            source: {
+              type: 'string',
+              enum: SIGNAL_SOURCES,
+              description: 'Workbook export target source',
+            },
+            skipRootFix: {
+              type: 'boolean',
+              default: false,
+              description: 'Skip workbook integrity normalization pass',
+            },
+          },
+          required: ['source'],
+        },
+        180_000,
+      ),
+      pythonAction(
+        'report.generate',
+        'Generate SignalStack DOCX report from latest pipeline outputs',
+        ['python', 'generate_report.py', '--source?', '<source>'],
+        (args) => {
+          const source = typeof args.source === 'string' ? args.source : 'all';
+          const commandArgs = ['generate_report.py'];
+          if (source !== 'all') {
+            commandArgs.push('--source', source);
+          }
+          return commandArgs;
+        },
+        {
+          type: 'object',
+          properties: {
+            source: {
+              type: 'string',
+              enum: SIGNAL_SOURCE_OPTIONS,
+              default: 'all',
+              description: 'Signal source subset for report generation',
+            },
+          },
+        },
+        300_000,
+      ),
+      pythonAction(
+        'package.output',
+        'Package SignalStack report artifacts into delivery ZIP',
+        ['python', 'package_output.py', '--source?', '<source>', '--no-code?'],
+        (args) => {
+          const source = typeof args.source === 'string' ? args.source : 'all';
+          const commandArgs = ['package_output.py'];
+          if (source !== 'all') {
+            commandArgs.push('--source', source);
+          }
+          if (Boolean(args.noCode)) {
+            commandArgs.push('--no-code');
+          }
+          return commandArgs;
+        },
+        {
+          type: 'object',
+          properties: {
+            source: {
+              type: 'string',
+              enum: SIGNAL_SOURCE_OPTIONS,
+              default: 'all',
+              description: 'Signal source subset for packaged chart outputs',
+            },
+            noCode: {
+              type: 'boolean',
+              default: false,
+              description: 'Omit code folder from packaged ZIP artifact',
+            },
+          },
+        },
+        300_000,
       ),
     ],
   },
