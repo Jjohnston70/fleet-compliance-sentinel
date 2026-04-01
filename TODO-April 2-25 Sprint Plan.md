@@ -73,7 +73,7 @@ These workstreams are complementary, not competing. The hardening secures the or
 - [x] Layer 5: Token/cost attribution with budget alerts
 - [x] Layer 6: Durable append-only audit logging for all tool calls
 - [x] Layer 7: Strict tenant/user tool isolation (visibility + execution)
-- [ ] Integration tests pass and go/no-go report published
+- [x] Integration tests pass and go/no-go report published
 
 ---
 
@@ -508,7 +508,7 @@ At task end:
 **Estimated Effort**: 0.5-1 day
 **Depends On**: A1-A7 all complete
 
-- [ ] Run integrated validation for Layers 1-7 and publish go/no-go report
+- [x] Run integrated validation for Layers 1-7 and publish go/no-go report
 
 **File Targets**:
 
