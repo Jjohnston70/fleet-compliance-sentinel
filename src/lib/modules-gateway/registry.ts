@@ -31,6 +31,7 @@ const SIGNAL_SOURCE_OPTIONS = [...SIGNAL_SOURCES, 'all'];
 const PAPERSTACK_GENERATE_FORMATS = ['pdf', 'docx'];
 const PAPERSTACK_REVERSE_MODES = ['js', 'python', 'pdf', 'python_pdf'];
 const PAPERSTACK_SCAN_DPI_VALUES = [200, 300, 400];
+const PAPERSTACK_INVOICE_EXPORT_FORMATS = ['fleet', 'original'];
 const COMMAND_CENTER_CLASSIFICATIONS = [
   'Operations',
   'Finance',
@@ -712,6 +713,175 @@ const MODULE_REGISTRY: ModuleDefinition[] = [
         () => ['paperstack.py', 'generate', 'docx'],
         EMPTY_ARGS_SCHEMA,
         120_000,
+      ),
+      pythonAction(
+        'invoice.extract',
+        'Extract one vendor invoice PDF and export JSON + XLSX',
+        ['python', 'scripts/invoice_gateway.py', 'single', '--input', '<invoice.pdf>', '--format', '<fleet|original>'],
+        (args) => {
+          const inputPath = resolvePaperstackPathArg(args.inputPath, {
+            label: 'args.inputPath',
+            extensions: ['.pdf'],
+          });
+          const commandArgs = [
+            'scripts/invoice_gateway.py',
+            'single',
+            '--input',
+            inputPath,
+            '--format',
+            String(args.format),
+          ];
+
+          if (typeof args.orgId === 'string' && args.orgId.trim().length > 0) {
+            commandArgs.push('--org-id', args.orgId.trim());
+          }
+          if (typeof args.operator === 'string' && args.operator.trim().length > 0) {
+            commandArgs.push('--operator', args.operator.trim());
+          }
+          if (typeof args.jsonOut === 'string' && args.jsonOut.trim().length > 0) {
+            commandArgs.push(
+              '--json-out',
+              resolvePaperstackPathArg(args.jsonOut, {
+                label: 'args.jsonOut',
+                allowMissing: true,
+                extensions: ['.json'],
+              }),
+            );
+          }
+          if (typeof args.xlsxOut === 'string' && args.xlsxOut.trim().length > 0) {
+            commandArgs.push(
+              '--xlsx-out',
+              resolvePaperstackPathArg(args.xlsxOut, {
+                label: 'args.xlsxOut',
+                allowMissing: true,
+                extensions: ['.xlsx'],
+              }),
+            );
+          }
+          return commandArgs;
+        },
+        {
+          type: 'object',
+          properties: {
+            inputPath: {
+              type: 'string',
+              description: 'Path to one invoice PDF within MOD-PAPERSTACK-PP',
+            },
+            format: {
+              type: 'string',
+              enum: PAPERSTACK_INVOICE_EXPORT_FORMATS,
+              default: 'fleet',
+              description: 'Export schema format for XLSX output',
+            },
+            orgId: {
+              type: 'string',
+              description: 'Optional organization id tag for extracted records',
+            },
+            operator: {
+              type: 'string',
+              default: 'module-gateway',
+              description: 'Operator identifier used by invoice extraction logs',
+            },
+            jsonOut: {
+              type: 'string',
+              description: 'Optional output JSON path within MOD-PAPERSTACK-PP',
+            },
+            xlsxOut: {
+              type: 'string',
+              description: 'Optional output XLSX path within MOD-PAPERSTACK-PP',
+            },
+          },
+          required: ['inputPath'],
+        },
+        300_000,
+      ),
+      pythonAction(
+        'invoice.extract_batch',
+        'Extract all invoice PDFs in a folder and export JSON + XLSX',
+        ['python', 'scripts/invoice_gateway.py', 'batch', '--input-dir', '<invoices/>', '--format', '<fleet|original>'],
+        (args) => {
+          const inputDir = resolvePaperstackPathArg(args.inputDir, {
+            label: 'args.inputDir',
+          });
+          const commandArgs = [
+            'scripts/invoice_gateway.py',
+            'batch',
+            '--input-dir',
+            inputDir,
+            '--format',
+            String(args.format),
+          ];
+
+          if (typeof args.pattern === 'string' && args.pattern.trim().length > 0) {
+            commandArgs.push('--pattern', args.pattern.trim());
+          }
+          if (typeof args.orgId === 'string' && args.orgId.trim().length > 0) {
+            commandArgs.push('--org-id', args.orgId.trim());
+          }
+          if (typeof args.operator === 'string' && args.operator.trim().length > 0) {
+            commandArgs.push('--operator', args.operator.trim());
+          }
+          if (typeof args.jsonOut === 'string' && args.jsonOut.trim().length > 0) {
+            commandArgs.push(
+              '--json-out',
+              resolvePaperstackPathArg(args.jsonOut, {
+                label: 'args.jsonOut',
+                allowMissing: true,
+                extensions: ['.json'],
+              }),
+            );
+          }
+          if (typeof args.xlsxOut === 'string' && args.xlsxOut.trim().length > 0) {
+            commandArgs.push(
+              '--xlsx-out',
+              resolvePaperstackPathArg(args.xlsxOut, {
+                label: 'args.xlsxOut',
+                allowMissing: true,
+                extensions: ['.xlsx'],
+              }),
+            );
+          }
+          return commandArgs;
+        },
+        {
+          type: 'object',
+          properties: {
+            inputDir: {
+              type: 'string',
+              description: 'Directory containing invoice PDFs within MOD-PAPERSTACK-PP',
+            },
+            pattern: {
+              type: 'string',
+              default: '*.pdf',
+              description: 'Glob pattern used to select PDFs inside inputDir',
+            },
+            format: {
+              type: 'string',
+              enum: PAPERSTACK_INVOICE_EXPORT_FORMATS,
+              default: 'fleet',
+              description: 'Export schema format for XLSX output',
+            },
+            orgId: {
+              type: 'string',
+              description: 'Optional organization id tag for extracted records',
+            },
+            operator: {
+              type: 'string',
+              default: 'module-gateway',
+              description: 'Operator identifier used by invoice extraction logs',
+            },
+            jsonOut: {
+              type: 'string',
+              description: 'Optional output JSON path within MOD-PAPERSTACK-PP',
+            },
+            xlsxOut: {
+              type: 'string',
+              description: 'Optional output XLSX path within MOD-PAPERSTACK-PP',
+            },
+          },
+          required: ['inputDir'],
+        },
+        600_000,
       ),
       pythonAction(
         'convert',

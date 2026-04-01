@@ -1,0 +1,1 @@
+{"version":3,"file":"health-monitor.d.ts","sourceRoot":"","sources":["../../../src/hooks/health-monitor.ts"],"names":[],"mappings":"AAAA;;;GAGG;AAIH,qBAAa,aAAa;IACxB,OAAO,CAAC,UAAU,CAA+B;IAEjD;;OAEG;IACH,KAAK,CAAC,UAAU,GAAE,MAAc,GAAG,IAAI;IAUvC;;OAEG;IACH,IAAI,IAAI,IAAI;IAOZ;;OAEG;IACG,QAAQ,IAAI,OAAO,CAAC,IAAI,CAAC;CAGhC;AAED,eAAO,MAAM,aAAa,eAAsB,CAAC"}

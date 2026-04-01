@@ -77,7 +77,8 @@ demo-fleet-data.xlsx
 
 # Tooling modules (local only until individually integrated)
 # fleet-compliance-sentinel is tracked — it contains core CFR data and import mappings
-tooling/command-center/
+tooling/command-center/node_modules/
+tooling/command-center/.next/
 tooling/compliance-command/
 tooling/contract-command/
 tooling/dispatch-command/

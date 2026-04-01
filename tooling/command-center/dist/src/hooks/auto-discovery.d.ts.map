@@ -1,0 +1,1 @@
+{"version":3,"file":"auto-discovery.d.ts","sourceRoot":"","sources":["../../../src/hooks/auto-discovery.ts"],"names":[],"mappings":"AAAA;;;GAGG;AAIH,qBAAa,aAAa;IACxB,OAAO,CAAC,UAAU,CAA+B;IAEjD;;OAEG;IACH,KAAK,CAAC,UAAU,GAAE,MAAc,GAAG,IAAI;IAUvC;;OAEG;IACH,IAAI,IAAI,IAAI;IAOZ;;OAEG;IACG,OAAO,IAAI,OAAO,CAAC,IAAI,CAAC;CAG/B;AAED,eAAO,MAAM,aAAa,eAAsB,CAAC"}

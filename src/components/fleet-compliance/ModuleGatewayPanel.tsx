@@ -221,9 +221,10 @@ export default function ModuleGatewayPanel() {
     );
     registerPreset(
       'MOD-PAPERSTACK-PP',
-      'generate.pdf',
-      'PaperStack flyer PDF',
-      'Generates the default Pipeline flyer PDF artifact.',
+      'invoice.extract_batch',
+      'PaperStack invoice batch extraction',
+      'Parses vendor invoice PDFs and exports fleet-ready JSON + XLSX artifacts.',
+      { inputDir: 'invoice-samples', pattern: '*.pdf', format: 'fleet' },
     );
     registerPreset(
       'command-center',

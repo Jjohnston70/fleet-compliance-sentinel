@@ -127,10 +127,17 @@ function toRepoRelativePath(absolutePath: string): string {
   return relative.split(path.sep).join('/');
 }
 
-function getPaperstackArtifactCandidates(run: ModuleRunRecord): string[] {
+function getPaperstackArtifactCandidates(run: ModuleRunRecord, stdoutRaw: string): string[] {
   const args = run.args;
   const inputPath = typeof args.inputPath === 'string' ? args.inputPath : null;
   const outputPath = typeof args.outputPath === 'string' ? args.outputPath : null;
+
+  const extractPaths = (pattern: RegExp): string[] => {
+    const matches = Array.from(stdoutRaw.matchAll(pattern));
+    return matches
+      .map((match) => (match[1] ? match[1].trim().replace(/^["']|["']$/g, '') : ''))
+      .filter((value) => value.length > 0);
+  };
 
   if (run.actionId === 'generate.pdf') {
     return ['Pipeline_Flyer.pdf'];
@@ -195,6 +202,13 @@ function getMlSignalArtifactCandidates(run: ModuleRunRecord, stdoutRaw: string):
     ];
   }
 
+  if (run.actionId === 'invoice.extract' || run.actionId === 'invoice.extract_batch') {
+    return [
+      ...extractPaths(/\[invoice\]\s+json:\s+([^\r\n]+)/gi),
+      ...extractPaths(/\[invoice\]\s+xlsx:\s+([^\r\n]+)/gi),
+    ];
+  }
+
   return [];
 }
 
@@ -226,7 +240,7 @@ function resolveArtifactAbsolutePath(run: ModuleRunRecord, candidate: string): s
 function collectRunArtifacts(run: ModuleRunRecord, stdoutRaw = ''): ModuleRunArtifact[] {
   let candidates: string[] = [];
   if (run.moduleId === 'MOD-PAPERSTACK-PP') {
-    candidates = getPaperstackArtifactCandidates(run);
+    candidates = getPaperstackArtifactCandidates(run, stdoutRaw);
   } else if (run.moduleId === 'ML-SIGNAL-STACK-TNCC') {
     candidates = getMlSignalArtifactCandidates(run, stdoutRaw);
   } else if (run.moduleId === 'ML-EIA-PETROLEUM-INTEL') {

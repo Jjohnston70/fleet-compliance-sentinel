@@ -26,6 +26,8 @@ npm install
 | `list` | List PaperStack tools and readiness | none |
 | `check` | Check dependencies and environment | none |
 | `generate` | Generate default flyer in one format | `format: pdf|docx` |
+| `invoice.extract` | Parse one vendor invoice PDF | `inputPath: string(.pdf)`, `format?: fleet|original`, `orgId?: string`, `operator?: string`, `jsonOut?: string(.json)`, `xlsxOut?: string(.xlsx)` |
+| `invoice.extract_batch` | Parse all invoice PDFs in a folder | `inputDir: string`, `pattern?: string`, `format?: fleet|original`, `orgId?: string`, `operator?: string`, `jsonOut?: string(.json)`, `xlsxOut?: string(.xlsx)` |
 | `convert` | Convert Markdown to HTML | `inputPath: string(.md)`, `outputPath?: string(.html)`, `dark?: boolean` |
 | `reverse` | Reverse DOCX into generator code | `inputPath: string(.docx)`, `mode?: js|python|pdf|python_pdf`, `outputPath?: string` |
 | `inspect` | Launch text-PDF inspector | `inputPath: string(.pdf)`, `port?: number` |
@@ -55,6 +57,7 @@ For artifact-producing PaperStack actions, run status includes `artifacts[]` wit
 
 Artifact capture is enabled for:
 - `generate`, `generate.pdf`, `generate.docx`
+- `invoice.extract`, `invoice.extract_batch`
 - `convert`
 - `reverse`
 
@@ -94,6 +97,26 @@ curl -X POST "http://localhost:3000/api/modules/run" \
   }'
 ```
 
+Batch parse vendor invoices into fleet schema:
+
+```bash
+curl -X POST "http://localhost:3000/api/modules/run" \
+  -H "Content-Type: application/json" \
+  -H "Cookie: __session=<clerk-session-token>" \
+  -d '{
+    "moduleId": "MOD-PAPERSTACK-PP",
+    "actionId": "invoice.extract_batch",
+    "args": {
+      "inputDir": "invoice-samples",
+      "pattern": "*.pdf",
+      "format": "fleet",
+      "operator": "module-tools-ui"
+    },
+    "timeoutMs": 600000,
+    "correlationId": "paperstack-invoice-batch-01"
+  }'
+```
+
 Reverse DOCX into python generator code:
 
 ```bash
@@ -126,6 +149,7 @@ curl -X GET "http://localhost:3000/api/modules/status/<run_id>" \
 2. OCR pathways require Poppler + Tesseract available in runtime PATH.
 3. Large PDF or OCR runs may require higher timeout settings up to gateway max (`900000` ms).
 4. Vercel serverless environments do not reliably execute local tooling modules; use local/self-hosted workers for module execution.
+5. `invoice.extract_batch` requires invoice PDFs under the module directory (`tooling/MOD-PAPERSTACK-PP/...`) due path safety guards.
 
 ## Troubleshooting
 
