@@ -263,7 +263,7 @@ export default function HomePage() {
           <div className="dashboard-mockup">
             <div className="mockup-topbar">
               <span className="mockup-brand">Fleet-Compliance Sentinel</span>
-              <span className="mockup-org">Example Fleet Co</span>
+              <span className="mockup-org">Sample Fleet</span>
             </div>
             <div className="mockup-body">
               <div className="mockup-sidebar">
