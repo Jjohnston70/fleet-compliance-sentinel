@@ -299,3 +299,34 @@ export interface AiBudgetAlertRecord {
   thresholdUsd: number;
 }
 
+export type ModuleInvocationAuditEventType =
+  | 'run_submitted'
+  | 'attempt_completed'
+  | 'run_escalated'
+  | 'remote_dispatch';
+
+export interface ModuleInvocationAuditRecord {
+  id: number;
+  runId: string;
+  eventType: ModuleInvocationAuditEventType;
+  requestId: string;
+  orgId: string;
+  userId: string;
+  moduleId: string;
+  actionId: string;
+  qualifiedName: string;
+  status: ModuleRunStatus;
+  attempt: number;
+  maxAttempts: number;
+  correlationId?: string | null;
+  timeoutMs: number;
+  dryRun: boolean;
+  durationMs?: number | null;
+  errorCode?: ModuleRunErrorCode | null;
+  errorMessage?: string | null;
+  argsRedacted: Record<string, unknown> | null;
+  resultRedacted: Record<string, unknown> | null;
+  detailsRedacted: Record<string, unknown> | null;
+  createdAt: string;
+}
+

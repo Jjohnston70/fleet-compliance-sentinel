@@ -1,5 +1,6 @@
 import { getSQL } from '@/lib/fleet-compliance-db';
 import { getCatalog } from '@/lib/modules-gateway/registry';
+import { redactAuditValue } from '@/lib/audit-logger';
 import type {
   AiBudgetAlertRecord,
   AiUsageCostRecord,
@@ -8,6 +9,8 @@ import type {
   ModuleGatewayAclPermission,
   ModuleGatewayAclRule,
   ModuleGatewayAclScopeType,
+  ModuleInvocationAuditEventType,
+  ModuleInvocationAuditRecord,
   ModuleGatewaySandboxEventType,
   ModuleRunRecord,
 } from '@/lib/modules-gateway/types';
@@ -106,6 +109,29 @@ export interface AiUsageBudgetConfig {
 
 export interface RecordAiUsageCostInput extends AiUsageCostRecord {
   budgetConfig?: Partial<AiUsageBudgetConfig>;
+}
+
+export interface ModuleGatewayInvocationAuditInput {
+  runId: string;
+  eventType: ModuleInvocationAuditEventType;
+  requestId?: string | null;
+  orgId: string;
+  userId: string;
+  moduleId: string;
+  actionId: string;
+  qualifiedName: string;
+  status: ModuleRunRecord['status'];
+  attempt: number;
+  maxAttempts: number;
+  correlationId?: string | null;
+  timeoutMs: number;
+  dryRun: boolean;
+  durationMs?: number | null;
+  errorCode?: string | null;
+  errorMessage?: string | null;
+  args?: unknown;
+  result?: unknown;
+  details?: unknown;
 }
 
 async function ensureModuleGatewayPersistenceTables(): Promise<void> {
@@ -264,6 +290,42 @@ async function ensureModuleGatewayPersistenceTables(): Promise<void> {
   await sql`
     CREATE INDEX IF NOT EXISTS idx_ai_usage_budget_alerts_org_created
     ON ai_usage_budget_alerts (org_id, created_at DESC)
+  `;
+
+  await sql`
+    CREATE TABLE IF NOT EXISTS module_gateway_invocation_audit (
+      id BIGSERIAL PRIMARY KEY,
+      run_id TEXT NOT NULL,
+      event_type TEXT NOT NULL,
+      request_id TEXT NOT NULL,
+      org_id TEXT NOT NULL,
+      user_id TEXT NOT NULL,
+      module_id TEXT NOT NULL,
+      action_id TEXT NOT NULL,
+      qualified_name TEXT NOT NULL,
+      status TEXT NOT NULL,
+      attempt INTEGER NOT NULL,
+      max_attempts INTEGER NOT NULL,
+      correlation_id TEXT,
+      timeout_ms INTEGER NOT NULL,
+      dry_run BOOLEAN NOT NULL DEFAULT FALSE,
+      duration_ms INTEGER,
+      error_code TEXT,
+      error_message TEXT,
+      args_redacted JSONB,
+      result_redacted JSONB,
+      details_redacted JSONB,
+      created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+      CHECK (event_type IN ('run_submitted', 'attempt_completed', 'run_escalated', 'remote_dispatch'))
+    )
+  `;
+  await sql`
+    CREATE INDEX IF NOT EXISTS idx_module_gateway_invocation_audit_run_created
+    ON module_gateway_invocation_audit (run_id, created_at DESC)
+  `;
+  await sql`
+    CREATE INDEX IF NOT EXISTS idx_module_gateway_invocation_audit_org_created
+    ON module_gateway_invocation_audit (org_id, created_at DESC)
   `;
 
   ensured = true;
@@ -1038,6 +1100,153 @@ export async function recordModuleGatewayRetryEscalation(
       actionId: input.actionId,
       message: error instanceof Error ? error.message : String(error),
     });
+  }
+}
+
+function normalizeAuditPayload(value: unknown): Record<string, unknown> | null {
+  const redacted = redactAuditValue(value);
+  if (redacted === null || redacted === undefined) return null;
+  if (Array.isArray(redacted)) {
+    return { items: redacted };
+  }
+  if (typeof redacted === 'object') {
+    return redacted as Record<string, unknown>;
+  }
+  return { value: redacted as string | number | boolean };
+}
+
+export async function appendModuleGatewayInvocationAudit(
+  input: ModuleGatewayInvocationAuditInput,
+): Promise<void> {
+  try {
+    await ensureModuleGatewayPersistenceTables();
+    const sql = getSQL();
+    await sql`
+      INSERT INTO module_gateway_invocation_audit (
+        run_id,
+        event_type,
+        request_id,
+        org_id,
+        user_id,
+        module_id,
+        action_id,
+        qualified_name,
+        status,
+        attempt,
+        max_attempts,
+        correlation_id,
+        timeout_ms,
+        dry_run,
+        duration_ms,
+        error_code,
+        error_message,
+        args_redacted,
+        result_redacted,
+        details_redacted
+      ) VALUES (
+        ${input.runId},
+        ${input.eventType},
+        ${input.requestId || input.correlationId || input.runId},
+        ${input.orgId},
+        ${input.userId},
+        ${input.moduleId},
+        ${input.actionId},
+        ${input.qualifiedName},
+        ${input.status},
+        ${input.attempt},
+        ${input.maxAttempts},
+        ${input.correlationId || null},
+        ${Math.max(0, Math.floor(input.timeoutMs || 0))},
+        ${Boolean(input.dryRun)},
+        ${typeof input.durationMs === 'number' ? Math.max(0, Math.floor(input.durationMs)) : null},
+        ${input.errorCode || null},
+        ${input.errorMessage || null},
+        ${JSON.stringify(normalizeAuditPayload(input.args))}::jsonb,
+        ${JSON.stringify(normalizeAuditPayload(input.result))}::jsonb,
+        ${JSON.stringify(normalizeAuditPayload(input.details))}::jsonb
+      )
+    `;
+  } catch (error) {
+    console.error('[module-gateway] failed to append invocation audit', {
+      runId: input.runId,
+      orgId: input.orgId,
+      moduleId: input.moduleId,
+      actionId: input.actionId,
+      eventType: input.eventType,
+      message: error instanceof Error ? error.message : String(error),
+    });
+  }
+}
+
+export async function listModuleGatewayInvocationAudit(
+  runId: string,
+  orgId: string,
+): Promise<ModuleInvocationAuditRecord[]> {
+  try {
+    await ensureModuleGatewayPersistenceTables();
+    const sql = getSQL();
+    const rows = await sql`
+      SELECT
+        id,
+        run_id,
+        event_type,
+        request_id,
+        org_id,
+        user_id,
+        module_id,
+        action_id,
+        qualified_name,
+        status,
+        attempt,
+        max_attempts,
+        correlation_id,
+        timeout_ms,
+        dry_run,
+        duration_ms,
+        error_code,
+        error_message,
+        args_redacted,
+        result_redacted,
+        details_redacted,
+        created_at
+      FROM module_gateway_invocation_audit
+      WHERE run_id = ${runId}
+        AND org_id = ${orgId}
+      ORDER BY created_at ASC, id ASC
+      LIMIT 200
+    `;
+
+    return rows.map((row) => ({
+      id: Number(row.id || 0),
+      runId: String(row.run_id),
+      eventType: String(row.event_type) as ModuleInvocationAuditRecord['eventType'],
+      requestId: String(row.request_id),
+      orgId: String(row.org_id),
+      userId: String(row.user_id),
+      moduleId: String(row.module_id),
+      actionId: String(row.action_id),
+      qualifiedName: String(row.qualified_name),
+      status: String(row.status) as ModuleInvocationAuditRecord['status'],
+      attempt: Number(row.attempt || 0),
+      maxAttempts: Number(row.max_attempts || 0),
+      correlationId: typeof row.correlation_id === 'string' ? row.correlation_id : null,
+      timeoutMs: Number(row.timeout_ms || 0),
+      dryRun: Boolean(row.dry_run),
+      durationMs: typeof row.duration_ms === 'number' ? row.duration_ms : null,
+      errorCode: (typeof row.error_code === 'string' ? row.error_code : null) as ModuleInvocationAuditRecord['errorCode'],
+      errorMessage: typeof row.error_message === 'string' ? row.error_message : null,
+      argsRedacted: asObject(row.args_redacted),
+      resultRedacted: asObject(row.result_redacted),
+      detailsRedacted: asObject(row.details_redacted),
+      createdAt: String(row.created_at),
+    }));
+  } catch (error) {
+    console.error('[module-gateway] failed to list invocation audit', {
+      runId,
+      orgId,
+      message: error instanceof Error ? error.message : String(error),
+    });
+    return [];
   }
 }
 

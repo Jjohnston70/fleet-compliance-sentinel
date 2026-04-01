@@ -71,7 +71,7 @@ These workstreams are complementary, not competing. The hardening secures the or
 - [x] Layer 3: Execution sandbox with permission checks, rate limits, sanitization, timeout enforcement
 - [x] Layer 4: Retry manager with cap=3 and escalation
 - [x] Layer 5: Token/cost attribution with budget alerts
-- [ ] Layer 6: Durable append-only audit logging for all tool calls
+- [x] Layer 6: Durable append-only audit logging for all tool calls
 - [x] Layer 7: Strict tenant/user tool isolation (visibility + execution)
 - [ ] Integration tests pass and go/no-go report published
 
@@ -456,7 +456,7 @@ At task end:
 **Estimated Effort**: 1 day
 **Depends On**: A0 (envelope schema)
 
-- [ ] Implement full durable tool-call audit history from day one
+- [x] Implement full durable tool-call audit history from day one
 
 **File Targets**:
 

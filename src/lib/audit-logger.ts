@@ -48,9 +48,18 @@ const REDACTED_METADATA_KEY_MATCHERS = [
   'lastname',
   'fullname',
 ];
+const MAX_REDACTION_DEPTH = 5;
+const MAX_ARRAY_ITEMS = 25;
+const MAX_STRING_CHARS = 1_000;
 
 function normalizeKey(key: string): string {
   return key.trim().toLowerCase().replace(/[^a-z0-9]/g, '');
+}
+
+function shouldRedactKey(rawKey: string): boolean {
+  const normalized = normalizeKey(rawKey);
+  if (REDACTED_METADATA_KEYS.has(normalized)) return true;
+  return REDACTED_METADATA_KEY_MATCHERS.some((matcher) => normalized.includes(matcher));
 }
 
 export function sanitize(metadata?: AuditMetadata): AuditMetadata | undefined {
@@ -60,13 +69,37 @@ export function sanitize(metadata?: AuditMetadata): AuditMetadata | undefined {
   for (const [rawKey, value] of Object.entries(metadata)) {
     const key = rawKey.trim();
     if (!key) continue;
-    const normalized = normalizeKey(key);
-    if (REDACTED_METADATA_KEYS.has(normalized)) continue;
-    if (REDACTED_METADATA_KEY_MATCHERS.some((matcher) => normalized.includes(matcher))) continue;
+    if (shouldRedactKey(key)) continue;
     sanitized[key] = value;
   }
 
   return Object.keys(sanitized).length > 0 ? sanitized : undefined;
+}
+
+export function redactAuditValue(value: unknown, depth = 0): unknown {
+  if (value === null || value === undefined) return value;
+  if (depth >= MAX_REDACTION_DEPTH) return '[REDACTED_DEPTH_LIMIT]';
+
+  if (typeof value === 'string') {
+    if (value.length <= MAX_STRING_CHARS) return value;
+    return `${value.slice(0, MAX_STRING_CHARS)}...[TRUNCATED]`;
+  }
+  if (typeof value === 'number' || typeof value === 'boolean') return value;
+  if (Array.isArray(value)) {
+    return value.slice(0, MAX_ARRAY_ITEMS).map((entry) => redactAuditValue(entry, depth + 1));
+  }
+  if (typeof value === 'object') {
+    const output: Record<string, unknown> = {};
+    for (const [key, nested] of Object.entries(value as Record<string, unknown>)) {
+      if (shouldRedactKey(key)) {
+        output[key] = '[REDACTED]';
+        continue;
+      }
+      output[key] = redactAuditValue(nested, depth + 1);
+    }
+    return output;
+  }
+  return String(value);
 }
 
 export function auditLog(event: {

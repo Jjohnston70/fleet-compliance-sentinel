@@ -13,6 +13,7 @@ import {
   validateActionOutput,
 } from '@/lib/modules-gateway/registry';
 import {
+  appendModuleGatewayInvocationAudit,
   recordModuleGatewayRetryEscalation,
   recordModuleGatewaySandboxEvent,
 } from '@/lib/modules-gateway/persistence';
@@ -225,6 +226,35 @@ function persistSandboxEvent(input: {
     errorCode: input.errorCode,
     message: input.message,
     metadata: input.metadata || null,
+  });
+}
+
+function appendRunAuditEvent(
+  run: ModuleRunRecord,
+  eventType: 'run_submitted' | 'attempt_completed' | 'run_escalated',
+  attemptOverride?: number,
+): void {
+  void appendModuleGatewayInvocationAudit({
+    runId: run.id,
+    eventType,
+    requestId: run.correlationId || run.id,
+    orgId: run.orgId,
+    userId: run.requestedBy,
+    moduleId: run.moduleId,
+    actionId: run.actionId,
+    qualifiedName: `${run.moduleId}.${run.actionId}`,
+    status: run.status,
+    attempt: typeof attemptOverride === 'number' ? attemptOverride : run.attemptCount,
+    maxAttempts: run.maxAttempts,
+    correlationId: run.correlationId || null,
+    timeoutMs: run.timeoutMs,
+    dryRun: run.dryRun,
+    durationMs: run.durationMs,
+    errorCode: run.error?.code || null,
+    errorMessage: run.error?.message || null,
+    args: run.args,
+    result: run.result,
+    details: run.error?.fieldErrors || run.error?.details || null,
   });
 }
 
@@ -1027,6 +1057,7 @@ async function executeRunWithRetry(runId: string): Promise<void> {
       maxAttempts,
       retryHistory: [...current.retryHistory, attemptSnapshot],
     })) || afterAttempt;
+    appendRunAuditEvent(runWithHistory, 'attempt_completed', attempt);
 
     if (runWithHistory.status === 'success') {
       suppressedFailureAlerts.delete(runId);
@@ -1063,6 +1094,10 @@ async function executeRunWithRetry(runId: string): Promise<void> {
           ],
         },
       }));
+      const escalatedSnapshot = runs.get(runId);
+      if (escalatedSnapshot) {
+        appendRunAuditEvent(escalatedSnapshot, 'run_escalated', attempt);
+      }
 
       void recordModuleGatewayRetryEscalation({
         runId,
@@ -1414,6 +1449,7 @@ export function startModuleRun(
   };
 
   runs.set(runId, runRecord);
+  appendRunAuditEvent(runRecord, 'run_submitted', runRecord.attemptCount);
 
   if (!dryRun) {
     setTimeout(() => {

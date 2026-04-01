@@ -6,7 +6,7 @@ import { readFile } from 'node:fs/promises';
 import { fetchRemoteModuleRun, shouldUseRemoteModuleGateway } from '@/lib/modules-gateway/remote';
 import { getModuleRun, resolveModuleRunArtifact } from '@/lib/modules-gateway/runner';
 import { fetchRemoteModuleArtifact } from '@/lib/modules-gateway/remote';
-import { maybePersistModuleRunInsights } from '@/lib/modules-gateway/persistence';
+import { listModuleGatewayInvocationAudit, maybePersistModuleRunInsights } from '@/lib/modules-gateway/persistence';
 import type { ModuleRunRecord } from '@/lib/modules-gateway/types';
 
 export const runtime = 'nodejs';
@@ -58,6 +58,10 @@ async function persistRunInsights(
   }
 }
 
+async function loadRunAudit(runId: string, orgId: string) {
+  return listModuleGatewayInvocationAudit(runId, orgId);
+}
+
 export async function GET(request: Request, context: { params: Promise<{ id: string }> }) {
   let orgId = '';
   try {
@@ -90,6 +94,8 @@ export async function GET(request: Request, context: { params: Promise<{ id: str
             );
           }
           await persistRunInsights(orgId, run, true);
+          const audit = await loadRunAudit(run.id, orgId);
+          return Response.json({ ...body, audit }, { status: res.status });
         }
         return Response.json(body, { status: res.status });
       }
@@ -105,7 +111,8 @@ export async function GET(request: Request, context: { params: Promise<{ id: str
         if (orgId) {
           await persistRunInsights(orgId, localRun, false);
         }
-        return Response.json({ ok: true, run: localRun }, { status: 200 });
+        const audit = await loadRunAudit(localRun.id, orgId);
+        return Response.json({ ok: true, run: localRun, audit }, { status: 200 });
       }
 
       return Response.json(body, { status: res.status });
@@ -141,6 +148,6 @@ export async function GET(request: Request, context: { params: Promise<{ id: str
   if (orgId) {
     await persistRunInsights(orgId, run, false);
   }
-
-  return Response.json({ ok: true, run }, { status: 200 });
+  const audit = await loadRunAudit(run.id, orgId);
+  return Response.json({ ok: true, run, audit }, { status: 200 });
 }

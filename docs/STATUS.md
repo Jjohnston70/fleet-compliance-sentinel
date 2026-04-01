@@ -1,12 +1,24 @@
 # Fleet-Compliance Sentinel — Status
 
-Last Updated: 2026-04-01 (Workstream A tasks A0-A6 complete)
+Last Updated: 2026-04-01 (Workstream A tasks A0-A7 complete)
 Current Phase: April 2-25 sprint active (Workstream A + B)
-Overall Completion: SOC 2 action plan 100%; module integration sprint 6/6 phases complete; hardening sprint A0-A6 complete
+Overall Completion: SOC 2 action plan 100%; module integration sprint 6/6 phases complete; hardening sprint A0-A7 complete
 Open Findings: 0 blockers; remaining items are accepted non-blocking hardening items
 SOC 2 Observation Window Start: 2026-03-24
 SOC 2 Type I Earliest Eligibility: 2026-06-22
 Days Until Type I Eligible: 83
+
+## 2026-04-01 Workstream A - Task A7 Layer 6 Audit Logging Outcome
+
+| Workstream | Result |
+|-----------|--------|
+| Durable append-only invocation log | Complete - added `module_gateway_invocation_audit` table with append-only run/attempt/escalation/remote-dispatch events |
+| Required correlation fields | Complete - audit rows now persist `run_id`, `request_id`, `org_id`, `user_id`, `module_id`, `action_id`, `qualified_name`, and attempt metadata |
+| Redaction policy | Complete - recursive redaction helper masks sensitive key paths before audit JSON persistence (`args_redacted`, `result_redacted`, `details_redacted`) |
+| Runner wiring | Complete - local module runs now append audit events for submission, each attempt completion, and retry escalations |
+| Route wiring | Complete - remote dispatches append durable audit events and status endpoint now returns run-scoped audit rows for authorized org context |
+| Hardening doc updates | Updated - `docs/integration/ENTERPRISE_FUNCTION_CALLING_HARDENING.md` now documents Layer 6 table/event schema and redaction controls |
+| Verification | `npm --prefix tooling/command-center run build` pass; `npm --prefix tooling/command-center run test` pass; `npx tsc --noEmit` pass; `npm run lint` pass (pre-existing a11y warnings only) |
 
 ## 2026-04-01 Workstream A - Task A6 Layer 5 Cost Tracking Outcome
 

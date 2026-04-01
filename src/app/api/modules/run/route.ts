@@ -11,6 +11,7 @@ import {
   startModuleRunAndWait,
 } from '@/lib/modules-gateway/runner';
 import {
+  appendModuleGatewayInvocationAudit,
   buildCommandCenterAclPayload,
   evaluateCommandCenterToolAcl,
   evaluateModuleGatewayAcl,
@@ -93,6 +94,7 @@ function parseRunRequest(body: unknown): { ok: true; data: ModuleRunRequest } | 
 }
 
 export async function POST(request: Request) {
+  const requestId = request.headers.get('x-request-id')?.trim() || `req_${Date.now()}`;
   let userId = 'system';
   let orgId = '';
   try {
@@ -123,6 +125,9 @@ export async function POST(request: Request) {
   if (!parsed.ok) {
     const error = buildValidationError(parsed.error);
     return Response.json({ ok: false, error }, { status: 400 });
+  }
+  if (!parsed.data.correlationId) {
+    parsed.data.correlationId = requestId;
   }
 
   const actionDecision = await evaluateModuleGatewayAcl({
@@ -223,6 +228,39 @@ export async function POST(request: Request) {
 
     try {
       const { res, body } = await startRemoteModuleRun(parsed.data);
+      const remoteRun = (body && typeof body === 'object' && 'run' in body)
+        ? (body.run as Partial<ModuleRunRecord> | undefined)
+        : undefined;
+      const remoteStatus = remoteRun?.status;
+      const normalizedStatus = (
+        remoteStatus === 'queued'
+        || remoteStatus === 'running'
+        || remoteStatus === 'success'
+        || remoteStatus === 'fail'
+      ) ? remoteStatus : 'queued';
+
+      await appendModuleGatewayInvocationAudit({
+        runId: remoteRun?.id || `remote_${requestId}`,
+        eventType: 'remote_dispatch',
+        requestId,
+        orgId,
+        userId,
+        moduleId: parsed.data.moduleId,
+        actionId: parsed.data.actionId,
+        qualifiedName: `${parsed.data.moduleId}.${parsed.data.actionId}`,
+        status: normalizedStatus,
+        attempt: typeof remoteRun?.attemptCount === 'number' && remoteRun.attemptCount > 0 ? remoteRun.attemptCount : 0,
+        maxAttempts: typeof remoteRun?.maxAttempts === 'number' && remoteRun.maxAttempts > 0 ? remoteRun.maxAttempts : 1,
+        correlationId: parsed.data.correlationId || requestId,
+        timeoutMs: typeof remoteRun?.timeoutMs === 'number' ? remoteRun.timeoutMs : (parsed.data.timeoutMs || 0),
+        dryRun: Boolean(parsed.data.dryRun),
+        durationMs: typeof remoteRun?.durationMs === 'number' ? remoteRun.durationMs : null,
+        errorCode: remoteRun?.error?.code || null,
+        errorMessage: remoteRun?.error?.message || null,
+        args: parsed.data.args,
+        result: remoteRun?.result || null,
+        details: remoteRun?.error?.details || remoteRun?.error?.fieldErrors || null,
+      });
       return Response.json(body, { status: res.status });
     } catch (error: unknown) {
       return Response.json(

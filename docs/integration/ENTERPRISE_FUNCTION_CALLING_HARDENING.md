@@ -111,6 +111,18 @@ Layer boundaries define ownership and prevent overlapping behavior changes.
 - Owns durable append-only call records using canonical envelope.
 - No mutation/deletion of prior call records.
 
+Layer 6 implementation notes (A7):
+
+- Durable table: `module_gateway_invocation_audit`
+- Append-only event types: `run_submitted`, `attempt_completed`, `run_escalated`, `remote_dispatch`
+- Required correlation fields per row:
+  - `run_id`, `request_id`, `org_id`, `user_id`
+  - `module_id`, `action_id`, `qualified_name`
+  - `attempt`, `max_attempts`, `status`, `error_code`
+- Payload controls:
+  - `args_redacted`, `result_redacted`, and `details_redacted` persisted as redacted JSONB
+  - Redaction is key-based and recursive for common sensitive keys (PII/contact identifiers)
+
 ### Layer 7: Tenant Isolation
 
 - Owns per-org/per-user visibility and execution ACL enforcement.
@@ -121,4 +133,3 @@ Layer boundaries define ownership and prevent overlapping behavior changes.
 - No runtime behavior change to current endpoints.
 - No refactor of Penny query path.
 - No migration or schema rollout beyond additive type/doc contract lock.
-
