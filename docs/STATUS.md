@@ -1,12 +1,34 @@
 # Fleet-Compliance Sentinel — Status
 
-Last Updated: 2026-03-31 (SOC 2 controls remain stable; module integration sprint Phase 1 preflight complete)
-Current Phase: Module integration sprint in progress (Phase 1 complete)
-Overall Completion: SOC 2 action plan 100%; module integration sprint 1/6 phases complete
+Last Updated: 2026-03-31 (SOC 2 controls remain stable; module integration sprint Phase 3 ML integration complete)
+Current Phase: Module integration sprint in progress (Phase 3 complete)
+Overall Completion: SOC 2 action plan 100%; module integration sprint 3/6 phases complete
 Open Findings: 0 blockers; remaining items are accepted non-blocking hardening items
 SOC 2 Observation Window Start: 2026-03-24
 SOC 2 Type I Earliest Eligibility: 2026-06-22
 Days Until Type I Eligible: 83
+
+## 2026-03-31 Module Integration Sprint - Phase 3 Outcome
+
+| Workstream | Result |
+|-----------|--------|
+| ML-EIA gateway integration | Complete - registered `ingest.all`, `ingest.source`, `ingest.api_update`, `pipeline.all`, `pipeline.product`, `export.report`, `export.skip_docx`, `export.json_only` |
+| ML-SIGNAL gateway integration | Complete - registered `export.csv`, `export.csv_all`, `export.csv_source`, `pipeline.source`, `pipeline.all`, `report.generate`, `package.output` |
+| Action argument validation | Complete - strict enums/defaults for source/product/horizon/flags; unknown args rejected |
+| ML integration runbook | Complete - `docs/integration/ML_RUNBOOK.md` added with command matrix, payloads, and troubleshooting |
+| Gateway contract docs | Updated - `docs/integration/MODULE_GATEWAY_CONTRACT.md` refreshed with Phase 3 examples and current allowlist |
+| Verification | `npm run lint` pass (pre-existing unrelated warnings only) |
+
+## 2026-03-31 Module Integration Sprint - Phase 2 Outcome
+
+| Workstream | Result |
+|-----------|--------|
+| Gateway core scaffold | Complete - `src/lib/modules-gateway/{types,registry,runner}.ts` added |
+| Module execution safety | Complete - allowlisted module/action mapping with deterministic command templates |
+| Process execution controls | Complete - timeout clamp, async run lifecycle tracking, stdout/stderr truncation |
+| Module API routes | Complete - `POST /api/modules/run`, `GET /api/modules/catalog`, `GET /api/modules/status/:id` added |
+| Endpoint auth guard | Complete - admin-role check required for run/catalog/status routes |
+| Verification | `npm run lint` pass (warnings only); `npm run build` blocked by pre-existing `EACCES` on `tooling/ML-SIGNAL-STACK-TNCC/venv_tnds-signal-engine/bin/python` during workspace scan |
 
 ## 2026-03-31 Module Integration Sprint - Phase 1 Outcome
 

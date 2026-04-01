@@ -167,7 +167,7 @@ Applies to planned endpoints:
 ## Job Record Shape (Internal Contract)
 
 ```ts
-type ModuleJobStatus = 'queued' | 'running' | 'success' | 'fail' | 'timeout';
+type ModuleJobStatus = 'queued' | 'running' | 'success' | 'fail';
 
 interface ModuleJobRecord {
   id: string;
@@ -178,15 +178,13 @@ interface ModuleJobRecord {
   cwd: string;
   createdAt: string;
   startedAt: string | null;
-  finishedAt: string | null;
+  endedAt: string | null;
   timeoutMs: number;
   exitCode: number | null;
-  output: {
-    stdoutPreview: string;
-    stderrPreview: string;
-    stdoutTruncated: boolean;
-    stderrTruncated: boolean;
-  };
+  stdoutPreview: string;
+  stderrPreview: string;
+  stdoutTruncated: boolean;
+  stderrTruncated: boolean;
   artifacts: Array<{
     kind: 'file' | 'report' | 'dataset';
     path: string;
@@ -201,15 +199,14 @@ interface ModuleJobRecord {
 }
 ```
 
-## Error Codes (Frozen Set for Phase 2/3)
+## Error Codes (Current Implementation)
 
-- `UNKNOWN_MODULE`
-- `UNKNOWN_ACTION`
-- `INVALID_ARGS`
+- `VALIDATION_ERROR`
+- `MODULE_NOT_FOUND`
+- `ACTION_NOT_ALLOWED`
 - `MISSING_ENV`
-- `PRECHECK_FAILED`
-- `EXECUTION_FAILED`
-- `EXECUTION_TIMEOUT`
+- `EXEC_TIMEOUT`
+- `EXEC_FAILED`
 - `INTERNAL_ERROR`
 
 ## Phase 1 Notes
@@ -217,3 +214,102 @@ interface ModuleJobRecord {
 1. `scripts/start-module.ps1` behavior is informative but not sufficient as-is for gateway orchestration because mixed-runtime modules (PaperStack) can be misclassified.
 2. Command-center execution path is currently "route and record" rather than full external side-effect execution; gateway adapter should preserve this behavior and normalize output.
 3. This contract is frozen for scaffold implementation in Phase 2; only additive fields are allowed in later phases.
+
+## Endpoint Usage Examples (Phase 2/3)
+
+Note: these routes require a valid Clerk-authenticated org-admin session. For CLI calls, pass a valid `__session` cookie value from an authenticated browser session.
+
+### Catalog
+
+```bash
+curl -X GET "http://localhost:3000/api/modules/catalog" \
+  -H "Cookie: __session=<clerk-session-token>"
+```
+
+### Run (Dry Run Validation)
+
+```bash
+curl -X POST "http://localhost:3000/api/modules/run" \
+  -H "Content-Type: application/json" \
+  -H "Cookie: __session=<clerk-session-token>" \
+  -d '{
+    "moduleId": "ML-EIA-PETROLEUM-INTEL",
+    "actionId": "pipeline.product",
+    "args": { "product": "diesel", "horizon": 30, "trainYears": 10 },
+    "dryRun": true,
+    "correlationId": "phase2-smoke-001"
+  }'
+```
+
+### Run (Execute ML-EIA Ingest API Update)
+
+```bash
+curl -X POST "http://localhost:3000/api/modules/run" \
+  -H "Content-Type: application/json" \
+  -H "Cookie: __session=<clerk-session-token>" \
+  -d '{
+    "moduleId": "ML-EIA-PETROLEUM-INTEL",
+    "actionId": "ingest.api_update",
+    "args": { "forceApi": false },
+    "timeoutMs": 300000,
+    "correlationId": "phase3-eia-api-update-001"
+  }'
+```
+
+### Run (Execute ML-SIGNAL Pipeline All)
+
+```bash
+curl -X POST "http://localhost:3000/api/modules/run" \
+  -H "Content-Type: application/json" \
+  -H "Cookie: __session=<clerk-session-token>" \
+  -d '{
+    "moduleId": "ML-SIGNAL-STACK-TNCC",
+    "actionId": "pipeline.all",
+    "args": { "skipSearch": true },
+    "timeoutMs": 900000,
+    "correlationId": "phase3-signal-all-001"
+  }'
+```
+
+### Run (Execute ML-SIGNAL Report)
+
+```bash
+curl -X POST "http://localhost:3000/api/modules/run" \
+  -H "Content-Type: application/json" \
+  -H "Cookie: __session=<clerk-session-token>" \
+  -d '{
+    "moduleId": "ML-SIGNAL-STACK-TNCC",
+    "actionId": "report.generate",
+    "args": { "source": "all" },
+    "timeoutMs": 300000,
+    "correlationId": "phase3-signal-report-001"
+  }'
+```
+
+### Run (Execute command-center baseline validation)
+
+```bash
+curl -X POST "http://localhost:3000/api/modules/run" \
+  -H "Content-Type: application/json" \
+  -H "Cookie: __session=<clerk-session-token>" \
+  -d '{
+    "moduleId": "command-center",
+    "actionId": "tests",
+    "args": {},
+    "timeoutMs": 180000
+  }'
+```
+
+### Status Poll
+
+```bash
+curl -X GET "http://localhost:3000/api/modules/status/<run_id>" \
+  -H "Cookie: __session=<clerk-session-token>"
+```
+
+### Current Allowlist (Phase 3)
+
+- `ML-EIA-PETROLEUM-INTEL`: `tests`, `ingest.all`, `ingest.source`, `ingest.api_update`, `pipeline.product`, `pipeline.all`, `export.report`, `export.skip_docx`, `export.json_only`
+- `ML-SIGNAL-STACK-TNCC`: `pipeline.source`, `pipeline.all`, `export.csv`, `export.csv_all`, `export.csv_source`, `report.generate`, `package.output`
+- `MOD-PAPERSTACK-PP`: `tools.list`, `tools.check`, `generate.pdf`, `generate.docx`
+- `command-center`: `tests`, `build`
