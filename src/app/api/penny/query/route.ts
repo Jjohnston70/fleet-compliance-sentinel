@@ -31,6 +31,9 @@ const GENERAL_FALLBACK_SESSION_LIMIT = (() => {
   if (!Number.isFinite(parsed)) return 3;
   return Math.max(0, Math.min(parsed, 20));
 })();
+const RAILWAY_ORG_CONTEXT_MAX_CHARS = 7900;
+const ORG_CONTEXT_BUDGET_CHARS = 5200;
+const GROUNDED_CONTEXT_BUDGET_CHARS = 2400;
 
 type BackendSource =
   | string
@@ -135,6 +138,40 @@ function buildOrgContextPreview(orgContext: string): string {
     .slice(0, 2)
     .join(' || ');
   return preview.slice(0, 220);
+}
+
+function truncateContext(value: string, maxChars: number): string {
+  if (!value) return '';
+  if (value.length <= maxChars) return value;
+  const slice = value.slice(0, maxChars);
+  const breakAt = Math.max(slice.lastIndexOf('\n'), slice.lastIndexOf(' '));
+  if (breakAt > Math.floor(maxChars * 0.6)) {
+    return slice.slice(0, breakAt).trim();
+  }
+  return slice.trim();
+}
+
+function buildCombinedContext(options: { orgContext: string; groundedContext: string | null }): string {
+  const orgContext = options.orgContext.trim();
+  const groundedContext = (options.groundedContext || '').trim();
+
+  if (orgContext && groundedContext) {
+    const parts = [
+      `### Operator Fleet Context\n${truncateContext(orgContext, ORG_CONTEXT_BUDGET_CHARS)}`,
+      `### CFR Grounding Context\n${truncateContext(groundedContext, GROUNDED_CONTEXT_BUDGET_CHARS)}`,
+    ];
+    return truncateContext(parts.join('\n\n'), RAILWAY_ORG_CONTEXT_MAX_CHARS);
+  }
+
+  if (orgContext) {
+    return truncateContext(orgContext, RAILWAY_ORG_CONTEXT_MAX_CHARS);
+  }
+
+  if (groundedContext) {
+    return truncateContext(groundedContext, RAILWAY_ORG_CONTEXT_MAX_CHARS);
+  }
+
+  return '';
 }
 
 export async function POST(request: NextRequest) {
@@ -282,9 +319,7 @@ export async function POST(request: NextRequest) {
     // Railway's MAX_QUERY_CHARS=2500) and pass CFR grounding through `org_context`
     // which feeds into the LLM system prompt (ORG_CONTEXT_MAX_CHARS=8000).
     // NOTE: Only send fields Railway's QueryRequest Pydantic v2 model accepts.
-    const combinedContext = groundedContext
-      ? `${groundedContext}\n\n${orgContext}`.trim()
-      : orgContext;
+    const combinedContext = buildCombinedContext({ orgContext, groundedContext });
 
     const res = await fetch(`${PENNY_API_URL}/query`, {
       method: 'POST',
@@ -316,17 +351,19 @@ export async function POST(request: NextRequest) {
         orgId: auditOrgId,
         resourceType: 'penny.query',
         severity: 'error',
-        metadata: {
+          metadata: {
           provider: typeof llmProvider === 'string' ? llmProvider.trim().toLowerCase() || 'default' : 'default',
           kbHit: false,
           fallbackUsed: false,
           responseMs: Date.now() - startedAt,
           status: res.status,
           contextMode,
-          orgContextIncluded: orgContext.length > 0,
-          orgContextChars: orgContext.length,
-          orgContextPreview,
-        },
+            orgContextIncluded: orgContext.length > 0,
+            orgContextChars: orgContext.length,
+            groundedContextChars: groundedContext?.length ?? 0,
+            combinedContextChars: combinedContext.length,
+            orgContextPreview,
+          },
       });
       return NextResponse.json(
         { error: 'Backend error', answer: 'Something went wrong on the backend. Try again in a moment.' },
@@ -365,6 +402,8 @@ export async function POST(request: NextRequest) {
         contextMode,
         orgContextIncluded: orgContext.length > 0,
         orgContextChars: orgContext.length,
+        groundedContextChars: groundedContext?.length ?? 0,
+        combinedContextChars: combinedContext.length,
         orgContextPreview,
       },
     });
@@ -408,6 +447,8 @@ export async function POST(request: NextRequest) {
         contextMode,
         orgContextIncluded: orgContext.length > 0,
         orgContextChars: orgContext.length,
+        groundedContextChars: 0,
+        combinedContextChars: 0,
         orgContextPreview,
       },
     });
