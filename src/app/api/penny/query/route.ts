@@ -113,6 +113,55 @@ function shouldIncludeOrgContext(query: string): boolean {
 function enrichComplianceQuery(query: string): string {
   const q = query.toLowerCase();
   const extras: string[] = [];
+  if (/\bmodule\s*0(\.0)?\b/.test(q)) {
+    extras.push('TNDS-HZ-000', 'Hazardous Materials Regulations Introduction', '49 CFR Parts 171-180');
+  }
+  if (/\bmodule\s*1(\.0)?\b/.test(q)) {
+    extras.push('TNDS-HZ-001', 'Hazardous Materials Table', '49 CFR 172.101');
+  }
+  if (/\bmodule\s*2(\.0)?\b/.test(q)) {
+    extras.push('TNDS-HZ-002', 'Shipping Papers', '49 CFR 172.200-205');
+  }
+  if (/\bmodule\s*3(\.0)?\b/.test(q)) {
+    extras.push('TNDS-HZ-003', 'Packaging Requirements', '49 CFR Parts 173/178');
+  }
+  if (/\bmodule\s*4(\.0)?\b/.test(q)) {
+    extras.push('TNDS-HZ-004', 'Marking Requirements', '49 CFR 172.300-338');
+  }
+  if (/\bmodule\s*5(\.0)?\b/.test(q)) {
+    extras.push('TNDS-HZ-005', 'Labeling Requirements', '49 CFR 172.400-450');
+  }
+  if (/\bmodule\s*6(\.0)?\b/.test(q)) {
+    extras.push('TNDS-HZ-006', 'Placarding Requirements', '49 CFR 172.500-560');
+  }
+  if (/\bmodule\s*7(\.0)?a\b/.test(q)) {
+    extras.push('TNDS-HZ-007a', 'Carrier Requirements: Highway', '49 CFR Parts 177/397');
+  }
+  if (/\bmodule\s*7(\.0)?b\b/.test(q)) {
+    extras.push('TNDS-HZ-007b', 'Carrier Requirements: Air', '49 CFR Part 175');
+  }
+  if (/\bmodule\s*7(\.0)?c\b/.test(q)) {
+    extras.push('TNDS-HZ-007c', 'Carrier Requirements: Rail', '49 CFR Part 174');
+  }
+  if (/\bmodule\s*7(\.0)?d\b/.test(q)) {
+    extras.push('TNDS-HZ-007d', 'Carrier Requirements: Vessel', '49 CFR Part 176');
+  }
+  if (/\bmodule\s*8(\.0)?\b/.test(q)) {
+    extras.push('TNDS-HZ-008', 'Security Requirements', '49 CFR 172.800-804');
+  }
+  if (
+    q.includes('hazmat training') &&
+    (q.includes('complete') || q.includes('completed') || q.includes('due') || q.includes('deadline'))
+  ) {
+    extras.push(
+      'hazmat_training_records',
+      'training assignments',
+      'next due date',
+      'assessment passed',
+      'certificate status',
+      'fcs_training'
+    );
+  }
   if ((q.includes('drink') || q.includes('alcohol') || q.includes('alchohol')) &&
       (q.includes('shift') || q.includes('duty') || q.includes('drive'))) {
     extras.push('382 207', 'pre duty use', 'four hours', 'safety sensitive functions');

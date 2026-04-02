@@ -6,7 +6,7 @@
 
 import path from 'node:path'
 import { fileURLToPath, pathToFileURL } from 'node:url'
-import { readdirSync } from 'node:fs'
+import { existsSync, readdirSync } from 'node:fs'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 const ROOT = path.resolve(__dirname, '..')
@@ -24,6 +24,7 @@ const { ingestFile } = await import(ingestUrl)
 const { JsonChunkIndex } = await import(retrievalUrl)
 
 const CFR_DOCS_DIR = path.join(ROOT, 'knowledge', 'cfr-docs')
+const TRAINING_DOCS_DIR = path.join(ROOT, 'knowledge', 'training-content', 'hazmat')
 const CFR_INDEX_FILE = path.join(ROOT, 'knowledge', 'cfr-index', 'chunks.json')
 
 console.log('[build-cfr-index] Starting CFR index build...')
@@ -65,6 +66,26 @@ for (const file of files) {
 
   chunksWritten += chunks.length
   console.log(`[build-cfr-index] ${file}: ${chunks.length} chunks`)
+}
+
+if (existsSync(TRAINING_DOCS_DIR)) {
+  const trainingFiles = readdirSync(TRAINING_DOCS_DIR)
+    .filter((f) => f.endsWith('.md') || f.endsWith('.txt'))
+    .sort()
+  for (const file of trainingFiles) {
+    const filePath = path.join(TRAINING_DOCS_DIR, file)
+    const doc = await ingestFile(filePath, { domainSlug: 'dot-compliance' })
+    const recordId = `training-${file.replace(/\.(md|txt)$/i, '').replace(/[^a-z0-9-]/gi, '-')}`
+    const chunks = await index.addDocument({
+      recordId,
+      sourceId: `training/${file}`,
+      domainSlug: 'dot-compliance',
+      document: doc,
+      chunking: { maxChunkChars: 1500, overlapChars: 150 },
+    })
+    chunksWritten += chunks.length
+    console.log(`[build-cfr-index] training/${file}: ${chunks.length} chunks`)
+  }
 }
 
 console.log('')

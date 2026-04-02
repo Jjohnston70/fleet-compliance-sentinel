@@ -27,6 +27,7 @@ interface CatalogOptions {
 
 const CFR_DOCS_DIR = path.join(process.cwd(), 'knowledge', 'cfr-docs');
 const DEMO_DOCS_DIR = path.join(process.cwd(), 'knowledge', 'data', 'original_content');
+const TRAINING_DOCS_DIR = path.join(process.cwd(), 'knowledge', 'training-content', 'hazmat');
 
 function sanitizeLimit(limit: number | undefined, fallback: number): number {
   if (!Number.isFinite(limit)) return fallback;
@@ -150,6 +151,21 @@ export function buildLocalPennyCatalog(limit: number | undefined): PennyCatalogR
         title: buildCfrTitle(filePath, file),
         source: file,
         category: 'CFR Parts',
+      });
+    }
+  }
+
+  if (existsSync(TRAINING_DOCS_DIR)) {
+    const trainingFiles = readdirSync(TRAINING_DOCS_DIR)
+      .filter((name) => name.endsWith('.md') || name.endsWith('.txt'))
+      .sort();
+    for (const file of trainingFiles) {
+      const stem = file.replace(/\.(md|txt)$/i, '');
+      const title = titleCase(stem.replace(/^TNDS-HZ-[^-]+-?/i, '').replace(/-/g, ' '));
+      documents.push({
+        title: title || stem,
+        source: `training/${file}`,
+        category: 'Training Modules',
       });
     }
   }

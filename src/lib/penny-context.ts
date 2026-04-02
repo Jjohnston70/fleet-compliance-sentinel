@@ -1,4 +1,5 @@
 import { loadFleetComplianceData, loadFleetComplianceInvoices } from '@/lib/fleet-compliance-data';
+import { getSQL } from '@/lib/fleet-compliance-db';
 
 const MAX_CONTEXT_CHARS = 12000;
 
@@ -11,9 +12,27 @@ type ContextSections = {
   drivers: ContextEntry[];
   assets: ContextEntry[];
   permits: ContextEntry[];
+  training: ContextEntry[];
   suspense: ContextEntry[];
   maintenance: ContextEntry[];
   invoices: ContextEntry[];
+};
+
+type TrainingRecordRow = {
+  employeeId: string;
+  employeeName: string;
+  moduleCode: string;
+  moduleTitle: string;
+  status: string;
+  completionDate: string;
+  nextDueDate: string;
+};
+
+type TrainingDeadlineRow = {
+  employeeId: string;
+  moduleCode: string;
+  status: string;
+  deadline: string;
 };
 
 function stringValue(value: unknown, fallback = 'Unknown'): string {
@@ -99,6 +118,9 @@ function renderContext(sections: ContextSections): string {
   lines.push(`PERMITS (${sections.permits.length} total):`);
   lines.push(...(sections.permits.length ? sections.permits.map((entry) => entry.line) : ['- None']));
   lines.push('');
+  lines.push(`TRAINING STATUS (${sections.training.length} rows):`);
+  lines.push(...(sections.training.length ? sections.training.map((entry) => entry.line) : ['- None']));
+  lines.push('');
   lines.push(`OPEN SUSPENSE ITEMS (${sections.suspense.length} items):`);
   lines.push(...(sections.suspense.length ? sections.suspense.map((entry) => entry.line) : ['- None']));
   lines.push('');
@@ -116,6 +138,7 @@ function trimToMaxContextChars(sections: ContextSections): ContextSections {
     drivers: [...sections.drivers],
     assets: [...sections.assets],
     permits: [...sections.permits],
+    training: [...sections.training],
     suspense: [...sections.suspense],
     maintenance: [...sections.maintenance],
     invoices: [...sections.invoices],
@@ -127,6 +150,7 @@ function trimToMaxContextChars(sections: ContextSections): ContextSections {
       { key: 'drivers' as const, index: oldestEntryIndex(mutable.drivers) },
       { key: 'assets' as const, index: oldestEntryIndex(mutable.assets) },
       { key: 'permits' as const, index: oldestEntryIndex(mutable.permits) },
+      { key: 'training' as const, index: oldestEntryIndex(mutable.training) },
       { key: 'suspense' as const, index: oldestEntryIndex(mutable.suspense) },
       { key: 'maintenance' as const, index: oldestEntryIndex(mutable.maintenance) },
       { key: 'invoices' as const, index: oldestEntryIndex(mutable.invoices) },
@@ -167,13 +191,77 @@ function buildSuspenseDescription(sourceType: string, rawTitle: string): string 
   return 'Compliance suspense item';
 }
 
+async function loadTrainingContextRows(orgId: string): Promise<{
+  trainingRecords: TrainingRecordRow[];
+  trainingDeadlines: TrainingDeadlineRow[];
+}> {
+  const sql = getSQL();
+  try {
+    const [records, deadlines] = await Promise.all([
+      sql`
+        SELECT
+          employee_id,
+          employee_name,
+          module_code,
+          module_title,
+          status,
+          completion_date,
+          next_due_date
+        FROM hazmat_training_records
+        WHERE org_id = ${orgId}
+        ORDER BY employee_id, module_code
+        LIMIT 250
+      `,
+      sql`
+        SELECT
+          ta.employee_id,
+          pr.module_code,
+          pr.status,
+          ta.deadline
+        FROM training_assignments ta
+        JOIN training_progress pr ON pr.assignment_id = ta.id
+        WHERE ta.org_id = ${orgId}
+          AND ta.deadline IS NOT NULL
+          AND ta.status <> 'complete'
+          AND COALESCE(pr.assessment_passed, FALSE) = FALSE
+        ORDER BY ta.deadline ASC
+        LIMIT 250
+      `,
+    ]);
+
+    return {
+      trainingRecords: records.map((row) => ({
+        employeeId: stringValue(row.employee_id, ''),
+        employeeName: stringValue(row.employee_name, ''),
+        moduleCode: stringValue(row.module_code, ''),
+        moduleTitle: stringValue(row.module_title, ''),
+        status: stringValue(row.status, 'unknown'),
+        completionDate: normalizeDate(row.completion_date),
+        nextDueDate: normalizeDate(row.next_due_date),
+      })),
+      trainingDeadlines: deadlines.map((row) => ({
+        employeeId: stringValue(row.employee_id, ''),
+        moduleCode: stringValue(row.module_code, ''),
+        status: stringValue(row.status, 'not_started'),
+        deadline: normalizeDate(row.deadline),
+      })),
+    };
+  } catch {
+    return {
+      trainingRecords: [],
+      trainingDeadlines: [],
+    };
+  }
+}
+
 export async function buildOrgContext(orgId: string): Promise<string> {
   const normalizedOrgId = orgId.trim();
   if (!normalizedOrgId) return '';
 
-  const [data, dbInvoices] = await Promise.all([
+  const [data, dbInvoices, trainingContext] = await Promise.all([
     loadFleetComplianceData(normalizedOrgId),
     loadFleetComplianceInvoices(normalizedOrgId),
+    loadTrainingContextRows(normalizedOrgId),
   ]);
   const hasData =
     data.drivers.length > 0 ||
@@ -181,7 +269,9 @@ export async function buildOrgContext(orgId: string): Promise<string> {
     data.permits.length > 0 ||
     data.suspense.length > 0 ||
     data.maintenanceEvents.length > 0 ||
-    dbInvoices.length > 0;
+    dbInvoices.length > 0 ||
+    trainingContext.trainingRecords.length > 0 ||
+    trainingContext.trainingDeadlines.length > 0;
   if (!hasData) return '';
 
   const employeeCdlMap = new Map<string, string>();
@@ -243,6 +333,24 @@ export async function buildOrgContext(orgId: string): Promise<string> {
     })
   );
 
+  const trainingRecords = trainingContext.trainingRecords.map((row) => {
+    const employeeLabel = row.employeeName || normalizeDriverId(row.employeeId);
+    const status = titleCase(row.status.replace(/_/g, ' '));
+    return {
+      line: `- Employee: ${employeeLabel} | Module: ${row.moduleCode} ${row.moduleTitle} | Status: ${status} | Completed: ${row.completionDate} | Next Due: ${row.nextDueDate}`,
+      sortKey: row.nextDueDate !== 'Unknown' ? row.nextDueDate : row.completionDate,
+    };
+  });
+  const trainingDeadlines = trainingContext.trainingDeadlines.map((row) => {
+    const employeeLabel = normalizeDriverId(row.employeeId);
+    const status = titleCase(row.status.replace(/_/g, ' '));
+    return {
+      line: `- Employee: ${employeeLabel} | Pending Module: ${row.moduleCode} | Status: ${status} | Deadline: ${row.deadline}`,
+      sortKey: row.deadline,
+    };
+  });
+  const training = sortEntriesByDateAscending([...trainingRecords, ...trainingDeadlines]).slice(0, 40);
+
   const suspense = sortEntriesByDateAscending(
     data.suspense
       .filter((item) => item.status.toLowerCase() === 'open')
@@ -295,6 +403,7 @@ export async function buildOrgContext(orgId: string): Promise<string> {
     drivers,
     assets,
     permits,
+    training,
     suspense,
     maintenance,
     invoices,
@@ -304,6 +413,7 @@ export async function buildOrgContext(orgId: string): Promise<string> {
     trimmed.drivers.length === 0 &&
     trimmed.assets.length === 0 &&
     trimmed.permits.length === 0 &&
+    trimmed.training.length === 0 &&
     trimmed.suspense.length === 0 &&
     trimmed.maintenance.length === 0 &&
     trimmed.invoices.length === 0

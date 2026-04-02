@@ -22,6 +22,7 @@ import { JsonChunkIndex, buildGroundedPrompt } from '@tnds/retrieval-core'
 
 // CFR source markdown files — output of cfr_dot_scraper.py
 const CFR_DOCS_DIR = path.join(process.cwd(), 'knowledge', 'cfr-docs')
+const TRAINING_DOCS_DIR = path.join(process.cwd(), 'knowledge', 'training-content', 'hazmat')
 
 // CFR chunk index — built by scripts/build-cfr-index.mjs
 const CFR_INDEX_FILE = path.join(process.cwd(), 'knowledge', 'cfr-index', 'chunks.json')
@@ -86,8 +87,33 @@ export async function buildCfrIndex(): Promise<{ chunksWritten: number; filesInd
     console.log(`[penny-ingest] Indexed ${file}: ${chunks.length} chunks`)
   }
 
-  console.log(`[penny-ingest] CFR index complete. ${chunksWritten} chunks across ${files.length} files.`)
-  return { chunksWritten, filesIndexed: files.length }
+  let trainingFiles: string[] = []
+  try {
+    trainingFiles = readdirSync(TRAINING_DOCS_DIR).filter((f) => f.endsWith('.md') || f.endsWith('.txt'))
+  } catch {
+    trainingFiles = []
+  }
+
+  for (const file of trainingFiles) {
+    const filePath = path.join(TRAINING_DOCS_DIR, file)
+    const doc = await ingestFile(filePath, { domainSlug: 'dot-compliance' })
+    const recordId = `training-${file.replace(/\.(md|txt)$/i, '').replace(/[^a-z0-9-]/gi, '-')}`
+    const chunks = await index.addDocument({
+      recordId,
+      sourceId: `training/${file}`,
+      domainSlug: 'dot-compliance',
+      document: doc,
+      chunking: {
+        maxChunkChars: 1500,
+        overlapChars: 150,
+      },
+    })
+    chunksWritten += chunks.length
+    console.log(`[penny-ingest] Indexed training/${file}: ${chunks.length} chunks`)
+  }
+
+  console.log(`[penny-ingest] CFR/training index complete. ${chunksWritten} chunks across ${files.length + trainingFiles.length} files.`)
+  return { chunksWritten, filesIndexed: files.length + trainingFiles.length }
 }
 
 /**

@@ -890,16 +890,16 @@ CREATE TABLE training_progress (
 **Estimated Effort**: 1 day
 **Depends On**: B1 (content), B7 (compliance data)
 
-- [ ] Ingest training markdown into Penny's indexes (CFR index + demo index)
-- [ ] Penny answers: "What does Module 6.0 cover?", "Has John completed hazmat training?", "When is the team's training due?"
+- [x] Ingest training markdown into Penny's indexes (CFR index + demo index)
+- [x] Penny answers: "What does Module 6.0 cover?", "Has John completed hazmat training?", "When is the team's training due?"
 
-- [ ] Training compliance reports:
+- [x] Training compliance reports:
   - Org-wide completion report (CSV + PDF export)
   - Per-employee training transcript
   - DOT audit package (one-click export)
   - Training hours report
 
-- [ ] SOC 2 evidence: access controls, audit trail, retention policy
+- [x] SOC 2 evidence: access controls, audit trail, retention policy
 
 **Commit**: `training(phase9): penny integration and compliance reporting`
 
