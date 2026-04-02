@@ -19,6 +19,8 @@ interface TrainingAssignment {
   completion_pct: number;
   deadline: string | null;
   assigned_date: string;
+  certificate_module_code?: string | null;
+  certificate_url?: string | null;
 }
 
 const STATUS_STYLES: Record<string, string> = {
@@ -299,6 +301,7 @@ export default function TrainingManagement() {
                     <th className="text-left px-4 py-3 font-medium text-slate-600">Plan Name</th>
                     <th className="text-left px-4 py-3 font-medium text-slate-600">Status</th>
                     <th className="text-left px-4 py-3 font-medium text-slate-600">Completion</th>
+                    <th className="text-left px-4 py-3 font-medium text-slate-600">Certificate</th>
                     <th className="text-left px-4 py-3 font-medium text-slate-600">Deadline</th>
                     <th className="text-left px-4 py-3 font-medium text-slate-600">Assigned</th>
                   </tr>
@@ -323,6 +326,18 @@ export default function TrainingManagement() {
                           </div>
                           <span className="text-slate-600">{a.completion_pct}%</span>
                         </div>
+                      </td>
+                      <td className="px-4 py-3 text-slate-600">
+                        {a.certificate_module_code ? (
+                          <a
+                            href={`/api/v1/training/certificates?employee_id=${encodeURIComponent(a.employee_id)}&module_code=${encodeURIComponent(a.certificate_module_code)}`}
+                            target="_blank"
+                            rel="noreferrer"
+                            className="text-teal-700 underline hover:text-teal-900"
+                          >
+                            Download
+                          </a>
+                        ) : '\u2014'}
                       </td>
                       <td className="px-4 py-3 text-slate-600">
                         {a.deadline

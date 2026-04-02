@@ -7,6 +7,7 @@ interface ModuleProgress {
   module_code: string;
   title: string;
   status: 'not_started' | 'viewing' | 'passed' | 'failed';
+  certificate_url?: string | null;
 }
 
 interface AssignmentProgress {
@@ -210,17 +211,29 @@ export default function MyTraining() {
                           <span className="text-sm font-mono text-slate-500">{mod.module_code}</span>
                           <span className="text-sm text-slate-700">{mod.title}</span>
                         </div>
-                        <button
-                          onClick={() => router.push(`/fleet-compliance/training/${mod.module_code}`)}
-                          disabled={mod.status === 'passed'}
-                          className={
-                            mod.status === 'passed'
-                              ? 'px-4 py-1 text-xs rounded-lg font-medium bg-emerald-50 text-emerald-600 cursor-default'
-                              : 'px-4 py-1 text-xs rounded-lg font-medium bg-teal-600 text-white hover:bg-teal-700 transition-colors'
-                          }
-                        >
-                          {moduleAction(mod.status)}
-                        </button>
+                        <div className="flex items-center gap-2">
+                          {mod.status === 'passed' && (
+                            <a
+                              href={`/api/v1/training/certificates?module_code=${encodeURIComponent(mod.module_code)}`}
+                              target="_blank"
+                              rel="noreferrer"
+                              className="px-3 py-1 text-xs rounded-lg font-medium border border-emerald-300 text-emerald-700 hover:bg-emerald-50 transition-colors"
+                            >
+                              Certificate
+                            </a>
+                          )}
+                          <button
+                            onClick={() => router.push(`/fleet-compliance/training/${mod.module_code}`)}
+                            disabled={mod.status === 'passed'}
+                            className={
+                              mod.status === 'passed'
+                                ? 'px-4 py-1 text-xs rounded-lg font-medium bg-emerald-50 text-emerald-600 cursor-default'
+                                : 'px-4 py-1 text-xs rounded-lg font-medium bg-teal-600 text-white hover:bg-teal-700 transition-colors'
+                            }
+                          >
+                            {moduleAction(mod.status)}
+                          </button>
+                        </div>
                       </div>
                     ))}
                   </div>

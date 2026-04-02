@@ -870,15 +870,15 @@ CREATE TABLE training_progress (
 **Estimated Effort**: 0.5 day
 **Depends On**: B7
 
-- [ ] Build certificate generator (Python script or FastAPI endpoint)
+- [x] Build certificate generator (Python script or FastAPI endpoint)
   - TNDS branded PDF (Navy/Teal, logo, compass rose)
   - Fields: Employee name, module title, completion date, score, CFR reference, org name
   - Unique certificate ID for verification
   - Signature line for fleet manager
   - "This training is equivalent to PHMSA Module X.X" statement where applicable
 
-- [ ] Storage: `/{org_id}/training-certs/{employee_id}/{module_code}_{date}.pdf`
-- [ ] Accessible from both admin and employee views
+- [x] Storage: `/{org_id}/training-certs/{employee_id}/{module_code}_{date}.pdf`
+- [x] Accessible from both admin and employee views
 
 **Commit**: `training(phase8): TNDS branded certificate PDF generation`
 

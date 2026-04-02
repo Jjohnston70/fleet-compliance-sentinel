@@ -1,6 +1,7 @@
 import { fleetComplianceAuthErrorResponse, requireFleetComplianceOrg } from '@/lib/fleet-compliance-auth';
 import { auditLog } from '@/lib/audit-logger';
 import { getSQL } from '@/lib/fleet-compliance-db';
+import { getTrainingModuleMetadata } from '@/lib/training-module-metadata';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -121,6 +122,29 @@ export async function GET(request: Request) {
   }
 
   const progress = Array.from(assignmentMap.values());
+  const mapModuleStatus = (status: string): 'not_started' | 'viewing' | 'passed' | 'failed' => {
+    if (status === 'assessment_passed') return 'passed';
+    if (status === 'assessment_failed') return 'failed';
+    if (status === 'viewing' || status === 'deck_complete') return 'viewing';
+    return 'not_started';
+  };
+
+  const assignments = progress.map((assignment) => ({
+    id: assignment.assignment_id,
+    plan_name: assignment.plan_name,
+    status: assignment.assignment_status as 'assigned' | 'in_progress' | 'complete' | 'overdue',
+    completion_pct: Number(assignment.completion_percentage ?? 0),
+    deadline: assignment.deadline,
+    modules: assignment.modules.map((module) => {
+      const meta = getTrainingModuleMetadata(module.module_code);
+      return {
+        module_code: module.module_code,
+        title: meta.title,
+        status: mapModuleStatus(module.status),
+        certificate_url: module.certificate_url,
+      };
+    }),
+  }));
 
   auditLog({
     action: 'data.read' as const,
@@ -130,5 +154,5 @@ export async function GET(request: Request) {
     metadata: { assignmentCount: progress.length, ...(assignmentId ? { assignmentId } : {}) },
   });
 
-  return Response.json({ progress });
+  return Response.json({ progress, assignments });
 }

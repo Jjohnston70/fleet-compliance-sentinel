@@ -1,7 +1,12 @@
 import { currentUser } from '@clerk/nextjs/server';
 import { fleetComplianceAuthErrorResponse, requireFleetComplianceOrg } from '@/lib/fleet-compliance-auth';
 import { auditLog } from '@/lib/audit-logger';
-import { getOrganizationPrimaryContact, getSQL } from '@/lib/fleet-compliance-db';
+import {
+  getOrganizationName,
+  getOrganizationPrimaryContact,
+  getSQL,
+} from '@/lib/fleet-compliance-db';
+import { generateTrainingCertificate } from '@/lib/training-certificate';
 import { getTrainingModuleMetadata } from '@/lib/training-module-metadata';
 
 export const runtime = 'nodejs';
@@ -241,7 +246,32 @@ export async function POST(
           certificate_uploaded_at = NOW(),
           notes = EXCLUDED.notes,
           updated_at = NOW()
+        RETURNING id
       `;
+      const recordRows = await sql`
+        SELECT id
+        FROM hazmat_training_records
+        WHERE org_id = ${orgId}
+          AND employee_id = ${userId}
+          AND module_code = ${moduleCode}
+        LIMIT 1
+      `;
+      const certificateId = String(recordRows[0]?.id || `${orgId}-${userId}-${moduleCode}`);
+      const orgName = await getOrganizationName(orgId) || process.env.FLEET_COMPLIANCE_ORG_NAME || orgId;
+      await generateTrainingCertificate({
+        certificateId,
+        orgName,
+        orgId,
+        employeeId: userId,
+        employeeName,
+        moduleCode,
+        moduleTitle: moduleMeta.title,
+        completionDate: completionDatePart,
+        scorePercentage: body.percentage,
+        cfrReference: moduleMeta.cfrReference,
+        phmsaEquivalent: moduleMeta.phmsaEquivalent,
+        certificateUrl,
+      });
 
       if (assignmentId) {
         await sql`

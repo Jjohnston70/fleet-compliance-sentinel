@@ -412,6 +412,18 @@ export async function getOrganizationPrimaryContact(orgId: string): Promise<stri
   return typeof contact === 'string' && contact.trim().length > 0 ? contact.trim() : null;
 }
 
+export async function getOrganizationName(orgId: string): Promise<string | null> {
+  const sql = getSQL();
+  const rows = await sql`
+    SELECT name
+    FROM organizations
+    WHERE id = ${orgId}
+    LIMIT 1
+  `;
+  const name = rows[0]?.name;
+  return typeof name === 'string' && name.trim().length > 0 ? name.trim() : null;
+}
+
 export async function restoreFleetComplianceRecord(collection: string, id: number, orgId: string): Promise<boolean> {
   const sql = getSQL();
   const rows = await sql`

@@ -1,14 +1,14 @@
 # Fleet-Compliance Sentinel — Status
 
-Last Updated: 2026-04-01 (Workstream B phases B1-B7 complete)
+Last Updated: 2026-04-01 (Workstream B phases B1-B8 complete)
 Current Phase: April 2-25 sprint active (Workstream A complete, Workstream B in progress)
-Overall Completion: SOC 2 action plan 100%; hardening A0-A8 complete; training-command B1-B7 complete (B8-B9 remaining)
+Overall Completion: SOC 2 action plan 100%; hardening A0-A8 complete; training-command B1-B8 complete (B9 remaining)
 Open Findings: 0 blockers
 SOC 2 Observation Window Start: 2026-03-24
 SOC 2 Type I Earliest Eligibility: 2026-06-22
 Days Until Type I Eligible: 83
 
-## 2026-04-01 Workstream B - Training Command Progress (B1-B7)
+## 2026-04-01 Workstream B - Training Command Progress (B1-B8)
 
 | Phase | Task | Result |
 |-------|------|--------|
@@ -19,12 +19,12 @@ Days Until Type I Eligible: 83
 | B5 | Web deck viewer + assessment UI | Complete - Training delivery flow is live with `TrainingDeckViewer`, `TrainingAssessment`, and assessment API routes (`deck`, `assessment/attempts`, `assessment/submit`) |
 | B6 | Training management + employee self-service | Complete - Admin and employee flows are live via `TrainingManagement`, `MyTraining`, and API routes (`plans`, `assignments`, `progress`) |
 | B7 | Compliance auto-update + suspense integration | Complete - assessment pass now upserts `hazmat_training_records`, sets `credit_pathway=fcs_training`, computes 3-year `next_due_date`, stamps certificate path placeholders, sends completion notifications to org admin, and injects training deadlines into suspense/alerts with 90-day warning support |
+| B8 | Certificate PDF generation | Complete - added TNDS-branded PDF generator (`src/lib/training-certificate.ts`), persisted certificate files under `storage/{org_id}/training-certs/{employee_id}/{module_code}_{date}.pdf`, served via authenticated API route (`/api/v1/training/certificates`), and surfaced certificate access in admin + employee training views |
 
 ### Remaining Workstream B Phases
 
 | Phase | Task | Status | Depends On |
 |-------|------|--------|------------|
-| B8 | Certificate PDF generation | Not started | B7 |
 | B9 | Penny integration + reporting | Not started | B1, B7 |
 
 ### Workstream B Commits

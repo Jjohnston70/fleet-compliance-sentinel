@@ -25,11 +25,21 @@ export async function GET(request: Request) {
   if (employeeId) {
     assignments = await sql`
       SELECT ta.id, ta.employee_id, ta.plan_id, ta.assigned_by,
-             ta.assigned_at, ta.deadline, ta.status,
-             ta.completed_at, ta.completion_percentage,
-             tp.plan_name
+             ta.assigned_at AS assigned_date, ta.deadline, ta.status,
+             ta.completed_at, ta.completion_percentage AS completion_pct,
+             tp.plan_name,
+             cert.module_code AS certificate_module_code,
+             cert.certificate_url
       FROM training_assignments ta
       JOIN training_plans tp ON tp.id = ta.plan_id
+      LEFT JOIN LATERAL (
+        SELECT module_code, certificate_url
+        FROM training_progress
+        WHERE assignment_id = ta.id
+          AND certificate_url IS NOT NULL
+        ORDER BY updated_at DESC
+        LIMIT 1
+      ) cert ON TRUE
       WHERE ta.org_id = ${orgId}
         AND ta.employee_id = ${employeeId}
       ORDER BY ta.assigned_at DESC
@@ -37,11 +47,21 @@ export async function GET(request: Request) {
   } else {
     assignments = await sql`
       SELECT ta.id, ta.employee_id, ta.plan_id, ta.assigned_by,
-             ta.assigned_at, ta.deadline, ta.status,
-             ta.completed_at, ta.completion_percentage,
-             tp.plan_name
+             ta.assigned_at AS assigned_date, ta.deadline, ta.status,
+             ta.completed_at, ta.completion_percentage AS completion_pct,
+             tp.plan_name,
+             cert.module_code AS certificate_module_code,
+             cert.certificate_url
       FROM training_assignments ta
       JOIN training_plans tp ON tp.id = ta.plan_id
+      LEFT JOIN LATERAL (
+        SELECT module_code, certificate_url
+        FROM training_progress
+        WHERE assignment_id = ta.id
+          AND certificate_url IS NOT NULL
+        ORDER BY updated_at DESC
+        LIMIT 1
+      ) cert ON TRUE
       WHERE ta.org_id = ${orgId}
       ORDER BY ta.assigned_at DESC
     `;
