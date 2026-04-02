@@ -13,7 +13,7 @@ import {
 export async function GET(req: NextRequest) {
   const auth = await requireFleetComplianceOrg();
   if (!auth.ok) {
-    return fleetComplianceAuthErrorResponse(auth);
+    return fleetComplianceAuthErrorResponse(auth) ?? NextResponse.json({ ok: false, error: 'Unauthorized' }, { status: 401 });
   }
 
   const expiringWithinDays = 

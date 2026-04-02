@@ -16,7 +16,7 @@ import {
 export async function GET(req: NextRequest) {
   const auth = await requireFleetComplianceOrg();
   if (!auth.ok) {
-    return fleetComplianceAuthErrorResponse(auth);
+    return fleetComplianceAuthErrorResponse(auth) ?? NextResponse.json({ ok: false, error: 'Unauthorized' }, { status: 401 });
   }
 
   const fileType = req.nextUrl.searchParams.get('fileType') || undefined;
@@ -33,7 +33,7 @@ export async function GET(req: NextRequest) {
 export async function POST(req: NextRequest) {
   const auth = await requireFleetComplianceOrgWithRole(['admin']);
   if (!auth.ok) {
-    return fleetComplianceAuthErrorResponse(auth);
+    return fleetComplianceAuthErrorResponse(auth) ?? NextResponse.json({ ok: false, error: 'Unauthorized' }, { status: 401 });
   }
 
   const body = await req.json();

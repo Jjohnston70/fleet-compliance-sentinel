@@ -16,7 +16,7 @@ export async function GET(
 ) {
   const auth = await requireFleetComplianceOrg();
   if (!auth.ok) {
-    return fleetComplianceAuthErrorResponse(auth);
+    return fleetComplianceAuthErrorResponse(auth) ?? NextResponse.json({ ok: false, error: 'Unauthorized' }, { status: 401 });
   }
 
   const { id } = await params;

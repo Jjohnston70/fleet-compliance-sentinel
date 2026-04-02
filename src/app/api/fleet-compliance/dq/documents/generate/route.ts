@@ -13,7 +13,7 @@ import {
 export async function POST(req: NextRequest) {
   const auth = await requireFleetComplianceOrgWithRole(['admin']);
   if (!auth.ok) {
-    return fleetComplianceAuthErrorResponse(auth);
+    return fleetComplianceAuthErrorResponse(auth) ?? NextResponse.json({ ok: false, error: 'Unauthorized' }, { status: 401 });
   }
 
   const body = await req.json();
