@@ -227,6 +227,17 @@ const MODULE_SEEDS: readonly ModuleSeed[] = [
     metadata: {},
   },
   {
+    id: 'dq-files',
+    name: 'DQ File Management',
+    description: 'DOT Driver Qualification & Drug/Alcohol History files per 49 CFR Part 391.',
+    category: 'compliance',
+    icon: 'ClipboardCheck',
+    routePrefix: '/dq',
+    isCore: false,
+    requiresPlan: 'starter',
+    metadata: {},
+  },
+  {
     id: 'realty',
     name: 'Realty Pipeline',
     description: 'Real estate CRM -- lead scoring, deal pipeline, and commission tracking.',
@@ -251,6 +262,7 @@ const PLAN_DEFAULTS: Readonly<Record<PlanTier, readonly string[]>> = {
     'proposals',
     'readiness',
     'invoices',
+    'dq-files',
   ],
   pro: [
     'fleet-compliance',
@@ -272,6 +284,7 @@ const PLAN_DEFAULTS: Readonly<Record<PlanTier, readonly string[]>> = {
     'email-analytics',
     'ml-signals',
     'realty',
+    'dq-files',
   ],
   enterprise: MODULE_SEEDS.map((item) => item.id),
 };

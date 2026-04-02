@@ -58,7 +58,7 @@ export const SIDEBAR_SECTIONS: readonly SidebarSection[] = [
     defaultExpanded: true,
     items: [
       { label: 'Compliance', href: '/fleet-compliance/compliance', icon: 'ShieldCheck' },
-      { label: 'DQ Files', href: '/fleet-compliance/dq-files', icon: 'ClipboardCheck', moduleId: 'compliance-docs' },
+      { label: 'DQ Files', href: '/fleet-compliance/dq', icon: 'ClipboardCheck', moduleId: 'dq-files' },
       { label: 'Alerts', href: '/fleet-compliance/alerts', icon: 'Bell' },
       { label: 'Suspense', href: '/fleet-compliance/suspense', icon: 'Clock' },
       { label: 'FMCSA Lookup', href: '/fleet-compliance/fmcsa', icon: 'Search' },
