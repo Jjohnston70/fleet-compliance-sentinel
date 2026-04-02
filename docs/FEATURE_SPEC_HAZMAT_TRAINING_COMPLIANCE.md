@@ -157,7 +157,7 @@ Full-page report view with filtering and export.
 
 **Filters**: Employee, status, module, date range, credit pathway
 **Columns**: Employee name, module, status, completion date, due date, days remaining, certificate status
-**Export**: CSV and PDF (audit-ready format with org header, date range, signature line)
+**Export**: CSV, PDF, and Print view (audit-ready format with org header, date range, signature line)
 **Sort**: Default by days remaining ascending (most urgent first)
 
 ### 4. Certificate Upload Flow
@@ -166,7 +166,7 @@ Full-page report view with filtering and export.
 
 1. User clicks "Upload Certificate" on a module row
 2. File picker accepts PDF only (max 10MB)
-3. File is uploaded to object storage (S3/R2) under `/{org_id}/hazmat-certs/{employee_id}/{module_code}_{date}.pdf`
+3. File is persisted in Neon-backed certificate storage (`training_certificate_files`) and referenced with path convention `/{org_id}/hazmat-certs/{employee_id}/{module_code}_{date}.pdf`
 4. Record updates with certificate_url and certificate_uploaded_at
 5. Certificate icon appears in the module row, clickable to view/download
 
@@ -279,8 +279,8 @@ The knowledge base markdown (already ingested) covers module content. The API en
 ## ESTIMATED EFFORT
 
 **Total**: 8-13 days (1.5-2.5 sprint weeks)
-**Dependencies**: Existing employee table, Suspense system, Resend integration, S3/R2 for certificates
-**Risk**: Certificate storage requires object storage configuration if not already set up
+**Dependencies**: Existing employee table, Suspense system, Resend integration, Neon Postgres certificate storage
+**Risk**: Ensure training certificate storage table migrations are applied in every environment
 
 ---
 

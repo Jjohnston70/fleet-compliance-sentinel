@@ -161,6 +161,23 @@ export interface HazmatTrainingDashboardSummary {
   upcomingExpirations: HazmatTrainingExpiringItem[];
 }
 
+export interface EmployeeHazmatTrainingRecord {
+  id: string;
+  employeeId: string;
+  moduleCode: string;
+  moduleTitle: string;
+  moduleCategory: string;
+  status: string;
+  creditPathway: string;
+  completionDate: string;
+  nextDueDate: string;
+  daysUntilDue: number | null;
+  trainingWindowStart: string;
+  trainingWindowEnd: string;
+  certificateUrl: string;
+  certificateUploadedAt: string;
+}
+
 export interface FleetComplianceEmployeeRecord {
   employeeId: string;
   firstName: string;
@@ -395,6 +412,99 @@ async function loadHazmatTrainingRecurrenceRows(orgId: string): Promise<HazmatRe
     }));
   } catch (error: unknown) {
     console.error('[fleet-compliance-data] failed to load hazmat training recurrence rows', { orgId, error });
+    return [];
+  }
+}
+
+export async function loadEmployeeHazmatTrainingRecords(
+  orgId: string,
+  employeeIds: string[],
+): Promise<EmployeeHazmatTrainingRecord[]> {
+  const normalizedEmployeeIds = Array.from(
+    new Set(employeeIds.map((id) => id.trim()).filter(Boolean)),
+  );
+  if (normalizedEmployeeIds.length === 0) return [];
+
+  try {
+    const sql = getSQL();
+    const hasHazmatTables = await sql`
+      SELECT
+        to_regclass('public.hazmat_training_records') IS NOT NULL AS has_records,
+        to_regclass('public.hazmat_training_modules') IS NOT NULL AS has_modules
+    `;
+    if (!hasHazmatTables[0]?.has_records || !hasHazmatTables[0]?.has_modules) return [];
+
+    const rows = normalizedEmployeeIds.length === 1
+      ? await sql`
+        SELECT
+          hr.id,
+          hr.employee_id,
+          hr.module_code,
+          hr.module_title,
+          hr.module_category,
+          hr.status,
+          hr.credit_pathway,
+          hr.completion_date,
+          hr.next_due_date,
+          hr.training_window_start,
+          hr.training_window_end,
+          hr.certificate_url,
+          hr.certificate_uploaded_at,
+          hm.sort_order
+        FROM hazmat_training_records hr
+        LEFT JOIN hazmat_training_modules hm ON hm.module_code = hr.module_code
+        WHERE hr.org_id = ${orgId}
+          AND hr.employee_id = ${normalizedEmployeeIds[0]}
+        ORDER BY COALESCE(hm.sort_order, 9999), hr.module_code
+      `
+      : await sql`
+        SELECT
+          hr.id,
+          hr.employee_id,
+          hr.module_code,
+          hr.module_title,
+          hr.module_category,
+          hr.status,
+          hr.credit_pathway,
+          hr.completion_date,
+          hr.next_due_date,
+          hr.training_window_start,
+          hr.training_window_end,
+          hr.certificate_url,
+          hr.certificate_uploaded_at,
+          hm.sort_order
+        FROM hazmat_training_records hr
+        LEFT JOIN hazmat_training_modules hm ON hm.module_code = hr.module_code
+        WHERE hr.org_id = ${orgId}
+          AND (hr.employee_id = ${normalizedEmployeeIds[0]} OR hr.employee_id = ${normalizedEmployeeIds[1]})
+        ORDER BY COALESCE(hm.sort_order, 9999), hr.module_code
+      `;
+
+    return rows.map((row) => {
+      const nextDueDate = normalizeDateLike(s(row.next_due_date));
+      return {
+        id: s(row.id),
+        employeeId: s(row.employee_id),
+        moduleCode: s(row.module_code),
+        moduleTitle: s(row.module_title),
+        moduleCategory: s(row.module_category),
+        status: s(row.status),
+        creditPathway: s(row.credit_pathway),
+        completionDate: normalizeDateLike(s(row.completion_date)),
+        nextDueDate,
+        daysUntilDue: nextDueDate ? daysUntil(nextDueDate) : null,
+        trainingWindowStart: normalizeDateLike(s(row.training_window_start)),
+        trainingWindowEnd: normalizeDateLike(s(row.training_window_end)),
+        certificateUrl: s(row.certificate_url),
+        certificateUploadedAt: normalizeDateLike(s(row.certificate_uploaded_at)),
+      };
+    });
+  } catch (error: unknown) {
+    console.error('[fleet-compliance-data] failed to load employee hazmat training rows', {
+      orgId,
+      employeeIds: normalizedEmployeeIds,
+      error,
+    });
     return [];
   }
 }

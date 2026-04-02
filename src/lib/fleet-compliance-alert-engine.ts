@@ -1,6 +1,13 @@
 import type { FleetComplianceSuspenseRecord } from '@/lib/fleet-compliance-data';
 
 export type AlertWindow = 'overdue' | 'due-today' | '7d' | '14d' | '30d' | '90d';
+export type HazmatAlertTemplateKey =
+  | 'hazmat-training-due-90'
+  | 'hazmat-training-due-30'
+  | 'hazmat-training-delinquent'
+  | 'hazmat-newhire-reminder';
+
+type AlertEmailTemplateKey = HazmatAlertTemplateKey | 'generic';
 
 export interface FleetComplianceAlertItem {
   suspenseItemId: string;
@@ -18,6 +25,7 @@ export interface FleetComplianceEmailPayload {
   subject: string;
   html: string;
   items: FleetComplianceAlertItem[];
+  templateKey: AlertEmailTemplateKey;
 }
 
 export interface FleetComplianceAlertRunSummary {
@@ -84,7 +92,20 @@ function dueLine(item: FleetComplianceAlertItem): string {
   return `due in ${item.daysOut} days (${item.dueDate})`;
 }
 
-function buildEmailHtml(ownerEmail: string, items: FleetComplianceAlertItem[], orgName: string): string {
+function templateHeadline(templateKey: AlertEmailTemplateKey): string {
+  if (templateKey === 'hazmat-training-due-90') return 'Hazmat training due in 90 days';
+  if (templateKey === 'hazmat-training-due-30') return 'Hazmat training due in 30 days';
+  if (templateKey === 'hazmat-training-delinquent') return 'Hazmat training past due';
+  if (templateKey === 'hazmat-newhire-reminder') return 'New hire hazmat training reminder';
+  return 'Compliance reminder';
+}
+
+function buildEmailHtml(
+  ownerEmail: string,
+  items: FleetComplianceAlertItem[],
+  orgName: string,
+  templateKey: AlertEmailTemplateKey,
+): string {
   const rows = items
     .map(
       (item) => `
@@ -111,6 +132,9 @@ function buildEmailHtml(ownerEmail: string, items: FleetComplianceAlertItem[], o
         </tr>
         <tr>
           <td style="padding:24px">
+            <p style="margin:0 0 14px;font-size:14px;font-weight:600;color:#0f172a;">
+              ${escapeHtml(templateHeadline(templateKey))}
+            </p>
             <table width="100%" cellpadding="0" cellspacing="0" style="border:1px solid #e5e7eb;border-radius:6px;border-collapse:collapse">
               <thead>
                 <tr style="background:#f3f4f6">
@@ -136,6 +160,54 @@ function buildEmailHtml(ownerEmail: string, items: FleetComplianceAlertItem[], o
   </table>
 </body>
 </html>`;
+}
+
+function resolveHazmatTemplateKey(item: FleetComplianceAlertItem): HazmatAlertTemplateKey | null {
+  if (item.sourceType === 'hazmat_training') {
+    if (item.window === 'overdue' || item.window === 'due-today') return 'hazmat-training-delinquent';
+    if (item.window === '7d' || item.window === '14d' || item.window === '30d') return 'hazmat-training-due-30';
+    if (item.window === '90d') return 'hazmat-training-due-90';
+  }
+
+  // New-hire assignments are typically issued with a 90-day deadline.
+  // The 60-day reminder aligns to a 30-day remaining window.
+  if (item.sourceType === 'training_assignment' && item.window === '30d') {
+    return 'hazmat-newhire-reminder';
+  }
+
+  return null;
+}
+
+function subjectForTemplate(
+  templateKey: AlertEmailTemplateKey,
+  itemCount: number,
+  isManager: boolean,
+  windowSummary: string,
+): string {
+  if (templateKey === 'hazmat-training-due-90') {
+    return isManager
+      ? `[Fleet-Compliance] Hazmat training due in 90 days — ${itemCount} item${itemCount !== 1 ? 's' : ''}`
+      : '[Fleet-Compliance] Hazmat training due in 90 days';
+  }
+  if (templateKey === 'hazmat-training-due-30') {
+    return isManager
+      ? `[Fleet-Compliance] Hazmat training due in 30 days — ${itemCount} item${itemCount !== 1 ? 's' : ''}`
+      : '[Fleet-Compliance] Hazmat training due in 30 days';
+  }
+  if (templateKey === 'hazmat-training-delinquent') {
+    return isManager
+      ? `[Fleet-Compliance] Hazmat training past due — ${itemCount} item${itemCount !== 1 ? 's' : ''}`
+      : '[Fleet-Compliance] Hazmat training past due';
+  }
+  if (templateKey === 'hazmat-newhire-reminder') {
+    return isManager
+      ? `[Fleet-Compliance] New hire hazmat training reminder — ${itemCount} item${itemCount !== 1 ? 's' : ''}`
+      : '[Fleet-Compliance] New hire hazmat training reminder';
+  }
+
+  return isManager
+    ? `[Fleet-Compliance] Compliance summary: ${itemCount} item${itemCount !== 1 ? 's' : ''} — ${windowSummary || 'review needed'}`
+    : `[Fleet-Compliance] Compliance reminder: ${itemCount} item${itemCount !== 1 ? 's' : ''} need attention`;
 }
 
 async function sendEmail(payload: FleetComplianceEmailPayload, apiKey: string): Promise<{ ok: boolean; error?: string }> {
@@ -217,28 +289,35 @@ export async function runFleetComplianceAlertSweep(
   const emails: FleetComplianceEmailPayload[] = [];
   for (const [ownerEmail, items] of byOwner.entries()) {
     const isManager = ownerEmail === managerEmail;
-    const windowCounts = items.reduce<Partial<Record<AlertWindow, number>>>((acc, item) => {
-      acc[item.window] = (acc[item.window] ?? 0) + 1;
-      return acc;
-    }, {});
+    const templateBuckets = new Map<AlertEmailTemplateKey, FleetComplianceAlertItem[]>();
 
-    const windowParts: string[] = [];
-    if (windowCounts.overdue) windowParts.push(`${windowCounts.overdue} overdue`);
-    if (windowCounts['due-today']) windowParts.push(`${windowCounts['due-today']} due today`);
-    if (windowCounts['7d']) windowParts.push(`${windowCounts['7d']} due this week`);
-    if (windowCounts['30d']) windowParts.push(`${windowCounts['30d']} due in 30 days`);
-    if (windowCounts['90d']) windowParts.push(`${windowCounts['90d']} due in 90 days`);
+    for (const item of items) {
+      const templateKey = resolveHazmatTemplateKey(item) ?? 'generic';
+      if (!templateBuckets.has(templateKey)) templateBuckets.set(templateKey, []);
+      templateBuckets.get(templateKey)!.push(item);
+    }
 
-    const subject = isManager
-      ? `[Fleet-Compliance] Compliance summary: ${items.length} item${items.length !== 1 ? 's' : ''} — ${windowParts.join(', ') || 'review needed'}`
-      : `[Fleet-Compliance] Compliance reminder: ${items.length} item${items.length !== 1 ? 's' : ''} need attention`;
+    for (const [templateKey, templateItems] of templateBuckets.entries()) {
+      const windowCounts = templateItems.reduce<Partial<Record<AlertWindow, number>>>((acc, item) => {
+        acc[item.window] = (acc[item.window] ?? 0) + 1;
+        return acc;
+      }, {});
 
-    emails.push({
-      to: ownerEmail,
-      subject,
-      html: buildEmailHtml(ownerEmail, items, orgName),
-      items,
-    });
+      const windowParts: string[] = [];
+      if (windowCounts.overdue) windowParts.push(`${windowCounts.overdue} overdue`);
+      if (windowCounts['due-today']) windowParts.push(`${windowCounts['due-today']} due today`);
+      if (windowCounts['7d']) windowParts.push(`${windowCounts['7d']} due this week`);
+      if (windowCounts['30d']) windowParts.push(`${windowCounts['30d']} due in 30 days`);
+      if (windowCounts['90d']) windowParts.push(`${windowCounts['90d']} due in 90 days`);
+
+      emails.push({
+        to: ownerEmail,
+        subject: subjectForTemplate(templateKey, templateItems.length, isManager, windowParts.join(', ')),
+        html: buildEmailHtml(ownerEmail, templateItems, orgName, templateKey),
+        items: templateItems,
+        templateKey,
+      });
+    }
   }
 
   const byWindow: Record<AlertWindow, number> = {

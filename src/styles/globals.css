@@ -3133,4 +3133,17 @@ a.penny-source-pill:hover {
   .fleet-compliance-filter-grid-wide,
   .fleet-compliance-kv-grid,
   .fleet-compliance-module-grid,
-  .fleet-compliance-list
+  .fleet-compliance-list-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .fleet-compliance-section-head,
+  .fleet-compliance-suspense-card {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .fleet-compliance-suspense-meta {
+    text-align: left;
+  }
+}
