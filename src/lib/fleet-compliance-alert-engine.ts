@@ -1,6 +1,6 @@
 import type { FleetComplianceSuspenseRecord } from '@/lib/fleet-compliance-data';
 
-export type AlertWindow = 'overdue' | 'due-today' | '7d' | '14d' | '30d';
+export type AlertWindow = 'overdue' | 'due-today' | '7d' | '14d' | '30d' | '90d';
 
 export interface FleetComplianceAlertItem {
   suspenseItemId: string;
@@ -37,6 +37,7 @@ const ALERT_WINDOWS: { window: AlertWindow; minDays: number; maxDays: number }[]
   { window: '7d', minDays: 1, maxDays: 7 },
   { window: '14d', minDays: 8, maxDays: 14 },
   { window: '30d', minDays: 15, maxDays: 30 },
+  { window: '90d', minDays: 31, maxDays: 90 },
 ];
 
 function daysUntil(dateText: string, referenceDate: Date): number {
@@ -59,7 +60,8 @@ function windowLabel(window: AlertWindow): string {
   if (window === 'due-today') return 'Due Today';
   if (window === '7d') return 'Due within 7 days';
   if (window === '14d') return 'Due within 14 days';
-  return 'Due within 30 days';
+  if (window === '30d') return 'Due within 30 days';
+  return 'Due within 90 days';
 }
 
 function dueLine(item: FleetComplianceAlertItem): string {
@@ -206,6 +208,8 @@ export async function runFleetComplianceAlertSweep(
     if (windowCounts.overdue) windowParts.push(`${windowCounts.overdue} overdue`);
     if (windowCounts['due-today']) windowParts.push(`${windowCounts['due-today']} due today`);
     if (windowCounts['7d']) windowParts.push(`${windowCounts['7d']} due this week`);
+    if (windowCounts['30d']) windowParts.push(`${windowCounts['30d']} due in 30 days`);
+    if (windowCounts['90d']) windowParts.push(`${windowCounts['90d']} due in 90 days`);
 
     const subject = isManager
       ? `[Fleet-Compliance] Compliance summary: ${items.length} item${items.length !== 1 ? 's' : ''} — ${windowParts.join(', ') || 'review needed'}`
@@ -225,6 +229,7 @@ export async function runFleetComplianceAlertSweep(
     '7d': 0,
     '14d': 0,
     '30d': 0,
+    '90d': 0,
   };
   for (const item of alertItems) {
     byWindow[item.window]++;
@@ -296,6 +301,7 @@ export function previewFleetComplianceAlerts(suspenseItems: FleetComplianceSuspe
     '7d': 0,
     '14d': 0,
     '30d': 0,
+    '90d': 0,
   };
   for (const item of alertItems) {
     byWindow[item.window]++;

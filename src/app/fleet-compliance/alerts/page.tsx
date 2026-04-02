@@ -19,6 +19,7 @@ const WINDOW_LABELS: Record<string, string> = {
   '7d': 'Due within 7 days',
   '14d': 'Due within 14 days',
   '30d': 'Due within 30 days',
+  '90d': 'Due within 90 days',
 };
 
 export default async function FleetComplianceAlertsPage() {

@@ -400,6 +400,18 @@ export async function listFleetComplianceOrgIds(): Promise<string[]> {
     .filter(Boolean);
 }
 
+export async function getOrganizationPrimaryContact(orgId: string): Promise<string | null> {
+  const sql = getSQL();
+  const rows = await sql`
+    SELECT primary_contact
+    FROM organization_contacts
+    WHERE org_id = ${orgId}
+    LIMIT 1
+  `;
+  const contact = rows[0]?.primary_contact;
+  return typeof contact === 'string' && contact.trim().length > 0 ? contact.trim() : null;
+}
+
 export async function restoreFleetComplianceRecord(collection: string, id: number, orgId: string): Promise<boolean> {
   const sql = getSQL();
   const rows = await sql`

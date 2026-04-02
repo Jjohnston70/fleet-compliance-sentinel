@@ -845,7 +845,7 @@ CREATE TABLE training_progress (
 **Estimated Effort**: 1 day
 **Depends On**: B5 (assessment engine), Hazmat Compliance Tracker (FEATURE_SPEC)
 
-- [ ] On assessment pass:
+- [x] On assessment pass:
   - Auto-create/update `hazmat_training_records` entry
   - Set status "complete", credit_pathway "fcs_training"
   - Calculate next_due_date (completion_date + recurrence_cycle)
@@ -854,7 +854,7 @@ CREATE TABLE training_progress (
   - Clear Suspense items for this module/employee
   - Send completion notification to org admin via Resend
 
-- [ ] On training deadline approach:
+- [x] On training deadline approach:
   - Feed into existing Suspense alert system (90/30/0 day warnings)
   - Email reminders to employee and admin
 

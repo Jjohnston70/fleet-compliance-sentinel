@@ -301,6 +301,82 @@ async function loadCollection(collection: string, orgId: string): Promise<RawRow
   }
 }
 
+interface TrainingDeadlineRow {
+  employeeId: string;
+  planName: string;
+  moduleCode: string;
+  moduleStatus: string;
+  deadline: string;
+}
+
+interface HazmatRecurrenceRow {
+  employeeId: string;
+  employeeName: string;
+  employeeEmail: string;
+  moduleCode: string;
+  moduleTitle: string;
+  nextDueDate: string;
+}
+
+async function loadTrainingDeadlineRows(orgId: string): Promise<TrainingDeadlineRow[]> {
+  try {
+    const sql = getSQL();
+    const rows = await sql`
+      SELECT
+        ta.employee_id,
+        tp.plan_name,
+        pr.module_code,
+        pr.status AS module_status,
+        ta.deadline
+      FROM training_assignments ta
+      JOIN training_plans tp ON tp.id = ta.plan_id
+      JOIN training_progress pr ON pr.assignment_id = ta.id
+      WHERE ta.org_id = ${orgId}
+        AND ta.deadline IS NOT NULL
+        AND ta.status <> 'complete'
+        AND COALESCE(pr.assessment_passed, FALSE) = FALSE
+    `;
+    return rows.map((row) => ({
+      employeeId: s(row.employee_id),
+      planName: s(row.plan_name),
+      moduleCode: s(row.module_code),
+      moduleStatus: s(row.module_status),
+      deadline: normalizeDateLike(s(row.deadline)),
+    }));
+  } catch {
+    return [];
+  }
+}
+
+async function loadHazmatTrainingRecurrenceRows(orgId: string): Promise<HazmatRecurrenceRow[]> {
+  try {
+    const sql = getSQL();
+    const rows = await sql`
+      SELECT
+        employee_id,
+        employee_name,
+        employee_email,
+        module_code,
+        module_title,
+        next_due_date
+      FROM hazmat_training_records
+      WHERE org_id = ${orgId}
+        AND status = 'complete'
+        AND next_due_date IS NOT NULL
+    `;
+    return rows.map((row) => ({
+      employeeId: s(row.employee_id),
+      employeeName: s(row.employee_name),
+      employeeEmail: s(row.employee_email),
+      moduleCode: s(row.module_code),
+      moduleTitle: s(row.module_title),
+      nextDueDate: normalizeDateLike(s(row.next_due_date)),
+    }));
+  } catch {
+    return [];
+  }
+}
+
 // ── Transformers ──────────────────────────────────────────────────────────
 
 function transformAssets(raw: RawRow[]): FleetComplianceAssetRecord[] {
@@ -570,6 +646,84 @@ function generateSuspenseFromAssets(assets: FleetComplianceAssetRecord[]): Fleet
   return items;
 }
 
+function resolveTrainingOwnerEmail(employeeEmail: string | undefined): string {
+  const value = (employeeEmail || '').trim();
+  if (/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)) return value;
+  return 'compliance@company.com';
+}
+
+function buildTrainingEmployeeDirectory(
+  employees: FleetComplianceEmployeeRecord[]
+): Map<string, { name: string; email: string }> {
+  const map = new Map<string, { name: string; email: string }>();
+  for (const employee of employees) {
+    const employeeId = employee.employeeId?.trim();
+    if (!employeeId) continue;
+    const displayName = `${employee.firstName || ''} ${employee.lastName || ''}`.trim() || employeeId;
+    map.set(employeeId, {
+      name: displayName,
+      email: employee.workEmail || '',
+    });
+  }
+  return map;
+}
+
+function generateSuspenseFromTrainingDeadlines(
+  rows: TrainingDeadlineRow[],
+  employeeDirectory: Map<string, { name: string; email: string }>
+): FleetComplianceSuspenseRecord[] {
+  const items: FleetComplianceSuspenseRecord[] = [];
+  for (const row of rows) {
+    if (!row.deadline) continue;
+    const days = daysUntil(row.deadline);
+    if (days > 90) continue;
+
+    const employee = employeeDirectory.get(row.employeeId);
+    const employeeName = employee?.name || row.employeeId || 'Employee';
+    const severity = days <= 30 ? 'high' : 'medium';
+    items.push({
+      suspenseItemId: `susp-training-${slugId(row.employeeId)}-${slugId(row.moduleCode)}`,
+      sourceType: 'training_assignment',
+      sourceId: `${row.employeeId}:${row.moduleCode}`,
+      title: `${row.planName || 'Training'} ${row.moduleCode} due for ${employeeName}`,
+      ownerEmail: resolveTrainingOwnerEmail(employee?.email),
+      dueDate: row.deadline,
+      alertState: days < 0 ? 'overdue' : 'scheduled',
+      severity,
+      status: 'open',
+    });
+  }
+  return items;
+}
+
+function generateSuspenseFromHazmatRecurrence(
+  rows: HazmatRecurrenceRow[],
+  employeeDirectory: Map<string, { name: string; email: string }>
+): FleetComplianceSuspenseRecord[] {
+  const items: FleetComplianceSuspenseRecord[] = [];
+  for (const row of rows) {
+    if (!row.nextDueDate) continue;
+    const days = daysUntil(row.nextDueDate);
+    if (days > 90) continue;
+
+    const employee = employeeDirectory.get(row.employeeId);
+    const employeeName = row.employeeName || employee?.name || row.employeeId || 'Employee';
+    const ownerEmail = resolveTrainingOwnerEmail(row.employeeEmail || employee?.email);
+    items.push({
+      suspenseItemId: `susp-hazmat-renewal-${slugId(row.employeeId)}-${slugId(row.moduleCode)}`,
+      sourceType: 'hazmat_training',
+      sourceId: `${row.employeeId}:${row.moduleCode}`,
+      title: `Hazmat renewal due: ${row.moduleTitle || row.moduleCode} for ${employeeName}`,
+      ownerEmail,
+      dueDate: row.nextDueDate,
+      alertState: days < 0 ? 'overdue' : 'scheduled',
+      severity: days <= 30 ? 'high' : 'medium',
+      status: 'open',
+    });
+  }
+  return items;
+}
+
 function normalizeAlertSeverity(severity: string | null | undefined): string {
   const normalized = (severity || '').trim().toLowerCase();
   if (normalized === 'high' || normalized === 'medium' || normalized === 'low') return normalized;
@@ -640,6 +794,7 @@ export async function loadFleetComplianceData(orgId: string): Promise<FleetCompl
   const [
     rawAssets, rawTanks, rawVehicles, rawDrivers, rawEmployees,
     rawPermits, rawActivity, rawMaintenance, rawSchedule, latestMlEiaInsight,
+    trainingDeadlineRows, hazmatRecurrenceRows,
   ] = await Promise.all([
     loadCollection('assets_master', orgId),
     loadCollection('storage_tanks', orgId),
@@ -651,6 +806,8 @@ export async function loadFleetComplianceData(orgId: string): Promise<FleetCompl
     loadCollection('maintenance_tracker', orgId),
     loadCollection('maintenance_schedule', orgId),
     loadLatestMlEiaInsight(orgId),
+    loadTrainingDeadlineRows(orgId),
+    loadHazmatTrainingRecurrenceRows(orgId),
   ]);
 
   const mlEiaInsight: FleetComplianceMlEiaInsight | null = latestMlEiaInsight
@@ -694,19 +851,22 @@ export async function loadFleetComplianceData(orgId: string): Promise<FleetCompl
   );
 
   const allPermits = sortByDateAsc(transformPermits(rawPermits), (r) => r.renewalDueDate);
+  const allEmployees = transformEmployees(rawEmployees);
+  const trainingEmployeeDirectory = buildTrainingEmployeeDirectory(allEmployees);
 
   // Suspense = generated from compliance deadlines
-  const allSuspense = sortByDateAsc(
-    [
-      ...generateSuspenseFromDrivers(allDrivers),
-      ...generateSuspenseFromPermits(allPermits),
-      ...generateSuspenseFromAssets(allAssets),
-      ...generateSuspenseFromMlEiaInsight(mlEiaInsight),
-    ],
-    (r) => r.dueDate
+  const suspenseItems = [
+    ...generateSuspenseFromDrivers(allDrivers),
+    ...generateSuspenseFromPermits(allPermits),
+    ...generateSuspenseFromAssets(allAssets),
+    ...generateSuspenseFromMlEiaInsight(mlEiaInsight),
+    ...generateSuspenseFromTrainingDeadlines(trainingDeadlineRows, trainingEmployeeDirectory),
+    ...generateSuspenseFromHazmatRecurrence(hazmatRecurrenceRows, trainingEmployeeDirectory),
+  ];
+  const dedupedSuspense = Array.from(
+    new Map(suspenseItems.map((item) => [item.suspenseItemId, item])).values()
   );
-
-  const allEmployees = transformEmployees(rawEmployees);
+  const allSuspense = sortByDateAsc(dedupedSuspense, (r) => r.dueDate);
 
   const allActivity = transformActivityLogs(rawActivity).reverse();
   const allMaintenance = [

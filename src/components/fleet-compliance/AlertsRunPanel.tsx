@@ -74,6 +74,7 @@ export default function AlertsRunPanel({ resendConfigured }: { resendConfigured:
             <div><dt>Due 7d</dt><dd>{run.summary.byWindow['7d']}</dd></div>
             <div><dt>Due 14d</dt><dd>{run.summary.byWindow['14d']}</dd></div>
             <div><dt>Due 30d</dt><dd>{run.summary.byWindow['30d']}</dd></div>
+            <div><dt>Due 90d</dt><dd>{run.summary.byWindow['90d']}</dd></div>
             <div><dt>Run at</dt><dd className="fleet-compliance-table-note">{new Date(run.summary.runAt).toLocaleString()}</dd></div>
           </dl>
           {run.summary.errors.length > 0 && (

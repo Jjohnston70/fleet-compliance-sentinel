@@ -1,14 +1,14 @@
 # Fleet-Compliance Sentinel — Status
 
-Last Updated: 2026-04-01 (Workstream B phases B1-B4 complete)
+Last Updated: 2026-04-01 (Workstream B phases B1-B7 complete)
 Current Phase: April 2-25 sprint active (Workstream A complete, Workstream B in progress)
-Overall Completion: SOC 2 action plan 100%; hardening A0-A8 complete; training-command B1-B4 complete (B5-B9 remaining)
+Overall Completion: SOC 2 action plan 100%; hardening A0-A8 complete; training-command B1-B7 complete (B8-B9 remaining)
 Open Findings: 0 blockers
 SOC 2 Observation Window Start: 2026-03-24
 SOC 2 Type I Earliest Eligibility: 2026-06-22
 Days Until Type I Eligible: 83
 
-## 2026-04-01 Workstream B - Training Command Progress (B1-B4)
+## 2026-04-01 Workstream B - Training Command Progress (B1-B7)
 
 | Phase | Task | Result |
 |-------|------|--------|
@@ -16,14 +16,14 @@ Days Until Type I Eligible: 83
 | B2 | Database tables + seed data | Complete - `migrations/012_training_tables.sql` adds 3 tables (`training_plans`, `training_assignments`, `training_progress`) with indexes and seed data for PHMSA Hazmat Required plan (12 module codes, 80% passing, 90-day deadline) |
 | B3 | Assessment question parser | Complete - `tools/parse-assessment.py` extracts questions from markdown into structured JSON. Handles `multiple_choice`, `true_false`, and `scenario` types with both explicit and inline correct-answer formats. 12 assessment JSON files + manifest generated in `knowledge/training-content/assessments/` |
 | B4 | Deck generation pipeline | Complete - `tools/training-to-deck.py` converts markdown to DeckRecord slide JSON with TNDS Navy/Teal theme. 6 slide types (title, objectives, content, section_divider, key_takeaways, assessment_intro). 526 total slides across 12 deck JSON files in `knowledge/training-content/decks/` |
+| B5 | Web deck viewer + assessment UI | Complete - Training delivery flow is live with `TrainingDeckViewer`, `TrainingAssessment`, and assessment API routes (`deck`, `assessment/attempts`, `assessment/submit`) |
+| B6 | Training management + employee self-service | Complete - Admin and employee flows are live via `TrainingManagement`, `MyTraining`, and API routes (`plans`, `assignments`, `progress`) |
+| B7 | Compliance auto-update + suspense integration | Complete - assessment pass now upserts `hazmat_training_records`, sets `credit_pathway=fcs_training`, computes 3-year `next_due_date`, stamps certificate path placeholders, sends completion notifications to org admin, and injects training deadlines into suspense/alerts with 90-day warning support |
 
 ### Remaining Workstream B Phases
 
 | Phase | Task | Status | Depends On |
 |-------|------|--------|------------|
-| B5 | Web deck viewer + assessment UI | Not started | B3, B4 |
-| B6 | Training management UI (admin + employee) | Not started | B2, B5 |
-| B7 | Compliance auto-update + suspense integration | Not started | B5 |
 | B8 | Certificate PDF generation | Not started | B7 |
 | B9 | Penny integration + reporting | Not started | B1, B7 |
 

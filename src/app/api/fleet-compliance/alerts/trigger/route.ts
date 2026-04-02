@@ -2,6 +2,7 @@ import { runFleetComplianceAlertSweep } from '@/lib/fleet-compliance-alert-engin
 import { loadFleetComplianceData } from '@/lib/fleet-compliance-data';
 import { fleetComplianceAuthErrorResponse, requireFleetComplianceOrgWithRole } from '@/lib/fleet-compliance-auth';
 import { auditLog } from '@/lib/audit-logger';
+import { getOrganizationPrimaryContact } from '@/lib/fleet-compliance-db';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -29,7 +30,11 @@ export async function POST(request: Request) {
 
   try {
     const data = await loadFleetComplianceData(orgId);
-    const summary = await runFleetComplianceAlertSweep(data.suspense, { dryRun });
+    const managerEmail = await getOrganizationPrimaryContact(orgId);
+    const summary = await runFleetComplianceAlertSweep(data.suspense, {
+      dryRun,
+      managerEmail: managerEmail || undefined,
+    });
     auditLog({
       action: 'cron.run',
       userId,

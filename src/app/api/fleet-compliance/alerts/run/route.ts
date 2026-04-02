@@ -1,7 +1,12 @@
 import { timingSafeEqual } from 'crypto';
 import { runFleetComplianceAlertSweep } from '@/lib/fleet-compliance-alert-engine';
 import { loadFleetComplianceData } from '@/lib/fleet-compliance-data';
-import { ensureCronLogTable, insertCronLogEntry, listFleetComplianceOrgIds } from '@/lib/fleet-compliance-db';
+import {
+  ensureCronLogTable,
+  getOrganizationPrimaryContact,
+  insertCronLogEntry,
+  listFleetComplianceOrgIds,
+} from '@/lib/fleet-compliance-db';
 import { fleetComplianceAuthErrorResponse, requireFleetComplianceOrgWithRole } from '@/lib/fleet-compliance-auth';
 import { runOffboardingLifecycleSweep } from '@/lib/offboarding-lifecycle';
 import { auditLog } from '@/lib/audit-logger';
@@ -71,13 +76,17 @@ export async function POST(request: Request) {
           '7d': 0,
           '14d': 0,
           '30d': 0,
+          '90d': 0,
         },
         errors: [] as string[],
       };
 
       for (const scopedOrgId of orgIds) {
         const data = await loadFleetComplianceData(scopedOrgId);
-        const summary = await runFleetComplianceAlertSweep(data.suspense);
+        const managerEmail = await getOrganizationPrimaryContact(scopedOrgId);
+        const summary = await runFleetComplianceAlertSweep(data.suspense, {
+          managerEmail: managerEmail || undefined,
+        });
         aggregated.runAt = summary.runAt;
         aggregated.itemsEvaluated += summary.itemsEvaluated;
         aggregated.itemsQueued += summary.itemsQueued;
@@ -89,6 +98,7 @@ export async function POST(request: Request) {
         aggregated.byWindow['7d'] += summary.byWindow['7d'];
         aggregated.byWindow['14d'] += summary.byWindow['14d'];
         aggregated.byWindow['30d'] += summary.byWindow['30d'];
+        aggregated.byWindow['90d'] += summary.byWindow['90d'];
         aggregated.errors.push(...summary.errors.map((error) => `[org:${scopedOrgId}] ${error}`));
 
         await insertCronLogEntry({
@@ -157,7 +167,10 @@ export async function POST(request: Request) {
 
   try {
     const data = await loadFleetComplianceData(orgId);
-    const summary = await runFleetComplianceAlertSweep(data.suspense);
+    const managerEmail = await getOrganizationPrimaryContact(orgId);
+    const summary = await runFleetComplianceAlertSweep(data.suspense, {
+      managerEmail: managerEmail || undefined,
+    });
     await insertCronLogEntry({
       jobName,
       orgId,
