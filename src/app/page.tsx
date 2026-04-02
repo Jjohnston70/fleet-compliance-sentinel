@@ -363,13 +363,13 @@ export default function HomePage() {
       </section>
 
       <section className="training-coming-soon">
-        <span className="training-badge">Coming April 2026 — Early Access</span>
+        <span className="training-badge">Now Live — Request Access</span>
         <h2>Train your team on the same regulations Penny answers from.</h2>
         <p className="section-intro">
-          Coming soon: an embedded compliance training platform inside
-          Fleet-Compliance Sentinel. 31 modules starting with hazmat &mdash; built from
-          ERG 2024, CFR, and PHMSA requirements. Completion automatically updates
-          driver compliance records. No separate LMS login. No separate system.
+          An embedded compliance training platform inside Fleet-Compliance Sentinel.
+          31 modules starting with hazmat &mdash; built from ERG 2024, CFR, and PHMSA
+          requirements. Completion automatically updates driver compliance records.
+          No separate LMS login. No separate system.
         </p>
         <div className="training-modules-summary">
           <span>12 required PHMSA hazmat modules</span>
@@ -414,11 +414,7 @@ export default function HomePage() {
             </article>
           ))}
         </div>
-        <p style={{ textAlign: 'center', marginTop: '1.5rem' }}>
-          <Link href="/fleet-compliance" className="see-all-link">
-            See all 16+ modules &rarr;
-          </Link>
-        </p>
+
       </section>
 
       <section className="features">
@@ -497,7 +493,7 @@ export default function HomePage() {
             </article>
           ))}
         </div>
-        <p className="pricing-note">First 20 clients receive a 30-day free trial. No credit card required. After Cohort 1 reaches capacity, standard 14-day trial applies.</p>
+        <p className="pricing-note">First 50 clients receive a 30-day free trial. No credit card required. After Cohort 1 reaches capacity, standard 14-day trial applies.</p>
       </section>
 
       <section className="cta">

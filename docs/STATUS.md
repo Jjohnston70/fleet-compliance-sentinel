@@ -1,12 +1,39 @@
 # Fleet-Compliance Sentinel — Status
 
-Last Updated: 2026-04-01 (Workstream B phases B1-B9 complete)
+Last Updated: 2026-04-02 (Training + Module Gateway production readiness audit completed)
 Current Phase: April 2-25 sprint active (Workstream A complete, Workstream B in progress)
 Overall Completion: SOC 2 action plan 100%; hardening A0-A8 complete; training-command B1-B9 complete
-Open Findings: 0 blockers
+Open Findings: 6 critical, 5 high, 3 medium, 3 styling (see latest audit below)
 SOC 2 Observation Window Start: 2026-03-24
 SOC 2 Type I Earliest Eligibility: 2026-06-22
 Days Until Type I Eligible: 83
+
+## 2026-04-02 Training + Module Gateway Production Readiness Audit
+
+Full report: `docs/integration/TRAINING_GATEWAY_AUDIT_2026-04.md`
+
+| Severity | Count | Key Findings |
+|----------|-------|--------------|
+| CRITICAL | 6 | C-1: Training schema rollout not deployment-safe (live missing-table failures); C-2: Assessment pass/fail is client-trusted; C-3: Completion/cert issuance possible without assignment/deck completion; C-4: Submit endpoint swallows DB failures and still returns success; C-5: Remote gateway tenancy not end-to-end bound; C-6: New orgs have zero assignable training plans |
+| HIGH | 5 | H-1: Training management data exposed to non-admin members; H-2: Assignment target identity not org-validated; H-3: Answer key exposed to clients; H-4: Certificate storage is ephemeral local disk; H-5: Certificate path boundary check is prefix-based |
+| MEDIUM | 3 | M-1: Assignment/progress writes are non-transactional; M-2: `/fleet-compliance/tools` hydration issue not yet deterministically pinned in current revision; M-3: Training route schema-failure handling is inconsistent across endpoints |
+| STYLING | 3 | S-1: Tailwind utility pipeline missing from global stylesheet; S-2: Previous/Next controls are the intended `TrainingDeckViewer` controls but render unstyled due CSS pipeline gap; S-3: No resilient training-specific fallback styles |
+| CONFIRMED | 6 | Org scoping on core training queries, admin-gated assignment POST, certificate access role guard, ACL lazy seeding, local mode tenant isolation checks, and duplicate-safe upserts verified |
+
+**Triage priority:** C-2 and C-3 are the highest compliance-liability risks before first paying client. C-1 and C-6 are immediate production availability blockers for training rollout.
+
+## 2026-04-01 Training B7-B9 Compliance Audit
+
+Full report: `docs/integration/TRAINING_B7_B9_AUDIT_2026-04.md`
+
+| Severity | Count | Key Findings |
+|----------|-------|--------------|
+| CRITICAL | 4 | C-1: No server-side score validation — client can fabricate pass; C-2: No SQL transaction on compliance write sequence — partial writes possible; C-3: Suspense items not cleared on completion; C-4: Audit package missing 49 CFR 172.704(d) required fields |
+| HIGH | 4 | H-1: HTML injection in completion email; H-2: Certificates on ephemeral filesystem; H-3: PII (employee names) in Penny training context; H-4: Training tables missing from offboarding hard-delete |
+| MEDIUM | 4 | M-1: No data retention policy for training tables; M-2: Certificate regeneration not audit-logged; M-3: Alert engine depends on suspense pass-through with silent failure; M-4: Report PDFs truncated at 30-42 rows |
+| CONFIRMED | 28 | Auth, tenant isolation, audit logging, Penny integration, suspense generation, idempotent upserts, server-side dates, path traversal protection — all verified |
+
+**Triage priority:** C-1 (score validation) must fix before first paying client. C-2 and C-4 required for DOT audit readiness. H-4 required during SOC 2 observation window.
 
 ## 2026-04-01 Workstream B - Training Command Progress (B1-B9)
 

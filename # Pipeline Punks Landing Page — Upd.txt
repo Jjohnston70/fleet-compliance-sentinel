@@ -1,5 +1,4 @@
 # Pipeline Punks Landing Page — Update TODO
-
 **Owner:** Jacob Johnston | jacob@truenorthstrategyops.com
 **Project:** pipelinepunks.com (00-FLEET-COMPLIANCE-SENTINEL)
 **Created:** 2026-04-01
@@ -14,7 +13,6 @@ Full strategic recommendation generated in planning session. This TODO covers th
 changes only. See the planning session for full rationale on each decision.
 
 Key inputs reviewed:
-
 - Current landing page at pipelinepunks.com (live)
 - PLATFORM_OVERVIEW.md (FCS platform state as of 2026-04-01)
 - FOB Command Center (fob-command-center) — Phase 3 Week 9 complete, Phase 4 pending
@@ -39,7 +37,6 @@ file or finding in the codebase or evidence docs.
 ### HARD BLOCKERS — Nothing goes live without these
 
 **P1 — Flip Stripe from test keys to live keys**
-
 - Stripe account must have identity verification and bank account connected
 - Create live products in Stripe at the updated prices: $199/mo (Starter), $399/mo (Pro)
 - Update Vercel environment variables:
@@ -53,7 +50,6 @@ file or finding in the codebase or evidence docs.
 - Risk if skipped: Stripe accepts real card numbers but money goes to test mode — no actual charges
 
 **P2 — Run one full billing lifecycle in test mode before going live**
-
 - Sign up as a new org → start trial → complete checkout → verify subscription active
   in `organizations` table → cancel → verify `data_deletion_scheduled_at` is set
 - Confirm Stripe webhook fires and `org.subscription.checkout_started` audit event logs
@@ -62,7 +58,6 @@ file or finding in the codebase or evidence docs.
 - Source: Stripe webhook route at `src/app/api/stripe/webhook/route.ts`
 
 **P3 — Verify live Stripe webhook endpoint secret matches Vercel env**
-
 - Creating a live endpoint in Stripe generates a NEW signing secret
 - That new value must go into `STRIPE_WEBHOOK_SECRET` in Vercel
 - If this step is missed: payments succeed in Stripe but webhook signature
@@ -72,28 +67,24 @@ file or finding in the codebase or evidence docs.
 ### LEGAL — Fix before Client #5
 
 **P4 — Privacy policy: explicit fleet data category list**
-
 - Current: privacy page mentions "fleet-compliance records, driver qualification records,
   CDL/license data, medical compliance dates, permits, fleet assets, and invoice records"
 - Status: PRESENT AND SUFFICIENT — verified by reading `src/app/privacy/page.tsx`
 - Action: None required. The gap analysis from March 25 has been resolved.
 
 **P5 — AI training disclosure**
-
 - Required text: customer data is not used to train AI models
 - Status: PRESENT — privacy page reads "We do not permit customer data to be used
   to train shared foundation models"
 - Action: None required. The gap from March 25 has been resolved.
 
 **P6 — Terms data ownership statement**
-
 - Required text: clients own their fleet compliance data
 - Status: PRESENT — terms page reads "Clients own their organization data uploaded
   to or generated within Fleet-Compliance"
 - Action: None required.
 
 **P7 — Run the compliance legal check script**
-
 - Command: `npm run compliance:legal-check`
 - This validates privacy and terms pages contain required disclosures (7 checks)
 - Run it now against the current state and confirm it passes before going live
@@ -102,14 +93,12 @@ file or finding in the codebase or evidence docs.
 ### OPERATIONAL — Do within 30 days of first payment
 
 **P8 — Upgrade Railway to Pro plan**
-
 - Current: Hobby tier
 - Risk: Hobby can have resource constraints affecting Penny cold start times
   A paying client hitting a 30-second cold start on first Penny query will not stay
 - Source: PLATFORM_OVERVIEW.md — "Pro upgrade recommended before first client"
 
 **P9 — Add Stripe keys to secret rotation schedule**
-
 - Add `STRIPE_SECRET_KEY` and `STRIPE_WEBHOOK_SECRET` to 90-day rotation cycle
 - File: `soc2-evidence/access-control/SECURITY_ROTATION.md`
 - Source: `post-phase8-go-to-market-audit.md` recommendation #1
@@ -120,7 +109,6 @@ Both legal pages were read and verified on 2026-04-01. All gaps identified in th
 March 25 gap analysis have been resolved. Summary of what is confirmed present:
 
 **Privacy Policy (`src/app/privacy/page.tsx`) — VERIFIED (retention language pending R-series)**
-
 - [x] Fleet data categories explicitly listed (driver records, CDL, medical dates, permits, invoices)
 - [x] AI model training disclosure ("do not permit customer data to be used to train")
 - [ ] Retention lifecycle — currently says "30/60 days" — UPDATE after R1/R2 decisions
@@ -132,7 +120,6 @@ March 25 gap analysis have been resolved. Summary of what is confirmed present:
 - [x] Contact information
 
 **Terms of Service (`src/app/terms/page.tsx`) — VERIFIED (retention language pending R-series)**
-
 - [x] Clients own their organization data — explicit statement present
 - [x] Service availability and incident communication language present
 - [ ] Cancellation lifecycle — currently says "30/60 days" — UPDATE after R1/R2 decisions
@@ -159,11 +146,9 @@ activation that you are not using and will be charged for if left on.
 Organization Settings → Plans & Usage → scroll to each product section → Disable
 
 **Keep enabled:**
-
 - [x] Log Management — the only intentional product in your setup
 
 **Disable all of these — none have any instrumentation in the codebase:**
-
 - [ ] APM / Distributed Tracing — Sentry handles this via tracesSampleRate
 - [ ] Infrastructure Monitoring — no Datadog agents installed anywhere
 - [ ] Real User Monitoring (RUM) — no Datadog browser SDK in the codebase
@@ -194,18 +179,15 @@ Add to backlog, do before your 10th paying client.
 **Issue 1 — tracesSampleRate set to 100% (will generate span overages at scale)**
 
 Files to update (same change in both):
-
 - `sentry.server.config.ts` — line 13
 - `sentry.edge.config.ts` — line 13
 
 Current value in both files:
-
 ```typescript
 tracesSampleRate: 1,
 ```
 
 Change to:
-
 ```typescript
 tracesSampleRate: 0.1,  // 10% sample rate — standard for production
 ```
@@ -220,7 +202,6 @@ without burning through the free tier. Do this before client #10, not before cli
 Files: `sentry.server.config.ts` line 15, `sentry.edge.config.ts` line 15
 
 Both files have:
-
 ```typescript
 enableLogs: true,
 ```
@@ -242,7 +223,6 @@ if you do upgrade.
 
 **Audit date:** 2026-04-01
 **Source files audited:**
-
 - `src/lib/offboarding-lifecycle.ts` — offboarding constants and hard delete logic
 - `soc2-evidence/compliance-milestones/COMPLIANCE_MILESTONES.md` — Datadog retention plan
 - `soc2-evidence/audit-findings/FULL_AUDIT_SUMMARY_2026-03-25.md` — all open findings
@@ -254,7 +234,6 @@ if you do upgrade.
 ### R0 — Datadog Log Retention (BLOCKED — Pending Pro Plan Approval)
 
 **Current state as of 2026-04-01:**
-
 - Pro upgrade submitted — under review, approval expected within 3 weeks (often faster)
 - Retention dropdown is locked — 30/45/60/90/180-day options all greyed out until approval
 - Only available retention right now: 15 days (insufficient for SOC 2 window)
@@ -282,11 +261,11 @@ audit log evidence is lost. Contact success@datadoghq.com immediately.
 
 4. Update `soc2-evidence/compliance-milestones/COMPLIANCE_MILESTONES.md`:
    Change: `| Datadog audit-logs-soc2 index | 15 days (trial) → 365 days (Pro) |`
-   To: `| Datadog audit-logs-soc2 index | 180 days (Pro plan — covers SOC 2 window) |`
+   To:     `| Datadog audit-logs-soc2 index | 180 days (Pro plan — covers SOC 2 window) |`
 
 5. Update finding #27 in `soc2-evidence/audit-findings/FULL_AUDIT_SUMMARY_2026-03-25.md`:
    Change: "Datadog Pro upgrade pending for 365-day retention"
-   To: "Datadog audit-logs-soc2 index set to 180 days — covers full SOC 2 observation window"
+   To:     "Datadog audit-logs-soc2 index set to 180 days — covers full SOC 2 observation window"
 
 **Reminder cadence:** Check Datadog plan page every other day until approval email arrives.
 Contact: success@datadoghq.com if no movement within 5 business days.
@@ -309,14 +288,12 @@ Screenshot the backup schedule and save to:
 
 File 1: `sentry.server.config.ts` line 13
 File 2: `sentry.edge.config.ts` line 13
-
 ```
 tracesSampleRate: 1   ← 100% of all transactions traced
 ```
 
 File 1: `sentry.server.config.ts` line 16
 File 2: `sentry.edge.config.ts` line 16
-
 ```
 enableLogs: true      ← sends structured logs to Sentry AND Datadog (double-logging)
 ```
@@ -327,10 +304,9 @@ active client running the dashboard + Penny queries will burn through that fast.
 you hit 5M, Sentry drops spans silently and you lose tracing visibility.
 
 **Issue 2 — You have 2 cron jobs, free plan only includes 1 cron monitor:**
-
 - `/api/fleet-compliance/alerts/run` (08:00 UTC daily) — cron 1
 - `/api/fleet-compliance/telematics-sync` (02:00 UTC daily) — cron 2
-  Source: `vercel.json` lines 42-51
+Source: `vercel.json` lines 42-51
 
 The free Developer plan only includes 1 cron monitor. Your second cron
 (`telematics-sync`) is unmonitored in Sentry on the free plan.
@@ -341,7 +317,6 @@ Free plan retains errors for 30 days. Your SOC 2 observation window runs
 on the free plan. Team plan gives you 90-day retention — exactly what you need.
 
 **Action 1 — Upgrade Sentry to Team plan:**
-
 - Cost: ~$26/month (1 member at current scale)
 - Go to: `sentry.io → Settings → Subscription → Upgrade to Team`
 - This covers: 90-day retention, 2 cron monitors, 5M spans, 50k errors, 5GB logs,
@@ -358,7 +333,6 @@ File: `sentry.server.config.ts`
 File: `sentry.edge.config.ts`
 
 Change in both files:
-
 ```
 FROM: tracesSampleRate: 1,
 TO:   tracesSampleRate: 0.1,
@@ -369,7 +343,6 @@ catch performance regressions and slow queries. At 10% you'd need 50M+ requests
 to exceed the 5M span limit.
 
 **One-commit surgical prompt for the tracesSampleRate change:**
-
 ```
 Read both files first to confirm current state:
   sentry.server.config.ts — confirm tracesSampleRate: 1 on line 13
@@ -401,7 +374,6 @@ Expect sales tax added to your Sentry invoice.
 ### R1 — Fleet Data Retention Window Decision
 
 **Current code:**
-
 ```
 File: src/lib/offboarding-lifecycle.ts
 Line 9:  const SOFT_DELETE_DELAY_DAYS = 30;   ← fires 30 days after cancellation
@@ -526,14 +498,12 @@ due within the SOC 2 observation window (before 2026-06-22).
 The table names and file locations need to be confirmed before writing the purge logic.
 
 **Likely files involved (verify via R2 Task 3 discovery):**
-
 - `railway-backend/integrations/verizon_reveal/` — telematics adapter
 - `migrations/008_telematics_adapter.sql` — telematics schema
 - `migrations/009_risk_scores.sql` — risk scoring tables
 - `src/app/api/fleet-compliance/telematics-sync/route.ts` — sync route
 
 **Implementation pattern when ready:**
-
 - Add a cron-triggered purge route or extend the existing alerts cron
 - Delete rows WHERE `created_at < NOW() - INTERVAL '90 days'`
 - Log purge count to `cron_log` with job_name = 'telematics_gps_retention'
@@ -544,7 +514,6 @@ The table names and file locations need to be confirmed before writing the purge
 ### R4 — Update Legal Pages (Execute After R1 Decision + R2 Complete)
 
 **Files to update:**
-
 - `src/app/privacy/page.tsx`
 - `src/app/terms/page.tsx`
 
@@ -552,7 +521,6 @@ The table names and file locations need to be confirmed before writing the purge
 **After R2 (assuming 90/90 decision):** update to match the new constants
 
 **Exact replacement text for privacy page Security and Retention section:**
-
 ```
 Active client fleet compliance data is retained for the duration of the
 subscription. After cancellation: records are soft deleted 90 days after
@@ -564,7 +532,6 @@ subscription status. GPS and telematics location data is retained for
 ```
 
 **Exact replacement text for terms page Cancellation and Data Lifecycle section:**
-
 ```
 If a client cancels service, organization access is blocked immediately.
 Fleet compliance records are soft deleted 90 days after cancellation and
@@ -574,11 +541,9 @@ separately for compliance purposes.
 ```
 
 **After updating both pages, run:**
-
 ```
 npm run compliance:legal-check
 ```
-
 This script at `scripts/check-legal-pages.mjs` validates required disclosures.
 Confirm it still passes after the retention language update.
 
@@ -617,28 +582,23 @@ WITHIN SOC 2 WINDOW (before June 22):
 ```
 
 ---
-
 ### Execute this sprint. These are pure text edits in existing Next.js pages.
 
 ### 1.1 — Rewrite the Hero Section
-
 **File:** `src/app/page.tsx` (or wherever the homepage hero lives)
 **Change type:** Copy rewrite only — no layout changes
 
 Replace:
-
 ```
 Fleet Compliance, Simplified.
 ```
 
 With:
-
 ```
 The compliance platform that knows the regulations — and knows your fleet.
 ```
 
 Replace hero subhead with:
-
 ```
 Fleet-Compliance Sentinel tracks every driver, vehicle, permit, and DOT
 deadline. Pipeline Penny answers regulatory questions cited directly from
@@ -646,7 +606,6 @@ federal CFR — not from a guess.
 ```
 
 **Notes:**
-
 - Keep existing CTA buttons (Start Free Trial + Book a Demo)
 - Make "Start Free Trial" the visually dominant button (primary styling)
 - "Book a Demo" secondary
@@ -655,7 +614,6 @@ federal CFR — not from a guess.
 ---
 
 ### 1.2 — Add Trust Rail Below Hero Fold
-
 **File:** `src/app/page.tsx`
 **Change type:** New section — single horizontal bar, text only, no images
 
@@ -676,27 +634,21 @@ Muted text color, small font. No cards, no icons — text strip only.
 ---
 
 ### 1.3 — Rewrite the Pricing Section Copy
-
 **File:** `src/app/page.tsx` (pricing section)
 **Change type:** Copy rewrite only — no pricing structure changes
 
 #### Starter — raise to $199/mo (from $149)
-
 Replace bullet list with outcome paragraph:
-
 ```
 See your entire fleet in one place. Track every driver CDL expiration,
 vehicle inspection, permit renewal, and DOT deadline. Daily automated
 alerts sweep before deadlines hit — no spreadsheet required.
 ```
-
 Keep: Up to 15 vehicles, up to 10 drivers, bulk import, FMCSA lookups,
 telematics (1 provider), email support.
 
 #### Professional — raise to $399/mo (from $299)
-
 Replace bullet list with outcome paragraph:
-
 ```
 Everything in Starter, plus Pipeline Penny — your AI compliance assistant.
 Ask Penny what the regulation requires AND where your drivers currently
@@ -710,7 +662,6 @@ Multi-LLM support (Claude, GPT-4o, Gemini, local Ollama).
 ```
 
 Add Penny explainer callout box below the paragraph:
-
 ```
 What is Pipeline Penny?
 Pipeline Penny is an AI assistant built on 13 sections of the FMCSA/DOT
@@ -725,9 +676,7 @@ regulation and always has your driver files open on the desk.
 ```
 
 #### Enterprise — Custom pricing (no change)
-
 Replace bullet list with:
-
 ```
 Full module suite. Custom deployment options: cloud-hosted, on-premise
 with local AI (Ollama), or hybrid for data residency requirements.
@@ -738,7 +687,6 @@ pathway for government contracting.
 ```
 
 #### Trial note — update to:
-
 ```
 First 20 clients receive a 30-day free trial. No credit card required.
 After Cohort 1 reaches capacity, standard 14-day trial applies.
@@ -747,14 +695,12 @@ After Cohort 1 reaches capacity, standard 14-day trial applies.
 ---
 
 ### 1.4 — Update the Final CTA Section
-
 **File:** `src/app/page.tsx` (bottom CTA)
 **Change type:** Copy rewrite
 
 Replace generic CTA with split layout:
 
 Left block:
-
 ```
 Headline: Stop tracking compliance in spreadsheets.
 Sub: Fleet-Compliance Sentinel runs on your existing data.
@@ -762,7 +708,6 @@ CTA button: Start your free trial →
 ```
 
 Right block:
-
 ```
 Headline: Running 20+ vehicles or need a custom build?
 Sub: Talk directly with Jacob.
@@ -778,18 +723,15 @@ in the footer unchanged.
 ---
 
 ## WAVE 2 — New Sections + Feature Copy (Execute After April 25 Sprint)
-
 ### Requires new component work. Do not start until Workstream A + B are complete.
 
 ### 2.1 — Add Three-Pillar Differentiation Section
-
 **Position:** After hero + trust rail, BEFORE the current feature grid
 **Change type:** New section — replaces the 8-card feature list
 
 Build a 3-column section with these pillars:
 
 **Pillar 1: AI That Reads the Regulation AND Your Driver Records**
-
 ```
 Pipeline Penny is grounded in 13 CFR parts (Parts 040–397) — the same
 federal regulations your DOT examiner references. But she doesn't stop
@@ -801,7 +743,6 @@ fleet — not two separate lookups. Source citations included. No guessing.
 ```
 
 **Pillar 2: Built for Compliance Ops, Not Recruiting**
-
 ```
 Tenstreet and similar platforms own the pre-hire funnel: recruiting,
 job boards, driver applications. Fleet-Compliance Sentinel owns what
@@ -811,7 +752,6 @@ problem. Different tool.
 ```
 
 **Pillar 3: Enterprise Security at SMB Price**
-
 ```
 Multi-tenant org isolation enforced at auth, query, and database layers.
 SOC 2 observation period active since March 2026. Audit trail on every
@@ -822,18 +762,15 @@ never trains an AI model.
 ---
 
 ### 2.2 — Add Training-Command Coming-Soon Section
-
 **Position:** After the Penny section, before the module grid
 **Change type:** New section with email capture
 
 Headline:
-
 ```
 Train your team on the same regulations Penny answers from.
 ```
 
 Subhead:
-
 ```
 Coming soon: an embedded compliance training platform inside
 Fleet-Compliance Sentinel. 31 modules starting with hazmat —
@@ -843,14 +780,12 @@ LMS login. No separate system.
 ```
 
 Module list (3-column):
-
 - 12 required PHMSA hazmat modules
 - 6 NFPA Awareness modules
 - 12 NFPA Operations modules
-- - supplemental DOT/CFR training
+- + supplemental DOT/CFR training
 
 Key point callout:
-
 ```
 When a driver completes a training module, their compliance record
 updates automatically. Expiration alerts fire when recertification
@@ -860,7 +795,6 @@ is due. Train → certify → track → alert — all in one platform.
 Badge: "Coming April 2026 — Early Access"
 
 Email capture form:
-
 ```
 Label: Get notified when training launches
 Input: Email address
@@ -879,13 +813,11 @@ warm leads before launch.
 ---
 
 ### 2.3 — Restructure the Module Grid
-
 **Change type:** Rewrite existing section
 
 Current: 16 modules listed in a flat grid. Nobody reads 16 descriptions.
 
 Replace with:
-
 - Lead header: "Enterprise-grade module architecture"
 - Sub: "One orchestration hub. 43 registered actions across 4 gateway
   modules. 7-layer enterprise function calling hardening in progress."
@@ -900,21 +832,16 @@ Replace with:
 ---
 
 ## WAVE 3 — Post-SOC 2 Type I (Execute After June 22, 2026)
-
 ### These require the audit to complete before the copy is accurate.
 
 ### 3.1 — Update Trust Rail
-
 Change: "SOC 2 Type I Observation Window Active" → "SOC 2 Type I Certified"
 
 ### 3.2 — Update Enterprise Tier Copy
-
 Add: "SOC 2 Type I certified. Audit report available on request."
 
 ### 3.3 — Add Penny Interactive Demo Panel
-
 Build a split-panel component with:
-
 - Left: typed question (example: "Are my CDL drivers current on medical
   certificates under 49 CFR Part 391, and who is expiring in 90 days?")
 - Right: Penny's response with CFR citation visible plus a driver status
@@ -924,7 +851,6 @@ Build a split-panel component with:
 This replaces the current 3-card AI section entirely.
 
 ### 3.4 — Add Enterprise Security Section
-
 Add a dedicated section surfacing the 7-layer hardening:
 Context-aware tool registry · Schema validation · Execution sandbox ·
 Retry manager · Token/cost attribution · Audit logging · Tenant isolation
@@ -980,16 +906,13 @@ and modules exist, they need a domain-specific dashboard config and knowledge lo
 ### What goes on the landing page now vs. what stays in sales conversations
 
 DO put on the landing page (Enterprise tier only — one line):
-
 ```
 Enterprise deployments include your own named AI assistant on the Pipeline X engine.
 ```
-
 This plants the "Pipeline Chief" concept without making the homepage feel like a
 broad platform play before fleet is fully proven.
 
 DO NOT put on the landing page yet:
-
 - The multi-vertical story (realty, govcon, OSHA, etc.)
 - Pipeline X architecture diagrams
 - "Built for any industry" positioning
@@ -1001,13 +924,11 @@ is a sales conversation and an enterprise pitch, not a homepage headline.
 ### Recommended title tag and meta (updated)
 
 Page title:
-
 ```
 Fleet-Compliance Sentinel — Powered by Pipeline X | Pipeline Punks
 ```
 
 Meta description:
-
 ```
 DOT/FMCSA fleet compliance platform with Pipeline Penny, your AI assistant
 built on Pipeline X. Track drivers, permits, and deadlines. Ask Penny what
@@ -1029,7 +950,6 @@ the regulation says and whether your fleet is currently in compliance.
 
 The FOB Command Center (Phase 3 Week 9 complete, Phase 4 pending) has
 modules that mirror FCS patterns:
-
 - mod-compliance-command and mod-contract-tracker wrap the same TNDS
   modules used by FCS
 - agent-compliance is built on the same compliance-gov-module as Penny
@@ -1045,7 +965,6 @@ has plan-based access control and multi-org support baked in.
 ## Quick Wins Checklist (Can Do Today)
 
 ### Monitoring (see R0 section — Datadog BLOCKED pending Pro approval)
-
 - [ ] ⚠ URGENT: Email success@datadoghq.com to expedite Pro plan activation
       (see Datadog expedite email drafted this session)
 - [ ] Check Datadog plan page every other day until approval arrives
@@ -1054,7 +973,6 @@ has plan-based access control and multi-org support baked in.
 - [ ] Sentry: check Settings → Subscription → confirm free Developer plan and usage levels
 
 ### Retention + SOC 2 (do these first — see RETENTION FIXES section above)
-
 - [ ] R0-A — Disable all Datadog products except Log Management (do right now)
 - [ ] R0-A — Set audit-logs-soc2 index to 365 days: Logs → Configuration → Indexes
 - [ ] R0-A — Verify in Logs Explorer: `index:audit-logs-soc2` shows audit events
@@ -1065,7 +983,6 @@ has plan-based access control and multi-org support baked in.
 - [ ] R1 — Decide retention window (recommend 90/90 = 180 days) then run R2 prompt
 
 ### Pre-Payment (see PRE-PAYMENT REQUIREMENTS section above)
-
 - [ ] P1 — Connect live bank account + verify Stripe identity
 - [ ] P1 — Create live Stripe products at $199/mo and $399/mo
 - [ ] P1 — Swap Stripe env vars in Vercel to live values
@@ -1074,20 +991,18 @@ has plan-based access control and multi-org support baked in.
 - [ ] P7 — Run `npm run compliance:legal-check` and confirm it passes
 
 ### Landing Page (copy changes — no new dev)
-
-- [x] 1.1 — Rewrite hero headline and subhead
-- [x] 1.2 — Add trust rail strip below hero
-- [x] 1.3 — Rewrite pricing copy (all 3 tiers + trial note)
-- [x] 1.4 — Update final CTA section
-- [x] Update `<title>` tag to "Fleet-Compliance Sentinel — Powered by Pipeline X | Pipeline Punks"
-- [x] Update meta description (see Brand Architecture section above)
-- [x] Add "Powered by Pipeline X" subdued tag near the Penny section header
-- [x] Add one line to Enterprise tier: "Enterprise deployments include your own named AI assistant on the Pipeline X engine."
-- [x] Make "Start Free Trial" button visually dominant (primary color)
-- [x] Make Jacob's phone number a `tel:` link in the CTA footer
+- [ ] 1.1 — Rewrite hero headline and subhead
+- [ ] 1.2 — Add trust rail strip below hero
+- [ ] 1.3 — Rewrite pricing copy (all 3 tiers + trial note)
+- [ ] 1.4 — Update final CTA section
+- [ ] Update `<title>` tag to "Fleet-Compliance Sentinel — Powered by Pipeline X | Pipeline Punks"
+- [ ] Update meta description (see Brand Architecture section above)
+- [ ] Add "Powered by Pipeline X" subdued tag near the Penny section header
+- [ ] Add one line to Enterprise tier: "Enterprise deployments include your own named AI assistant on the Pipeline X engine."
+- [ ] Make "Start Free Trial" button visually dominant (primary color)
+- [ ] Make Jacob's phone number a `tel:` link in the CTA footer
 
 ### Within 30 Days of First Payment
-
 - [ ] P8 — Upgrade Railway to Pro plan
 - [ ] P9 — Add Stripe keys to `soc2-evidence/access-control/SECURITY_ROTATION.md` 90-day schedule
 - [ ] Sentry: reduce tracesSampleRate from 1 to 0.1 in both
@@ -1097,9 +1012,9 @@ has plan-based access control and multi-org support baked in.
 
 ## Post-Wave-2 Checklist
 
-- [x] 2.1 — Three-pillar differentiation section
-- [x] 2.2 — Training-Command coming-soon section with email capture
-- [x] 2.3 — Restructure module grid (16 → 5 featured + "see all" link)
+- [ ] 2.1 — Three-pillar differentiation section
+- [ ] 2.2 — Training-Command coming-soon section with email capture
+- [ ] 2.3 — Restructure module grid (16 → 5 featured + "see all" link)
 - [ ] Wire email capture to Resend + waitlist table
 
 ---

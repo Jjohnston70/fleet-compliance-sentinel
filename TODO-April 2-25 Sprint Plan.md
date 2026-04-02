@@ -566,9 +566,9 @@ This is not a one-off hazmat feature. It's a training platform that starts with 
 - [x] Web-based deck viewer for employee training delivery
 - [x] Assessment engine with scoring and retake logic
 - [x] Training assignment and progress tracking (3 new DB tables)
-- [ ] Compliance auto-update on assessment pass
-- [ ] Certificate PDF generation
-- [ ] Penny can query training content and completion status
+- [x] Compliance auto-update on assessment pass
+- [x] Certificate PDF generation
+- [x] Penny can query training content and completion status
 
 ---
 
