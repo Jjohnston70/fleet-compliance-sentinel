@@ -113,6 +113,7 @@ export const SIDEBAR_SECTIONS: readonly SidebarSection[] = [
       { label: 'Command Center', href: '/fleet-compliance/command-center', icon: 'Terminal' },
       { label: 'Module Tools', href: '/fleet-compliance/tools', icon: 'Wrench' },
       { label: 'Penny AI', href: '/penny', icon: 'Bot' },
+      { label: 'Module Toggles', href: '/fleet-compliance/dev/modules', icon: 'ToggleRight', adminOnly: true },
     ],
   },
 ];
