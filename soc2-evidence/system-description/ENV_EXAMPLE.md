@@ -41,8 +41,8 @@ Canonical environment-variable reference for Phase 0 audit.
 | `STRIPE_WEBHOOK_SECRET` | REQUIRED | `POST /api/stripe/webhook` signature verification | `whsec_xxxxx` |
 | `NEXT_PUBLIC_CLERK_SIGN_IN_URL` | OPTIONAL | auth routing config | `/sign-in` |
 | `NEXT_PUBLIC_CLERK_SIGN_UP_URL` | OPTIONAL | auth routing config | `/sign-up` |
-| `NEXT_PUBLIC_CLERK_AFTER_SIGN_IN_URL` | OPTIONAL | auth routing config | `/penny` |
-| `NEXT_PUBLIC_CLERK_AFTER_SIGN_UP_URL` | OPTIONAL | auth routing config | `/penny` |
+| `NEXT_PUBLIC_CLERK_SIGN_IN_FALLBACK_REDIRECT_URL` | OPTIONAL | auth routing config | `/penny` |
+| `NEXT_PUBLIC_CLERK_SIGN_UP_FALLBACK_REDIRECT_URL` | OPTIONAL | auth routing config | `/penny` |
 
 ## Railway Penny Backend (`railway-backend/.env`)
 

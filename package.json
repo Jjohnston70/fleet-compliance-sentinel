@@ -8,7 +8,7 @@
   ],
   "scripts": {
     "dev": "next dev",
-    "build":  "tsx scripts/build-cfr-index.mjs && tsx scripts/build-demo-index.mjs && next build",
+    "build": "tsx scripts/build-cfr-index.mjs && tsx scripts/build-demo-index.mjs && next build",
     "start": "next start",
     "lint": "next lint",
     "docs:vendors": "node scripts/download-vendor-docs.mjs",
@@ -21,7 +21,7 @@
     "eval:penny": "node scripts/run-penny-evals.mjs"
   },
   "dependencies": {
-    "@clerk/nextjs": "^6.39.1",
+    "@clerk/nextjs": "^7.0.8",
     "@neondatabase/serverless": "^1.0.2",
     "@sentry/nextjs": "^10.46.0",
     "@tnds/ingest-core": "*",

@@ -29,9 +29,8 @@ export default function Navigation({ clerkEnabled = true }: NavigationProps) {
           <span className="nav-brand-text">Pipeline Penny</span>
         </Link>
         <ul className="nav-links">
-          <li>
-            <Link href="/sign-in">Sign In</Link>
-          </li>
+          <li><Link href="/platform">Platform</Link></li>
+          <li><Link href="/sign-in">Sign In</Link></li>
           <li>
             <Link href="/sign-up" className="btn-nav">
               Get Access

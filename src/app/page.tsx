@@ -126,7 +126,8 @@ const pricingTiers = [
       'Up to 10 drivers',
       'Bulk Excel import',
       'FMCSA carrier lookups',
-      'Telematics integration (1 provider)',
+      'Compliance training platform (31 modules)',
+      'AI invoice extraction (customizable vendor list)',
       'Email support',
     ],
   },
@@ -136,16 +137,14 @@ const pricingTiers = [
     cta: 'Start Free Trial',
     href: '/sign-up',
     featured: true,
-    outcome: 'Everything in Starter, plus Pipeline Penny — your AI compliance assistant. Ask Penny what the regulation requires AND where your drivers currently stand against it. Penny pulls the cited federal CFR answer and checks it against your actual driver records — CDL status, medical card expiration, drug test history, hazmat endorsements — so you know the rule and whether your fleet is in or out of compliance right now. No guessing. No digging through spreadsheets. Penny reads the regulation and reads your data at the same time. Multi-LLM support (Claude, GPT-4o, Gemini, local Ollama).',
+    outcome: 'Everything in Starter, plus Pipeline Penny — your AI compliance assistant. Ask Penny what the regulation requires AND where your drivers currently stand against it. Penny pulls the cited federal CFR answer and checks it against your actual driver records — CDL status, medical card expiration, drug test history, hazmat endorsements — so you know the rule and whether your fleet is in or out of compliance right now. No guessing. No digging through spreadsheets. Penny reads the regulation and reads your data at the same time. Includes telematics integration with all supported providers. Multi-LLM support (Claude, GPT-4o, Gemini, local Ollama).',
     pennyExplainer: false,
     features: [
       'Up to 50 vehicles',
       'Up to 25 drivers',
       'Pipeline Penny AI assistant (multi-LLM)',
-      'Compliance training platform (31 modules)',
-      'AI invoice extraction (12 vendors)',
-      'Telematics integration (all providers)',
-      'ML forecasting dashboards',
+      'Telematics integration (Geotab, Samsara, Verizon Reveal + more)',
+      'Business trend reports and cash flow dashboards',
       'Priority support',
     ],
   },
@@ -155,7 +154,7 @@ const pricingTiers = [
     cta: 'Contact Us',
     href: 'https://www.truenorthstrategyops.com/contact',
     featured: false,
-    outcome: 'Full module suite. Custom deployment options: cloud-hosted, on-premise with local AI (Ollama), or hybrid for data residency requirements. Dedicated onboarding. SLA guarantee. SOC 2 compliance documentation available on request for procurement and audit teams. Google Cloud migration in progress — enhanced scalability and FedRAMP pathway for government contracting. Enterprise deployments include your own named AI assistant on the Pipeline X engine.',
+    outcome: 'Full module suite. Custom deployment options: cloud-hosted, on-premise, or hybrid for data residency requirements. Dedicated onboarding. SLA guarantee. SOC 2 compliance documentation available on request. Enterprise deployments include your own named AI assistant. See the platform page for the full module list.',
     features: [
       'Unlimited vehicles and drivers',
       'Everything in Professional',
@@ -186,7 +185,7 @@ export default function HomePage() {
         <p className="hero-sub">
           Fleet-Compliance Sentinel tracks every driver, vehicle, permit, and DOT
           deadline. Pipeline Penny answers regulatory questions cited directly from
-          federal CFR — not from a guess.
+          federal CFR and your fleet data — not from a guess.
         </p>
         <div className="hero-actions">
           <Link href="/sign-up" className="btn-primary">
@@ -208,7 +207,7 @@ export default function HomePage() {
             </div>
             <div className="hero-trust-item">
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
-              <span>30-Day Free Trial</span>
+              <span>14-Day Free Trial</span>
             </div>
           </div>
         </div>
@@ -260,213 +259,17 @@ export default function HomePage() {
 
       <section className="trust-rail">
         <div className="trust-rail-items">
-          <span>SOC 2 Type I Observation Window Active</span>
-          <span className="trust-rail-dot">&middot;</span>
-          <span>OWASP LLM Top 10 Assessed</span>
-          <span className="trust-rail-dot">&middot;</span>
-          <span>25,000+ CFR Chunks Indexed</span>
+          <span>SOC 2 Type I Audit-Ready</span>
           <span className="trust-rail-dot">&middot;</span>
           <span>SDVOSB Certified</span>
           <span className="trust-rail-dot">&middot;</span>
+          <span>49 CFR Parts 040&ndash;397 Indexed</span>
+          <span className="trust-rail-dot">&middot;</span>
+          <span>14-Day Free Trial — No Credit Card</span>
+          <span className="trust-rail-dot">&middot;</span>
           <span>Colorado Springs, CO</span>
           <span className="trust-rail-dot">&middot;</span>
-          <a href="https://status.pipelinepunks.com" target="_blank" rel="noopener noreferrer">status.pipelinepunks.com</a>
-        </div>
-      </section>
-
-      <section className="features differentiation">
-        <h2>Why Fleet-Compliance Sentinel</h2>
-        <div className="differentiation-grid">
-          <article className="differentiation-pillar">
-            <h3>AI That Reads the Regulation AND Your Driver Records</h3>
-            <p>
-              Pipeline Penny is grounded in 13 CFR parts (Parts 040&ndash;397) &mdash; the same
-              federal regulations your DOT examiner references. But she doesn&apos;t stop
-              at quoting the rule. She cross-references it against your actual driver
-              data: CDL status, medical card dates, drug test records, hazmat
-              endorsements. Ask &ldquo;are my drivers current on medical certificates under
-              Part 391?&rdquo; and get the regulation plus a real-time status check on your
-              fleet &mdash; not two separate lookups. Source citations included. No guessing.
-            </p>
-          </article>
-          <article className="differentiation-pillar">
-            <h3>Built for Compliance Ops, Not Recruiting</h3>
-            <p>
-              Tenstreet and similar platforms own the pre-hire funnel: recruiting,
-              job boards, driver applications. Fleet-Compliance Sentinel owns what
-              happens after the hire: CDL tracking, drug test records, permit renewals,
-              FMCSA safety lookups, and automated daily alert sweeps. Different
-              problem. Different tool.
-            </p>
-          </article>
-          <article className="differentiation-pillar">
-            <h3>Enterprise Security at SMB Price</h3>
-            <p>
-              Multi-tenant org isolation enforced at auth, query, and database layers.
-              SOC 2 observation period active since March 2026. Audit trail on every
-              write. Automated data lifecycle on cancellation. Your data never trains
-              an AI model.
-            </p>
-          </article>
-          <article className="differentiation-pillar">
-            <h3>What is Pipeline Penny?</h3>
-            <p>
-              Pipeline Penny is an AI assistant built on 13 sections of the FMCSA/DOT
-              regulatory manual (49 CFR Parts 040&ndash;397). When you ask a compliance
-              question, she searches the actual federal regulations AND cross-references
-              your live fleet data &mdash; your drivers, CDL expirations, medical cards, drug
-              test records, permits, and open action items. You get two things at once:
-              what the rule says, and whether your drivers are currently meeting it.
-              She doesn&apos;t make things up. She shows her sources. Think of her as a
-              compliance analyst who has memorized every federal regulation and always
-              has your driver files open on the desk.
-            </p>
-          </article>
-        </div>
-      </section>
-
-      <section className="how">
-        <h2>Your AI Compliance Assistant</h2>
-        <p className="powered-by-tag">Powered by Pipeline X</p>
-        <div className="steps">
-          <article className="step">
-            <div className="step-num">1</div>
-            <div className="step-content">
-              <h3>Built on 13 FMCSA/DOT Regulation Chapters</h3>
-              <p>Pipeline Penny is grounded in 13 sections of the FMCSA DOT regulatory manual (49 CFR Parts 040-397) and returns regulation-aware guidance.</p>
-            </div>
-          </article>
-          <article className="step">
-            <div className="step-num">2</div>
-            <div className="step-content">
-              <h3>Answers With Your Fleet Context</h3>
-              <p>Questions are answered with your actual fleet data, permit records, maintenance records, and compliance timelines.</p>
-            </div>
-          </article>
-          <article className="step">
-            <div className="step-num">3</div>
-            <div className="step-content">
-              <h3>Source-Cited, No Guessing</h3>
-              <p>Pipeline Penny does not make things up - responses are grounded in your data and federal source references.</p>
-            </div>
-          </article>
-        </div>
-      </section>
-
-      <section className="features">
-        <h2>Telematics and Fleet Monitoring</h2>
-        <p className="section-intro">
-          Connect your existing telematics provider to Fleet-Compliance Sentinel. We pull vehicle, driver,
-          HOS/ELD, GPS, and risk score data directly from your account - you keep your hardware and provider relationship.
-        </p>
-        <div className="telematics-providers">
-          <div className="provider-card">
-            <h3>Geotab</h3>
-            <p>Connect your Geotab account for vehicle tracking, driver behavior analysis, and HOS monitoring.</p>
-          </div>
-          <div className="provider-card">
-            <h3>Samsara</h3>
-            <p>Connect your Samsara account for real-time GPS, ELD compliance, and fleet safety scoring.</p>
-          </div>
-          <div className="provider-card">
-            <h3>Verizon Reveal Connect</h3>
-            <p>Connect your Verizon Reveal account for vehicle diagnostics, route optimization, and driver performance.</p>
-          </div>
-        </div>
-        <p className="section-note">
-          We integrate with your existing telematics provider - no new hardware required. Need a different provider? We add integrations on request.
-        </p>
-      </section>
-
-      <section className="training-coming-soon">
-        <span className="training-badge">Now Live — Request Access</span>
-        <h2>Train your team on the same regulations Penny answers from.</h2>
-        <p className="section-intro">
-          An embedded compliance training platform inside Fleet-Compliance Sentinel.
-          31 modules starting with hazmat &mdash; built from ERG 2024, CFR, and PHMSA
-          requirements. Completion automatically updates driver compliance records.
-          No separate LMS login. No separate system.
-        </p>
-        <div className="training-modules-summary">
-          <span>12 required PHMSA hazmat modules</span>
-          <span>6 NFPA Awareness modules</span>
-          <span>12 NFPA Operations modules</span>
-          <span>+ supplemental DOT/CFR training</span>
-        </div>
-        <p className="training-callout">
-          Train &rarr; certify &rarr; track &rarr; alert — all in one platform.
-        </p>
-        <form className="training-email-capture" action="/api/training-waitlist" method="POST">
-          <input
-            type="email"
-            name="email"
-            placeholder="Email address"
-            aria-label="Get notified when training launches"
-            required
-          />
-          <button type="submit">Notify me</button>
-        </form>
-      </section>
-
-      <section className="features modules-section">
-        <div style={{ textAlign: 'center', marginBottom: '1.5rem' }}>
-          <Image
-            src="/tnds-command-center-logo.png"
-            alt="TNDS Command Center"
-            width={200}
-            height={200}
-            style={{ borderRadius: '1rem', mixBlendMode: 'lighten' }}
-          />
-        </div>
-        <h2>Enterprise-grade module architecture</h2>
-        <p className="section-intro">
-          One orchestration hub. 43 registered actions across 4 gateway modules.
-          7-layer enterprise function calling hardening complete.
-        </p>
-        <div className="module-grid">
-          {featuredModules.map((mod) => (
-            <article className="module-card" key={mod.name}>
-              <h3>{mod.name}</h3>
-              <p>{mod.description}</p>
-            </article>
-          ))}
-        </div>
-
-      </section>
-
-      <section className="features">
-        <h2>Machine Learning and Forecasting</h2>
-        <p className="section-intro">
-          Go beyond compliance tracking with production-ready ML modules that turn your operational data into forecasts and actionable intelligence.
-        </p>
-        <div className="module-grid">
-          {mlModules.map((mod) => (
-            <article className="module-card" key={mod.name}>
-              <h3>{mod.name}</h3>
-              <p>{mod.description}</p>
-            </article>
-          ))}
-        </div>
-      </section>
-
-      <section className="features">
-        <h2>Deployment Options</h2>
-        <p className="section-intro">
-          Pipeline Penny and Fleet-Compliance Sentinel are designed to meet your infrastructure where it is.
-        </p>
-        <div className="telematics-providers">
-          <div className="provider-card">
-            <h3>Cloud-Hosted (Default)</h3>
-            <p>Deployed on Vercel and Railway with Neon PostgreSQL. SOC 2 audit-ready. Migrating to Google Cloud for enhanced scalability and compliance.</p>
-          </div>
-          <div className="provider-card">
-            <h3>On-Premise / Local</h3>
-            <p>Run Pipeline Penny locally via Electron with your choice of LLM provider: Ollama, Anthropic, OpenAI, Gemini, or ChatGPT. Your data never leaves your network.</p>
-          </div>
-          <div className="provider-card">
-            <h3>Hybrid</h3>
-            <p>Cloud compliance platform with local AI processing. Best of both worlds for organizations with strict data residency requirements.</p>
-          </div>
+          <a href="https://status.pipelinepunks.com" target="_blank" rel="noopener noreferrer">Platform Status</a>
         </div>
       </section>
 
@@ -510,7 +313,155 @@ export default function HomePage() {
             </article>
           ))}
         </div>
-        <p className="pricing-note">First 50 clients receive a 30-day free trial. No credit card required. After Cohort 1 reaches capacity, standard 14-day trial applies.</p>
+        <p className="pricing-note">All plans include a 14-day free trial — no credit card required. Try everything before you choose. First 10 clients also receive a complimentary custom deployment consultation at the Professional package level.</p>
+      </section>
+
+      <section className="features differentiation">
+        <h2>Why Fleet-Compliance Sentinel</h2>
+        <div className="differentiation-grid">
+          <article className="differentiation-pillar">
+            <h3>AI That Reads the Regulation AND Your Driver Records</h3>
+            <p>
+              Pipeline Penny knows the federal DOT rulebook and has your driver files
+              open at the same time. Ask her &ldquo;which of my drivers are due for their
+              annual MVR pull under Part 391?&rdquo; and she will cite the exact regulation
+              and show you which drivers are past due, which are coming up in the next
+              30 days, and which are current &mdash; pulled straight from your records, not
+              a guess. One question. Two answers. No digging through folders.
+            </p>
+          </article>
+          <article className="differentiation-pillar">
+            <h3>Built for Compliance Ops, Not Recruiting</h3>
+            <p>
+              Tenstreet and similar platforms own the pre-hire funnel: recruiting,
+              job boards, driver applications. Fleet-Compliance Sentinel owns what
+              happens after the hire: CDL tracking, drug test records, permit renewals,
+              FMCSA safety lookups, and automated daily alert sweeps. Different
+              problem. Different tool.
+            </p>
+          </article>
+          <article className="differentiation-pillar">
+            <h3>Built to Protect Your Business, Not Just Track It</h3>
+            <p>
+              Every driver file, permit record, and compliance action is logged with a
+              timestamp and an owner. Your data is stored in a separate, isolated
+              environment — no other fleet operator can see yours. SOC 2 audit-ready
+              since March 2026. Every cancellation triggers an automatic data cleanup
+              on a documented schedule. Your data never trains an AI model.
+            </p>
+          </article>
+          <article className="differentiation-pillar">
+            <h3>What is Pipeline Penny?</h3>
+            <p>
+              Pipeline Penny is an AI assistant built on 13 sections of the FMCSA/DOT
+              regulatory manual (49 CFR Parts 040&ndash;397). When you ask a compliance
+              question, she searches the actual federal regulations AND cross-references
+              your live fleet data &mdash; your drivers, CDL expirations, medical cards, drug
+              test records, permits, and open action items. You get two things at once:
+              what the rule says, and whether your drivers are currently meeting it.
+              She doesn&apos;t make things up. She shows her sources. Think of her as a
+              compliance analyst who has memorized every federal regulation and always
+              has your driver files open on the desk.
+            </p>
+          </article>
+        </div>
+      </section>
+
+      <section className="how">
+        <h2>How Pipeline Penny Works</h2>
+        <div className="steps">
+          <article className="step">
+            <div className="step-num">1</div>
+            <div className="step-content">
+              <h3>Loaded with the Federal Rulebook</h3>
+              <p>Penny knows 13 chapters of the FMCSA/DOT regulatory manual — Parts 040 through 397. The same rules your DOT examiner uses. She quotes the exact section, not a summary.</p>
+            </div>
+          </article>
+          <article className="step">
+            <div className="step-num">2</div>
+            <div className="step-content">
+              <h3>Checks Your Fleet at the Same Time</h3>
+              <p>While she pulls the regulation, she checks your actual driver files, permit records, and maintenance logs. You get the rule and your fleet status in one answer.</p>
+            </div>
+          </article>
+          <article className="step">
+            <div className="step-num">3</div>
+            <div className="step-content">
+              <h3>Shows Her Work — Every Time</h3>
+              <p>Every answer includes the CFR source so you can verify it yourself. No guessing. No made-up answers. If she is not sure, she tells you.</p>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <section className="features">
+        <h2>GPS and ELD Monitoring — No New Hardware</h2>
+        <p className="section-intro">
+          Already running Geotab, Samsara, or Verizon on your trucks? Connect your existing account and your vehicle location, driver hours, and ELD status flows directly into your compliance dashboard. You keep your hardware and your provider relationship.
+        </p>
+        <div className="telematics-providers">
+          <div className="provider-card">
+            <h3>Geotab</h3>
+            <p>Connect your Geotab account for vehicle tracking, driver behavior analysis, and HOS monitoring.</p>
+          </div>
+          <div className="provider-card">
+            <h3>Samsara</h3>
+            <p>Connect your Samsara account for real-time GPS, ELD compliance, and fleet safety scoring.</p>
+          </div>
+          <div className="provider-card">
+            <h3>Verizon Reveal Connect</h3>
+            <p>Connect your Verizon Reveal account for vehicle diagnostics, route optimization, and driver performance.</p>
+          </div>
+        </div>
+        <p className="section-note">
+          No new hardware. No switching providers. Need a different provider than what is listed? We add integrations on request.
+        </p>
+      </section>
+
+      <section className="training-coming-soon">
+        <span className="training-badge">Now Live — Request Access</span>
+        <h2>Train your team on the same regulations Penny answers from.</h2>
+        <p className="section-intro">
+          An embedded compliance training platform inside Fleet-Compliance Sentinel.
+          31 modules starting with hazmat &mdash; built from ERG 2024, CFR, and PHMSA
+          requirements. Completion automatically updates driver compliance records.
+          No separate LMS login. No separate system.
+        </p>
+        <div className="training-modules-summary">
+          <span>12 required PHMSA hazmat modules</span>
+          <span>6 NFPA Awareness modules</span>
+          <span>12 NFPA Operations modules</span>
+          <span>+ supplemental DOT/CFR training</span>
+        </div>
+        <p className="training-callout">
+          Train &rarr; certify &rarr; track &rarr; alert — all in one platform.
+        </p>
+        <form className="training-email-capture" action="/api/training-waitlist" method="POST">
+          <input
+            type="email"
+            name="email"
+            placeholder="Email address"
+            aria-label="Get notified when training launches"
+            required
+          />
+          <button type="submit">Notify me</button>
+        </form>
+      </section>
+
+      <section className="features modules-section" style={{ textAlign: 'center', padding: '3rem 1.5rem' }}>
+        <h2>Enterprise operations modules — and more.</h2>
+        <p className="section-intro" style={{ maxWidth: '620px', margin: '0.75rem auto 1.5rem' }}>
+          Fleet-Compliance Sentinel is the first vertical of a larger operations platform.
+          GovCon tracking, compliance document generation, financial intelligence, proposal
+          building, and forecasting modules are available in the Enterprise tier.
+        </p>
+        <Link
+          href="/platform"
+          className="btn-secondary"
+          style={{ display: 'inline-block' }}
+        >
+          See all platform modules &rarr;
+        </Link>
       </section>
 
       <section className="cta">

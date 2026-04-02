@@ -4,6 +4,7 @@ import '../styles/globals.css';
 import Navigation from '@/components/Navigation';
 import CookieConsent from '@/components/CookieConsent';
 import { isClerkEnabled } from '@/lib/clerk';
+import { getClerkRedirectConfig } from '@/lib/clerk-redirects';
 
 export const metadata: Metadata = {
   title: {
@@ -54,6 +55,7 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   const hasClerk = isClerkEnabled();
+  const redirectConfig = getClerkRedirectConfig();
   const shell = (
     <>
       <Navigation clerkEnabled={hasClerk} />
@@ -65,7 +67,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="en">
       <body>
-        {hasClerk ? <ClerkProvider>{shell}</ClerkProvider> : shell}
+        {hasClerk ? <ClerkProvider {...redirectConfig}>{shell}</ClerkProvider> : shell}
       </body>
     </html>
   );

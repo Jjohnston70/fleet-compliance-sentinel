@@ -1,8 +1,10 @@
 import { SignUp } from '@clerk/nextjs';
 import { isClerkEnabled } from '@/lib/clerk';
+import { getClerkRedirectConfig } from '@/lib/clerk-redirects';
 
 export default function SignUpPage() {
   const hasClerk = isClerkEnabled();
+  const redirectConfig = getClerkRedirectConfig();
 
   if (!hasClerk) {
     return (
@@ -17,7 +19,15 @@ export default function SignUpPage() {
 
   return (
     <main style={{ minHeight: 'calc(100vh - 65px)', display: 'grid', placeItems: 'center', padding: '2rem' }}>
-      <SignUp />
+      <SignUp
+        routing="path"
+        path="/sign-up"
+        signInUrl="/sign-in"
+        fallbackRedirectUrl={redirectConfig.signUpFallbackRedirectUrl}
+        forceRedirectUrl={redirectConfig.signUpForceRedirectUrl}
+        signInFallbackRedirectUrl={redirectConfig.signInFallbackRedirectUrl}
+        signInForceRedirectUrl={redirectConfig.signInForceRedirectUrl}
+      />
     </main>
   );
 }
