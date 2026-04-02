@@ -86,6 +86,7 @@ export const SIDEBAR_SECTIONS: readonly SidebarSection[] = [
       { label: 'Proposals', href: '/fleet-compliance/proposals', icon: 'FilePenLine', moduleId: 'proposals' },
       { label: 'Contracts', href: '/fleet-compliance/contracts', icon: 'FileText', moduleId: 'contracts' },
       { label: 'Invoices', href: '/fleet-compliance/invoices', icon: 'ReceiptText', moduleId: 'invoices' },
+      { label: 'Realty', href: '/fleet-compliance/realty', icon: 'Home', moduleId: 'realty' },
     ],
   },
   {

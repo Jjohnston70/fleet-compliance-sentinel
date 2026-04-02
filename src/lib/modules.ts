@@ -226,6 +226,17 @@ const MODULE_SEEDS: readonly ModuleSeed[] = [
     requiresPlan: 'pro',
     metadata: {},
   },
+  {
+    id: 'realty',
+    name: 'Realty Pipeline',
+    description: 'Real estate CRM -- lead scoring, deal pipeline, and commission tracking.',
+    category: 'business',
+    icon: 'Home',
+    routePrefix: '/realty',
+    isCore: false,
+    requiresPlan: 'pro',
+    metadata: {},
+  },
 ];
 
 const PLAN_DEFAULTS: Readonly<Record<PlanTier, readonly string[]>> = {
@@ -260,6 +271,7 @@ const PLAN_DEFAULTS: Readonly<Record<PlanTier, readonly string[]>> = {
     'onboarding',
     'email-analytics',
     'ml-signals',
+    'realty',
   ],
   enterprise: MODULE_SEEDS.map((item) => item.id),
 };
