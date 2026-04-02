@@ -1,6 +1,13 @@
 import type { ModuleRunRequest } from '@/lib/modules-gateway/types';
+import { createHmac } from 'node:crypto';
 
 const DEFAULT_RAILWAY_MODULE_GATEWAY_URL = 'https://pipeline-punks-v2-production.up.railway.app';
+
+export interface RemoteGatewayTenantContext {
+  orgId: string;
+  userId?: string;
+  requestId?: string;
+}
 
 function trimTrailingSlash(value: string): string {
   return value.replace(/\/+$/, '');
@@ -26,7 +33,26 @@ function resolveRemoteApiKey(): string | null {
   return configured || null;
 }
 
-function headersWithAuth(contentType = false): HeadersInit {
+function buildTenantHeaders(context?: RemoteGatewayTenantContext): Record<string, string> {
+  if (!context || !context.orgId) return {};
+  const headers: Record<string, string> = {
+    'X-Fleet-Org-Id': context.orgId,
+  };
+  if (context.userId) headers['X-Fleet-User-Id'] = context.userId;
+  if (context.requestId) headers['X-Fleet-Request-Id'] = context.requestId;
+
+  const signingSecret = (process.env.MODULE_GATEWAY_REMOTE_SIGNING_SECRET || '').trim();
+  if (!signingSecret) return headers;
+
+  const timestamp = String(Math.floor(Date.now() / 1000));
+  const payload = `${context.orgId}:${context.userId || ''}:${timestamp}:${context.requestId || ''}`;
+  const signature = createHmac('sha256', signingSecret).update(payload).digest('hex');
+  headers['X-Fleet-Timestamp'] = timestamp;
+  headers['X-Fleet-Signature'] = signature;
+  return headers;
+}
+
+function headersWithAuth(contentType = false, tenantContext?: RemoteGatewayTenantContext): HeadersInit {
   const headers: Record<string, string> = {};
   const key = resolveRemoteApiKey();
   if (key) {
@@ -35,7 +61,10 @@ function headersWithAuth(contentType = false): HeadersInit {
   if (contentType) {
     headers['Content-Type'] = 'application/json';
   }
-  return headers;
+  return {
+    ...headers,
+    ...buildTenantHeaders(tenantContext),
+  };
 }
 
 function buildRemoteUrl(pathname: string): string {
@@ -63,11 +92,28 @@ export async function fetchRemoteModuleCatalog() {
   return { res, body };
 }
 
-export async function startRemoteModuleRun(input: ModuleRunRequest) {
+export async function startRemoteModuleRun(input: ModuleRunRequest, tenantContext?: RemoteGatewayTenantContext) {
+  const payload: ModuleRunRequest & {
+    context?: {
+      orgId: string;
+      userId?: string;
+      requestId?: string;
+    };
+  } = {
+    ...input,
+  };
+  if (tenantContext?.orgId) {
+    payload.context = {
+      orgId: tenantContext.orgId,
+      userId: tenantContext.userId,
+      requestId: tenantContext.requestId,
+    };
+  }
+
   const res = await fetch(buildRemoteUrl('/modules/run'), {
     method: 'POST',
-    headers: headersWithAuth(true),
-    body: JSON.stringify(input),
+    headers: headersWithAuth(true, tenantContext),
+    body: JSON.stringify(payload),
     cache: 'no-store',
     signal: AbortSignal.timeout(30_000),
   });
@@ -75,11 +121,11 @@ export async function startRemoteModuleRun(input: ModuleRunRequest) {
   return { res, body };
 }
 
-export async function fetchRemoteModuleRun(runId: string) {
+export async function fetchRemoteModuleRun(runId: string, tenantContext?: RemoteGatewayTenantContext) {
   const encoded = encodeURIComponent(runId);
   const res = await fetch(buildRemoteUrl(`/modules/status/${encoded}`), {
     method: 'GET',
-    headers: headersWithAuth(false),
+    headers: headersWithAuth(false, tenantContext),
     cache: 'no-store',
     signal: AbortSignal.timeout(30_000),
   });
@@ -87,12 +133,16 @@ export async function fetchRemoteModuleRun(runId: string) {
   return { res, body };
 }
 
-export async function fetchRemoteModuleArtifact(runId: string, artifactPath: string) {
+export async function fetchRemoteModuleArtifact(
+  runId: string,
+  artifactPath: string,
+  tenantContext?: RemoteGatewayTenantContext,
+) {
   const encodedRunId = encodeURIComponent(runId);
   const encodedPath = encodeURIComponent(artifactPath);
   const res = await fetch(buildRemoteUrl(`/modules/artifact/${encodedRunId}?path=${encodedPath}`), {
     method: 'GET',
-    headers: headersWithAuth(false),
+    headers: headersWithAuth(false, tenantContext),
     cache: 'no-store',
     signal: AbortSignal.timeout(60_000),
   });

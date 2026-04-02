@@ -3,6 +3,11 @@ import { auditLog } from '@/lib/audit-logger';
 import { getOrganizationName, getSQL } from '@/lib/fleet-compliance-db';
 import { certificateFileExists, generateTrainingCertificate, readTrainingCertificateBuffer } from '@/lib/training-certificate';
 import { getTrainingModuleMetadata } from '@/lib/training-module-metadata';
+import {
+  checkTrainingSchema,
+  TRAINING_COMPLIANCE_TABLES,
+  trainingSchemaNotReadyResponse,
+} from '@/lib/training-schema';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -32,6 +37,8 @@ export async function GET(request: Request) {
   }
 
   const sql = getSQL();
+  const schemaCheck = await checkTrainingSchema(TRAINING_COMPLIANCE_TABLES, sql);
+  if (!schemaCheck.ok) return trainingSchemaNotReadyResponse(schemaCheck);
   const recordRows = await sql`
     SELECT id, employee_name, certificate_url, completion_date
     FROM hazmat_training_records

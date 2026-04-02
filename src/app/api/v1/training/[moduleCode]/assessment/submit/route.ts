@@ -6,6 +6,16 @@ import {
   getOrganizationPrimaryContact,
   getSQL,
 } from '@/lib/fleet-compliance-db';
+import {
+  gradeTrainingAssessment,
+  loadTrainingAssessment,
+  normalizeAnswerMap,
+} from '@/lib/training-assessment';
+import {
+  checkTrainingSchema,
+  TRAINING_COMPLIANCE_TABLES,
+  trainingSchemaNotReadyResponse,
+} from '@/lib/training-schema';
 import { generateTrainingCertificate } from '@/lib/training-certificate';
 import { getTrainingModuleMetadata } from '@/lib/training-module-metadata';
 
@@ -14,10 +24,6 @@ export const dynamic = 'force-dynamic';
 
 interface SubmitBody {
   answers: Record<string, string>;
-  score: number;
-  total: number;
-  percentage: number;
-  passed: boolean;
 }
 
 function isValidEmail(value: string | null | undefined): value is string {
@@ -100,172 +106,231 @@ export async function POST(
   }
 
   const { moduleCode } = await params;
-
   if (!/^TNDS-HZ-\d{3}[a-d]?$/.test(moduleCode)) {
     return Response.json({ error: 'Invalid module code' }, { status: 400 });
   }
 
-  let body: SubmitBody;
+  let rawBody: unknown;
   try {
-    body = await request.json();
+    rawBody = await request.json();
   } catch {
     return Response.json({ error: 'Invalid JSON body' }, { status: 400 });
   }
 
-  if (
-    typeof body.score !== 'number' ||
-    typeof body.total !== 'number' ||
-    typeof body.percentage !== 'number' ||
-    typeof body.passed !== 'boolean'
-  ) {
-    return Response.json({ error: 'Missing required fields' }, { status: 422 });
+  const answers = normalizeAnswerMap((rawBody as Partial<SubmitBody>)?.answers);
+  if (!answers) {
+    return Response.json({ error: 'answers must be an object of question->answer values' }, { status: 422 });
   }
 
-  // Persist assessment result to training_progress
+  const assessment = await loadTrainingAssessment(moduleCode);
+  if (!assessment) {
+    return Response.json({ error: 'Assessment not found' }, { status: 404 });
+  }
+
+  const sql = getSQL();
+  const schemaCheck = await checkTrainingSchema(TRAINING_COMPLIANCE_TABLES, sql);
+  if (!schemaCheck.ok) return trainingSchemaNotReadyResponse(schemaCheck);
+
+  const assignmentRows = await sql`
+    SELECT
+      ta.id AS assignment_id,
+      pr.id AS progress_id,
+      pr.deck_completed_at,
+      tp.passing_score_override
+    FROM training_assignments ta
+    JOIN training_plans tp ON tp.id = ta.plan_id
+    LEFT JOIN training_progress pr
+      ON pr.assignment_id = ta.id
+      AND pr.module_code = ${moduleCode}
+    WHERE ta.org_id = ${orgId}
+      AND ta.employee_id = ${userId}
+      AND tp.modules::jsonb ? ${moduleCode}
+    ORDER BY ta.assigned_at DESC
+    LIMIT 1
+  `;
+
+  if (assignmentRows.length === 0) {
+    return Response.json(
+      { error: 'Training module is not assigned to this user in the current organization' },
+      { status: 403 },
+    );
+  }
+
+  const assignment = assignmentRows[0];
+  const assignmentId = String(assignment.assignment_id);
+  if (!assignment.progress_id) {
+    return Response.json(
+      { error: 'Training progress row missing for assigned module' },
+      { status: 409 },
+    );
+  }
+  if (!assignment.deck_completed_at) {
+    return Response.json(
+      { error: 'Complete the training deck before submitting the assessment' },
+      { status: 409 },
+    );
+  }
+
+  const passingScoreOverride = (
+    assignment.passing_score_override === null
+    || assignment.passing_score_override === undefined
+  )
+    ? null
+    : Number(assignment.passing_score_override);
+
+  const graded = gradeTrainingAssessment(assessment, answers, passingScoreOverride);
+  const moduleMeta = getTrainingModuleMetadata(moduleCode);
+  const completionDate = new Date();
+  const completionDateIso = completionDate.toISOString();
+  const completionDatePart = completionDateIso.slice(0, 10);
+  const nextDueDate = new Date(completionDate);
+  nextDueDate.setFullYear(nextDueDate.getFullYear() + moduleMeta.recurrenceCycleYears);
+  const certificateUrl = `/${orgId}/training-certs/${userId}/${moduleCode}_${completionDatePart}.pdf`;
+
+  const clerkUser = await currentUser();
+  const employeeName = [clerkUser?.firstName, clerkUser?.lastName]
+    .filter((value): value is string => Boolean(value && value.trim().length > 0))
+    .join(' ')
+    || userId;
+  const employeeEmail = clerkUser?.primaryEmailAddress?.emailAddress || null;
+
+  let certificateId: string | null = null;
   try {
-    const sql = getSQL();
-    const moduleMeta = getTrainingModuleMetadata(moduleCode);
-    let assignmentId: string | null = null;
-
-    // Find or create assignment + progress row
-    // First check if an assignment exists for this user/module
-    const assignments = await sql`
-      SELECT ta.id as assignment_id
-      FROM training_assignments ta
-      JOIN training_plans tp ON tp.id = ta.plan_id
-      WHERE ta.org_id = ${orgId}
-        AND ta.employee_id = ${userId}
-        AND tp.modules::jsonb ? ${moduleCode}
-      LIMIT 1
-    `;
-
-    if (assignments.length > 0) {
-      assignmentId = assignments[0].assignment_id;
-
-      // Upsert progress
-      await sql`
-        INSERT INTO training_progress (
-          assignment_id, module_code, status, assessment_score,
-          assessment_passed, assessment_completed_at, attempts_count
-        ) VALUES (
-          ${assignmentId}, ${moduleCode},
-          ${body.passed ? 'assessment_passed' : 'assessment_failed'},
-          ${body.percentage}, ${body.passed}, NOW(), 1
-        )
-        ON CONFLICT (assignment_id, module_code)
-        DO UPDATE SET
-          status = ${body.passed ? 'assessment_passed' : 'assessment_failed'},
-          assessment_score = ${body.percentage},
-          assessment_passed = ${body.passed},
-          assessment_completed_at = NOW(),
-          attempts_count = training_progress.attempts_count + 1,
-          updated_at = NOW()
-      `;
-
-      // Update assignment completion percentage
-      const progressRows = await sql`
-        SELECT COUNT(*) FILTER (WHERE assessment_passed = true) as passed,
-               COUNT(*) as total
-        FROM training_progress
-        WHERE assignment_id = ${assignmentId}
-      `;
-
-      if (progressRows.length > 0) {
-        const pct = progressRows[0].total > 0
-          ? Math.round((progressRows[0].passed / progressRows[0].total) * 100)
-          : 0;
-
-        const allPassed = progressRows[0].passed === progressRows[0].total;
-
-        await sql`
-          UPDATE training_assignments
-          SET completion_percentage = ${pct},
-              status = ${allPassed ? 'complete' : 'in_progress'},
-              completed_at = ${allPassed ? new Date().toISOString() : null},
+    const txResults = await sql.transaction((tx) => {
+      const writes = [
+        tx`
+          UPDATE training_progress
+          SET status = ${graded.passed ? 'assessment_passed' : 'assessment_failed'},
+              assessment_score = ${graded.percentage},
+              assessment_passed = ${graded.passed},
+              assessment_completed_at = NOW(),
+              attempts_count = COALESCE(attempts_count, 0) + 1,
               updated_at = NOW()
-          WHERE id = ${assignmentId}
-        `;
+          WHERE assignment_id = ${assignmentId}
+            AND module_code = ${moduleCode}
+        `,
+        tx`
+          UPDATE training_assignments ta
+          SET completion_percentage = stats.pct,
+              status = CASE
+                WHEN stats.total > 0 AND stats.passed = stats.total THEN 'complete'
+                ELSE 'in_progress'
+              END,
+              completed_at = CASE
+                WHEN stats.total > 0 AND stats.passed = stats.total THEN NOW()
+                ELSE NULL
+              END,
+              updated_at = NOW()
+          FROM (
+            SELECT
+              COUNT(*) FILTER (WHERE assessment_passed = true)::int AS passed,
+              COUNT(*)::int AS total,
+              CASE
+                WHEN COUNT(*) > 0
+                  THEN ROUND((COUNT(*) FILTER (WHERE assessment_passed = true)::numeric / COUNT(*)::numeric) * 100)
+                ELSE 0
+              END AS pct
+            FROM training_progress
+            WHERE assignment_id = ${assignmentId}
+          ) stats
+          WHERE ta.id = ${assignmentId}
+        `,
+      ];
+
+      if (graded.passed) {
+        writes.push(
+          tx`
+            INSERT INTO hazmat_training_records (
+              org_id,
+              employee_id,
+              employee_name,
+              employee_email,
+              module_code,
+              module_title,
+              module_category,
+              status,
+              credit_pathway,
+              completion_date,
+              recurrence_cycle_years,
+              next_due_date,
+              certificate_url,
+              certificate_uploaded_at,
+              notes,
+              created_by,
+              updated_at
+            ) VALUES (
+              ${orgId},
+              ${userId},
+              ${employeeName},
+              ${employeeEmail},
+              ${moduleCode},
+              ${moduleMeta.title},
+              ${moduleMeta.moduleCategory},
+              'complete',
+              'fcs_training',
+              ${completionDateIso},
+              ${moduleMeta.recurrenceCycleYears},
+              ${nextDueDate.toISOString()},
+              ${certificateUrl},
+              NOW(),
+              ${`Auto-updated from training assessment pass (${moduleCode}).`},
+              ${userId},
+              NOW()
+            )
+            ON CONFLICT (org_id, employee_id, module_code)
+            DO UPDATE SET
+              employee_name = EXCLUDED.employee_name,
+              employee_email = EXCLUDED.employee_email,
+              module_title = EXCLUDED.module_title,
+              module_category = EXCLUDED.module_category,
+              status = 'complete',
+              credit_pathway = 'fcs_training',
+              completion_date = EXCLUDED.completion_date,
+              recurrence_cycle_years = EXCLUDED.recurrence_cycle_years,
+              next_due_date = EXCLUDED.next_due_date,
+              certificate_url = EXCLUDED.certificate_url,
+              certificate_uploaded_at = NOW(),
+              notes = EXCLUDED.notes,
+              updated_at = NOW()
+            RETURNING id
+          `,
+          tx`
+            UPDATE training_progress
+            SET certificate_url = ${certificateUrl},
+                updated_at = NOW()
+            WHERE assignment_id = ${assignmentId}
+              AND module_code = ${moduleCode}
+          `,
+        );
+      } else {
+        writes.push(
+          tx`
+            UPDATE training_progress
+            SET certificate_url = NULL,
+                updated_at = NOW()
+            WHERE assignment_id = ${assignmentId}
+              AND module_code = ${moduleCode}
+          `,
+        );
       }
+
+      return writes;
+    });
+
+    if (graded.passed) {
+      const recordRows = txResults[2] as Array<{ id: string | number }>;
+      certificateId = String(recordRows[0]?.id || `${orgId}-${userId}-${moduleCode}`);
     }
+  } catch (error: unknown) {
+    console.error('[training] failed to persist graded assessment', error);
+    return Response.json(
+      { error: 'Failed to persist assessment result' },
+      { status: 500 },
+    );
+  }
 
-    if (body.passed) {
-      const completionDate = new Date();
-      const completionDateIso = completionDate.toISOString();
-      const completionDatePart = completionDateIso.slice(0, 10);
-      const nextDueDate = new Date(completionDate);
-      nextDueDate.setFullYear(nextDueDate.getFullYear() + moduleMeta.recurrenceCycleYears);
-      const certificateUrl = `/${orgId}/training-certs/${userId}/${moduleCode}_${completionDatePart}.pdf`;
-      const clerkUser = await currentUser();
-      const employeeName = [clerkUser?.firstName, clerkUser?.lastName]
-        .filter((value): value is string => Boolean(value && value.trim().length > 0))
-        .join(' ')
-        || userId;
-      const employeeEmail = clerkUser?.primaryEmailAddress?.emailAddress || null;
-
-      await sql`
-        INSERT INTO hazmat_training_records (
-          org_id,
-          employee_id,
-          employee_name,
-          employee_email,
-          module_code,
-          module_title,
-          module_category,
-          status,
-          credit_pathway,
-          completion_date,
-          recurrence_cycle_years,
-          next_due_date,
-          certificate_url,
-          certificate_uploaded_at,
-          notes,
-          created_by,
-          updated_at
-        ) VALUES (
-          ${orgId},
-          ${userId},
-          ${employeeName},
-          ${employeeEmail},
-          ${moduleCode},
-          ${moduleMeta.title},
-          ${moduleMeta.moduleCategory},
-          'complete',
-          'fcs_training',
-          ${completionDateIso},
-          ${moduleMeta.recurrenceCycleYears},
-          ${nextDueDate.toISOString()},
-          ${certificateUrl},
-          NOW(),
-          ${`Auto-updated from training assessment pass (${moduleCode}).`},
-          ${userId},
-          NOW()
-        )
-        ON CONFLICT (org_id, employee_id, module_code)
-        DO UPDATE SET
-          employee_name = EXCLUDED.employee_name,
-          employee_email = EXCLUDED.employee_email,
-          module_title = EXCLUDED.module_title,
-          module_category = EXCLUDED.module_category,
-          status = 'complete',
-          credit_pathway = 'fcs_training',
-          completion_date = EXCLUDED.completion_date,
-          recurrence_cycle_years = EXCLUDED.recurrence_cycle_years,
-          next_due_date = EXCLUDED.next_due_date,
-          certificate_url = EXCLUDED.certificate_url,
-          certificate_uploaded_at = NOW(),
-          notes = EXCLUDED.notes,
-          updated_at = NOW()
-        RETURNING id
-      `;
-      const recordRows = await sql`
-        SELECT id
-        FROM hazmat_training_records
-        WHERE org_id = ${orgId}
-          AND employee_id = ${userId}
-          AND module_code = ${moduleCode}
-        LIMIT 1
-      `;
-      const certificateId = String(recordRows[0]?.id || `${orgId}-${userId}-${moduleCode}`);
+  if (graded.passed && certificateId) {
+    try {
       const orgName = await getOrganizationName(orgId) || process.env.FLEET_COMPLIANCE_ORG_NAME || orgId;
       await generateTrainingCertificate({
         certificateId,
@@ -276,44 +341,37 @@ export async function POST(
         moduleCode,
         moduleTitle: moduleMeta.title,
         completionDate: completionDatePart,
-        scorePercentage: body.percentage,
+        scorePercentage: graded.percentage,
         cfrReference: moduleMeta.cfrReference,
         phmsaEquivalent: moduleMeta.phmsaEquivalent,
         certificateUrl,
       });
-
-      if (assignmentId) {
-        await sql`
-          UPDATE training_progress
-          SET certificate_url = ${certificateUrl},
-              updated_at = NOW()
-          WHERE assignment_id = ${assignmentId}
-            AND module_code = ${moduleCode}
-        `;
-      }
-
-      const orgAdminEmail =
-        await getOrganizationPrimaryContact(orgId)
-        || process.env.FLEET_COMPLIANCE_ALERT_EMAIL
-        || null;
-
-        if (isValidEmail(orgAdminEmail)) {
-          await sendTrainingCompletionEmail({
-            adminEmail: orgAdminEmail,
-            employeeName,
-            employeeId: userId,
-          moduleCode,
-          moduleTitle: moduleMeta.title,
-          cfrReference: moduleMeta.cfrReference,
-          scorePercentage: body.percentage,
-          completionDate: completionDatePart,
-          certificateUrl,
-        });
-      }
+    } catch (error: unknown) {
+      console.error('[training] failed to generate training certificate', error);
+      return Response.json(
+        { error: 'Assessment saved, but certificate generation failed' },
+        { status: 500 },
+      );
     }
-  } catch (err) {
-    // Log but don't fail the response — assessment result is still valid
-    console.error('Failed to persist assessment result:', err);
+
+    const orgAdminEmail =
+      await getOrganizationPrimaryContact(orgId)
+      || process.env.FLEET_COMPLIANCE_ALERT_EMAIL
+      || null;
+
+    if (isValidEmail(orgAdminEmail)) {
+      await sendTrainingCompletionEmail({
+        adminEmail: orgAdminEmail,
+        employeeName,
+        employeeId: userId,
+        moduleCode,
+        moduleTitle: moduleMeta.title,
+        cfrReference: moduleMeta.cfrReference,
+        scorePercentage: graded.percentage,
+        completionDate: completionDatePart,
+        certificateUrl,
+      });
+    }
   }
 
   auditLog({
@@ -323,18 +381,21 @@ export async function POST(
     resourceType: 'training.assessment',
     metadata: {
       moduleCode,
-      score: body.score,
-      total: body.total,
-      percentage: body.percentage,
-      passed: body.passed,
+      score: graded.score,
+      total: graded.total,
+      percentage: graded.percentage,
+      passed: graded.passed,
+      passingScore: graded.passingScore,
     },
   });
 
   return Response.json({
-    status: body.passed ? 'passed' : 'failed',
-    score: body.score,
-    total: body.total,
-    percentage: body.percentage,
+    status: graded.passed ? 'passed' : 'failed',
+    score: graded.score,
+    total: graded.total,
+    percentage: graded.percentage,
+    passed: graded.passed,
+    passing_score: graded.passingScore,
     moduleCode,
   }, { status: 201 });
 }

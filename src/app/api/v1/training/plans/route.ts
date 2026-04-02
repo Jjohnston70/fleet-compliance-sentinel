@@ -1,6 +1,7 @@
 import { fleetComplianceAuthErrorResponse, requireFleetComplianceOrg, requireFleetComplianceOrgWithRole } from '@/lib/fleet-compliance-auth';
 import { auditLog } from '@/lib/audit-logger';
 import { getSQL } from '@/lib/fleet-compliance-db';
+import { checkTrainingSchema, trainingSchemaNotReadyResponse } from '@/lib/training-schema';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -17,6 +18,8 @@ export async function GET(request: Request) {
   }
 
   const sql = getSQL();
+  const schemaCheck = await checkTrainingSchema(undefined, sql);
+  if (!schemaCheck.ok) return trainingSchemaNotReadyResponse(schemaCheck);
 
   const plans = await sql`
     SELECT id, plan_name, description, modules,
@@ -72,6 +75,8 @@ export async function POST(request: Request) {
   }
 
   const sql = getSQL();
+  const schemaCheck = await checkTrainingSchema(undefined, sql);
+  if (!schemaCheck.ok) return trainingSchemaNotReadyResponse(schemaCheck);
 
   const result = await sql`
     INSERT INTO training_plans (

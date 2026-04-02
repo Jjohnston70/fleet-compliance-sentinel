@@ -5,7 +5,6 @@ import { useState, useEffect } from 'react';
 interface AssessmentOption {
   label: string;
   text: string;
-  is_correct: boolean;
 }
 
 interface AssessmentQuestion {
@@ -13,9 +12,7 @@ interface AssessmentQuestion {
   question_type: string;
   question_text: string;
   options: AssessmentOption[];
-  correct_answer: string;
-  explanation: string;
-  cfr_reference: string;
+  cfr_reference?: string;
 }
 
 interface AssessmentData {
@@ -64,8 +61,6 @@ export default function TrainingAssessment({
   const [submitting, setSubmitting] = useState(false);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
-  const [showExplanation, setShowExplanation] = useState(false);
-  const [answeredCorrectly, setAnsweredCorrectly] = useState<boolean | null>(null);
 
   useEffect(() => {
     async function loadAssessment() {
@@ -75,10 +70,10 @@ export default function TrainingAssessment({
           setError('Failed to load assessment');
           return;
         }
-        // Load assessment JSON directly
         const assessRes = await fetch(`/api/v1/training/${moduleCode}/assessment/attempts`);
         if (!assessRes.ok) {
-          setError('Failed to load assessment data');
+          const payload = await assessRes.json().catch(() => null) as { error?: string } | null;
+          setError(payload?.error || 'Failed to load assessment data');
           return;
         }
         const data = await assessRes.json();
@@ -90,88 +85,85 @@ export default function TrainingAssessment({
         setLoading(false);
       }
     }
-    loadAssessment();
+    void loadAssessment();
   }, [moduleCode]);
 
   function handleSelectAnswer(label: string) {
-    if (showExplanation) return;
     setSelectedAnswer(label);
   }
 
-  function handleConfirmAnswer() {
-    if (!selectedAnswer || !questions[currentQuestion]) return;
-
-    const question = questions[currentQuestion];
-    const isCorrect = question.options.find(
-      (o) => o.label === selectedAnswer
-    )?.is_correct ?? false;
-
-    setAnsweredCorrectly(isCorrect);
-    setShowExplanation(true);
-    setAnswers((prev) => ({
-      ...prev,
-      [question.number]: selectedAnswer,
-    }));
-  }
-
   function handleNextQuestion() {
+    if (!selectedAnswer || !questions[currentQuestion]) return;
+    const question = questions[currentQuestion];
+    const nextAnswers = {
+      ...answers,
+      [question.number]: selectedAnswer,
+    };
+    setAnswers(nextAnswers);
+
     if (currentQuestion >= questions.length - 1) {
-      submitAssessment();
+      void submitAssessment(nextAnswers);
       return;
     }
     setCurrentQuestion((prev) => prev + 1);
     setSelectedAnswer(null);
-    setShowExplanation(false);
-    setAnsweredCorrectly(null);
   }
 
-  async function submitAssessment() {
+  async function submitAssessment(finalAnswers: Record<number, string>) {
     if (!assessment) return;
     setSubmitting(true);
-
-    const finalAnswers = { ...answers };
-    if (selectedAnswer && questions[currentQuestion]) {
-      finalAnswers[questions[currentQuestion].number] = selectedAnswer;
-    }
-
-    let correctCount = 0;
-    for (const q of questions) {
-      const answer = finalAnswers[q.number];
-      const correct = q.options.find((o) => o.label === answer)?.is_correct;
-      if (correct) correctCount++;
-    }
-
-    const percentage = Math.round((correctCount / questions.length) * 100);
-    const passed = percentage >= assessment.passing_score;
-
-    const assessmentResult: AssessmentResult = {
-      passed,
-      score: correctCount,
-      total: questions.length,
-      percentage,
-      passing_score: assessment.passing_score,
-    };
+    setError('');
 
     try {
-      await fetch(`/api/v1/training/${moduleCode}/assessment/submit`, {
+      const response = await fetch(`/api/v1/training/${moduleCode}/assessment/submit`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          answers: finalAnswers,
-          score: correctCount,
-          total: questions.length,
-          percentage,
-          passed,
-        }),
+        body: JSON.stringify({ answers: finalAnswers }),
       });
-    } catch {
-      // Non-blocking — result is still shown
-    }
+      const payload = await response.json().catch(() => null) as
+        | {
+            error?: string;
+            passed?: boolean;
+            score?: number;
+            total?: number;
+            percentage?: number;
+            passing_score?: number;
+          }
+        | null;
 
-    setResult(assessmentResult);
-    setShowResult(true);
+      if (!response.ok) {
+        setError(payload?.error || 'Unable to submit assessment.');
+        return;
+      }
+
+      const assessmentResult: AssessmentResult = {
+        passed: Boolean(payload?.passed),
+        score: Number(payload?.score || 0),
+        total: Number(payload?.total || questions.length),
+        percentage: Number(payload?.percentage || 0),
+        passing_score: Number(payload?.passing_score || assessment.passing_score),
+      };
+
+      setResult(assessmentResult);
+      setShowResult(true);
+      onComplete(assessmentResult);
+    } catch {
+      setError('Network error submitting assessment');
+    } finally {
+      setSubmitting(false);
+    }
+  }
+
+  function handleRetakeClick() {
+    setShowResult(false);
+    setResult(null);
+    setError('');
     setSubmitting(false);
-    onComplete(assessmentResult);
+    setCurrentQuestion(0);
+    setSelectedAnswer(null);
+    setAnswers({});
+    setQuestions((prev) => shuffleArray(prev));
+    onRetake();
   }
 
   if (loading) {
@@ -185,7 +177,7 @@ export default function TrainingAssessment({
     );
   }
 
-  if (error) {
+  if (error && !showResult) {
     return (
       <div className="bg-red-50 border border-red-200 rounded-lg p-6 text-center">
         <p className="text-red-700 font-medium">{error}</p>
@@ -224,7 +216,7 @@ export default function TrainingAssessment({
                 Review the material and try again. You may retake the assessment.
               </p>
               <button
-                onClick={onRetake}
+                onClick={handleRetakeClick}
                 className="px-6 py-3 bg-teal-600 text-white rounded-lg font-medium hover:bg-teal-700 transition-colors"
               >
                 Retake Assessment
@@ -243,7 +235,6 @@ export default function TrainingAssessment({
 
   return (
     <div className="max-w-2xl mx-auto">
-      {/* Progress */}
       <div className="mb-6">
         <div className="flex justify-between text-sm text-slate-500 mb-2">
           <span>
@@ -259,40 +250,32 @@ export default function TrainingAssessment({
         </div>
       </div>
 
-      {/* Question */}
       <div className="bg-white border border-slate-200 rounded-lg p-6 mb-6">
         <div className="flex items-start gap-3 mb-1">
           <span className="inline-block px-2 py-1 text-xs font-medium rounded bg-slate-100 text-slate-600 uppercase">
             {question.question_type.replace('_', ' ')}
           </span>
+          {question.cfr_reference && (
+            <span className="inline-block px-2 py-1 text-xs rounded bg-slate-50 text-slate-500">
+              {question.cfr_reference}
+            </span>
+          )}
         </div>
         <h3 className="text-lg font-medium text-slate-900 mt-3">
           {question.question_text}
         </h3>
       </div>
 
-      {/* Options */}
       <div className="space-y-3 mb-6">
         {question.options.map((option) => {
-          let optionStyle = 'border-slate-200 hover:border-teal-400 hover:bg-teal-50';
-          if (selectedAnswer === option.label && !showExplanation) {
-            optionStyle = 'border-teal-600 bg-teal-50 ring-2 ring-teal-200';
-          }
-          if (showExplanation) {
-            if (option.is_correct) {
-              optionStyle = 'border-emerald-500 bg-emerald-50';
-            } else if (selectedAnswer === option.label && !option.is_correct) {
-              optionStyle = 'border-red-400 bg-red-50';
-            } else {
-              optionStyle = 'border-slate-200 opacity-60';
-            }
-          }
+          const optionStyle = selectedAnswer === option.label
+            ? 'border-teal-600 bg-teal-50 ring-2 ring-teal-200'
+            : 'border-slate-200 hover:border-teal-400 hover:bg-teal-50';
 
           return (
             <button
               key={option.label}
               onClick={() => handleSelectAnswer(option.label)}
-              disabled={showExplanation}
               className={`w-full text-left p-4 rounded-lg border-2 transition-all ${optionStyle}`}
             >
               <div className="flex items-start gap-3">
@@ -306,54 +289,26 @@ export default function TrainingAssessment({
         })}
       </div>
 
-      {/* Explanation */}
-      {showExplanation && (
-        <div
-          className={`rounded-lg p-4 mb-6 border ${
-            answeredCorrectly
-              ? 'bg-emerald-50 border-emerald-200'
-              : 'bg-amber-50 border-amber-200'
-          }`}
-        >
-          <p className="font-medium mb-1">
-            {answeredCorrectly ? 'Correct!' : 'Not quite.'}
-          </p>
-          <p className="text-sm text-slate-700">{question.explanation}</p>
-          {question.cfr_reference && (
-            <p className="text-xs text-slate-500 mt-2">
-              Reference: {question.cfr_reference}
-            </p>
-          )}
-        </div>
+      {error && (
+        <p className="mb-4 text-sm text-red-600">{error}</p>
       )}
 
-      {/* Actions */}
       <div className="flex justify-end">
-        {!showExplanation ? (
-          <button
-            onClick={handleConfirmAnswer}
-            disabled={!selectedAnswer}
-            className="px-6 py-3 bg-teal-600 text-white rounded-lg font-medium hover:bg-teal-700 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
-          >
-            Confirm Answer
-          </button>
-        ) : (
-          <button
-            onClick={handleNextQuestion}
-            disabled={submitting}
-            className={`px-6 py-3 rounded-lg font-medium transition-colors ${
-              currentQuestion >= questions.length - 1
-                ? 'bg-amber-500 text-white hover:bg-amber-600'
-                : 'bg-teal-600 text-white hover:bg-teal-700'
-            }`}
-          >
-            {submitting
-              ? 'Submitting...'
-              : currentQuestion >= questions.length - 1
-                ? 'Finish Assessment'
-                : 'Next Question'}
-          </button>
-        )}
+        <button
+          onClick={handleNextQuestion}
+          disabled={!selectedAnswer || submitting}
+          className={`px-6 py-3 rounded-lg font-medium transition-colors ${
+            currentQuestion >= questions.length - 1
+              ? 'bg-amber-500 text-white hover:bg-amber-600'
+              : 'bg-teal-600 text-white hover:bg-teal-700'
+          } disabled:opacity-40 disabled:cursor-not-allowed`}
+        >
+          {submitting
+            ? 'Submitting...'
+            : currentQuestion >= questions.length - 1
+              ? 'Finish Assessment'
+              : 'Next Question'}
+        </button>
       </div>
     </div>
   );

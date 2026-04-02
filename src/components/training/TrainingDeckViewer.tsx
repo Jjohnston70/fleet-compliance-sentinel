@@ -53,6 +53,8 @@ export default function TrainingDeckViewer({
   const [slideStartTime, setSlideStartTime] = useState(Date.now());
   const [timePerSlide, setTimePerSlide] = useState<Record<number, number>>({});
   const [showNotes, setShowNotes] = useState(false);
+  const [completingDeck, setCompletingDeck] = useState(false);
+  const [deckCompleteError, setDeckCompleteError] = useState('');
 
   useEffect(() => {
     async function loadDeck() {
@@ -91,12 +93,30 @@ export default function TrainingDeckViewer({
     onSlideChange?.(next + 1, deck.slides.length);
   }
 
-  function handleNext() {
+  async function handleNext() {
     if (!deck) return;
+    setDeckCompleteError('');
     if (currentSlide >= deck.slides.length - 1) {
       recordSlideTime();
       const totalSeconds = Math.round((Date.now() - startTime) / 1000);
-      onDeckComplete();
+      setCompletingDeck(true);
+      try {
+        const response = await fetch(`/api/v1/training/${moduleCode}/deck/complete`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ time_spent_seconds: totalSeconds }),
+        });
+        if (!response.ok) {
+          const payload = await response.json().catch(() => null) as { error?: string } | null;
+          setDeckCompleteError(payload?.error || 'Unable to mark deck complete. Please try again.');
+          return;
+        }
+        onDeckComplete();
+      } catch {
+        setDeckCompleteError('Unable to mark deck complete. Please check your connection and retry.');
+      } finally {
+        setCompletingDeck(false);
+      }
       return;
     }
     goToSlide(currentSlide + 1);
@@ -110,7 +130,7 @@ export default function TrainingDeckViewer({
     function handleKeyDown(e: KeyboardEvent) {
       if (e.key === 'ArrowRight' || e.key === ' ') {
         e.preventDefault();
-        handleNext();
+        void handleNext();
       } else if (e.key === 'ArrowLeft') {
         e.preventDefault();
         handlePrev();
@@ -260,16 +280,24 @@ export default function TrainingDeckViewer({
         </div>
 
         <button
-          onClick={handleNext}
+          onClick={() => {
+            void handleNext();
+          }}
+          disabled={completingDeck}
           className={`px-6 py-2 rounded-lg font-medium transition-colors ${
             isLastSlide
               ? 'bg-amber-500 text-white hover:bg-amber-600'
               : 'bg-teal-600 text-white hover:bg-teal-700'
-          }`}
+          } ${completingDeck ? 'opacity-70 cursor-not-allowed' : ''}`}
         >
-          {isLastSlide ? 'Start Assessment' : 'Next'}
+          {isLastSlide
+            ? (completingDeck ? 'Saving...' : 'Start Assessment')
+            : 'Next'}
         </button>
       </div>
+      {deckCompleteError && (
+        <p className="mt-3 text-sm text-red-600">{deckCompleteError}</p>
+      )}
     </div>
   );
 }

@@ -1,0 +1,88 @@
+{
+  "module": {
+    "name": "dq-command",
+    "version": "1.0.0",
+    "description": "DOT Driver Qualification File System — 49 CFR §391.51 (DQF) and §391.53 (DHF)",
+    "author": "True North Data Strategies",
+    "license": "proprietary",
+    "category": "fleet-compliance-module"
+  },
+
+  "runtime": {
+    "platform": "next.js",
+    "entrypoint": "src/index.ts",
+    "routePrefix": "/api/fleet-compliance/dq",
+    "database": "postgresql",
+    "auth": "clerk"
+  },
+
+  "concept": {
+    "description": "Manages the full lifecycle of DOT Driver Qualification Files (DQF) and Drug & Alcohol History Files (DHF). Includes driver self-service intake via token-gated forms, document checklist tracking, auto-generation of compliance documents, and a daily sweep that creates suspense items for missing or expiring documents.",
+    "regulatoryBasis": "49 CFR Part 391 (Subparts C, D, E, F), 49 CFR Part 382, 49 CFR Part 40",
+    "inputMethod": "Driver intake form (token-gated), fleet manager uploads, API",
+    "outputMethod": "Checklist dashboard, generated PDFs, suspense items"
+  },
+
+  "tables": [
+    "dq_files",
+    "dq_documents",
+    "dq_intake_responses",
+    "dq_audit_log"
+  ],
+
+  "migrations": [
+    "migrations/014_dq_files.sql",
+    "migrations/015_dq_retention_flag.sql"
+  ],
+
+  "tools": [
+    "create_dq_file",
+    "get_dq_checklist",
+    "get_dq_gaps",
+    "upload_dq_document",
+    "generate_dq_document",
+    "send_intake_link",
+    "get_intake_status",
+    "mark_doc_verified",
+    "run_dq_sweep",
+    "get_dq_summary",
+    "archive_dq_file"
+  ],
+
+  "routes": {
+    "files": {
+      "GET  /files":              "List all DQ files for org with checklist completion %",
+      "POST /files":              "Create DQ file record for a driver, generate intake token",
+      "GET  /files/[id]":         "Get single DQ file with full document checklist",
+      "PATCH /files/[id]":        "Update DQ file status, notes",
+      "GET  /files/[id]/checklist": "Checklist view — all docs, status, expiry, gaps"
+    },
+    "documents": {
+      "POST /documents":          "Upload a document (sets status = uploaded)",
+      "PATCH /documents/[id]":    "Update doc status, expiry, reviewer notes",
+      "DELETE /documents/[id]":   "Soft delete a document record",
+      "POST /documents/generate": "Generate a document from driver data"
+    },
+    "intake": {
+      "GET  /intake/[token]":         "Validate intake token, return form schema",
+      "POST /intake/[token]":         "Submit intake section data",
+      "POST /intake/[token]/complete": "Mark intake complete, trigger doc generation"
+    },
+    "compliance": {
+      "POST /sweep":  "Daily sweep — flag expiring docs, create suspense items",
+      "GET  /gaps":   "Return all drivers with missing or expiring DQ docs",
+      "GET  /summary": "Org-level DQ compliance summary"
+    }
+  },
+
+  "integrations": {
+    "suspenseSystem": "Creates suspense_items for missing/expiring documents",
+    "paperStack": "PDF generation for 7 auto-generated document types",
+    "clerkAuth": "Org-scoped tenant isolation + admin role checks"
+  },
+
+  "dependencies": {
+    "internal": ["fleet-compliance-sentinel", "compliance-command"],
+    "npm": ["zod"]
+  }
+}

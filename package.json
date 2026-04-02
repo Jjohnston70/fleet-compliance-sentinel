@@ -16,6 +16,7 @@
     "docs:vendors:package": "npm run docs:vendors && npm run docs:vendors:prepare",
     "compliance:legal-check": "node scripts/check-legal-pages.mjs",
     "compliance:ops-check": "node scripts/ops-check.mjs",
+    "db:check-training-schema": "node scripts/check-training-schema.mjs",
     "sync:knowledge": "node scripts/sync-local-knowledge.mjs",
     "build:cfr-index": "tsx scripts/build-cfr-index.mjs",
     "eval:penny": "node scripts/run-penny-evals.mjs"

@@ -1,9 +1,18 @@
 import { mkdir, readFile, stat, writeFile } from 'fs/promises';
 import path from 'path';
+import { getSQL } from '@/lib/fleet-compliance-db';
 
 const STORAGE_ROOT = path.resolve(
-  process.env.TRAINING_CERT_STORAGE_ROOT || path.join(process.cwd(), 'storage')
+  process.env.TRAINING_CERT_STORAGE_ROOT || path.join(process.cwd(), 'storage'),
 );
+
+const STORAGE_BACKEND = (
+  process.env.TRAINING_CERT_STORAGE_BACKEND || 'database'
+).trim().toLowerCase() === 'filesystem'
+  ? 'filesystem'
+  : 'database';
+
+let ensureDbStoragePromise: Promise<void> | null = null;
 
 function escapePdfText(value: string): string {
   return value.replace(/\\/g, '\\\\').replace(/\(/g, '\\(').replace(/\)/g, '\\)');
@@ -61,15 +70,46 @@ export interface TrainingCertificateInput {
   certificateUrl: string;
 }
 
-export function resolveCertificateAbsolutePath(certificateUrl: string): string {
+function normalizeCertificateUrl(certificateUrl: string): string {
   const trimmed = certificateUrl.trim();
   if (!trimmed.startsWith('/')) {
     throw new Error('Certificate URL must be an absolute app path');
   }
+  const normalized = path.posix.normalize(trimmed);
+  if (!normalized.startsWith('/')) {
+    throw new Error('Certificate URL must normalize to an absolute app path');
+  }
+  if (normalized === '/' || normalized.includes('\0')) {
+    throw new Error('Certificate URL is invalid');
+  }
+  return normalized;
+}
 
-  const relative = trimmed.replace(/^\/+/, '');
+async function ensureDbCertificateStorage(): Promise<void> {
+  if (!ensureDbStoragePromise) {
+    ensureDbStoragePromise = (async () => {
+      const sql = getSQL();
+      await sql`
+        CREATE TABLE IF NOT EXISTS training_certificate_files (
+          certificate_url TEXT PRIMARY KEY,
+          content_base64 TEXT NOT NULL,
+          size_bytes INT NOT NULL,
+          created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+          updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+        )
+      `;
+    })();
+  }
+  await ensureDbStoragePromise;
+}
+
+export function resolveCertificateAbsolutePath(certificateUrl: string): string {
+  const normalizedUrl = normalizeCertificateUrl(certificateUrl);
+  const relative = normalizedUrl.slice(1);
   const absolute = path.resolve(STORAGE_ROOT, relative);
-  if (!absolute.startsWith(STORAGE_ROOT)) {
+  const relativeFromRoot = path.relative(STORAGE_ROOT, absolute);
+
+  if (relativeFromRoot.startsWith('..') || path.isAbsolute(relativeFromRoot)) {
     throw new Error('Certificate path resolved outside storage root');
   }
   return absolute;
@@ -109,10 +149,39 @@ function buildCertificateContent(input: TrainingCertificateInput): string {
 }
 
 export async function generateTrainingCertificate(input: TrainingCertificateInput): Promise<{ absolutePath: string; sizeBytes: number }> {
-  const absolutePath = resolveCertificateAbsolutePath(input.certificateUrl);
-  await mkdir(path.dirname(absolutePath), { recursive: true });
+  const normalizedUrl = normalizeCertificateUrl(input.certificateUrl);
   const content = buildCertificateContent(input);
   const pdfBuffer = buildPdfDocument(content);
+
+  if (STORAGE_BACKEND === 'database') {
+    await ensureDbCertificateStorage();
+    const sql = getSQL();
+    await sql`
+      INSERT INTO training_certificate_files (
+        certificate_url,
+        content_base64,
+        size_bytes,
+        updated_at
+      ) VALUES (
+        ${normalizedUrl},
+        ${pdfBuffer.toString('base64')},
+        ${pdfBuffer.length},
+        NOW()
+      )
+      ON CONFLICT (certificate_url)
+      DO UPDATE SET
+        content_base64 = EXCLUDED.content_base64,
+        size_bytes = EXCLUDED.size_bytes,
+        updated_at = NOW()
+    `;
+    return {
+      absolutePath: `db:${normalizedUrl}`,
+      sizeBytes: pdfBuffer.length,
+    };
+  }
+
+  const absolutePath = resolveCertificateAbsolutePath(normalizedUrl);
+  await mkdir(path.dirname(absolutePath), { recursive: true });
   await writeFile(absolutePath, pdfBuffer);
   return {
     absolutePath,
@@ -121,8 +190,27 @@ export async function generateTrainingCertificate(input: TrainingCertificateInpu
 }
 
 export async function readTrainingCertificateBuffer(certificateUrl: string): Promise<Buffer | null> {
+  const normalizedUrl = normalizeCertificateUrl(certificateUrl);
+  if (STORAGE_BACKEND === 'database') {
+    await ensureDbCertificateStorage();
+    const sql = getSQL();
+    const rows = await sql`
+      SELECT content_base64
+      FROM training_certificate_files
+      WHERE certificate_url = ${normalizedUrl}
+      LIMIT 1
+    `;
+    const encoded = rows[0]?.content_base64;
+    if (typeof encoded !== 'string' || encoded.length === 0) return null;
+    try {
+      return Buffer.from(encoded, 'base64');
+    } catch {
+      return null;
+    }
+  }
+
   try {
-    const absolutePath = resolveCertificateAbsolutePath(certificateUrl);
+    const absolutePath = resolveCertificateAbsolutePath(normalizedUrl);
     const file = await readFile(absolutePath);
     return file;
   } catch {
@@ -131,8 +219,21 @@ export async function readTrainingCertificateBuffer(certificateUrl: string): Pro
 }
 
 export async function certificateFileExists(certificateUrl: string): Promise<boolean> {
+  const normalizedUrl = normalizeCertificateUrl(certificateUrl);
+  if (STORAGE_BACKEND === 'database') {
+    await ensureDbCertificateStorage();
+    const sql = getSQL();
+    const rows = await sql`
+      SELECT 1
+      FROM training_certificate_files
+      WHERE certificate_url = ${normalizedUrl}
+      LIMIT 1
+    `;
+    return rows.length > 0;
+  }
+
   try {
-    const absolutePath = resolveCertificateAbsolutePath(certificateUrl);
+    const absolutePath = resolveCertificateAbsolutePath(normalizedUrl);
     const fileStat = await stat(absolutePath);
     return fileStat.isFile();
   } catch {

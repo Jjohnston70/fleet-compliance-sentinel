@@ -5,6 +5,11 @@ import {
 import { auditLog } from '@/lib/audit-logger';
 import { getOrganizationName, getSQL } from '@/lib/fleet-compliance-db';
 import { toCsv, toSimplePdf } from '@/lib/training-report-export';
+import {
+  checkTrainingSchema,
+  TRAINING_COMPLIANCE_TABLES,
+  trainingSchemaNotReadyResponse,
+} from '@/lib/training-schema';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -62,6 +67,8 @@ export async function GET(request: Request) {
   }
 
   const sql = getSQL();
+  const schemaCheck = await checkTrainingSchema(TRAINING_COMPLIANCE_TABLES, sql);
+  if (!schemaCheck.ok) return trainingSchemaNotReadyResponse(schemaCheck);
   const orgName = await getOrganizationName(orgId) || orgId;
   const exportDate = new Date().toISOString().slice(0, 10);
 

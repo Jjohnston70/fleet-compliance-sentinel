@@ -66,8 +66,8 @@ function check(category: EnvCategory) {
   return { total: rows.length, missing };
 }
 
-export function runEnvCheck(options: { exitOnCritical?: boolean } = {}) {
-  const { exitOnCritical = false } = options;
+export function runEnvCheck(options: { exitOnCritical?: boolean; exitOnRequired?: boolean } = {}) {
+  const { exitOnCritical = false, exitOnRequired = false } = options;
 
   console.log('Environment check: Fleet-Compliance Sentinel');
 
@@ -87,14 +87,23 @@ export function runEnvCheck(options: { exitOnCritical?: boolean } = {}) {
     console.log('No CRITICAL env vars missing.');
   }
 
+  if (required.missing.length > 0) {
+    console.error('REQUIRED env vars are missing.');
+    if (exitOnRequired) {
+      process.exit(1);
+    }
+  } else {
+    console.log('No REQUIRED env vars missing.');
+  }
+
   return {
     criticalMissing: critical.missing,
     requiredMissing: required.missing,
     optionalMissing: optional.missing,
-    ok: critical.missing.length === 0,
+    ok: critical.missing.length === 0 && required.missing.length === 0,
   };
 }
 
 if (require.main === module) {
-  runEnvCheck({ exitOnCritical: true });
+  runEnvCheck({ exitOnCritical: true, exitOnRequired: true });
 }

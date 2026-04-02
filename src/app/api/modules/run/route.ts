@@ -227,7 +227,7 @@ export async function POST(request: Request) {
     }
 
     try {
-      const { res, body } = await startRemoteModuleRun(parsed.data);
+      const { res, body } = await startRemoteModuleRun(parsed.data, { orgId, userId, requestId });
       const remoteRun = (body && typeof body === 'object' && 'run' in body)
         ? (body.run as Partial<ModuleRunRecord> | undefined)
         : undefined;

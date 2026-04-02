@@ -4,7 +4,11 @@ import {
   fleetComplianceAuthErrorResponse,
   requireFleetComplianceOrgWithRole,
 } from '@/lib/fleet-compliance-auth';
-import { fetchRemoteModuleArtifact, shouldUseRemoteModuleGateway } from '@/lib/modules-gateway/remote';
+import {
+  fetchRemoteModuleArtifact,
+  fetchRemoteModuleRun,
+  shouldUseRemoteModuleGateway,
+} from '@/lib/modules-gateway/remote';
 import { getModuleRun, resolveModuleRunArtifact } from '@/lib/modules-gateway/runner';
 
 export const runtime = 'nodejs';
@@ -61,7 +65,41 @@ export async function GET(request: Request) {
 
   if (shouldUseRemoteModuleGateway()) {
     try {
-      const { res } = await fetchRemoteModuleArtifact(parsed.runId, parsed.artifactPath);
+      const runResponse = await fetchRemoteModuleRun(parsed.runId, { orgId });
+      if (!runResponse.res.ok || !runResponse.body?.ok || !runResponse.body?.run) {
+        return Response.json(
+          runResponse.body || { ok: false, error: { code: 'MODULE_NOT_FOUND', message: 'Run was not found' } },
+          { status: runResponse.res.status },
+        );
+      }
+
+      const remoteRun = runResponse.body.run as { orgId?: string };
+      if (typeof remoteRun.orgId !== 'string' || remoteRun.orgId.length === 0) {
+        return Response.json(
+          {
+            ok: false,
+            error: {
+              code: 'TENANT_ISOLATION_VIOLATION',
+              message: 'Remote run is missing organization ownership metadata',
+            },
+          },
+          { status: 502 },
+        );
+      }
+      if (remoteRun.orgId !== orgId) {
+        return Response.json(
+          {
+            ok: false,
+            error: {
+              code: 'TENANT_ISOLATION_VIOLATION',
+              message: `Artifact '${parsed.artifactPath}' is not accessible for this organization`,
+            },
+          },
+          { status: 403 },
+        );
+      }
+
+      const { res } = await fetchRemoteModuleArtifact(parsed.runId, parsed.artifactPath, { orgId });
       if (!res.ok) {
         let body: unknown = null;
         try {

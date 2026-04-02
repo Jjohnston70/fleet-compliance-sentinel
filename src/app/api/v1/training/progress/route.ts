@@ -2,6 +2,7 @@ import { fleetComplianceAuthErrorResponse, requireFleetComplianceOrg } from '@/l
 import { auditLog } from '@/lib/audit-logger';
 import { getSQL } from '@/lib/fleet-compliance-db';
 import { getTrainingModuleMetadata } from '@/lib/training-module-metadata';
+import { checkTrainingSchema, trainingSchemaNotReadyResponse } from '@/lib/training-schema';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -21,6 +22,8 @@ export async function GET(request: Request) {
   const assignmentId = searchParams.get('assignment_id');
 
   const sql = getSQL();
+  const schemaCheck = await checkTrainingSchema(undefined, sql);
+  if (!schemaCheck.ok) return trainingSchemaNotReadyResponse(schemaCheck);
 
   let rows;
   if (assignmentId) {

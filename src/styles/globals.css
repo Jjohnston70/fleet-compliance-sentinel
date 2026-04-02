@@ -1,6 +1,9 @@
 /* app/globals.css */
 /* Pipeline Punks - Pipeline Penny Product Site */
 /* Brand: Navy #1a3a5c (primary), Teal #3d8eb9 (accent) */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
 :root {
   --navy: #1a3a5c;

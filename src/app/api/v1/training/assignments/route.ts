@@ -1,15 +1,32 @@
-import { fleetComplianceAuthErrorResponse, requireFleetComplianceOrg, requireFleetComplianceOrgWithRole } from '@/lib/fleet-compliance-auth';
+import { clerkClient } from '@clerk/nextjs/server';
+import {
+  fleetComplianceAuthErrorResponse,
+  requireFleetComplianceOrgContext,
+  requireFleetComplianceOrgWithRole,
+} from '@/lib/fleet-compliance-auth';
 import { auditLog } from '@/lib/audit-logger';
 import { getSQL } from '@/lib/fleet-compliance-db';
+import { checkTrainingSchema, trainingSchemaNotReadyResponse } from '@/lib/training-schema';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
 
+async function employeeIsOrgMember(orgId: string, employeeId: string): Promise<boolean> {
+  const client = await clerkClient();
+  const memberships = await client.organizations.getOrganizationMembershipList({
+    organizationId: orgId,
+    userId: [employeeId],
+    limit: 1,
+  });
+  return Array.isArray(memberships?.data) && memberships.data.length > 0;
+}
+
 export async function GET(request: Request) {
   let userId: string;
   let orgId: string;
+  let role: 'admin' | 'member';
   try {
-    ({ userId, orgId } = await requireFleetComplianceOrg(request));
+    ({ userId, orgId, role } = await requireFleetComplianceOrgContext(request));
   } catch (error: unknown) {
     const authResponse = fleetComplianceAuthErrorResponse(error);
     if (authResponse) return authResponse;
@@ -17,12 +34,21 @@ export async function GET(request: Request) {
   }
 
   const { searchParams } = new URL(request.url);
-  const employeeId = searchParams.get('employee_id');
+  const requestedEmployeeId = (searchParams.get('employee_id') || '').trim();
+  const effectiveEmployeeId = role === 'admin'
+    ? (requestedEmployeeId || null)
+    : userId;
+
+  if (role !== 'admin' && requestedEmployeeId && requestedEmployeeId !== userId) {
+    return Response.json({ error: 'Forbidden' }, { status: 403 });
+  }
 
   const sql = getSQL();
+  const schemaCheck = await checkTrainingSchema(undefined, sql);
+  if (!schemaCheck.ok) return trainingSchemaNotReadyResponse(schemaCheck);
 
   let assignments;
-  if (employeeId) {
+  if (effectiveEmployeeId) {
     assignments = await sql`
       SELECT ta.id, ta.employee_id, ta.plan_id, ta.assigned_by,
              ta.assigned_at AS assigned_date, ta.deadline, ta.status,
@@ -41,7 +67,7 @@ export async function GET(request: Request) {
         LIMIT 1
       ) cert ON TRUE
       WHERE ta.org_id = ${orgId}
-        AND ta.employee_id = ${employeeId}
+        AND ta.employee_id = ${effectiveEmployeeId}
       ORDER BY ta.assigned_at DESC
     `;
   } else {
@@ -72,7 +98,11 @@ export async function GET(request: Request) {
     userId,
     orgId,
     resourceType: 'training.assignments',
-    metadata: { count: assignments.length, ...(employeeId ? { employeeId } : {}) },
+    metadata: {
+      count: assignments.length,
+      role,
+      ...(effectiveEmployeeId ? { employeeId: effectiveEmployeeId } : {}),
+    },
   });
 
   return Response.json({ assignments });
@@ -108,6 +138,34 @@ export async function POST(request: Request) {
   }
 
   const sql = getSQL();
+  const schemaCheck = await checkTrainingSchema(undefined, sql);
+  if (!schemaCheck.ok) return trainingSchemaNotReadyResponse(schemaCheck);
+
+  const employeeId = body.employee_id.trim();
+  if (!employeeId) {
+    return Response.json({ error: 'employee_id is required' }, { status: 422 });
+  }
+
+  let isOrgMember = false;
+  try {
+    isOrgMember = await employeeIsOrgMember(orgId, employeeId);
+  } catch (error: unknown) {
+    console.error('[training] failed to validate org membership for assignment', {
+      orgId,
+      employeeId,
+      message: error instanceof Error ? error.message : String(error),
+    });
+    return Response.json(
+      { error: 'Unable to validate employee membership. Please try again.' },
+      { status: 503 },
+    );
+  }
+  if (!isOrgMember) {
+    return Response.json(
+      { error: 'employee_id must be a valid Clerk user ID in this organization' },
+      { status: 422 },
+    );
+  }
 
   // Look up the plan to get modules and deadline_days
   const plans = await sql`
@@ -134,42 +192,48 @@ export async function POST(request: Request) {
     deadline = d.toISOString();
   }
 
-  // Insert assignment with ON CONFLICT DO NOTHING
-  const result = await sql`
-    INSERT INTO training_assignments (
-      org_id, employee_id, plan_id, assigned_by, deadline, status
-    ) VALUES (
-      ${orgId},
-      ${body.employee_id},
-      ${body.plan_id},
-      ${userId},
-      ${deadline},
-      'assigned'
+  const insertRows = await sql`
+    WITH inserted_assignment AS (
+      INSERT INTO training_assignments (
+        org_id, employee_id, plan_id, assigned_by, deadline, status
+      ) VALUES (
+        ${orgId},
+        ${employeeId},
+        ${body.plan_id},
+        ${userId},
+        ${deadline},
+        'assigned'
+      )
+      ON CONFLICT (org_id, employee_id, plan_id) DO NOTHING
+      RETURNING id, employee_id, plan_id, assigned_by,
+                assigned_at, deadline, status, completion_percentage
+    ),
+    module_rows AS (
+      SELECT
+        inserted_assignment.id AS assignment_id,
+        jsonb_array_elements_text(${JSON.stringify(modules)}::jsonb) AS module_code
+      FROM inserted_assignment
+    ),
+    inserted_progress AS (
+      INSERT INTO training_progress (
+        assignment_id, module_code, status
+      )
+      SELECT
+        module_rows.assignment_id,
+        module_rows.module_code,
+        'not_started'
+      FROM module_rows
+      ON CONFLICT (assignment_id, module_code) DO NOTHING
+      RETURNING assignment_id
     )
-    ON CONFLICT (org_id, employee_id, plan_id) DO NOTHING
-    RETURNING id, employee_id, plan_id, assigned_by,
-              assigned_at, deadline, status, completion_percentage
+    SELECT * FROM inserted_assignment
   `;
 
-  if (result.length === 0) {
+  if (insertRows.length === 0) {
     return Response.json({ error: 'Assignment already exists' }, { status: 409 });
   }
 
-  const assignment = result[0];
-
-  // Create training_progress rows for each module
-  for (const moduleCode of modules) {
-    await sql`
-      INSERT INTO training_progress (
-        assignment_id, module_code, status
-      ) VALUES (
-        ${assignment.id},
-        ${moduleCode},
-        'not_started'
-      )
-      ON CONFLICT (assignment_id, module_code) DO NOTHING
-    `;
-  }
+  const assignment = insertRows[0];
 
   auditLog({
     action: 'data.write' as const,
@@ -178,7 +242,7 @@ export async function POST(request: Request) {
     resourceType: 'training.assignments',
     metadata: {
       assignmentId: assignment.id,
-      employeeId: body.employee_id,
+      employeeId,
       planId: body.plan_id,
       moduleCount: modules.length,
     },

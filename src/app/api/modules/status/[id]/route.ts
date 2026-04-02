@@ -23,8 +23,12 @@ async function readLocalArtifactJson(runId: string, artifactPath: string): Promi
   }
 }
 
-async function readRemoteArtifactJson(runId: string, artifactPath: string): Promise<Record<string, unknown> | null> {
-  const { res } = await fetchRemoteModuleArtifact(runId, artifactPath);
+async function readRemoteArtifactJson(
+  runId: string,
+  artifactPath: string,
+  orgId: string,
+): Promise<Record<string, unknown> | null> {
+  const { res } = await fetchRemoteModuleArtifact(runId, artifactPath, { orgId });
   if (!res.ok) return null;
   try {
     return (await res.json()) as Record<string, unknown>;
@@ -44,7 +48,7 @@ async function persistRunInsights(
       run,
       readArtifactJson: (artifactPath: string) =>
         useRemoteArtifacts
-          ? readRemoteArtifactJson(run.id, artifactPath)
+          ? readRemoteArtifactJson(run.id, artifactPath, orgId)
           : readLocalArtifactJson(run.id, artifactPath),
     });
   } catch (error) {
@@ -83,11 +87,23 @@ export async function GET(request: Request, context: { params: Promise<{ id: str
 
   if (shouldUseRemoteModuleGateway()) {
     try {
-      const { res, body } = await fetchRemoteModuleRun(runId);
+      const { res, body } = await fetchRemoteModuleRun(runId, { orgId });
       if (res.status !== 404) {
         if (res.ok && body?.ok && body?.run && orgId) {
           const run = body.run as ModuleRunRecord;
-          if (typeof run.orgId === 'string' && run.orgId.length > 0 && run.orgId !== orgId) {
+          if (typeof run.orgId !== 'string' || run.orgId.length === 0) {
+            return Response.json(
+              {
+                ok: false,
+                error: {
+                  code: 'TENANT_ISOLATION_VIOLATION',
+                  message: 'Remote run is missing organization ownership metadata',
+                },
+              },
+              { status: 502 },
+            );
+          }
+          if (run.orgId !== orgId) {
             return Response.json(
               { ok: false, error: { code: 'TENANT_ISOLATION_VIOLATION', message: 'Run belongs to another organization' } },
               { status: 403 },

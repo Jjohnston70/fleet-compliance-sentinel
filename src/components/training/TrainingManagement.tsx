@@ -231,18 +231,24 @@ export default function TrainingManagement() {
                   <div className="mt-4 pt-4 border-t border-slate-200">
                     <div className="flex flex-wrap items-end gap-3">
                       <div>
-                        <label className="block text-sm text-slate-600 mb-1">Employee ID</label>
+                        <label htmlFor={`assign-employee-${plan.id}`} className="block text-sm text-slate-600 mb-1">
+                          Employee User ID
+                        </label>
                         <input
+                          id={`assign-employee-${plan.id}`}
                           type="text"
                           value={assignEmployeeId}
                           onChange={(e) => setAssignEmployeeId(e.target.value)}
-                          placeholder="e.g. EMP-001"
+                          placeholder="e.g. user_2abcDEF..."
                           className="px-3 py-2 border border-slate-300 rounded-lg text-sm focus:outline-none focus:border-teal-500"
                         />
                       </div>
                       <div>
-                        <label className="block text-sm text-slate-600 mb-1">Deadline (optional)</label>
+                        <label htmlFor={`assign-deadline-${plan.id}`} className="block text-sm text-slate-600 mb-1">
+                          Deadline (optional)
+                        </label>
                         <input
+                          id={`assign-deadline-${plan.id}`}
                           type="date"
                           value={assignDeadline}
                           onChange={(e) => setAssignDeadline(e.target.value)}

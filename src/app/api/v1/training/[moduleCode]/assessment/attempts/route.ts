@@ -1,7 +1,10 @@
 import { fleetComplianceAuthErrorResponse, requireFleetComplianceOrg } from '@/lib/fleet-compliance-auth';
 import { getSQL } from '@/lib/fleet-compliance-db';
-import { readFile } from 'fs/promises';
-import { join } from 'path';
+import {
+  loadTrainingAssessment,
+  sanitizeTrainingAssessmentForClient,
+} from '@/lib/training-assessment';
+import { checkTrainingSchema, trainingSchemaNotReadyResponse } from '@/lib/training-schema';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -26,20 +29,8 @@ export async function GET(
     return Response.json({ error: 'Invalid module code' }, { status: 400 });
   }
 
-  // Load assessment JSON
-  const assessmentPath = join(
-    process.cwd(),
-    'knowledge',
-    'training-content',
-    'assessments',
-    `${moduleCode}-assessment.json`,
-  );
-
-  let assessment;
-  try {
-    const json = await readFile(assessmentPath, 'utf-8');
-    assessment = JSON.parse(json);
-  } catch {
+  const assessment = await loadTrainingAssessment(moduleCode);
+  if (!assessment) {
     return Response.json({ error: 'Assessment not found' }, { status: 404 });
   }
 
@@ -47,6 +38,8 @@ export async function GET(
   let attempts: any[] = [];
   try {
     const sql = getSQL();
+    const schemaCheck = await checkTrainingSchema(undefined, sql);
+    if (!schemaCheck.ok) return trainingSchemaNotReadyResponse(schemaCheck);
     const rows = await sql`
       SELECT tp.attempts_count, tp.assessment_score, tp.assessment_passed,
              tp.assessment_completed_at, tp.status
@@ -60,8 +53,11 @@ export async function GET(
     `;
     attempts = rows;
   } catch {
-    // DB may not have tables yet — return assessment without history
+    // Keep history optional in this route to avoid blocking assessment load.
   }
 
-  return Response.json({ assessment, attempts });
+  return Response.json({
+    assessment: sanitizeTrainingAssessmentForClient(assessment),
+    attempts,
+  });
 }

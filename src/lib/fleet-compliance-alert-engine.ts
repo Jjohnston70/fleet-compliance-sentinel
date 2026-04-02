@@ -174,6 +174,7 @@ export async function runFleetComplianceAlertSweep(
   const orgName = process.env.FLEET_COMPLIANCE_ORG_NAME || 'Fleet Compliance';
   const rawManagerEmail = options.managerEmail || process.env.FLEET_COMPLIANCE_ALERT_EMAIL || '';
   const managerEmail = extractEmail(rawManagerEmail) || '';
+  const skippedOwnerEmailCounts = new Map<string, number>();
 
   const openItems = suspenseItems.filter((item: FleetComplianceSuspenseRecord) => item.status === 'open');
 
@@ -199,7 +200,11 @@ export async function runFleetComplianceAlertSweep(
   const byOwner = new Map<string, FleetComplianceAlertItem[]>();
   for (const item of alertItems) {
     const key = extractEmail(item.ownerEmail);
-    if (!key) continue;
+    if (!key) {
+      const raw = item.ownerEmail.trim() || '(empty)';
+      skippedOwnerEmailCounts.set(raw, (skippedOwnerEmailCounts.get(raw) ?? 0) + 1);
+      continue;
+    }
     if (!byOwner.has(key)) byOwner.set(key, []);
     byOwner.get(key)!.push(item);
   }
@@ -258,6 +263,20 @@ export async function runFleetComplianceAlertSweep(
     byWindow,
     errors: [],
   };
+
+  if (skippedOwnerEmailCounts.size > 0) {
+    const skippedCount = [...skippedOwnerEmailCounts.values()].reduce((total, count) => total + count, 0);
+    const samples = [...skippedOwnerEmailCounts.entries()]
+      .slice(0, 5)
+      .map(([email, count]) => `${email} (${count})`);
+    summary.errors.push(
+      `Skipped ${skippedCount} suspense item(s) due to invalid owner email values. Samples: ${samples.join(', ')}`
+    );
+  }
+
+  if (rawManagerEmail.trim().length > 0 && !managerEmail) {
+    summary.errors.push(`Manager summary email is invalid and was skipped: ${rawManagerEmail.trim()}`);
+  }
 
   if (dryRun) {
     summary.emailsSent = 0;

@@ -1,0 +1,22 @@
+{
+  "name": "@tnds/dq-command",
+  "version": "1.0.0",
+  "description": "DOT Driver Qualification File System — manages DQF (49 CFR §391.51) and DHF (49 CFR §391.53) compliance for Fleet-Compliance Sentinel",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "type-check": "tsc --noEmit"
+  },
+  "dependencies": {
+    "zod": "^3.22.4"
+  },
+  "devDependencies": {
+    "@types/node": "^20.10.6",
+    "@vitest/ui": "^1.1.0",
+    "typescript": "^5.3.3",
+    "vitest": "^1.1.0"
+  }
+}

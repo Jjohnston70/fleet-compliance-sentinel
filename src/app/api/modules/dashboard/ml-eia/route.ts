@@ -192,17 +192,24 @@ function buildDashboardHtml(input: {
 </html>`;
 }
 
-async function getRunRecord(runId: string): Promise<ModuleRunRecord | null> {
+async function getRunRecord(runId: string, orgId: string): Promise<ModuleRunRecord | null> {
   if (shouldUseRemoteModuleGateway()) {
-    const { res, body } = await fetchRemoteModuleRun(runId);
+    const { res, body } = await fetchRemoteModuleRun(runId, { orgId });
     if (!res.ok || !body?.ok || !body?.run) return null;
-    return body.run as ModuleRunRecord;
+    const run = body.run as ModuleRunRecord;
+    if (typeof run.orgId !== 'string' || run.orgId.length === 0) return null;
+    if (run.orgId !== orgId) return null;
+    return run;
   }
   return getModuleRun(runId);
 }
 
-async function readRemoteJson(runId: string, artifactPath: string): Promise<Record<string, unknown> | null> {
-  const { res } = await fetchRemoteModuleArtifact(runId, artifactPath);
+async function readRemoteJson(
+  runId: string,
+  artifactPath: string,
+  orgId: string,
+): Promise<Record<string, unknown> | null> {
+  const { res } = await fetchRemoteModuleArtifact(runId, artifactPath, { orgId });
   if (!res.ok) return null;
   try {
     return (await res.json()) as Record<string, unknown>;
@@ -222,16 +229,22 @@ async function readLocalJson(runId: string, artifactPath: string): Promise<Recor
   }
 }
 
-async function readArtifactJson(runId: string, artifactPath: string): Promise<Record<string, unknown> | null> {
+async function readArtifactJson(
+  runId: string,
+  artifactPath: string,
+  orgId: string,
+): Promise<Record<string, unknown> | null> {
   if (shouldUseRemoteModuleGateway()) {
-    return readRemoteJson(runId, artifactPath);
+    return readRemoteJson(runId, artifactPath, orgId);
   }
   return readLocalJson(runId, artifactPath);
 }
 
 export async function GET(request: Request) {
+  let orgId = '';
   try {
-    await requireFleetComplianceOrgWithRole(request, 'admin');
+    const authContext = await requireFleetComplianceOrgWithRole(request, 'admin');
+    orgId = authContext.orgId;
   } catch (error: unknown) {
     const authResponse = fleetComplianceAuthErrorResponse(error);
     if (authResponse) return authResponse;
@@ -246,11 +259,17 @@ export async function GET(request: Request) {
     );
   }
 
-  const run = await getRunRecord(runId);
+  const run = await getRunRecord(runId, orgId);
   if (!run) {
     return Response.json(
       { ok: false, error: { code: 'MODULE_NOT_FOUND', message: `Run '${runId}' was not found` } },
       { status: 404 },
+    );
+  }
+  if (run.orgId !== orgId) {
+    return Response.json(
+      { ok: false, error: { code: 'TENANT_ISOLATION_VIOLATION', message: 'Run belongs to another organization' } },
+      { status: 403 },
     );
   }
 
@@ -280,9 +299,9 @@ export async function GET(request: Request) {
   }
 
   const [snapshot, alerts, forecastDocs] = await Promise.all([
-    snapshotPath ? readArtifactJson(runId, snapshotPath) : Promise.resolve(null),
-    alertsPath ? readArtifactJson(runId, alertsPath) : Promise.resolve(null),
-    Promise.all(forecastPaths.map((forecastPath) => readArtifactJson(runId, forecastPath))),
+    snapshotPath ? readArtifactJson(runId, snapshotPath, orgId) : Promise.resolve(null),
+    alertsPath ? readArtifactJson(runId, alertsPath, orgId) : Promise.resolve(null),
+    Promise.all(forecastPaths.map((forecastPath) => readArtifactJson(runId, forecastPath, orgId))),
   ]);
 
   const html = buildDashboardHtml({
