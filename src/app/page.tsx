@@ -137,10 +137,12 @@ const pricingTiers = [
     href: '/sign-up',
     featured: true,
     outcome: 'Everything in Starter, plus Pipeline Penny — your AI compliance assistant. Ask Penny what the regulation requires AND where your drivers currently stand against it. Penny pulls the cited federal CFR answer and checks it against your actual driver records — CDL status, medical card expiration, drug test history, hazmat endorsements — so you know the rule and whether your fleet is in or out of compliance right now. No guessing. No digging through spreadsheets. Penny reads the regulation and reads your data at the same time. Multi-LLM support (Claude, GPT-4o, Gemini, local Ollama).',
-    pennyExplainer: true,
+    pennyExplainer: false,
     features: [
       'Up to 50 vehicles',
       'Up to 25 drivers',
+      'Pipeline Penny AI assistant (multi-LLM)',
+      'Compliance training platform (31 modules)',
       'AI invoice extraction (12 vendors)',
       'Telematics integration (all providers)',
       'ML forecasting dashboards',
@@ -304,6 +306,20 @@ export default function HomePage() {
               SOC 2 observation period active since March 2026. Audit trail on every
               write. Automated data lifecycle on cancellation. Your data never trains
               an AI model.
+            </p>
+          </article>
+          <article className="differentiation-pillar">
+            <h3>What is Pipeline Penny?</h3>
+            <p>
+              Pipeline Penny is an AI assistant built on 13 sections of the FMCSA/DOT
+              regulatory manual (49 CFR Parts 040&ndash;397). When you ask a compliance
+              question, she searches the actual federal regulations AND cross-references
+              your live fleet data &mdash; your drivers, CDL expirations, medical cards, drug
+              test records, permits, and open action items. You get two things at once:
+              what the rule says, and whether your drivers are currently meeting it.
+              She doesn&apos;t make things up. She shows her sources. Think of her as a
+              compliance analyst who has memorized every federal regulation and always
+              has your driver files open on the desk.
             </p>
           </article>
         </div>
@@ -544,6 +560,7 @@ export default function HomePage() {
               target="_blank"
               rel="noopener noreferrer nofollow"
               aria-label="View True North Data Strategies LLC BBB Business Review"
+              className="bbb-seal"
             >
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
