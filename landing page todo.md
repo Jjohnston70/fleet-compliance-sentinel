@@ -1097,9 +1097,9 @@ has plan-based access control and multi-org support baked in.
 
 ## Post-Wave-2 Checklist
 
-- [ ] 2.1 — Three-pillar differentiation section
-- [ ] 2.2 — Training-Command coming-soon section with email capture
-- [ ] 2.3 — Restructure module grid (16 → 5 featured + "see all" link)
+- [x] 2.1 — Three-pillar differentiation section
+- [x] 2.2 — Training-Command coming-soon section with email capture
+- [x] 2.3 — Restructure module grid (16 → 5 featured + "see all" link)
 - [ ] Wire email capture to Resend + waitlist table
 
 ---

@@ -71,70 +71,26 @@ const fleetComplianceFeatures = [
   },
 ];
 
-const availableModules = [
+const featuredModules = [
   {
     name: 'Command Center',
-    description: 'Unified integration hub for all modules. Tool discovery, routing, health checks, and a master registry.',
-  },
-  {
-    name: 'Compliance Command',
-    description: 'Automated compliance document generation. Single intake produces 7 compliance packages: security, privacy, government, and more.',
-  },
-  {
-    name: 'Contract Command',
-    description: 'Contract lifecycle management with party tracking, milestone management, amendments, and renewal automation.',
-  },
-  {
-    name: 'Dispatch Command',
-    description: 'Emergency dispatch operations with zone management, truck capacity tracking, driver rotation, and SLA monitoring.',
-  },
-  {
-    name: 'Email Command',
-    description: 'Email analytics and anomaly detection with statistical analysis, action item extraction, and executive digest generation.',
-  },
-  {
-    name: 'Financial Command',
-    description: 'Personal and business finance tracking with automatic categorization, tax calculations, and budget variance analysis.',
+    description: 'Single hub for all modules. Tool discovery, routing, health checks.',
   },
   {
     name: 'GovCon Command',
-    description: 'Federal government contracting operations with opportunity management, weighted bid/no-bid scoring, and pipeline dashboards.',
+    description: 'Federal opportunity tracking, weighted bid/no-bid scoring, SDVOSB pipeline.',
   },
   {
-    name: 'Invoice Module',
-    description: 'Portable invoice extraction for fleet maintenance PDFs. Supports 12 vendors with automatic detection and SOC 2 audit logging.',
+    name: 'Compliance Command',
+    description: 'One intake produces 7 compliance packages: security, privacy, government, and more.',
   },
   {
-    name: 'Onboard Command',
-    description: 'Google Workspace provisioning and employee onboarding with automated user creation, license assignment, and rollback recovery.',
+    name: 'Financial Command',
+    description: 'Automatic categorization, tax calculations, budget variance — no accountant required.',
   },
   {
     name: 'Proposal Command',
-    description: 'Enterprise proposal generation from 5 built-in templates with DOCX output, email delivery, and conversion metrics.',
-  },
-  {
-    name: 'Readiness Command',
-    description: 'AI readiness assessment module. Identifies and prioritizes AI/automation opportunities with weighted scoring and recommendations.',
-  },
-  {
-    name: 'Realty Command',
-    description: 'Real estate operations with lead scoring, property listing management, deal pipeline tracking, and commission forecasting.',
-  },
-  {
-    name: 'Sales Command',
-    description: 'Sales analytics and revenue forecasting with KPI calculations, trend analysis, and moving average projections.',
-  },
-  {
-    name: 'Task Command',
-    description: 'Task management with priority tracking, team assignment, workload analysis, and automatic overdue detection.',
-  },
-  {
-    name: 'Training Command',
-    description: 'Training platform backend with course management, enrollment tracking, workshop registration, and certificate generation.',
-  },
-  {
-    name: 'Fleet Compliance Sentinel',
-    description: 'Core compliance data hub housing CFR/DOT documentation, FMCSA imports, and bulk upload mapping for fleet operations.',
+    description: 'Enterprise proposals from 5 built-in templates with DOCX output and delivery tracking.',
   },
 ];
 
@@ -316,16 +272,40 @@ export default function HomePage() {
         </div>
       </section>
 
-      <section className="features">
-        <h2>Fleet-Compliance Features</h2>
-        <div className="feature-grid">
-          {fleetComplianceFeatures.map((feature) => (
-            <article className="feature-card" key={feature.title}>
-              <div className="feature-icon">{featureIcons[feature.icon] ?? feature.icon}</div>
-              <h3>{feature.title}</h3>
-              <p>{feature.description}</p>
-            </article>
-          ))}
+      <section className="features differentiation">
+        <h2>Why Fleet-Compliance Sentinel</h2>
+        <div className="differentiation-grid">
+          <article className="differentiation-pillar">
+            <h3>AI That Reads the Regulation AND Your Driver Records</h3>
+            <p>
+              Pipeline Penny is grounded in 13 CFR parts (Parts 040&ndash;397) &mdash; the same
+              federal regulations your DOT examiner references. But she doesn&apos;t stop
+              at quoting the rule. She cross-references it against your actual driver
+              data: CDL status, medical card dates, drug test records, hazmat
+              endorsements. Ask &ldquo;are my drivers current on medical certificates under
+              Part 391?&rdquo; and get the regulation plus a real-time status check on your
+              fleet &mdash; not two separate lookups. Source citations included. No guessing.
+            </p>
+          </article>
+          <article className="differentiation-pillar">
+            <h3>Built for Compliance Ops, Not Recruiting</h3>
+            <p>
+              Tenstreet and similar platforms own the pre-hire funnel: recruiting,
+              job boards, driver applications. Fleet-Compliance Sentinel owns what
+              happens after the hire: CDL tracking, drug test records, permit renewals,
+              FMCSA safety lookups, and automated daily alert sweeps. Different
+              problem. Different tool.
+            </p>
+          </article>
+          <article className="differentiation-pillar">
+            <h3>Enterprise Security at SMB Price</h3>
+            <p>
+              Multi-tenant org isolation enforced at auth, query, and database layers.
+              SOC 2 observation period active since March 2026. Audit trail on every
+              write. Automated data lifecycle on cancellation. Your data never trains
+              an AI model.
+            </p>
+          </article>
         </div>
       </section>
 
@@ -382,6 +362,36 @@ export default function HomePage() {
         </p>
       </section>
 
+      <section className="training-coming-soon">
+        <span className="training-badge">Coming April 2026 — Early Access</span>
+        <h2>Train your team on the same regulations Penny answers from.</h2>
+        <p className="section-intro">
+          Coming soon: an embedded compliance training platform inside
+          Fleet-Compliance Sentinel. 31 modules starting with hazmat &mdash; built from
+          ERG 2024, CFR, and PHMSA requirements. Completion automatically updates
+          driver compliance records. No separate LMS login. No separate system.
+        </p>
+        <div className="training-modules-summary">
+          <span>12 required PHMSA hazmat modules</span>
+          <span>6 NFPA Awareness modules</span>
+          <span>12 NFPA Operations modules</span>
+          <span>+ supplemental DOT/CFR training</span>
+        </div>
+        <p className="training-callout">
+          Train &rarr; certify &rarr; track &rarr; alert — all in one platform.
+        </p>
+        <form className="training-email-capture" action="/api/training-waitlist" method="POST">
+          <input
+            type="email"
+            name="email"
+            placeholder="Email address"
+            aria-label="Get notified when training launches"
+            required
+          />
+          <button type="submit">Notify me</button>
+        </form>
+      </section>
+
       <section className="features modules-section">
         <div style={{ textAlign: 'center', marginBottom: '1.5rem' }}>
           <Image
@@ -391,19 +401,24 @@ export default function HomePage() {
             height={140}
           />
         </div>
-        <h2>Available Modules</h2>
+        <h2>Enterprise-grade module architecture</h2>
         <p className="section-intro">
-          Fleet-Compliance Sentinel is built on a modular architecture. Each module handles a specific operational
-          domain and integrates through the Command Center hub.
+          One orchestration hub. 43 registered actions across 4 gateway modules.
+          7-layer enterprise function calling hardening complete.
         </p>
         <div className="module-grid">
-          {availableModules.map((mod) => (
+          {featuredModules.map((mod) => (
             <article className="module-card" key={mod.name}>
               <h3>{mod.name}</h3>
               <p>{mod.description}</p>
             </article>
           ))}
         </div>
+        <p style={{ textAlign: 'center', marginTop: '1.5rem' }}>
+          <Link href="/fleet-compliance" className="see-all-link">
+            See all 16+ modules &rarr;
+          </Link>
+        </p>
       </section>
 
       <section className="features">
@@ -439,32 +454,6 @@ export default function HomePage() {
             <h3>Hybrid</h3>
             <p>Cloud compliance platform with local AI processing. Best of both worlds for organizations with strict data residency requirements.</p>
           </div>
-        </div>
-      </section>
-
-      <section className="features">
-        <h2>What Pipeline Penny Knows</h2>
-        <p className="section-intro">
-          Pipeline Penny is trained on curated knowledge bases covering federal regulations, business operations, and market intelligence.
-          All of this knowledge is available through your Penny AI assistant when you sign up.
-        </p>
-        <div className="module-grid">
-          <article className="module-card">
-            <h3>CFR 49 DOT Regulations</h3>
-            <p>13 sections of FMCSA/DOT regulatory guidance (Parts 040-397) for fleet compliance.</p>
-          </article>
-          <article className="module-card">
-            <h3>Real Estate Operations</h3>
-            <p>Lead scoring, property management, deal pipelines, and commission tracking knowledge.</p>
-          </article>
-          <article className="module-card">
-            <h3>HubSpot API Integration</h3>
-            <p>CRM operations, contact management, deal pipelines, and marketing automation.</p>
-          </article>
-          <article className="module-card">
-            <h3>ML Forecasting Models</h3>
-            <p>SARIMA time-series analysis, sales forecasting, and energy market intelligence.</p>
-          </article>
         </div>
       </section>
 

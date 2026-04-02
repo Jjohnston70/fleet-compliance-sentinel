@@ -97,6 +97,29 @@ body {
   background: rgba(15, 36, 57, 0.62);
 }
 
+/* Module and provider cards on dark landing background */
+.landing-main .module-card,
+.landing-main .provider-card {
+  background: rgba(15, 36, 57, 0.62);
+  border-color: rgba(148, 163, 184, 0.36);
+}
+
+.landing-main .module-card h3,
+.landing-main .provider-card h3 {
+  color: #f8fafc;
+}
+
+.landing-main .module-card p,
+.landing-main .provider-card p {
+  color: rgba(226, 232, 240, 0.8);
+}
+
+.landing-main .module-card:hover,
+.landing-main .provider-card:hover {
+  border-color: rgba(61, 142, 185, 0.6);
+  background: rgba(15, 36, 57, 0.8);
+}
+
 .landing-main .btn-secondary {
   color: #e2e8f0;
   border-color: rgba(226, 232, 240, 0.38);
@@ -1066,6 +1089,135 @@ body {
   font-style: italic;
 }
 
+/* ===== Differentiation Pillars ===== */
+.differentiation-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 2rem;
+  max-width: 1060px;
+  margin: 0 auto;
+}
+
+.differentiation-pillar {
+  background: rgba(15, 36, 57, 0.62);
+  border: 1px solid rgba(148, 163, 184, 0.36);
+  border-radius: 0.75rem;
+  padding: 2rem 1.5rem;
+  transition: border-color 0.2s ease, background 0.2s ease;
+}
+
+.differentiation-pillar:hover {
+  border-color: rgba(61, 142, 185, 0.6);
+  background: rgba(15, 36, 57, 0.8);
+}
+
+.differentiation-pillar h3 {
+  color: #f8fafc;
+  font-size: 1.1rem;
+  margin-bottom: 0.75rem;
+}
+
+.differentiation-pillar p {
+  color: rgba(226, 232, 240, 0.8);
+  font-size: 0.92rem;
+  line-height: 1.65;
+}
+
+/* ===== Training Coming Soon ===== */
+.training-coming-soon {
+  padding: 4rem 2rem;
+  text-align: center;
+  border-top: 1px solid rgba(148, 163, 184, 0.15);
+}
+
+.training-coming-soon h2 {
+  font-size: 1.6rem;
+  color: #f8fafc;
+  margin-bottom: 0.5rem;
+}
+
+.training-badge {
+  display: inline-block;
+  background: rgba(61, 142, 185, 0.15);
+  border: 1px solid rgba(61, 142, 185, 0.4);
+  color: var(--teal);
+  font-size: 0.78rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  padding: 0.35rem 0.85rem;
+  border-radius: 999px;
+  margin-bottom: 1.25rem;
+}
+
+.training-coming-soon .section-intro {
+  color: rgba(226, 232, 240, 0.8);
+}
+
+.training-modules-summary {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 0.75rem;
+  max-width: 680px;
+  margin: 1.5rem auto;
+}
+
+.training-modules-summary span {
+  background: rgba(15, 36, 57, 0.62);
+  border: 1px solid rgba(148, 163, 184, 0.25);
+  border-radius: 0.5rem;
+  padding: 0.6rem 1rem;
+  font-size: 0.85rem;
+  color: rgba(226, 232, 240, 0.85);
+}
+
+.training-callout {
+  font-size: 1.05rem;
+  font-weight: 600;
+  color: var(--teal);
+  margin: 1.5rem 0;
+  letter-spacing: 0.02em;
+}
+
+.training-email-capture {
+  display: flex;
+  gap: 0.5rem;
+  justify-content: center;
+  max-width: 440px;
+  margin: 1.5rem auto 0;
+}
+
+.training-email-capture input {
+  flex: 1;
+  padding: 0.65rem 1rem;
+  border-radius: 0.5rem;
+  border: 1px solid rgba(148, 163, 184, 0.4);
+  background: rgba(15, 36, 57, 0.5);
+  color: #f8fafc;
+  font-size: 0.9rem;
+}
+
+.training-email-capture input::placeholder {
+  color: rgba(226, 232, 240, 0.4);
+}
+
+.training-email-capture button {
+  padding: 0.65rem 1.25rem;
+  border-radius: 0.5rem;
+  border: none;
+  background: var(--teal);
+  color: #fff;
+  font-weight: 600;
+  font-size: 0.88rem;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background 0.2s ease;
+}
+
+.training-email-capture button:hover {
+  background: var(--teal-light, #4da8d4);
+}
+
 .telematics-providers {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
@@ -1140,7 +1292,20 @@ body {
 }
 
 .modules-section {
-  background: #f8fafc;
+  background: transparent;
+}
+
+.see-all-link {
+  color: var(--teal);
+  text-decoration: none;
+  font-size: 0.95rem;
+  font-weight: 600;
+  transition: color 0.2s ease;
+}
+
+.see-all-link:hover {
+  color: var(--teal-light, #4da8d4);
+  text-decoration: underline;
 }
 
 .modules-section .section-intro {
@@ -1148,7 +1313,7 @@ body {
 }
 
 .modules-section h2 {
-  color: var(--navy);
+  color: #f8fafc;
 }
 
 .landing-main .who h2 {
@@ -1948,6 +2113,18 @@ a.penny-source-pill:hover {
     flex-direction: column;
     align-items: center;
     gap: 0.6rem;
+  }
+
+  .differentiation-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .training-email-capture {
+    flex-direction: column;
+  }
+
+  .training-modules-summary {
+    grid-template-columns: 1fr 1fr;
   }
 
   .cta-split {
