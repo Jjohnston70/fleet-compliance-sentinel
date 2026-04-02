@@ -211,9 +211,7 @@ export default function RealtyPipelinePage() {
   return (
     <main className="fleet-compliance-shell">
       <section className="fleet-compliance-hero">
-        <p className="fleet-compliance-eyebrow" style={{ color: '#3d8eb9' }}>
-          Realty Command
-        </p>
+        <p className="fleet-compliance-eyebrow">Realty Command</p>
         <h1>Real Estate Pipeline</h1>
         <p className="fleet-compliance-subcopy">
           Track leads, manage deals through stages, and calculate commissions.
@@ -223,19 +221,19 @@ export default function RealtyPipelinePage() {
       {error && (
         <div
           style={{
-            background: '#4a1c1c',
-            border: '1px solid #7a3333',
+            marginTop: '1rem',
+            background: '#fef2f2',
+            border: '1px solid #fecaca',
             borderRadius: '8px',
             padding: '0.75rem 1rem',
-            color: '#ffaaaa',
-            marginBottom: '1rem',
+            color: '#991b1b',
           }}
         >
           {error}
           <button
             type="button"
             onClick={() => setError(null)}
-            style={{ float: 'right', background: 'none', border: 'none', color: '#ffaaaa', cursor: 'pointer' }}
+            style={{ float: 'right', background: 'none', border: 'none', color: '#991b1b', cursor: 'pointer', fontWeight: 600 }}
           >
             x
           </button>
@@ -244,11 +242,11 @@ export default function RealtyPipelinePage() {
 
       {/* Pipeline Summary Cards */}
       {summary && (
-        <section className="fleet-compliance-section" style={{ marginBottom: '1.5rem' }}>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(180px, 1fr))', gap: '0.75rem' }}>
+        <section className="fleet-compliance-section">
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(160px, 1fr))', gap: '0.75rem' }}>
             {[
               { label: 'Total Deals', value: String(summary.totalDeals) },
-              { label: 'Total Pipeline Value', value: formatCurrency(summary.totalValue) },
+              { label: 'Pipeline Value', value: formatCurrency(summary.totalValue) },
               { label: 'Closed Deals', value: String(summary.closedCount) },
               { label: 'Total Leads', value: String(summary.totalLeads) },
               { label: 'Conversion Rate', value: `${summary.conversionRate}%` },
@@ -257,17 +255,17 @@ export default function RealtyPipelinePage() {
               <div
                 key={card.label}
                 style={{
-                  background: 'rgba(255,255,255,0.03)',
-                  border: '1px solid rgba(255,255,255,0.06)',
+                  background: '#f8fafc',
+                  border: '1px solid var(--border)',
                   borderRadius: '8px',
                   padding: '1rem',
                   textAlign: 'center',
                 }}
               >
-                <p style={{ fontSize: '0.7rem', textTransform: 'uppercase', letterSpacing: '0.1em', color: '#94a3b8', margin: '0 0 0.25rem' }}>
+                <p style={{ fontSize: '0.7rem', textTransform: 'uppercase', letterSpacing: '0.1em', color: 'var(--text-muted)', margin: '0 0 0.25rem' }}>
                   {card.label}
                 </p>
-                <p style={{ fontSize: '1.4rem', fontWeight: 700, color: '#fff', margin: 0 }}>
+                <p style={{ fontSize: '1.4rem', fontWeight: 700, color: 'var(--navy)', margin: 0 }}>
                   {card.value}
                 </p>
               </div>
@@ -277,7 +275,7 @@ export default function RealtyPipelinePage() {
       )}
 
       {/* Actions Row */}
-      <section className="fleet-compliance-section" style={{ marginBottom: '1.5rem' }}>
+      <section className="fleet-compliance-section">
         <div style={{ display: 'flex', gap: '0.75rem', flexWrap: 'wrap', alignItems: 'center' }}>
           <button
             type="button"
@@ -285,9 +283,9 @@ export default function RealtyPipelinePage() {
             style={{
               padding: '0.5rem 1rem',
               borderRadius: '6px',
-              border: '1px solid #3d8eb9',
-              background: 'rgba(61,142,185,0.15)',
-              color: '#7bb8d9',
+              border: '1px solid var(--teal)',
+              background: 'var(--teal-dim)',
+              color: 'var(--teal)',
               cursor: 'pointer',
               fontSize: '0.85rem',
               fontWeight: 600,
@@ -300,9 +298,9 @@ export default function RealtyPipelinePage() {
             style={{
               padding: '0.5rem 1rem',
               borderRadius: '6px',
-              border: '1px solid rgba(255,255,255,0.12)',
-              background: 'rgba(255,255,255,0.04)',
-              color: '#94a3b8',
+              border: '1px solid var(--border)',
+              background: '#f8fafc',
+              color: 'var(--navy)',
               textDecoration: 'none',
               fontSize: '0.85rem',
             }}
@@ -314,8 +312,8 @@ export default function RealtyPipelinePage() {
 
       {/* Add Deal Form */}
       {showAddDeal && (
-        <section className="fleet-compliance-section" style={{ marginBottom: '1.5rem' }}>
-          <h3 style={{ fontSize: '0.9rem', marginBottom: '0.75rem' }}>New Deal</h3>
+        <section className="fleet-compliance-section">
+          <h3 style={{ fontSize: '0.9rem', marginBottom: '0.75rem', color: 'var(--navy)' }}>New Deal</h3>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(240px, 1fr))', gap: '0.75rem' }}>
             <input
               placeholder="Client Name"
@@ -370,7 +368,7 @@ export default function RealtyPipelinePage() {
               padding: '0.5rem 1.25rem',
               borderRadius: '6px',
               border: 'none',
-              background: '#3d8eb9',
+              background: 'var(--teal)',
               color: '#fff',
               cursor: (!newDeal.clientName || !newDeal.propertyAddress) ? 'not-allowed' : 'pointer',
               opacity: (!newDeal.clientName || !newDeal.propertyAddress) ? 0.5 : 1,
@@ -384,8 +382,8 @@ export default function RealtyPipelinePage() {
       )}
 
       {/* Lead Scoring */}
-      <section className="fleet-compliance-section" style={{ marginBottom: '1.5rem' }}>
-        <h3 style={{ fontSize: '0.9rem', marginBottom: '0.75rem' }}>Lead Scoring</h3>
+      <section className="fleet-compliance-section">
+        <h3 style={{ fontSize: '0.9rem', marginBottom: '0.75rem', color: 'var(--navy)' }}>Lead Scoring</h3>
         <div style={{ display: 'flex', gap: '0.75rem', alignItems: 'center', flexWrap: 'wrap' }}>
           <select
             value={selectedLeadId}
@@ -407,7 +405,7 @@ export default function RealtyPipelinePage() {
               padding: '0.5rem 1rem',
               borderRadius: '6px',
               border: 'none',
-              background: '#3d8eb9',
+              background: 'var(--teal)',
               color: '#fff',
               cursor: (!selectedLeadId || scoring) ? 'not-allowed' : 'pointer',
               opacity: (!selectedLeadId || scoring) ? 0.5 : 1,
@@ -422,8 +420,8 @@ export default function RealtyPipelinePage() {
           <div
             style={{
               marginTop: '0.75rem',
-              background: 'rgba(61,142,185,0.08)',
-              border: '1px solid rgba(61,142,185,0.2)',
+              background: 'var(--teal-dim)',
+              border: '1px solid rgba(61,142,185,0.25)',
               borderRadius: '8px',
               padding: '1rem',
               display: 'flex',
@@ -433,20 +431,20 @@ export default function RealtyPipelinePage() {
             }}
           >
             <div style={{ textAlign: 'center' }}>
-              <p style={{ fontSize: '0.7rem', textTransform: 'uppercase', color: '#94a3b8', margin: '0 0 0.2rem' }}>Score</p>
+              <p style={{ fontSize: '0.7rem', textTransform: 'uppercase', color: 'var(--text-muted)', margin: '0 0 0.2rem' }}>Score</p>
               <p
                 style={{
                   fontSize: '2rem',
                   fontWeight: 700,
                   margin: 0,
-                  color: scoreResult.score >= 60 ? '#4ade80' : scoreResult.score >= 30 ? '#facc15' : '#f87171',
+                  color: scoreResult.score >= 60 ? '#059669' : scoreResult.score >= 30 ? '#d97706' : '#dc2626',
                 }}
               >
                 {scoreResult.score}
               </p>
             </div>
             <div>
-              <p style={{ fontSize: '0.75rem', color: '#94a3b8', margin: '0 0 0.4rem' }}>Breakdown</p>
+              <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)', margin: '0 0 0.4rem' }}>Breakdown</p>
               {Object.entries(scoreResult.breakdown).map(([key, val]) => (
                 <span
                   key={key}
@@ -454,10 +452,10 @@ export default function RealtyPipelinePage() {
                     display: 'inline-block',
                     marginRight: '0.75rem',
                     fontSize: '0.8rem',
-                    color: '#cbd5e1',
+                    color: 'var(--text-secondary)',
                   }}
                 >
-                  <span style={{ color: '#64748b', textTransform: 'capitalize' }}>{key}:</span> +{val}
+                  <span style={{ color: 'var(--text-muted)', textTransform: 'capitalize' }}>{key}:</span> +{val}
                 </span>
               ))}
             </div>
@@ -468,11 +466,11 @@ export default function RealtyPipelinePage() {
       {/* Kanban Pipeline Board */}
       {loading ? (
         <section className="fleet-compliance-section">
-          <p style={{ color: '#94a3b8' }}>Loading pipeline...</p>
+          <p style={{ color: 'var(--text-muted)' }}>Loading pipeline...</p>
         </section>
       ) : (
         <section className="fleet-compliance-section">
-          <h3 style={{ fontSize: '0.9rem', marginBottom: '0.75rem' }}>Deal Pipeline</h3>
+          <h3 style={{ fontSize: '0.9rem', marginBottom: '0.75rem', color: 'var(--navy)' }}>Deal Pipeline</h3>
           <div
             style={{
               display: 'flex',
@@ -490,8 +488,8 @@ export default function RealtyPipelinePage() {
                     minWidth: '240px',
                     maxWidth: '280px',
                     flex: '0 0 auto',
-                    background: 'rgba(255,255,255,0.02)',
-                    border: '1px solid rgba(255,255,255,0.06)',
+                    background: '#f8fafc',
+                    border: '1px solid var(--border)',
                     borderRadius: '8px',
                     display: 'flex',
                     flexDirection: 'column',
@@ -507,7 +505,7 @@ export default function RealtyPipelinePage() {
                       alignItems: 'center',
                     }}
                   >
-                    <span style={{ fontSize: '0.75rem', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+                    <span style={{ fontSize: '0.75rem', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.05em', color: 'var(--navy)' }}>
                       {stage.label}
                     </span>
                     <span
@@ -526,7 +524,7 @@ export default function RealtyPipelinePage() {
                   {/* Deal Cards */}
                   <div style={{ padding: '0.5rem', flex: 1, display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
                     {stageDeals.length === 0 && (
-                      <p style={{ fontSize: '0.75rem', color: '#475569', textAlign: 'center', padding: '1rem 0' }}>
+                      <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)', textAlign: 'center', padding: '1rem 0' }}>
                         No deals
                       </p>
                     )}
@@ -578,30 +576,31 @@ function DealCard({
   return (
     <div
       style={{
-        background: 'rgba(255,255,255,0.03)',
-        border: '1px solid rgba(255,255,255,0.06)',
+        background: '#ffffff',
+        border: '1px solid var(--border)',
         borderRadius: '6px',
         padding: '0.6rem',
         opacity: isMoving ? 0.5 : 1,
         transition: 'opacity 0.2s',
       }}
     >
-      <p style={{ fontSize: '0.8rem', fontWeight: 600, margin: '0 0 0.2rem', color: '#e2e8f0' }}>
+      <p style={{ fontSize: '0.8rem', fontWeight: 600, margin: '0 0 0.2rem', color: 'var(--navy)' }}>
         {deal.clientName}
       </p>
-      <p style={{ fontSize: '0.7rem', color: '#94a3b8', margin: '0 0 0.3rem', lineHeight: '1.3' }}>
+      <p style={{ fontSize: '0.7rem', color: 'var(--text-muted)', margin: '0 0 0.3rem', lineHeight: '1.3' }}>
         {deal.propertyAddress}
       </p>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-        <span style={{ fontSize: '0.75rem', fontWeight: 600, color: '#3d8eb9' }}>
+        <span style={{ fontSize: '0.75rem', fontWeight: 600, color: 'var(--teal)' }}>
           {formatCurrency(value)}
         </span>
         <span
           style={{
             fontSize: '0.6rem',
             textTransform: 'uppercase',
-            background: deal.dealType === 'sell' ? 'rgba(217,119,6,0.2)' : 'rgba(61,142,185,0.2)',
-            color: deal.dealType === 'sell' ? '#fbbf24' : '#7bb8d9',
+            fontWeight: 600,
+            background: deal.dealType === 'sell' ? 'rgba(217,119,6,0.12)' : 'var(--teal-dim)',
+            color: deal.dealType === 'sell' ? '#b45309' : 'var(--teal)',
             padding: '1px 5px',
             borderRadius: '3px',
           }}
@@ -610,7 +609,7 @@ function DealCard({
         </span>
       </div>
       {deal.estimatedClose && (
-        <p style={{ fontSize: '0.65rem', color: '#64748b', margin: '0.25rem 0 0' }}>
+        <p style={{ fontSize: '0.65rem', color: 'var(--text-muted)', margin: '0.25rem 0 0' }}>
           Est. close: {deal.estimatedClose}
         </p>
       )}
@@ -625,8 +624,8 @@ function DealCard({
             padding: '0.3rem',
             borderRadius: '4px',
             border: '1px solid rgba(61,142,185,0.3)',
-            background: 'rgba(61,142,185,0.1)',
-            color: '#7bb8d9',
+            background: 'var(--teal-dim)',
+            color: 'var(--teal)',
             cursor: isMoving ? 'not-allowed' : 'pointer',
             fontSize: '0.7rem',
             fontWeight: 600,
@@ -640,14 +639,14 @@ function DealCard({
 }
 
 // ---------------------------------------------------------------------------
-// Shared input style
+// Shared input style (light theme)
 // ---------------------------------------------------------------------------
 
 const inputStyle: React.CSSProperties = {
   padding: '0.5rem 0.75rem',
   borderRadius: '6px',
-  border: '1px solid #444',
-  background: '#1e293b',
-  color: '#fff',
+  border: '1px solid var(--border)',
+  background: '#ffffff',
+  color: 'var(--text-primary)',
   fontSize: '0.85rem',
 };

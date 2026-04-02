@@ -25,9 +25,7 @@ export default function CommissionCalculatorPage() {
   return (
     <main className="fleet-compliance-shell">
       <section className="fleet-compliance-hero">
-        <p className="fleet-compliance-eyebrow" style={{ color: '#3d8eb9' }}>
-          Realty Command
-        </p>
+        <p className="fleet-compliance-eyebrow">Realty Command</p>
         <h1>Commission Calculator</h1>
         <p className="fleet-compliance-subcopy">
           Input sale price, commission rate, and agent/brokerage split to see the breakdown.
@@ -37,7 +35,7 @@ export default function CommissionCalculatorPage() {
       <section className="fleet-compliance-section" style={{ maxWidth: '600px' }}>
         <Link
           href="/fleet-compliance/realty"
-          style={{ fontSize: '0.8rem', color: '#3d8eb9', textDecoration: 'none', display: 'inline-block', marginBottom: '1rem' }}
+          style={{ fontSize: '0.8rem', color: 'var(--teal)', textDecoration: 'none', display: 'inline-block', marginBottom: '1rem' }}
         >
           &larr; Back to Pipeline
         </Link>
@@ -45,7 +43,7 @@ export default function CommissionCalculatorPage() {
         {/* Input Form */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
           <div>
-            <label htmlFor="sale-price" style={{ display: 'block', fontSize: '0.8rem', color: '#94a3b8', marginBottom: '0.3rem' }}>
+            <label htmlFor="sale-price" style={{ display: 'block', fontSize: '0.8rem', color: 'var(--text-muted)', marginBottom: '0.3rem' }}>
               Sale Price ($)
             </label>
             <input
@@ -59,7 +57,7 @@ export default function CommissionCalculatorPage() {
           </div>
 
           <div>
-            <label htmlFor="commission-pct" style={{ display: 'block', fontSize: '0.8rem', color: '#94a3b8', marginBottom: '0.3rem' }}>
+            <label htmlFor="commission-pct" style={{ display: 'block', fontSize: '0.8rem', color: 'var(--text-muted)', marginBottom: '0.3rem' }}>
               Commission Rate (%)
             </label>
             <input
@@ -74,7 +72,7 @@ export default function CommissionCalculatorPage() {
           </div>
 
           <div>
-            <label htmlFor="split-pct" style={{ display: 'block', fontSize: '0.8rem', color: '#94a3b8', marginBottom: '0.3rem' }}>
+            <label htmlFor="split-pct" style={{ display: 'block', fontSize: '0.8rem', color: 'var(--text-muted)', marginBottom: '0.3rem' }}>
               Agent / Brokerage Split (% to agent)
             </label>
             <input
@@ -86,7 +84,7 @@ export default function CommissionCalculatorPage() {
               onChange={(e) => setSplitPct(e.target.value)}
               style={inputStyle}
             />
-            <p style={{ fontSize: '0.7rem', color: '#64748b', margin: '0.25rem 0 0' }}>
+            <p style={{ fontSize: '0.7rem', color: 'var(--text-muted)', margin: '0.25rem 0 0' }}>
               Agent gets {splitPctNum}% / Brokerage gets {100 - splitPctNum}%
             </p>
           </div>
@@ -97,37 +95,37 @@ export default function CommissionCalculatorPage() {
           <div
             style={{
               marginTop: '1.5rem',
-              background: 'rgba(61,142,185,0.08)',
-              border: '1px solid rgba(61,142,185,0.2)',
+              background: 'var(--teal-dim)',
+              border: '1px solid rgba(61,142,185,0.25)',
               borderRadius: '8px',
               padding: '1.25rem',
             }}
           >
-            <h3 style={{ fontSize: '0.75rem', textTransform: 'uppercase', letterSpacing: '0.1em', color: '#94a3b8', margin: '0 0 1rem' }}>
+            <h3 style={{ fontSize: '0.75rem', textTransform: 'uppercase', letterSpacing: '0.1em', color: 'var(--text-muted)', margin: '0 0 1rem' }}>
               Commission Breakdown
             </h3>
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '1rem', textAlign: 'center' }}>
               <div>
-                <p style={{ fontSize: '0.7rem', textTransform: 'uppercase', color: '#64748b', margin: '0 0 0.3rem' }}>
+                <p style={{ fontSize: '0.7rem', textTransform: 'uppercase', color: 'var(--text-muted)', margin: '0 0 0.3rem' }}>
                   Total Commission
                 </p>
-                <p style={{ fontSize: '1.5rem', fontWeight: 700, color: '#fff', margin: 0 }}>
+                <p style={{ fontSize: '1.5rem', fontWeight: 700, color: 'var(--navy)', margin: 0 }}>
                   {formatCurrency(total)}
                 </p>
               </div>
               <div>
-                <p style={{ fontSize: '0.7rem', textTransform: 'uppercase', color: '#64748b', margin: '0 0 0.3rem' }}>
+                <p style={{ fontSize: '0.7rem', textTransform: 'uppercase', color: 'var(--text-muted)', margin: '0 0 0.3rem' }}>
                   Agent ({splitPctNum}%)
                 </p>
-                <p style={{ fontSize: '1.5rem', fontWeight: 700, color: '#4ade80', margin: 0 }}>
+                <p style={{ fontSize: '1.5rem', fontWeight: 700, color: '#059669', margin: 0 }}>
                   {formatCurrency(agent)}
                 </p>
               </div>
               <div>
-                <p style={{ fontSize: '0.7rem', textTransform: 'uppercase', color: '#64748b', margin: '0 0 0.3rem' }}>
+                <p style={{ fontSize: '0.7rem', textTransform: 'uppercase', color: 'var(--text-muted)', margin: '0 0 0.3rem' }}>
                   Brokerage ({100 - splitPctNum}%)
                 </p>
-                <p style={{ fontSize: '1.5rem', fontWeight: 700, color: '#f59e0b', margin: 0 }}>
+                <p style={{ fontSize: '1.5rem', fontWeight: 700, color: '#d97706', margin: 0 }}>
                   {formatCurrency(brokerage)}
                 </p>
               </div>
@@ -143,12 +141,12 @@ export default function CommissionCalculatorPage() {
                 display: 'flex',
               }}
             >
-              <div style={{ width: `${splitPctNum}%`, background: '#4ade80', transition: 'width 0.3s' }} />
-              <div style={{ width: `${100 - splitPctNum}%`, background: '#f59e0b', transition: 'width 0.3s' }} />
+              <div style={{ width: `${splitPctNum}%`, background: '#059669', transition: 'width 0.3s' }} />
+              <div style={{ width: `${100 - splitPctNum}%`, background: '#d97706', transition: 'width 0.3s' }} />
             </div>
 
             {/* Summary line */}
-            <p style={{ fontSize: '0.75rem', color: '#94a3b8', margin: '0.75rem 0 0', textAlign: 'center' }}>
+            <p style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', margin: '0.75rem 0 0', textAlign: 'center' }}>
               {formatCurrency(salePriceNum)} sale &times; {commissionPctNum}% = {formatCurrency(total)} total commission
             </p>
           </div>
@@ -156,7 +154,7 @@ export default function CommissionCalculatorPage() {
 
         {/* Quick Presets */}
         <div style={{ marginTop: '1.5rem' }}>
-          <p style={{ fontSize: '0.75rem', color: '#64748b', marginBottom: '0.5rem' }}>Quick presets:</p>
+          <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginBottom: '0.5rem' }}>Quick presets:</p>
           <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
             {[
               { label: '$250K / 3%', price: '250000', pct: '3' },
@@ -175,9 +173,9 @@ export default function CommissionCalculatorPage() {
                 style={{
                   padding: '0.35rem 0.75rem',
                   borderRadius: '4px',
-                  border: '1px solid rgba(255,255,255,0.08)',
-                  background: 'rgba(255,255,255,0.03)',
-                  color: '#94a3b8',
+                  border: '1px solid var(--border)',
+                  background: '#f8fafc',
+                  color: 'var(--text-secondary)',
                   cursor: 'pointer',
                   fontSize: '0.75rem',
                 }}
@@ -196,8 +194,8 @@ const inputStyle: React.CSSProperties = {
   width: '100%',
   padding: '0.6rem 0.75rem',
   borderRadius: '6px',
-  border: '1px solid #444',
-  background: '#1e293b',
-  color: '#fff',
+  border: '1px solid var(--border)',
+  background: '#ffffff',
+  color: 'var(--text-primary)',
   fontSize: '0.9rem',
 };
