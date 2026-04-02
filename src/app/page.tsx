@@ -413,8 +413,9 @@ export default function HomePage() {
           <Image
             src="/tnds-command-center-logo.png"
             alt="TNDS Command Center"
-            width={140}
-            height={140}
+            width={200}
+            height={200}
+            style={{ borderRadius: '1rem', mixBlendMode: 'lighten' }}
           />
         </div>
         <h2>Enterprise-grade module architecture</h2>

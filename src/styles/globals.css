@@ -73,7 +73,7 @@ body {
 }
 
 .landing-main .section-intro {
-  color: rgba(226, 232, 240, 0.86);
+  color: rgba(226, 232, 240, 0.95);
 }
 
 .landing-main .section-note {
@@ -82,6 +82,8 @@ body {
 
 .landing-main .features h2,
 .landing-main .how h2 {
+  color: #f8fafc;
+  font-size: 2.1rem;
   text-align: center;
 }
 
@@ -111,7 +113,7 @@ body {
 
 .landing-main .module-card p,
 .landing-main .provider-card p {
-  color: rgba(226, 232, 240, 0.8);
+  color: rgba(226, 232, 240, 0.95);
 }
 
 .landing-main .module-card:hover,
@@ -239,7 +241,7 @@ body {
 }
 
 .hero-logo {
-  width: 132px;
+  width: 180px;
   height: auto;
   mix-blend-mode: multiply;
 }
@@ -1098,9 +1100,9 @@ body {
 /* ===== Differentiation Pillars ===== */
 .differentiation-grid {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(2, 1fr);
   gap: 2rem;
-  max-width: 1060px;
+  max-width: 960px;
   margin: 0 auto;
 }
 
@@ -1119,14 +1121,15 @@ body {
 
 .differentiation-pillar h3 {
   color: #f8fafc;
-  font-size: 1.1rem;
+  font-size: 1.15rem;
+  font-weight: 700;
   margin-bottom: 0.75rem;
 }
 
 .differentiation-pillar p {
-  color: rgba(226, 232, 240, 0.8);
-  font-size: 0.92rem;
-  line-height: 1.65;
+  color: rgba(226, 232, 240, 0.95);
+  font-size: 0.95rem;
+  line-height: 1.7;
 }
 
 /* ===== Training Coming Soon ===== */
@@ -1137,9 +1140,11 @@ body {
 }
 
 .training-coming-soon h2 {
-  font-size: 1.6rem;
+  font-size: 2rem;
   color: #f8fafc;
   margin-bottom: 0.5rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
 }
 
 .training-badge {
