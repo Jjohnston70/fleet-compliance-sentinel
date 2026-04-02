@@ -4,6 +4,7 @@ import { redirect } from 'next/navigation';
 import type { Metadata } from 'next';
 import { isClerkEnabled } from '@/lib/clerk';
 import AlertSettingsForm from '@/components/fleet-compliance/forms/AlertSettingsForm';
+import ManageBillingButton from '@/components/fleet-compliance/ManageBillingButton';
 
 export const dynamic = 'force-dynamic';
 export const metadata: Metadata = {
@@ -48,6 +49,14 @@ export default async function AlertSettingsPage() {
           serverFromEmail={fromEmail}
           serverResendConfigured={resendConfigured}
         />
+
+        <div className="fleet-compliance-list-card" style={{ marginTop: '2rem' }}>
+          <h3>Billing</h3>
+          <p className="fleet-compliance-table-note" style={{ marginBottom: '1rem' }}>
+            Open the Stripe billing portal to update payment methods, view invoices, or manage your subscription.
+          </p>
+          <ManageBillingButton />
+        </div>
       </section>
     </main>
   );

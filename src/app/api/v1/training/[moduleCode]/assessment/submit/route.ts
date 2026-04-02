@@ -25,6 +25,15 @@ function isValidEmail(value: string | null | undefined): value is string {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
 }
 
+function escapeHtml(value: string): string {
+  return value
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+}
+
 async function sendTrainingCompletionEmail(input: {
   adminEmail: string;
   employeeName: string;
@@ -46,13 +55,13 @@ async function sendTrainingCompletionEmail(input: {
 <html lang="en">
 <body style="font-family:system-ui,sans-serif;background:#f8fafc;margin:0;padding:20px;">
   <div style="max-width:680px;margin:0 auto;background:#fff;border:1px solid #e2e8f0;border-radius:10px;padding:20px;">
-    <h2 style="margin:0 0 12px;color:#0f2b46;">${orgName} Training Completion</h2>
-    <p style="margin:0 0 10px;color:#334155;"><strong>Employee:</strong> ${input.employeeName} (${input.employeeId})</p>
-    <p style="margin:0 0 10px;color:#334155;"><strong>Module:</strong> ${input.moduleTitle} (${input.moduleCode})</p>
-    <p style="margin:0 0 10px;color:#334155;"><strong>Completion Date:</strong> ${input.completionDate}</p>
-    <p style="margin:0 0 10px;color:#334155;"><strong>Assessment Score:</strong> ${input.scorePercentage}%</p>
-    <p style="margin:0 0 10px;color:#334155;"><strong>CFR Reference:</strong> ${input.cfrReference}</p>
-    <p style="margin:0 0 10px;color:#334155;"><strong>Certificate Path:</strong> <code>${input.certificateUrl}</code></p>
+    <h2 style="margin:0 0 12px;color:#0f2b46;">${escapeHtml(orgName)} Training Completion</h2>
+    <p style="margin:0 0 10px;color:#334155;"><strong>Employee:</strong> ${escapeHtml(input.employeeName)} (${escapeHtml(input.employeeId)})</p>
+    <p style="margin:0 0 10px;color:#334155;"><strong>Module:</strong> ${escapeHtml(input.moduleTitle)} (${escapeHtml(input.moduleCode)})</p>
+    <p style="margin:0 0 10px;color:#334155;"><strong>Completion Date:</strong> ${escapeHtml(input.completionDate)}</p>
+    <p style="margin:0 0 10px;color:#334155;"><strong>Assessment Score:</strong> ${escapeHtml(String(input.scorePercentage))}%</p>
+    <p style="margin:0 0 10px;color:#334155;"><strong>CFR Reference:</strong> ${escapeHtml(input.cfrReference)}</p>
+    <p style="margin:0 0 10px;color:#334155;"><strong>Certificate Path:</strong> <code>${escapeHtml(input.certificateUrl)}</code></p>
   </div>
 </body>
 </html>`;

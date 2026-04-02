@@ -2,6 +2,7 @@ import crypto from 'crypto';
 import { NextResponse } from 'next/server';
 import { ensureOrgScopingTables, getSQL } from '@/lib/fleet-compliance-db';
 import { syncModulesForPlanChange } from '@/lib/plan-gate';
+import { normalizePlanTier } from '@/lib/modules';
 import { recordOrgAuditEvent } from '@/lib/org-audit';
 
 export const runtime = 'nodejs';
@@ -36,9 +37,17 @@ function timingSafeEqualsHex(a: string, b: string): boolean {
   return crypto.timingSafeEqual(left, right);
 }
 
+const WEBHOOK_TIMESTAMP_TOLERANCE_SECONDS = 300; // 5 minutes, per Stripe recommendation
+
 function verifyStripeSignature(rawBody: string, header: string | null, secret: string): boolean {
   const parsed = parseStripeSignature(header);
   if (!parsed) return false;
+
+  const timestampSeconds = Number(parsed.timestamp);
+  if (!Number.isFinite(timestampSeconds)) return false;
+  const nowSeconds = Math.floor(Date.now() / 1000);
+  if (Math.abs(nowSeconds - timestampSeconds) > WEBHOOK_TIMESTAMP_TOLERANCE_SECONDS) return false;
+
   const payload = `${parsed.timestamp}.${rawBody}`;
   const expected = crypto
     .createHmac('sha256', secret)
@@ -204,7 +213,8 @@ async function handleSubscriptionEvent(sql: ReturnType<typeof getSQL>, event: St
   }
 
   const stripeCustomerId = typeof obj.customer === 'string' ? obj.customer : null;
-  const nextPlan = subscriptionPlanFromObject(obj);
+  const rawPlan = subscriptionPlanFromObject(obj);
+  const nextPlan = normalizePlanTier(rawPlan);
   const nextStatus = typeof obj.status === 'string' ? obj.status : 'unknown';
   const nextPeriodEnd = subscriptionPeriodEnd(obj);
 

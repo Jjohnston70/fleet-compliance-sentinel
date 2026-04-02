@@ -28,7 +28,7 @@ function AuthNav() {
         <>
           <li><Link href="/fleet-compliance">Fleet-Compliance</Link></li>
           <li><Link href="/penny">Penny</Link></li>
-          <li><UserButton afterSignOutUrl="/" /></li>
+          <li><UserButton /></li>
         </>
       )}
     </ul>

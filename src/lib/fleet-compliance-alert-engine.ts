@@ -31,6 +31,20 @@ export interface FleetComplianceAlertRunSummary {
   errors: string[];
 }
 
+function escapeHtml(value: string): string {
+  return value
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+}
+
+function extractEmail(value: string): string | null {
+  const match = value.match(/[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}/i);
+  return match ? match[0].toLowerCase() : null;
+}
+
 const ALERT_WINDOWS: { window: AlertWindow; minDays: number; maxDays: number }[] = [
   { window: 'overdue', minDays: -Infinity, maxDays: -1 },
   { window: 'due-today', minDays: 0, maxDays: 0 },
@@ -75,9 +89,9 @@ function buildEmailHtml(ownerEmail: string, items: FleetComplianceAlertItem[], o
     .map(
       (item) => `
       <tr>
-        <td style="padding:8px 12px;border-bottom:1px solid #e5e7eb;font-weight:600;color:${item.window === 'overdue' ? '#dc2626' : item.window === 'due-today' ? '#d97706' : '#111827'}">${item.title}</td>
-        <td style="padding:8px 12px;border-bottom:1px solid #e5e7eb;color:#6b7280;text-transform:capitalize">${item.severity}</td>
-        <td style="padding:8px 12px;border-bottom:1px solid #e5e7eb;color:#6b7280">${dueLine(item)}</td>
+        <td style="padding:8px 12px;border-bottom:1px solid #e5e7eb;font-weight:600;color:${item.window === 'overdue' ? '#dc2626' : item.window === 'due-today' ? '#d97706' : '#111827'}">${escapeHtml(item.title)}</td>
+        <td style="padding:8px 12px;border-bottom:1px solid #e5e7eb;color:#6b7280;text-transform:capitalize">${escapeHtml(item.severity)}</td>
+        <td style="padding:8px 12px;border-bottom:1px solid #e5e7eb;color:#6b7280">${escapeHtml(dueLine(item))}</td>
       </tr>`
     )
     .join('');
@@ -91,7 +105,7 @@ function buildEmailHtml(ownerEmail: string, items: FleetComplianceAlertItem[], o
       <table width="600" cellpadding="0" cellspacing="0" style="background:#ffffff;border:1px solid #e5e7eb;border-radius:8px;overflow:hidden">
         <tr>
           <td style="background:#111827;padding:20px 24px">
-            <p style="margin:0;color:#ffffff;font-size:18px;font-weight:700">${orgName} — Compliance Reminder</p>
+            <p style="margin:0;color:#ffffff;font-size:18px;font-weight:700">${escapeHtml(orgName)} — Compliance Reminder</p>
             <p style="margin:4px 0 0;color:#9ca3af;font-size:13px">${items.length} item${items.length !== 1 ? 's' : ''} require attention</p>
           </td>
         </tr>
@@ -114,7 +128,7 @@ function buildEmailHtml(ownerEmail: string, items: FleetComplianceAlertItem[], o
         </tr>
         <tr>
           <td style="background:#f9fafb;padding:16px 24px;border-top:1px solid #e5e7eb">
-            <p style="margin:0;font-size:12px;color:#9ca3af">This is an automated compliance reminder from ${orgName}. Sent to ${ownerEmail}.</p>
+            <p style="margin:0;font-size:12px;color:#9ca3af">This is an automated compliance reminder from ${escapeHtml(orgName)}. Sent to ${escapeHtml(ownerEmail)}.</p>
           </td>
         </tr>
       </table>
@@ -158,7 +172,8 @@ export async function runFleetComplianceAlertSweep(
   const apiKey = process.env.RESEND_API_KEY;
   const dryRun = options.dryRun ?? !apiKey;
   const orgName = process.env.FLEET_COMPLIANCE_ORG_NAME || 'Fleet Compliance';
-  const managerEmail = options.managerEmail || process.env.FLEET_COMPLIANCE_ALERT_EMAIL || 'compliance@company.com';
+  const rawManagerEmail = options.managerEmail || process.env.FLEET_COMPLIANCE_ALERT_EMAIL || '';
+  const managerEmail = extractEmail(rawManagerEmail) || '';
 
   const openItems = suspenseItems.filter((item: FleetComplianceSuspenseRecord) => item.status === 'open');
 
@@ -180,19 +195,17 @@ export async function runFleetComplianceAlertSweep(
     });
   }
 
-  // Group by owner for per-owner emails
+  // Group by owner for per-owner emails (skip non-email values)
   const byOwner = new Map<string, FleetComplianceAlertItem[]>();
   for (const item of alertItems) {
-    const key = item.ownerEmail;
+    const key = extractEmail(item.ownerEmail);
+    if (!key) continue;
     if (!byOwner.has(key)) byOwner.set(key, []);
     byOwner.get(key)!.push(item);
   }
 
-  // Always include manager summary email
-  if (alertItems.length > 0 && !byOwner.has(managerEmail)) {
-    byOwner.set(managerEmail, alertItems);
-  } else if (alertItems.length > 0 && managerEmail !== '') {
-    // Ensure manager gets all items, not just their own
+  // Always include manager summary email (only if valid email)
+  if (alertItems.length > 0 && managerEmail) {
     byOwner.set(managerEmail, alertItems);
   }
 

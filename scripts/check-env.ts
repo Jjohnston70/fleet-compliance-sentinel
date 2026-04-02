@@ -29,6 +29,7 @@ const SPECS: EnvVarSpec[] = [
   { name: 'NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY', category: 'REQUIRED', reason: 'Stripe publishable key used by frontend Stripe integrations' },
   { name: 'STRIPE_STARTER_PRICE_ID', category: 'REQUIRED', reason: 'Stripe price id for Starter subscription plan' },
   { name: 'STRIPE_PRO_PRICE_ID', category: 'REQUIRED', reason: 'Stripe price id for Professional subscription plan' },
+  { name: 'STRIPE_WEBHOOK_SECRET', category: 'REQUIRED', reason: 'Stripe webhook signature verification — billing is broken without this' },
 
   // OPTIONAL: monitoring, alerts, and access controls
   { name: 'RESEND_API_KEY', category: 'OPTIONAL', reason: 'Email delivery for Fleet-Compliance alert engine' },

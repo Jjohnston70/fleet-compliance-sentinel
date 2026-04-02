@@ -7,6 +7,13 @@ const nextConfig = {
   outputFileTracingIncludes: {
     '/*': ['./tooling/command-center/dist/**/*'],
   },
+  outputFileTracingExcludes: {
+    '/*': [
+      './tooling/ML-SIGNAL-STACK-TNCC/**',
+      './tooling/ML-EIA-PETROLEUM-INTEL/**',
+      './tooling/MOD-PAPERSTACK-PP/**',
+    ],
+  },
   images: {
     formats: ['image/avif', 'image/webp'],
   },
@@ -15,6 +22,17 @@ const nextConfig = {
   },
   compress: true,
   poweredByHeader: false,
+  webpack: (config) => {
+    config.watchOptions = {
+      ...config.watchOptions,
+      ignored: [
+        '**/tooling/ML-SIGNAL-STACK-TNCC/**',
+        '**/tooling/ML-EIA-PETROLEUM-INTEL/**',
+        '**/tooling/MOD-PAPERSTACK-PP/**',
+      ],
+    };
+    return config;
+  },
   async headers() {
     return [
       {
