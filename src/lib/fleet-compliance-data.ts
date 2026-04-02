@@ -296,7 +296,8 @@ async function loadCollection(collection: string, orgId: string): Promise<RawRow
       ORDER BY imported_at ASC
     `;
     return rows.map((r) => r.data as RawRow);
-  } catch {
+  } catch (error: unknown) {
+    console.error('[fleet-compliance-data] failed to load collection rows', { collection, orgId, error });
     return [];
   }
 }
@@ -343,7 +344,8 @@ async function loadTrainingDeadlineRows(orgId: string): Promise<TrainingDeadline
       moduleStatus: s(row.module_status),
       deadline: normalizeDateLike(s(row.deadline)),
     }));
-  } catch {
+  } catch (error: unknown) {
+    console.error('[fleet-compliance-data] failed to load training deadline rows', { orgId, error });
     return [];
   }
 }
@@ -372,7 +374,8 @@ async function loadHazmatTrainingRecurrenceRows(orgId: string): Promise<HazmatRe
       moduleTitle: s(row.module_title),
       nextDueDate: normalizeDateLike(s(row.next_due_date)),
     }));
-  } catch {
+  } catch (error: unknown) {
+    console.error('[fleet-compliance-data] failed to load hazmat training recurrence rows', { orgId, error });
     return [];
   }
 }

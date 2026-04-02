@@ -9,6 +9,7 @@ export const TRAINING_CORE_TABLES = [
 
 export const TRAINING_COMPLIANCE_TABLES = [
   ...TRAINING_CORE_TABLES,
+  'hazmat_training_modules',
   'hazmat_training_records',
   'training_certificate_files',
 ] as const;

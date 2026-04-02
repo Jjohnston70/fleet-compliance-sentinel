@@ -16,6 +16,9 @@ export const dynamic = 'force-dynamic';
 
 type ReportType = 'org_completion' | 'employee_transcript' | 'audit_package' | 'hours';
 type ReportFormat = 'json' | 'csv' | 'pdf';
+const DOT_CERTIFICATION_STATEMENT = 'Employee has been trained and tested per 49 CFR 172.704(a).';
+const DOT_TRAINER_NAME = process.env.FLEET_COMPLIANCE_TRAINER_NAME || 'True North Data Strategies';
+const DOT_TRAINER_ADDRESS = process.env.FLEET_COMPLIANCE_TRAINER_ADDRESS || 'Trainer address not configured';
 
 function toIsoDate(value: unknown): string {
   if (!value) return '';
@@ -37,6 +40,22 @@ function ensureFormat(value: string | null): ReportFormat {
   if (value === 'csv') return value;
   if (value === 'pdf') return value;
   return 'json';
+}
+
+function buildPdfTruncationNotice(shown: number, total: number): string | null {
+  if (total <= shown) return null;
+  return `NOTICE: Showing ${shown} of ${total} rows. Use CSV export for complete data.`;
+}
+
+function buildTrainingMaterialsDescription(input: {
+  moduleTitle: string;
+  cfrReference: string;
+  phmsaEquivalent: string;
+}): string {
+  const title = input.moduleTitle || 'Hazmat training module';
+  const cfrReference = input.cfrReference || '49 CFR 172 Subpart H';
+  const phmsaEquivalent = input.phmsaEquivalent || 'PHMSA-equivalent module';
+  return `${title}; CFR scope ${cfrReference}; ${phmsaEquivalent}`;
 }
 
 export async function GET(request: Request) {
@@ -136,11 +155,14 @@ export async function GET(request: Request) {
     }
 
     if (format === 'pdf') {
+      const visibleRows = normalized.slice(0, 32);
+      const truncationNotice = buildPdfTruncationNotice(visibleRows.length, normalized.length);
       const lines = [
         `Organization: ${orgName}`,
         `Report Date: ${exportDate}`,
         `Rows: ${normalized.length}`,
-        ...normalized.slice(0, 32).map((row) =>
+        ...(truncationNotice ? [truncationNotice] : []),
+        ...visibleRows.map((row) =>
           `${row.employee_name} | ${row.module_code} | ${row.status} | due ${row.next_due_date || 'n/a'} | cert ${row.certificate_status}`
         ),
       ];
@@ -234,11 +256,14 @@ export async function GET(request: Request) {
 
     if (format === 'pdf') {
       const employeeName = normalized[0]?.employee_name || employeeId;
+      const visibleRows = normalized.slice(0, 32);
+      const truncationNotice = buildPdfTruncationNotice(visibleRows.length, normalized.length);
       const lines = [
         `Organization: ${orgName}`,
         `Employee: ${employeeName} (${employeeId})`,
         `Report Date: ${exportDate}`,
-        ...normalized.slice(0, 32).map((row) =>
+        ...(truncationNotice ? [truncationNotice] : []),
+        ...visibleRows.map((row) =>
           `${row.module_code} | ${row.status} | score ${row.assessment_score || 'n/a'} | due ${row.next_due_date || 'n/a'}`
         ),
       ];
@@ -300,10 +325,13 @@ export async function GET(request: Request) {
     }
 
     if (format === 'pdf') {
+      const visibleRows = normalized.slice(0, 34);
+      const truncationNotice = buildPdfTruncationNotice(visibleRows.length, normalized.length);
       const lines = [
         `Organization: ${orgName}`,
         `Report Date: ${exportDate}`,
-        ...normalized.slice(0, 34).map((row) =>
+        ...(truncationNotice ? [truncationNotice] : []),
+        ...visibleRows.map((row) =>
           `${row.employee_id} | modules ${row.modules_passed}/${row.module_rows} | ${row.training_hours} hours`
         ),
       ];
@@ -328,10 +356,17 @@ export async function GET(request: Request) {
       hr.employee_id,
       COALESCE(hr.employee_name, hr.employee_id) AS employee_name,
       hr.module_code,
+      hr.module_title,
       hr.status,
+      hr.credit_pathway,
+      hr.completion_date,
       hr.next_due_date,
-      hr.certificate_url
+      hr.certificate_url,
+      hm.cfr_reference,
+      hm.phmsa_equivalent
     FROM hazmat_training_records hr
+    LEFT JOIN hazmat_training_modules hm
+      ON hm.module_code = hr.module_code
     WHERE hr.org_id = ${orgId}
     ORDER BY hr.employee_id, hr.module_code
   `;
@@ -345,8 +380,21 @@ export async function GET(request: Request) {
     employee_id: String(row.employee_id || ''),
     employee_name: String(row.employee_name || ''),
     module_code: String(row.module_code || ''),
+    module_title: String(row.module_title || ''),
     status: String(row.status || ''),
+    credit_pathway: String(row.credit_pathway || ''),
+    completion_date: toIsoDate(row.completion_date),
     next_due_date: toIsoDate(row.next_due_date),
+    cfr_reference: String(row.cfr_reference || ''),
+    phmsa_equivalent: String(row.phmsa_equivalent || ''),
+    training_materials_description: buildTrainingMaterialsDescription({
+      moduleTitle: String(row.module_title || ''),
+      cfrReference: String(row.cfr_reference || ''),
+      phmsaEquivalent: String(row.phmsa_equivalent || ''),
+    }),
+    trainer_name: DOT_TRAINER_NAME,
+    trainer_address: DOT_TRAINER_ADDRESS,
+    certification_statement: DOT_CERTIFICATION_STATEMENT,
     certificate_status: row.certificate_url ? 'available' : 'missing',
   }));
 
@@ -359,7 +407,23 @@ export async function GET(request: Request) {
   });
 
   if (format === 'csv') {
-    const headers = ['employee_id', 'employee_name', 'module_code', 'status', 'next_due_date', 'certificate_status'];
+    const headers = [
+      'employee_id',
+      'employee_name',
+      'module_code',
+      'module_title',
+      'status',
+      'credit_pathway',
+      'completion_date',
+      'next_due_date',
+      'cfr_reference',
+      'phmsa_equivalent',
+      'training_materials_description',
+      'trainer_name',
+      'trainer_address',
+      'certification_statement',
+      'certificate_status',
+    ];
     const csv = toCsv(headers, auditRows);
     return new Response(csv, {
       headers: {
@@ -370,14 +434,19 @@ export async function GET(request: Request) {
   }
 
   if (format === 'pdf') {
+    const visibleRows = auditRows.slice(0, 30);
+    const truncationNotice = buildPdfTruncationNotice(visibleRows.length, auditRows.length);
     const lines = [
       `Organization: ${orgName}`,
       `Report Date: ${exportDate}`,
       `Total Records: ${auditRows.length}`,
       `Overdue Items: ${overdue.length}`,
       `Missing Certificates: ${missingCertificates.length}`,
-      ...auditRows.slice(0, 30).map((row) =>
-        `${row.employee_name} | ${row.module_code} | ${row.status} | due ${row.next_due_date || 'n/a'} | cert ${row.certificate_status}`
+      `Trainer of Record: ${DOT_TRAINER_NAME} | ${DOT_TRAINER_ADDRESS}`,
+      `Certification: ${DOT_CERTIFICATION_STATEMENT}`,
+      ...(truncationNotice ? [truncationNotice] : []),
+      ...visibleRows.map((row) =>
+        `${row.employee_name} | ${row.module_code} | ${row.status} | completed ${row.completion_date || 'n/a'} | due ${row.next_due_date || 'n/a'} | cert ${row.certificate_status}`
       ),
     ];
     const pdf = toSimplePdf('DOT Audit Training Package', lines);

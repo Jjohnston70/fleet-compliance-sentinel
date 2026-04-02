@@ -177,6 +177,36 @@ async function runHardDeleteForOrg(orgId: string): Promise<RowCounts> {
         RETURNING id
       `
     : [];
+  const trainingProgressRows = tableAvailability.training_progress && tableAvailability.training_assignments
+    ? await sql`
+        DELETE FROM training_progress
+        WHERE assignment_id IN (
+          SELECT id FROM training_assignments WHERE org_id = ${orgId}
+        )
+        RETURNING id
+      `
+    : [];
+  const trainingAssignmentRows = tableAvailability.training_assignments
+    ? await sql`
+        DELETE FROM training_assignments
+        WHERE org_id = ${orgId}
+        RETURNING id
+      `
+    : [];
+  const trainingPlanRows = tableAvailability.training_plans
+    ? await sql`
+        DELETE FROM training_plans
+        WHERE org_id = ${orgId}
+        RETURNING id
+      `
+    : [];
+  const hazmatTrainingRows = tableAvailability.hazmat_training_records
+    ? await sql`
+        DELETE FROM hazmat_training_records
+        WHERE org_id = ${orgId}
+        RETURNING id
+      `
+    : [];
   const webhookRows = tableAvailability.stripe_webhook_events
     ? await sql`
         DELETE FROM stripe_webhook_events
@@ -207,6 +237,10 @@ async function runHardDeleteForOrg(orgId: string): Promise<RowCounts> {
     fleet_compliance_error_events: errorEventRows.length,
     cron_log: cronRows.length,
     subscriptions: subscriptionRows.length,
+    training_progress: trainingProgressRows.length,
+    training_assignments: trainingAssignmentRows.length,
+    training_plans: trainingPlanRows.length,
+    hazmat_training_records: hazmatTrainingRows.length,
     stripe_webhook_events: webhookRows.length,
     organization_contacts: contactRows.length,
     org_audit_events: orgAuditRows.length,
@@ -227,6 +261,10 @@ async function getTableAvailability(): Promise<TableAvailability> {
     'fleet_compliance_error_events',
     'cron_log',
     'subscriptions',
+    'training_progress',
+    'training_assignments',
+    'training_plans',
+    'hazmat_training_records',
     'stripe_webhook_events',
     'organization_contacts',
     'org_audit_events',

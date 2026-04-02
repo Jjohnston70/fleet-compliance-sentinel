@@ -82,6 +82,7 @@ export async function GET(request: Request) {
   const certificateId = String(record.id);
 
   const exists = await certificateFileExists(certificateUrl);
+  let regenerated = false;
   if (!exists) {
     await generateTrainingCertificate({
       certificateId,
@@ -97,6 +98,7 @@ export async function GET(request: Request) {
       phmsaEquivalent: moduleMeta.phmsaEquivalent,
       certificateUrl,
     });
+    regenerated = true;
   }
 
   const pdf = await readTrainingCertificateBuffer(certificateUrl);
@@ -115,6 +117,19 @@ export async function GET(request: Request) {
       role,
     },
   });
+  if (regenerated) {
+    auditLog({
+      action: 'data.write',
+      userId,
+      orgId,
+      resourceType: 'training.certificate.regenerated',
+      metadata: {
+        moduleCode,
+        employeeId,
+        role,
+      },
+    });
+  }
 
   const safeModule = moduleCode.replace(/[^A-Za-z0-9.-]/g, '_');
   const safeDate = completionDate.replace(/[^0-9-]/g, '');

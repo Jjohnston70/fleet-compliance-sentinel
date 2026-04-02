@@ -216,6 +216,10 @@ export async function POST(
                 WHEN stats.total > 0 AND stats.passed = stats.total THEN 'complete'
                 ELSE 'in_progress'
               END,
+              deadline = CASE
+                WHEN stats.total > 0 AND stats.passed = stats.total THEN NULL
+                ELSE ta.deadline
+              END,
               completed_at = CASE
                 WHEN stats.total > 0 AND stats.passed = stats.total THEN NOW()
                 ELSE NULL

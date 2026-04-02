@@ -20,7 +20,6 @@ type ContextSections = {
 
 type TrainingRecordRow = {
   employeeId: string;
-  employeeName: string;
   moduleCode: string;
   moduleTitle: string;
   status: string;
@@ -201,7 +200,6 @@ async function loadTrainingContextRows(orgId: string): Promise<{
       sql`
         SELECT
           employee_id,
-          employee_name,
           module_code,
           module_title,
           status,
@@ -232,7 +230,6 @@ async function loadTrainingContextRows(orgId: string): Promise<{
     return {
       trainingRecords: records.map((row) => ({
         employeeId: stringValue(row.employee_id, ''),
-        employeeName: stringValue(row.employee_name, ''),
         moduleCode: stringValue(row.module_code, ''),
         moduleTitle: stringValue(row.module_title, ''),
         status: stringValue(row.status, 'unknown'),
@@ -334,7 +331,7 @@ export async function buildOrgContext(orgId: string): Promise<string> {
   );
 
   const trainingRecords = trainingContext.trainingRecords.map((row) => {
-    const employeeLabel = row.employeeName || normalizeDriverId(row.employeeId);
+    const employeeLabel = normalizeDriverId(row.employeeId);
     const status = titleCase(row.status.replace(/_/g, ' '));
     return {
       line: `- Employee: ${employeeLabel} | Module: ${row.moduleCode} ${row.moduleTitle} | Status: ${status} | Completed: ${row.completionDate} | Next Due: ${row.nextDueDate}`,

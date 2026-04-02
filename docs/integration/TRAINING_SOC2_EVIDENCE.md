@@ -39,11 +39,27 @@ Scope: training-command reporting, certificate delivery, and Penny training/comp
 
 ## 4) Retention and Storage
 
-- Certificates are generated and persisted under:
-  - `storage/{org_id}/training-certs/{employee_id}/{module_code}_{date}.pdf`
-- Application path recorded in DB:
+- Certificates are generated and persisted in durable DB storage (`training_certificate_files`) with authenticated read access.
+- Application path is still recorded in compliance records for deterministic lookup:
   - `/{org_id}/training-certs/{employee_id}/{module_code}_{date}.pdf`
-- Files are served through authenticated API route and not public static hosting.
+- Certificate download route records both:
+  - `training.certificate` (read event)
+  - `training.certificate.regenerated` when a missing binary is regenerated before serving
+- Offboarding hard delete now includes training tables:
+  - `training_progress`
+  - `training_assignments`
+  - `training_plans`
+  - `hazmat_training_records`
+
+### Training Data Retention Policy (49 CFR 172.704(d) + SOC 2 CC6.5)
+
+- Active tenant:
+  - Keep `hazmat_training_records`, `training_assignments`, and `training_progress` for the current employment/compliance cycle.
+- Canceled tenant:
+  - Soft delete at 30 days.
+  - Hard delete at 60 days through the offboarding lifecycle sweep.
+- Auditability:
+  - Offboarding row counts are captured in org metadata and org audit events.
 
 ## 5) Penny Integration Evidence
 
@@ -54,6 +70,7 @@ Scope: training-command reporting, certificate delivery, and Penny training/comp
   - `src/lib/penny-catalog.ts`
 - Penny org context includes live training completion/deadline rows via:
   - `src/lib/penny-context.ts`
+- Penny training context is de-identified to employee IDs (no employee full names).
 
 ## 6) Operational Checks
 
