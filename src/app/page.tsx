@@ -160,14 +160,14 @@ const notebookLmLinks = [
 const pricingTiers = [
   {
     name: 'STARTER',
-    price: '$149/mo',
+    price: '$199/mo',
     cta: 'Start Free Trial',
     href: '/sign-up',
     featured: false,
+    outcome: 'See your entire fleet in one place. Track every driver CDL expiration, vehicle inspection, permit renewal, and DOT deadline. Daily automated alerts sweep before deadlines hit — no spreadsheet required.',
     features: [
       'Up to 15 vehicles',
       'Up to 10 drivers',
-      'Compliance alerts and reminders',
       'Bulk Excel import',
       'FMCSA carrier lookups',
       'Telematics integration (1 provider)',
@@ -176,15 +176,15 @@ const pricingTiers = [
   },
   {
     name: 'PROFESSIONAL',
-    price: '$299/mo',
+    price: '$399/mo',
     cta: 'Start Free Trial',
     href: '/sign-up',
     featured: true,
+    outcome: 'Everything in Starter, plus Pipeline Penny — your AI compliance assistant. Ask Penny what the regulation requires AND where your drivers currently stand against it. Penny pulls the cited federal CFR answer and checks it against your actual driver records — CDL status, medical card expiration, drug test history, hazmat endorsements — so you know the rule and whether your fleet is in or out of compliance right now. No guessing. No digging through spreadsheets. Penny reads the regulation and reads your data at the same time. Multi-LLM support (Claude, GPT-4o, Gemini, local Ollama).',
+    pennyExplainer: true,
     features: [
       'Up to 50 vehicles',
       'Up to 25 drivers',
-      'Everything in Starter',
-      'Pipeline Penny AI assistant (multi-LLM)',
       'AI invoice extraction (12 vendors)',
       'Telematics integration (all providers)',
       'ML forecasting dashboards',
@@ -197,6 +197,7 @@ const pricingTiers = [
     cta: 'Contact Us',
     href: 'https://www.truenorthstrategyops.com/contact',
     featured: false,
+    outcome: 'Full module suite. Custom deployment options: cloud-hosted, on-premise with local AI (Ollama), or hybrid for data residency requirements. Dedicated onboarding. SLA guarantee. SOC 2 compliance documentation available on request for procurement and audit teams. Google Cloud migration in progress — enhanced scalability and FedRAMP pathway for government contracting. Enterprise deployments include your own named AI assistant on the Pipeline X engine.',
     features: [
       'Unlimited vehicles and drivers',
       'Everything in Professional',
@@ -223,13 +224,11 @@ export default function HomePage() {
             priority
           />
         </div>
-        <h1>Fleet Compliance, Simplified.</h1>
+        <h1>The compliance platform that knows the regulations — and knows your fleet.</h1>
         <p className="hero-sub">
-          Track drivers, vehicles, permits, and DOT deadlines - with an AI compliance assistant that knows the regulations.
-        </p>
-        <p className="hero-desc">
-          Fleet-Compliance Sentinel keeps every requirement visible, every deadline tracked, and every team member aligned.
-          Pipeline Penny adds CFR-grounded answers so your staff can move faster without guessing.
+          Fleet-Compliance Sentinel tracks every driver, vehicle, permit, and DOT
+          deadline. Pipeline Penny answers regulatory questions cited directly from
+          federal CFR — not from a guess.
         </p>
         <div className="hero-actions">
           <Link href="/sign-up" className="btn-primary">
@@ -242,12 +241,12 @@ export default function HomePage() {
         <div className="hero-trust">
           <div className="hero-trust-items">
             <div className="hero-trust-item">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><polyline points="9 12 11 14 15 10"/></svg>
-              <span>SBA-Certified VOSB/SDVOSB</span>
-            </div>
-            <div className="hero-trust-item">
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
               <span>SOC 2 Type I Audit-Ready</span>
+            </div>
+            <div className="hero-trust-item">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><polyline points="9 12 11 14 15 10"/></svg>
+              <span>SBA-Certified VOSB/SDVOSB</span>
             </div>
             <div className="hero-trust-item">
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
@@ -301,6 +300,22 @@ export default function HomePage() {
         </div>
       </section>
 
+      <section className="trust-rail">
+        <div className="trust-rail-items">
+          <span>SOC 2 Type I Observation Window Active</span>
+          <span className="trust-rail-dot">&middot;</span>
+          <span>OWASP LLM Top 10 Assessed</span>
+          <span className="trust-rail-dot">&middot;</span>
+          <span>25,000+ CFR Chunks Indexed</span>
+          <span className="trust-rail-dot">&middot;</span>
+          <span>SDVOSB Certified</span>
+          <span className="trust-rail-dot">&middot;</span>
+          <span>Colorado Springs, CO</span>
+          <span className="trust-rail-dot">&middot;</span>
+          <a href="https://status.pipelinepunks.com" target="_blank" rel="noopener noreferrer">status.pipelinepunks.com</a>
+        </div>
+      </section>
+
       <section className="features">
         <h2>Fleet-Compliance Features</h2>
         <div className="feature-grid">
@@ -316,6 +331,7 @@ export default function HomePage() {
 
       <section className="how">
         <h2>Your AI Compliance Assistant</h2>
+        <p className="powered-by-tag">Powered by Pipeline X</p>
         <div className="steps">
           <article className="step">
             <div className="step-num">1</div>
@@ -464,6 +480,23 @@ export default function HomePage() {
               {tier.featured && <span className="pricing-badge">Most Popular</span>}
               <p className="pricing-tier">{tier.name}</p>
               <p className="pricing-price">{tier.price}</p>
+              {tier.outcome && <p className="pricing-outcome">{tier.outcome}</p>}
+              {'pennyExplainer' in tier && tier.pennyExplainer && (
+                <div className="penny-explainer">
+                  <h4>What is Pipeline Penny?</h4>
+                  <p>
+                    Pipeline Penny is an AI assistant built on 13 sections of the FMCSA/DOT
+                    regulatory manual (49 CFR Parts 040-397). When you ask a compliance
+                    question, she searches the actual federal regulations AND cross-references
+                    your live fleet data — your drivers, CDL expirations, medical cards, drug
+                    test records, permits, and open action items. You get two things at once:
+                    what the rule says, and whether your drivers are currently meeting it.
+                    She doesn&apos;t make things up. She shows her sources.
+                    Think of her as a compliance analyst who has memorized every federal
+                    regulation and always has your driver files open on the desk.
+                  </p>
+                </div>
+              )}
               <ul className="pricing-features">
                 {tier.features.map((item) => (
                   <li key={`${tier.name}-${item}`}>{item}</li>
@@ -475,36 +508,29 @@ export default function HomePage() {
             </article>
           ))}
         </div>
-        <p className="pricing-note">All plans include a 30-day free trial. No credit card required.</p>
-      </section>
-
-      <section className="who trust">
-        <h2>SOC 2 Type I Audit-Ready</h2>
-        <div className="who-grid">
-          <div className="who-item">
-            <span className="who-marker">-</span>
-            <p>Your data is encrypted, org-isolated, and never used to train AI models.</p>
-          </div>
-          <div className="who-item">
-            <span className="who-marker">-</span>
-            <p>Veteran-owned. Built in Colorado.</p>
-          </div>
-        </div>
+        <p className="pricing-note">First 20 clients receive a 30-day free trial. No credit card required. After Cohort 1 reaches capacity, standard 14-day trial applies.</p>
       </section>
 
       <section className="cta">
-        <h2>Ready to stop tracking compliance in spreadsheets?</h2>
-        <p>Launch Fleet-Compliance Sentinel for your team and activate Pipeline Penny when you need AI support.</p>
-        <div className="cta-actions">
-          <Link href="/sign-up" className="btn-primary">
-            Start your 30-day free trial
-          </Link>
-          <Link href="https://www.truenorthstrategyops.com/contact" className="btn-secondary">
-            Book a Demo
-          </Link>
-          <a href="tel:555-555-5555" className="btn-secondary">
-            Call 555-555-5555
-          </a>
+        <div className="cta-split">
+          <div className="cta-block">
+            <h2>Stop tracking compliance in spreadsheets.</h2>
+            <p>Fleet-Compliance Sentinel runs on your existing data.</p>
+            <Link href="/sign-up" className="btn-primary">
+              Start your free trial &rarr;
+            </Link>
+          </div>
+          <div className="cta-block">
+            <h2>Running 20+ vehicles or need a custom build?</h2>
+            <p>Talk directly with Jacob.</p>
+            <div className="cta-contact">
+              <Link href="https://www.truenorthstrategyops.com/contact" className="btn-secondary">
+                Book a Demo
+              </Link>
+              <a href="tel:555-555-5555" className="cta-phone">555-555-5555</a>
+              <a href="mailto:jacob@truenorthstrategyops.com" className="cta-email">jacob@truenorthstrategyops.com</a>
+            </div>
+          </div>
         </div>
       </section>
 

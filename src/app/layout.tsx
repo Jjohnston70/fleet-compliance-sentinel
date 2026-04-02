@@ -7,8 +7,8 @@ import { isClerkEnabled } from '@/lib/clerk';
 
 export const metadata: Metadata = {
   title: {
-    default: 'Pipeline Penny | True North Data Strategies',
-    template: '%s | Pipeline Penny',
+    default: 'Fleet-Compliance Sentinel — Powered by Pipeline X | Pipeline Punks',
+    template: '%s | Fleet-Compliance Sentinel',
   },
   icons: {
     icon: [
@@ -19,13 +19,17 @@ export const metadata: Metadata = {
     apple: '/PipelineX-penny.png',
   },
   description:
-    'Pipeline Penny helps business owners search and query their SOPs, contracts, and internal knowledge in plain English.',
+    'DOT/FMCSA fleet compliance platform with Pipeline Penny, your AI assistant built on Pipeline X. Track drivers, permits, and deadlines. Ask Penny what the regulation says and whether your fleet is currently in compliance.',
   keywords: [
+    'fleet compliance',
+    'DOT compliance',
+    'FMCSA',
     'pipeline penny',
-    'small business AI',
-    'knowledge base assistant',
-    'business operations',
+    'fleet management',
+    'CDL tracking',
+    'compliance alerts',
     'True North Data Strategies',
+    'Pipeline Punks',
   ],
   authors: [{ name: 'Jacob Johnston', url: 'https://truenorthstrategyops.com' }],
   creator: 'True North Data Strategies LLC',
@@ -33,17 +37,17 @@ export const metadata: Metadata = {
   openGraph: {
     type: 'website',
     locale: 'en_US',
-    url: 'https://truenorthstrategyops.com',
-    siteName: 'Pipeline Penny',
-    title: 'Pipeline Penny',
+    url: 'https://pipelinepunks.com',
+    siteName: 'Fleet-Compliance Sentinel',
+    title: 'Fleet-Compliance Sentinel — Powered by Pipeline X',
     description:
-      'Ask questions about your business knowledge and get answers from your real documents.',
-    images: [{ url: '/og-default.png', width: 1200, height: 630, alt: 'True North Data Strategies' }],
+      'DOT/FMCSA fleet compliance platform with Pipeline Penny AI. Track drivers, permits, and deadlines.',
+    images: [{ url: '/og-default.png', width: 1200, height: 630, alt: 'Fleet-Compliance Sentinel by Pipeline Punks' }],
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Pipeline Penny',
-    description: 'Your business knowledge, searchable and queryable.',
+    title: 'Fleet-Compliance Sentinel — Pipeline Punks',
+    description: 'DOT/FMCSA fleet compliance with AI-powered regulatory guidance from Pipeline Penny.',
     images: ['/og-default.png'],
   },
 };
