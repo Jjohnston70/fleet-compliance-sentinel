@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import Link from 'next/link';
 
 interface TrainingPlan {
   id: string;
@@ -63,8 +64,31 @@ export default function TrainingManagement() {
       }
       const plansData = await plansRes.json();
       const assignData = await assignRes.json();
-      setPlans(Array.isArray(plansData) ? plansData : plansData.plans || []);
-      setAssignments(Array.isArray(assignData) ? assignData : assignData.assignments || []);
+      const rawPlans = Array.isArray(plansData) ? plansData : plansData.plans || [];
+      const normalizedPlans: TrainingPlan[] = rawPlans.map((plan: any) => ({
+        id: String(plan.id),
+        name: String(plan.name || plan.plan_name || 'Untitled Plan'),
+        description: String(plan.description || ''),
+        module_count: Number(plan.module_count || (Array.isArray(plan.modules) ? plan.modules.length : 0)),
+        required_badge: plan.is_required ? 'Required' : '',
+      }));
+
+      const rawAssignments = Array.isArray(assignData) ? assignData : assignData.assignments || [];
+      const normalizedAssignments: TrainingAssignment[] = rawAssignments.map((assignment: any) => ({
+        id: String(assignment.id),
+        employee_id: String(assignment.employee_id || ''),
+        plan_id: String(assignment.plan_id || ''),
+        plan_name: String(assignment.plan_name || ''),
+        status: assignment.status || 'assigned',
+        completion_pct: Number(assignment.completion_pct || assignment.completion_percentage || 0),
+        deadline: assignment.deadline || null,
+        assigned_date: String(assignment.assigned_date || assignment.assigned_at || ''),
+        certificate_module_code: assignment.certificate_module_code || null,
+        certificate_url: assignment.certificate_url || null,
+      }));
+
+      setPlans(normalizedPlans);
+      setAssignments(normalizedAssignments);
     } catch {
       setError('Network error loading training data');
     } finally {
@@ -160,6 +184,14 @@ export default function TrainingManagement() {
       <div className="mb-8">
         <h1 className="text-2xl font-bold text-slate-900">Training Management</h1>
         <p className="text-slate-500 mt-1">Manage training plans and employee assignments</p>
+        <div className="mt-3">
+          <Link
+            href="/fleet-compliance/training/reports"
+            className="inline-block px-4 py-2 rounded-lg border border-slate-300 text-sm font-medium text-slate-700 hover:bg-slate-50"
+          >
+            Open Hazmat Reports (certificate upload + export)
+          </Link>
+        </div>
       </div>
 
       {/* Dashboard Stats */}

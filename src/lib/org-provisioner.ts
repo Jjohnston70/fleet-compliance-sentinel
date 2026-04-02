@@ -18,6 +18,7 @@ export interface OrganizationRecord {
 export interface OrganizationContactRecord {
   orgId: string;
   primaryContact: string;
+  primaryContactAddress: string;
   createdAt: Date | null;
   updatedAt: Date | null;
 }
@@ -246,7 +247,7 @@ export async function getOrganizationContact(orgId: string): Promise<Organizatio
   await ensureOrgScopingTables();
   const sql = getSQL();
   const rows = await sql`
-    SELECT org_id, primary_contact, created_at, updated_at
+    SELECT org_id, primary_contact, primary_contact_address, created_at, updated_at
     FROM organization_contacts
     WHERE org_id = ${orgId}
     LIMIT 1
@@ -256,6 +257,7 @@ export async function getOrganizationContact(orgId: string): Promise<Organizatio
   return {
     orgId: String(row.org_id),
     primaryContact: String(row.primary_contact ?? ''),
+    primaryContactAddress: String(row.primary_contact_address ?? ''),
     createdAt: parseDate(row.created_at),
     updatedAt: parseDate(row.updated_at),
   };

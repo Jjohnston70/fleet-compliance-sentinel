@@ -176,6 +176,32 @@ function bridgeAction(
   };
 }
 
+/**
+ * Creates an action that routes a command-module tool call through command-center.
+ * Each tool becomes a selectable action in the admin ModuleGatewayPanel.
+ */
+function commandToolAction(
+  moduleId: string,
+  toolName: string,
+  description: string,
+  argsSchema: ModuleActionArgsSchema = EMPTY_ARGS_SCHEMA,
+  defaultTimeoutMs = 60_000,
+): ModuleActionDefinition {
+  const qualifiedName = `${moduleId}.${toolName}`;
+  return {
+    actionId: `tool.${toolName}`,
+    description,
+    argsSchema,
+    defaultTimeoutMs,
+    commandPreview: ['internal', 'command-center', 'route.tool_call', qualifiedName],
+    execute: async (args): Promise<ModuleActionExecutionResult> =>
+      executeCommandCenterAction('route.tool_call', {
+        qualifiedName,
+        parameters: args,
+      }),
+  };
+}
+
 const MODULE_REGISTRY: ModuleDefinition[] = [
   {
     moduleId: 'ML-EIA-PETROLEUM-INTEL',

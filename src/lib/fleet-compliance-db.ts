@@ -119,9 +119,14 @@ export async function ensureOrgScopingTables() {
     CREATE TABLE IF NOT EXISTS organization_contacts (
       org_id TEXT PRIMARY KEY REFERENCES organizations(id) ON DELETE CASCADE,
       primary_contact TEXT NOT NULL,
+      primary_contact_address TEXT,
       created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
       updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
     )
+  `;
+  await sql`
+    ALTER TABLE organization_contacts
+    ADD COLUMN IF NOT EXISTS primary_contact_address TEXT
   `;
 
   await sql`
@@ -410,6 +415,27 @@ export async function getOrganizationPrimaryContact(orgId: string): Promise<stri
   `;
   const contact = rows[0]?.primary_contact;
   return typeof contact === 'string' && contact.trim().length > 0 ? contact.trim() : null;
+}
+
+export async function getOrganizationTrainerContact(orgId: string): Promise<{
+  primaryContact: string | null;
+  primaryContactAddress: string | null;
+}> {
+  const sql = getSQL();
+  const rows = await sql`
+    SELECT primary_contact, primary_contact_address
+    FROM organization_contacts
+    WHERE org_id = ${orgId}
+    LIMIT 1
+  `;
+  const row = rows[0];
+  const primaryContact = typeof row?.primary_contact === 'string' && row.primary_contact.trim().length > 0
+    ? row.primary_contact.trim()
+    : null;
+  const primaryContactAddress = typeof row?.primary_contact_address === 'string' && row.primary_contact_address.trim().length > 0
+    ? row.primary_contact_address.trim()
+    : null;
+  return { primaryContact, primaryContactAddress };
 }
 
 export async function getOrganizationName(orgId: string): Promise<string | null> {

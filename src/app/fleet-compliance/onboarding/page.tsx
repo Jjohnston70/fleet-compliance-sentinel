@@ -50,6 +50,7 @@ export default async function FleetComplianceOnboardingPage() {
           <FleetComplianceOnboardingForm
             initialCompanyName={org.name}
             initialPrimaryContact={contact?.primaryContact || ''}
+            initialPrimaryContactAddress={contact?.primaryContactAddress || ''}
             initialFleetSize={readMetadataText(org.metadata, 'fleetSize')}
             initialPrimaryDotConcern={readMetadataText(org.metadata, 'primaryDotConcern')}
           />

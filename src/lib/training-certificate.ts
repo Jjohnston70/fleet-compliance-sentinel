@@ -153,6 +153,15 @@ export async function generateTrainingCertificate(input: TrainingCertificateInpu
   const content = buildCertificateContent(input);
   const pdfBuffer = buildPdfDocument(content);
 
+  return persistTrainingCertificateBuffer(normalizedUrl, pdfBuffer);
+}
+
+export async function persistTrainingCertificateBuffer(
+  certificateUrl: string,
+  certificateBuffer: Buffer,
+): Promise<{ absolutePath: string; sizeBytes: number }> {
+  const normalizedUrl = normalizeCertificateUrl(certificateUrl);
+
   if (STORAGE_BACKEND === 'database') {
     await ensureDbCertificateStorage();
     const sql = getSQL();
@@ -164,8 +173,8 @@ export async function generateTrainingCertificate(input: TrainingCertificateInpu
         updated_at
       ) VALUES (
         ${normalizedUrl},
-        ${pdfBuffer.toString('base64')},
-        ${pdfBuffer.length},
+        ${certificateBuffer.toString('base64')},
+        ${certificateBuffer.length},
         NOW()
       )
       ON CONFLICT (certificate_url)
@@ -176,16 +185,16 @@ export async function generateTrainingCertificate(input: TrainingCertificateInpu
     `;
     return {
       absolutePath: `db:${normalizedUrl}`,
-      sizeBytes: pdfBuffer.length,
+      sizeBytes: certificateBuffer.length,
     };
   }
 
   const absolutePath = resolveCertificateAbsolutePath(normalizedUrl);
   await mkdir(path.dirname(absolutePath), { recursive: true });
-  await writeFile(absolutePath, pdfBuffer);
+  await writeFile(absolutePath, certificateBuffer);
   return {
     absolutePath,
-    sizeBytes: pdfBuffer.length,
+    sizeBytes: certificateBuffer.length,
   };
 }
 

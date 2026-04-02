@@ -76,6 +76,15 @@ Scope: training-command reporting, certificate delivery, and Penny training/comp
 
 - TypeScript validation:
   - `npx tsc --noEmit`
+- Hazmat tracking API validation (new compliance surface):
+  - `GET /api/v1/hazmat-training/{employee_id}`
+  - `POST /api/v1/hazmat-training/{employee_id}/record`
+  - `GET /api/v1/hazmat-training/org/{org_id}/summary`
+  - `GET /api/v1/hazmat-training/org/{org_id}/expiring`
+  - `GET /api/v1/hazmat-training/org/{org_id}/report`
+  - `PUT /api/v1/hazmat-training/records/{record_id}`
+  - `DELETE /api/v1/hazmat-training/records/{record_id}` (soft-delete behavior)
+  - `POST /api/v1/hazmat-training/records/{record_id}/certificate` (PDF upload, durable DB-backed storage)
 - Recommended post-deploy validation:
   1. Pass a module assessment and confirm `hazmat_training_records` row upsert.
   2. Download certificate from both admin and employee paths.

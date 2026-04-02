@@ -7,6 +7,7 @@ import FleetComplianceErrorBoundary from '@/components/fleet-compliance/FleetCom
 import FmcsaSnapshotCard from '@/components/fleet-compliance/FmcsaSnapshotCard';
 import {
   loadFleetComplianceData,
+  loadHazmatTrainingDashboardSummary,
   fleetComplianceResourceLinks,
   getAssetStats,
   getComplianceStats,
@@ -98,6 +99,24 @@ const modules = [
     description: 'Upload CSV/XLSX, validate rows, approve or reject per-row before committing.',
     status: 'Live',
   },
+  {
+    href: '/fleet-compliance/training',
+    title: 'Training Modules',
+    description: 'PHMSA/NFPA training catalog with deck + assessment flow.',
+    status: 'Live',
+  },
+  {
+    href: '/fleet-compliance/training/manage',
+    title: 'Training Management',
+    description: 'Assign plans and monitor organization training completion.',
+    status: 'Live — admin',
+  },
+  {
+    href: '/fleet-compliance/training/reports',
+    title: 'Hazmat Training Reports',
+    description: 'Filter employee module records, export reports, and upload certificates.',
+    status: 'Live — admin',
+  },
 ];
 
 export default async function FleetCompliancePage() {
@@ -130,6 +149,7 @@ export default async function FleetCompliancePage() {
   const complianceStats = getComplianceStats(data.drivers, data.permits);
   const suspenseStats = getSuspenseStats(data.suspense);
   const importStats = await getImportStats(orgId);
+  const hazmatSummary = await loadHazmatTrainingDashboardSummary(orgId);
 
   const quickStats = [
     { label: 'Tracked Assets', value: String(data.assets.length), note: 'Vehicles, equipment, tanks, and trailers', status: '' },
@@ -190,6 +210,18 @@ export default async function FleetCompliancePage() {
               <li>{suspenseStats.totalOpen} open suspense items are currently staged.</li>
               <li>{suspenseStats.next7Days} items hit in the next 7 days.</li>
               <li>{suspenseStats.highSeverity} high-severity alerts are already visible in the route.</li>
+            </ul>
+          </div>
+          <div className="fleet-compliance-list-card">
+            <h3>Hazmat Training</h3>
+            <ul>
+              <li>{hazmatSummary.compliant} compliant, {hazmatSummary.atRisk} at risk, {hazmatSummary.delinquent} delinquent.</li>
+              <li>{hazmatSummary.notTracked} not tracked across {hazmatSummary.knownEmployees} known employees.</li>
+              <li>
+                {hazmatSummary.upcomingExpirations.length > 0
+                  ? `Next due: ${hazmatSummary.upcomingExpirations[0].employeeName} (${hazmatSummary.upcomingExpirations[0].moduleCode}) in ${hazmatSummary.upcomingExpirations[0].daysUntilDue} days.`
+                  : 'No hazmat renewals due in the next 90 days.'}
+              </li>
             </ul>
           </div>
           <div className="fleet-compliance-list-card">

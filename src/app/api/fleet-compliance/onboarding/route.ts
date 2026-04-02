@@ -10,6 +10,7 @@ export const dynamic = 'force-dynamic';
 interface OnboardingPayload {
   companyName?: string;
   primaryContact?: string;
+  primaryContactAddress?: string;
   fleetSize?: string;
   primaryDotConcern?: string;
 }
@@ -39,6 +40,7 @@ export async function POST(request: Request) {
 
   const companyName = normalize(payload.companyName, 160);
   const primaryContact = normalize(payload.primaryContact, 160);
+  const primaryContactAddress = normalize(payload.primaryContactAddress, 320);
   const fleetSize = normalize(payload.fleetSize, 80);
   const primaryDotConcern = normalize(payload.primaryDotConcern, 240);
 
@@ -59,11 +61,12 @@ export async function POST(request: Request) {
     };
 
     await sql`
-      INSERT INTO organization_contacts (org_id, primary_contact, updated_at)
-      VALUES (${orgId}, ${primaryContact}, NOW())
+      INSERT INTO organization_contacts (org_id, primary_contact, primary_contact_address, updated_at)
+      VALUES (${orgId}, ${primaryContact}, ${primaryContactAddress || null}, NOW())
       ON CONFLICT (org_id) DO UPDATE
       SET
         primary_contact = EXCLUDED.primary_contact,
+        primary_contact_address = EXCLUDED.primary_contact_address,
         updated_at = NOW()
     `;
 

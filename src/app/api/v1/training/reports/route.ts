@@ -1,9 +1,10 @@
+import { clerkClient } from '@clerk/nextjs/server';
 import {
   fleetComplianceAuthErrorResponse,
   requireFleetComplianceOrgContext,
 } from '@/lib/fleet-compliance-auth';
 import { auditLog } from '@/lib/audit-logger';
-import { getOrganizationName, getSQL } from '@/lib/fleet-compliance-db';
+import { getOrganizationName, getOrganizationTrainerContact, getSQL } from '@/lib/fleet-compliance-db';
 import { toCsv, toSimplePdf } from '@/lib/training-report-export';
 import {
   checkTrainingSchema,
@@ -17,8 +18,54 @@ export const dynamic = 'force-dynamic';
 type ReportType = 'org_completion' | 'employee_transcript' | 'audit_package' | 'hours';
 type ReportFormat = 'json' | 'csv' | 'pdf';
 const DOT_CERTIFICATION_STATEMENT = 'Employee has been trained and tested per 49 CFR 172.704(a).';
-const DOT_TRAINER_NAME = process.env.FLEET_COMPLIANCE_TRAINER_NAME || 'True North Data Strategies';
-const DOT_TRAINER_ADDRESS = process.env.FLEET_COMPLIANCE_TRAINER_ADDRESS || 'Trainer address not configured';
+const DOT_TRAINER_NAME_FALLBACK = process.env.FLEET_COMPLIANCE_TRAINER_NAME || 'Organization Admin';
+const DOT_TRAINER_ADDRESS_FALLBACK = process.env.FLEET_COMPLIANCE_TRAINER_ADDRESS || 'Trainer address not configured';
+
+function asNonEmpty(value: unknown): string | null {
+  if (typeof value !== 'string') return null;
+  const trimmed = value.trim();
+  return trimmed.length > 0 ? trimmed : null;
+}
+
+async function resolveOrganizationAdminTrainerName(orgId: string): Promise<string | null> {
+  try {
+    const client = await clerkClient();
+    const memberships = await client.organizations.getOrganizationMembershipList({
+      organizationId: orgId,
+      limit: 50,
+    });
+    const adminMembership = (memberships.data || []).find((membership) => {
+      const role = String((membership as any)?.role || '').toLowerCase();
+      return role.endsWith('admin');
+    });
+    if (!adminMembership) return null;
+
+    const publicUserData = (adminMembership as any)?.publicUserData;
+    const fullName = [asNonEmpty(publicUserData?.firstName), asNonEmpty(publicUserData?.lastName)]
+      .filter((value): value is string => Boolean(value))
+      .join(' ')
+      .trim();
+    if (fullName) return fullName;
+
+    return asNonEmpty(publicUserData?.identifier)
+      || asNonEmpty(publicUserData?.userId)
+      || null;
+  } catch {
+    return null;
+  }
+}
+
+async function resolveTrainerOfRecord(orgId: string): Promise<{ name: string; address: string }> {
+  const [adminName, trainerContact] = await Promise.all([
+    resolveOrganizationAdminTrainerName(orgId),
+    getOrganizationTrainerContact(orgId),
+  ]);
+
+  return {
+    name: adminName || trainerContact.primaryContact || DOT_TRAINER_NAME_FALLBACK,
+    address: trainerContact.primaryContactAddress || DOT_TRAINER_ADDRESS_FALLBACK,
+  };
+}
 
 function toIsoDate(value: unknown): string {
   if (!value) return '';
@@ -89,6 +136,7 @@ export async function GET(request: Request) {
   const schemaCheck = await checkTrainingSchema(TRAINING_COMPLIANCE_TABLES, sql);
   if (!schemaCheck.ok) return trainingSchemaNotReadyResponse(schemaCheck);
   const orgName = await getOrganizationName(orgId) || orgId;
+  const trainerOfRecord = await resolveTrainerOfRecord(orgId);
   const exportDate = new Date().toISOString().slice(0, 10);
 
   if (reportType === 'org_completion') {
@@ -392,8 +440,8 @@ export async function GET(request: Request) {
       cfrReference: String(row.cfr_reference || ''),
       phmsaEquivalent: String(row.phmsa_equivalent || ''),
     }),
-    trainer_name: DOT_TRAINER_NAME,
-    trainer_address: DOT_TRAINER_ADDRESS,
+    trainer_name: trainerOfRecord.name,
+    trainer_address: trainerOfRecord.address,
     certification_statement: DOT_CERTIFICATION_STATEMENT,
     certificate_status: row.certificate_url ? 'available' : 'missing',
   }));
@@ -442,7 +490,7 @@ export async function GET(request: Request) {
       `Total Records: ${auditRows.length}`,
       `Overdue Items: ${overdue.length}`,
       `Missing Certificates: ${missingCertificates.length}`,
-      `Trainer of Record: ${DOT_TRAINER_NAME} | ${DOT_TRAINER_ADDRESS}`,
+      `Trainer of Record: ${trainerOfRecord.name} | ${trainerOfRecord.address}`,
       `Certification: ${DOT_CERTIFICATION_STATEMENT}`,
       ...(truncationNotice ? [truncationNotice] : []),
       ...visibleRows.map((row) =>

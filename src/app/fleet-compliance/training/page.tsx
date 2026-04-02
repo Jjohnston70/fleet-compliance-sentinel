@@ -74,6 +74,26 @@ export default async function TrainingPage() {
         <p className="text-slate-500 mt-1">
           PHMSA Hazardous Materials Training — 49 CFR Part 172, Subpart H
         </p>
+        <div className="flex flex-wrap gap-2 mt-4">
+          <Link
+            href="/fleet-compliance/training/my"
+            className="px-4 py-2 rounded-lg border border-slate-300 text-sm font-medium text-slate-700 hover:bg-slate-50"
+          >
+            My Training
+          </Link>
+          <Link
+            href="/fleet-compliance/training/manage"
+            className="px-4 py-2 rounded-lg border border-slate-300 text-sm font-medium text-slate-700 hover:bg-slate-50"
+          >
+            Manage Assignments
+          </Link>
+          <Link
+            href="/fleet-compliance/training/reports"
+            className="px-4 py-2 rounded-lg border border-slate-300 text-sm font-medium text-slate-700 hover:bg-slate-50"
+          >
+            Hazmat Reports
+          </Link>
+        </div>
         {decks && (
           <div className="flex gap-6 mt-4 text-sm text-slate-600">
             <span>{decks.total_modules} modules</span>

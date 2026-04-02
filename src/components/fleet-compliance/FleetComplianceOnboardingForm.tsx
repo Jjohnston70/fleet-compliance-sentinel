@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation';
 interface FleetComplianceOnboardingFormProps {
   initialCompanyName: string;
   initialPrimaryContact: string;
+  initialPrimaryContactAddress: string;
   initialFleetSize: string;
   initialPrimaryDotConcern: string;
 }
@@ -13,12 +14,14 @@ interface FleetComplianceOnboardingFormProps {
 export default function FleetComplianceOnboardingForm({
   initialCompanyName,
   initialPrimaryContact,
+  initialPrimaryContactAddress,
   initialFleetSize,
   initialPrimaryDotConcern,
 }: FleetComplianceOnboardingFormProps) {
   const router = useRouter();
   const [companyName, setCompanyName] = useState(initialCompanyName);
   const [primaryContact, setPrimaryContact] = useState(initialPrimaryContact);
+  const [primaryContactAddress, setPrimaryContactAddress] = useState(initialPrimaryContactAddress);
   const [fleetSize, setFleetSize] = useState(initialFleetSize);
   const [primaryDotConcern, setPrimaryDotConcern] = useState(initialPrimaryDotConcern);
   const [submitting, setSubmitting] = useState(false);
@@ -28,10 +31,11 @@ export default function FleetComplianceOnboardingForm({
     return (
       companyName.trim().length > 0 &&
       primaryContact.trim().length > 0 &&
+      primaryContactAddress.trim().length > 0 &&
       fleetSize.trim().length > 0 &&
       primaryDotConcern.trim().length > 0
     );
-  }, [companyName, primaryContact, fleetSize, primaryDotConcern]);
+  }, [companyName, primaryContact, primaryContactAddress, fleetSize, primaryDotConcern]);
 
   async function onSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -48,6 +52,7 @@ export default function FleetComplianceOnboardingForm({
         body: JSON.stringify({
           companyName,
           primaryContact,
+          primaryContactAddress,
           fleetSize,
           primaryDotConcern,
         }),
@@ -107,6 +112,18 @@ export default function FleetComplianceOnboardingForm({
         </label>
 
         <label className="fleet-compliance-field-stack">
+          <span>Primary Contact Address</span>
+          <input
+            type="text"
+            value={primaryContactAddress}
+            onChange={(event) => setPrimaryContactAddress(event.target.value)}
+            placeholder="123 Main St, City, ST ZIP"
+            maxLength={320}
+            required
+          />
+        </label>
+
+        <label className="fleet-compliance-field-stack">
           <span>Primary DOT Compliance Concern</span>
           <input
             type="text"
@@ -129,4 +146,3 @@ export default function FleetComplianceOnboardingForm({
     </form>
   );
 }
-

@@ -142,6 +142,25 @@ export interface FleetComplianceImportCollectionStat {
   count: number;
 }
 
+export interface HazmatTrainingExpiringItem {
+  employeeId: string;
+  employeeName: string;
+  moduleCode: string;
+  moduleTitle: string;
+  nextDueDate: string;
+  daysUntilDue: number;
+}
+
+export interface HazmatTrainingDashboardSummary {
+  compliant: number;
+  atRisk: number;
+  delinquent: number;
+  notTracked: number;
+  trackedEmployees: number;
+  knownEmployees: number;
+  upcomingExpirations: HazmatTrainingExpiringItem[];
+}
+
 export interface FleetComplianceEmployeeRecord {
   employeeId: string;
   firstName: string;
@@ -1021,6 +1040,134 @@ export async function loadFleetComplianceInvoices(orgId: string): Promise<FleetC
   }
 
   return invoices.sort((a, b) => b.invoiceDate.localeCompare(a.invoiceDate));
+}
+
+export async function loadHazmatTrainingDashboardSummary(orgId: string): Promise<HazmatTrainingDashboardSummary> {
+  const zero: HazmatTrainingDashboardSummary = {
+    compliant: 0,
+    atRisk: 0,
+    delinquent: 0,
+    notTracked: 0,
+    trackedEmployees: 0,
+    knownEmployees: 0,
+    upcomingExpirations: [],
+  };
+
+  try {
+    const sql = getSQL();
+    const hasHazmatTables = await sql`
+      SELECT
+        to_regclass('public.hazmat_training_records') IS NOT NULL AS has_records,
+        to_regclass('public.hazmat_training_modules') IS NOT NULL AS has_modules
+    `;
+    if (!hasHazmatTables[0]?.has_records || !hasHazmatTables[0]?.has_modules) return zero;
+
+    const [summaryRows, expiringRows, employeeRows] = await Promise.all([
+      sql`
+        WITH required_modules AS (
+          SELECT module_code
+          FROM hazmat_training_modules
+          WHERE module_category = 'required'
+        ),
+        tracked_employees AS (
+          SELECT DISTINCT employee_id
+          FROM hazmat_training_records
+          WHERE org_id = ${orgId}
+        ),
+        per_employee AS (
+          SELECT
+            te.employee_id,
+            COUNT(rm.module_code)::int AS required_total,
+            COUNT(*) FILTER (
+              WHERE hr.status = 'complete'
+                AND (hr.next_due_date IS NULL OR hr.next_due_date >= NOW())
+            )::int AS required_complete,
+            COUNT(*) FILTER (
+              WHERE hr.next_due_date IS NOT NULL
+                AND hr.next_due_date < NOW()
+            )::int AS overdue_required,
+            COUNT(*) FILTER (
+              WHERE hr.next_due_date IS NOT NULL
+                AND hr.next_due_date >= NOW()
+                AND hr.next_due_date <= NOW() + (90 * INTERVAL '1 day')
+            )::int AS due_soon_required
+          FROM tracked_employees te
+          CROSS JOIN required_modules rm
+          LEFT JOIN hazmat_training_records hr
+            ON hr.org_id = ${orgId}
+            AND hr.employee_id = te.employee_id
+            AND hr.module_code = rm.module_code
+          GROUP BY te.employee_id
+        )
+        SELECT
+          COUNT(*)::int AS tracked_employees,
+          COUNT(*) FILTER (
+            WHERE required_total > 0
+              AND required_complete = required_total
+          )::int AS compliant_employees,
+          COUNT(*) FILTER (
+            WHERE overdue_required > 0
+          )::int AS delinquent_employees,
+          COUNT(*) FILTER (
+            WHERE overdue_required = 0
+              AND due_soon_required > 0
+          )::int AS at_risk_employees
+        FROM per_employee
+      `,
+      sql`
+        SELECT
+          employee_id,
+          COALESCE(employee_name, employee_id) AS employee_name,
+          module_code,
+          module_title,
+          next_due_date
+        FROM hazmat_training_records
+        WHERE org_id = ${orgId}
+          AND status = 'complete'
+          AND next_due_date IS NOT NULL
+          AND next_due_date >= NOW()
+          AND next_due_date <= NOW() + (90 * INTERVAL '1 day')
+        ORDER BY next_due_date ASC
+        LIMIT 8
+      `,
+      sql`
+        SELECT
+          COUNT(DISTINCT NULLIF(BTRIM(data->>'Employee ID'), ''))::int AS known_employees
+        FROM fleet_compliance_records
+        WHERE org_id = ${orgId}
+          AND collection = 'employees'
+          AND deleted_at IS NULL
+      `,
+    ]);
+
+    const summary = summaryRows[0] || {};
+    const trackedEmployees = Number(summary.tracked_employees || 0);
+    const knownEmployees = Number(employeeRows[0]?.known_employees || 0);
+    const notTracked = Math.max(knownEmployees - trackedEmployees, 0);
+
+    return {
+      compliant: Number(summary.compliant_employees || 0),
+      atRisk: Number(summary.at_risk_employees || 0),
+      delinquent: Number(summary.delinquent_employees || 0),
+      notTracked,
+      trackedEmployees,
+      knownEmployees,
+      upcomingExpirations: expiringRows.map((row) => {
+        const nextDueDate = normalizeDateLike(s(row.next_due_date));
+        return {
+          employeeId: s(row.employee_id),
+          employeeName: s(row.employee_name),
+          moduleCode: s(row.module_code),
+          moduleTitle: s(row.module_title),
+          nextDueDate,
+          daysUntilDue: daysUntil(nextDueDate),
+        };
+      }),
+    };
+  } catch (error: unknown) {
+    console.error('[fleet-compliance-data] failed to load hazmat training dashboard summary', { orgId, error });
+    return zero;
+  }
 }
 
 // ── Filter functions ──────────────────────────────────────────────────────
