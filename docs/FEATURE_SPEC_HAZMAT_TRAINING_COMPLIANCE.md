@@ -128,12 +128,14 @@ CREATE TABLE hazmat_training_modules (
 Located in the Employee detail view, new tab alongside existing DQF, Medical, and License tabs.
 
 **Layout**:
+
 - Top bar: Employee name, overall hazmat compliance status badge (Compliant / At Risk / Delinquent), percentage complete indicator
 - Required modules section: 12-row table showing module code, title, status, completion date, credit pathway, certificate link, days until due
 - Supplemental section (collapsible): 19-row table for NFPA 472 + grant course
 - Action buttons: "Record Completion", "Upload Certificate", "Set Training Window"
 
 **Status badges**:
+
 - **Compliant** (green): All 12 required modules complete and within recurrence window
 - **At Risk** (amber): One or more modules within 90 days of due date
 - **Delinquent** (red): One or more modules past due date
@@ -144,6 +146,7 @@ Located in the Employee detail view, new tab alongside existing DQF, Medical, an
 New card on the main Compliance dashboard page.
 
 **Content**:
+
 - Count of employees by status (Compliant / At Risk / Delinquent / Not Tracked)
 - "Upcoming expirations" list: employees with modules due in next 90 days, sorted by soonest
 - Quick link to full hazmat training report
@@ -160,6 +163,7 @@ Full-page report view with filtering and export.
 ### 4. Certificate Upload Flow
 
 **Process**:
+
 1. User clicks "Upload Certificate" on a module row
 2. File picker accepts PDF only (max 10MB)
 3. File is uploaded to object storage (S3/R2) under `/{org_id}/hazmat-certs/{employee_id}/{module_code}_{date}.pdf`
@@ -174,14 +178,14 @@ Full-page report view with filtering and export.
 
 Hazmat training alerts feed into the existing FCS Suspense system.
 
-| Trigger | Alert Type | Timing | Action |
-|---------|-----------|--------|--------|
-| Module due date approaching | Warning | 90 days before due | Suspense item created, dashboard badge turns amber |
-| Module due date approaching | Urgent | 30 days before due | Suspense item escalated, email notification to org admin |
-| Module past due | Delinquent | Day of due date | Suspense item turns red, employee status changes to Delinquent |
-| New hire 90-day window | Info | Day of hire | Suspense items created for all 12 required modules with 90-day deadline |
-| New hire 60 days in | Warning | 60 days after hire | Notification if any required modules still incomplete |
-| Certificate missing | Info | On completion record | Nudge to upload certificate for audit readiness |
+| Trigger                     | Alert Type | Timing               | Action                                                                  |
+| --------------------------- | ---------- | -------------------- | ----------------------------------------------------------------------- |
+| Module due date approaching | Warning    | 90 days before due   | Suspense item created, dashboard badge turns amber                      |
+| Module due date approaching | Urgent     | 30 days before due   | Suspense item escalated, email notification to org admin                |
+| Module past due             | Delinquent | Day of due date      | Suspense item turns red, employee status changes to Delinquent          |
+| New hire 90-day window      | Info       | Day of hire          | Suspense items created for all 12 required modules with 90-day deadline |
+| New hire 60 days in         | Warning    | 60 days after hire   | Notification if any required modules still incomplete                   |
+| Certificate missing         | Info       | On completion record | Nudge to upload certificate for audit readiness                         |
 
 ### Email Notifications
 
@@ -212,6 +216,7 @@ DELETE /api/v1/hazmat-training/records/{record_id}     -- Soft delete record
 ### Penny Integration
 
 Penny should be able to answer questions like:
+
 - "Which employees have delinquent hazmat training?"
 - "When is John's placarding certification due?"
 - "How many employees are hazmat compliant?"
@@ -296,6 +301,7 @@ This feature directly competes with J.J. Keller Encompass ($25-59/vehicle/month)
 This feature spec covers the **admin/compliance tracking side** of hazmat training. A companion module -- `training-command` -- is planned as the **driver-facing training delivery system**. See `todo-04-02-2026.md` for the full sprint plan.
 
 The training-command module will:
+
 - Deliver self-contained training content (authored from ERG, CFR, and PHMSA source material)
 - Present training as slide decks generated from markdown via the Electron deck engine
 - Include built-in assessments with pass/fail scoring
@@ -319,5 +325,5 @@ When training-command is built, the `credit_pathway` field in `hazmat_training_r
 
 ---
 
-*True North Data Strategies | Turning Data into Direction*
-*Jacob Johnston | 555-555-5555 | jacob@truenorthstrategyops.com*
+_True North Data Strategies | Turning Data into Direction_
+_Jacob Johnston | 555-555-5555 | jacob@truenorthstrategyops.com_
