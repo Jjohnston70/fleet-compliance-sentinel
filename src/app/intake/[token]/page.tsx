@@ -20,8 +20,9 @@ interface Field {
 }
 
 interface IntakeData {
-  sections: Section[];
-  driverName: string;
+  sections?: Section[];
+  driverName?: string;
+  driver_name?: string;
 }
 
 const SECTION_CONFIGS: Record<string, Section> = {
@@ -119,13 +120,25 @@ export default function IntakePage() {
         }
 
         const data: IntakeData = await res.json();
+        const apiSections = Array.isArray(data.sections) ? data.sections : [];
         const sectionIds = ['personal', 'licensing', 'employment_history', 'violations', 'certifications', 'uploads'];
         const loadedSections = sectionIds
-          .map((id) => data.sections.find((s) => s.id === id) || SECTION_CONFIGS[id])
+          .map((id) => {
+            const base = SECTION_CONFIGS[id];
+            const fromApi = apiSections.find((section) => section?.id === id);
+            if (!fromApi) return base;
+            return {
+              ...base,
+              ...fromApi,
+              title: fromApi.title || base.title,
+              description: fromApi.description || base.description,
+              fields: Array.isArray(fromApi.fields) && fromApi.fields.length > 0 ? fromApi.fields : base.fields,
+            };
+          })
           .filter(Boolean) as Section[];
 
         setSections(loadedSections);
-        setDriverName(data.driverName);
+        setDriverName(data.driverName || data.driver_name || '');
         setResponses(
           loadedSections.reduce((acc, section) => {
             acc[section.id] = {};
@@ -279,6 +292,29 @@ export default function IntakePage() {
   }
 
   const currentSection = sections[currentSectionIdx];
+  if (!currentSection) {
+    return (
+      <div
+        style={{
+          minHeight: '100vh',
+          background: '#ffffff',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          padding: '2rem 1rem',
+        }}
+      >
+        <div style={{ maxWidth: '480px', textAlign: 'center' }}>
+          <h1 style={{ color: '#ef4444', fontSize: '1.5rem', fontWeight: 700, marginBottom: '1rem' }}>
+            Intake Form Unavailable
+          </h1>
+          <p style={{ color: '#4a4a4a' }}>
+            This intake link is missing form sections. Please ask your fleet manager to regenerate the link.
+          </p>
+        </div>
+      </div>
+    );
+  }
   const progress = ((currentSectionIdx + 1) / sections.length) * 100;
 
   return (

@@ -37,14 +37,16 @@ export async function GET(
   const dhfFile = allFiles.find((item) => item.driver_id === file.driver_id && item.file_type === 'dhf');
 
   const toTab = (fileId: number | undefined) => {
-    if (!fileId) return { completion: 0, items: [] };
+    if (!fileId) return { fileId: null, completion: 0, items: [] };
     const checklist = getChecklist(fileId);
     const completed = checklist.filter(
       (item) => item.status === 'uploaded' || item.status === 'generated' || item.status === 'verified',
     ).length;
     return {
+      fileId,
       completion: checklist.length > 0 ? Math.round((completed / checklist.length) * 100) : 0,
       items: checklist.map((item) => ({
+        docType: item.doc_type,
         label: item.doc_label,
         reference: item.cfr_reference,
         status:

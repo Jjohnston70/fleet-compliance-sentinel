@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { useParams } from 'next/navigation';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 
 interface Driver {
   name: string;
@@ -12,15 +12,17 @@ interface Driver {
 }
 
 interface ChecklistItem {
+  docType: string;
   label: string;
   reference: string;
   status: 'complete' | 'incomplete' | 'expired';
   cadence: string;
   expiryDate: string;
-  action: string;
+  action: 'view' | 'upload' | 'generate';
 }
 
 interface TabData {
+  fileId: number | null;
   completion: number;
   items: ChecklistItem[];
 }
@@ -35,24 +37,26 @@ export default function DriverDetailPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [activeTab, setActiveTab] = useState<'dqf' | 'dhf'>('dqf');
+  const [actionBusy, setActionBusy] = useState<string | null>(null);
+
+  const loadData = useCallback(async () => {
+    try {
+      const res = await fetch(`/api/fleet-compliance/dq/files/${fileId}`);
+      if (!res.ok) throw new Error('Failed to load file');
+      const data = await res.json();
+      setDriver(data.driver);
+      setDqf(data.dqf);
+      setDhf(data.dhf);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Unknown error');
+    } finally {
+      setLoading(false);
+    }
+  }, [fileId]);
 
   useEffect(() => {
-    async function loadData() {
-      try {
-        const res = await fetch(`/api/fleet-compliance/dq/files/${fileId}`);
-        if (!res.ok) throw new Error('Failed to load file');
-        const data = await res.json();
-        setDriver(data.driver);
-        setDqf(data.dqf);
-        setDhf(data.dhf);
-      } catch (err) {
-        setError(err instanceof Error ? err.message : 'Unknown error');
-      } finally {
-        setLoading(false);
-      }
-    }
     loadData();
-  }, [fileId]);
+  }, [loadData]);
 
   const getStatusColor = (status: string): string => {
     if (status === 'complete') return '#10b981';
@@ -62,6 +66,58 @@ export default function DriverDetailPage() {
   };
 
   const currentTab = activeTab === 'dqf' ? dqf : dhf;
+
+  const handleDocumentAction = async (item: ChecklistItem, index: number) => {
+    if (!currentTab?.fileId || item.action === 'view') return;
+
+    const busyKey = `${activeTab}-${index}`;
+    setActionBusy(busyKey);
+    setError('');
+
+    try {
+      if (item.action === 'generate') {
+        const res = await fetch('/api/fleet-compliance/dq/documents/generate', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            dq_file_id: currentTab.fileId,
+            doc_type: item.docType,
+          }),
+        });
+
+        const data = await res.json();
+        if (!res.ok || !data?.document) {
+          throw new Error(data?.error || `Failed to generate ${item.label}`);
+        }
+      } else if (item.action === 'upload') {
+        const filePath = window.prompt(`Upload path/URL for "${item.label}"`, '');
+        if (!filePath) return;
+        const expiresAt = window.prompt('Optional expiration date (YYYY-MM-DD)', '');
+
+        const res = await fetch('/api/fleet-compliance/dq/documents', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            dq_file_id: currentTab.fileId,
+            doc_type: item.docType,
+            file_path: filePath,
+            expires_at: expiresAt || undefined,
+          }),
+        });
+
+        const data = await res.json();
+        if (!res.ok || !data?.document) {
+          throw new Error(data?.error || `Failed to upload ${item.label}`);
+        }
+      }
+
+      await loadData();
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Action failed');
+    } finally {
+      setActionBusy(null);
+    }
+  };
 
   return (
     <main className="fleet-compliance-shell">
@@ -226,17 +282,22 @@ export default function DriverDetailPage() {
                             <td>{item.expiryDate || '—'}</td>
                             <td>
                               <button
+                                onClick={() => handleDocumentAction(item, idx)}
+                                disabled={item.action === 'view' || actionBusy === `${activeTab}-${idx}`}
                                 style={{
                                   padding: '0.35rem 0.7rem',
-                                  background: 'var(--teal)',
+                                  background: item.action === 'view' ? 'var(--border)' : 'var(--teal)',
                                   color: '#fff',
                                   border: 'none',
                                   borderRadius: '4px',
                                   fontSize: '0.8rem',
-                                  cursor: 'pointer',
+                                  cursor: item.action === 'view' ? 'not-allowed' : 'pointer',
+                                  opacity: actionBusy === `${activeTab}-${idx}` ? 0.6 : 1,
                                 }}
                               >
-                                {item.action}
+                                {actionBusy === `${activeTab}-${idx}`
+                                  ? 'working...'
+                                  : item.action}
                               </button>
                             </td>
                           </tr>
