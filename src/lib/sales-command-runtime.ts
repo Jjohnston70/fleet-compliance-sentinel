@@ -36,7 +36,7 @@ function toErrorMessage(error: unknown): string {
 
 async function loadSalesCommandModule(): Promise<SalesCommandModuleShape> {
   if (!salesModulePromise) {
-    salesModulePromise = import('../../tooling/sales-command/dist/src/index.js') as Promise<SalesCommandModuleShape>;
+    salesModulePromise = import('../../tooling/sales-command/dist/tools.js') as Promise<SalesCommandModuleShape>;
   }
   return salesModulePromise;
 }
