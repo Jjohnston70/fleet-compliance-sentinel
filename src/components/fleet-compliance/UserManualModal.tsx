@@ -5,29 +5,35 @@ import { useState, useEffect, useCallback } from 'react';
 /* ------------------------------------------------------------------ */
 /*  Section data – every feature in Fleet-Compliance Sentinel         */
 /* ------------------------------------------------------------------ */
-const SECTIONS: { id: string; title: string; content: string[] }[] = [
+const SECTIONS: { id: string; title: string; group?: string; content: string[] }[] = [
+  /* ── Getting Started ─────────────────────────────────────────────── */
   {
     id: 'getting-started',
     title: 'Getting Started',
     content: [
-      'Fleet-Compliance Sentinel is your single-pane-of-glass for DOT/FMCSA fleet compliance. It tracks drivers, vehicles, permits, inspections, maintenance, invoices, and regulatory deadlines so nothing falls through the cracks.',
+      'Fleet-Compliance Sentinel is your single-pane-of-glass for DOT/FMCSA fleet compliance. It tracks drivers, vehicles, permits, inspections, maintenance, invoices, training, and regulatory deadlines so nothing falls through the cracks.',
       'After signing in through the secure Clerk portal, new organizations are guided through a one-time onboarding wizard that sets your company name, primary contact, and initial fleet data. Once onboarding completes you land on the Dashboard.',
-      'The sidebar on the left is your primary navigation. It lists every module: Dashboard, Assets, Compliance, Suspense, Alerts, Invoices, Spend Dashboard, FMCSA Lookup, Telematics, Module Tools, Command Center Catalog, Employees, Import Data, Penny AI, and Settings. On mobile, tap "Menu" to expand the sidebar.',
+      'The sidebar on the left is your primary navigation. Modules are organized into six groups: Operations, Compliance, Training, Finance, Intelligence, and Admin. Some modules are admin-only and will not appear for member-role users. On mobile, tap "Menu" to expand the sidebar.',
+      'Module visibility is configurable per organization. Admins can enable or disable modules from the Module Toggles page under Admin, so each organization sees only the capabilities relevant to their operation.',
     ],
   },
+
+  /* ── OPERATIONS GROUP ────────────────────────────────────────────── */
   {
     id: 'dashboard',
     title: 'Dashboard',
+    group: 'Operations',
     content: [
       'The Dashboard is your operational command post. At the top you see four headline metrics: Tracked Assets, Driver Records, Open Suspense Items, and Permit Records. These numbers refresh automatically after imports or record changes.',
       'Below the headline metrics are three snapshot cards. The Assets card shows total units, items due for service soon, and units on maintenance hold. The Compliance card shows active drivers, medical cards expiring within 60 days, and permit deadlines within 120 days. The Suspense card shows open items, items due within 7 days, and high-severity count.',
-      'A module status grid displays cards for each integrated module (12 total) with status badges so you can see at a glance which capabilities are online. The data coverage table shows row counts per collection, updated after every import.',
+      'A module status grid displays cards for each integrated module with status badges so you can see at a glance which capabilities are online. The data coverage table shows row counts per collection, updated after every import.',
       'The FMCSA snapshot card shows your most recent carrier lookup result if one has been saved.',
     ],
   },
   {
     id: 'assets',
     title: 'Assets',
+    group: 'Operations',
     content: [
       'The Assets module is your fleet inventory register. It tracks vehicles, trailers, fuel cubes, storage tanks, and equipment with full lifecycle data: VIN, year, make, model, mileage, assigned driver, location, and maintenance status.',
       'From the Assets list you can search by any field, filter by category or status, and sort by column. Click any row to open the asset detail page with a read-only snapshot of that unit.',
@@ -37,8 +43,51 @@ const SECTIONS: { id: string; title: string; content: string[] }[] = [
     ],
   },
   {
+    id: 'employees',
+    title: 'Employees',
+    group: 'Operations',
+    content: [
+      'The Employees module is your driver profile registry. Each employee record stores: full name, status (Active/Inactive/Terminated), contact info (phone, email, address), CDL details (number, state, expiry, endorsements), medical card expiry, TSA/TWIC clearance, drug test schedule, and MVR record date.',
+      'Add employees individually using the "Add Employee" form, or import in bulk through the Import Data module. Employee records support soft-delete with restore capability and maintain a full audit trail.',
+      'Employee data feeds directly into the Compliance module and Pipeline Penny\'s fleet context, so your AI assistant always has current driver information when answering regulatory questions.',
+    ],
+  },
+  {
+    id: 'dispatch',
+    title: 'Dispatch',
+    group: 'Operations',
+    content: [
+      'The Dispatch module provides fleet dispatch management and vehicle assignment tracking. Use it to schedule drivers to assets, log trip assignments, and track vehicle checkout/return events.',
+      'Dispatch records link employees to assets with timestamps, notes, and location data. This module integrates with the Activity Log so all dispatch events appear in the fleet operational timeline.',
+      'This module is enabled per-organization through Module Toggles.',
+    ],
+  },
+  {
+    id: 'tasks',
+    title: 'Tasks',
+    group: 'Operations',
+    content: [
+      'The Tasks module is a lightweight task management system for operational to-do items that are not compliance-related (for compliance deadlines, use Suspense Items instead).',
+      'Create tasks with a title, description, assignee, priority, and due date. Tasks can be filtered by status (open, in-progress, completed) and priority level.',
+      'This module is enabled per-organization through Module Toggles.',
+    ],
+  },
+  {
+    id: 'onboarding',
+    title: 'Onboarding',
+    group: 'Operations',
+    content: [
+      'The Onboarding module guides new organizations through initial setup. It collects your company name, primary contact information, fleet size, address, and primary DOT concern.',
+      'After onboarding completes, the system provisions your organization record and you are directed to the Dashboard. Onboarding status is tracked per-organization and cannot be repeated once completed.',
+      'If your organization needs to update onboarding information later, use the Settings page or contact support.',
+    ],
+  },
+
+  /* ── COMPLIANCE GROUP ────────────────────────────────────────────── */
+  {
     id: 'compliance',
     title: 'Compliance Tracking',
+    group: 'Compliance',
     content: [
       'The Compliance module combines driver qualification tracking and permit/license management into one view. Use the scope toggle at the top to switch between Drivers Only, Permits Only, or Both.',
       'Driver compliance records track: CDL number, state, expiration, and endorsements (hazmat, passenger, tanker); medical card expiration per 49 CFR Part 391.41; Motor Vehicle Record (MVR) dates; drug and alcohol testing status per 49 CFR Part 382; and TSA/TWIC clearance status.',
@@ -48,28 +97,20 @@ const SECTIONS: { id: string; title: string; content: string[] }[] = [
     ],
   },
   {
-    id: 'employees',
-    title: 'Employees',
+    id: 'dq-files',
+    title: 'DQ Files (Driver Qualification)',
+    group: 'Compliance',
     content: [
-      'The Employees module is your driver profile registry. Each employee record stores: full name, status (Active/Inactive/Terminated), contact info (phone, email, address), CDL details (number, state, expiry, endorsements), medical card expiry, TSA/TWIC clearance, drug test schedule, and MVR record date.',
-      'Add employees individually using the "Add Employee" form, or import in bulk through the Import Data module. Employee records support soft-delete with restore capability and maintain a full audit trail.',
-      'Employee data feeds directly into the Compliance module and Pipeline Penny\'s fleet context, so your AI assistant always has current driver information when answering regulatory questions.',
-    ],
-  },
-  {
-    id: 'suspense',
-    title: 'Suspense Items',
-    content: [
-      'Suspense items are compliance tasks that require action. Think of them as your regulatory to-do list with teeth — every item has a severity level, due date, owner, and audit trail.',
-      'Each suspense item includes: title, description, due date, severity (Critical, High, Medium, Low), alert window (overdue, due-today, 7-day, 14-day, 30-day), owner email, source type (driver CDL, medical card, permit, vehicle inspection, maintenance, activity), source record ID (linked to the originating record), resolution status (open, resolved, snoozed), and notes.',
-      'Suspense items can be created manually from the "New Suspense Item" form, or they are auto-generated when you import fleet data with approaching deadlines.',
-      'To resolve an item, click "Resolve" on its detail page. You must enter resolution notes. The system records who resolved it, when, and what notes were provided — creating a permanent audit trail for compliance documentation.',
-      'Filter the suspense queue by severity, alert state, status, or source type to focus on what matters most right now.',
+      'The DQ Files module provides a structured view of Driver Qualification files as required by 49 CFR Part 391. Each driver\'s DQ file consolidates all mandatory documents in one place: application for employment, road test certificate, annual MVR review, medical examiner\'s certificate, driving record inquiries, and annual review of driving record.',
+      'DQ file status is shown per driver with completeness indicators. Missing or expired documents are flagged with severity levels that feed directly into the Suspense Items and Alerts engine.',
+      'Use this module during DOT audits to quickly pull a complete driver qualification file for any employee. The consolidated view ensures you can verify compliance at a glance without searching across multiple sections.',
+      'This module is enabled per-organization through Module Toggles.',
     ],
   },
   {
     id: 'alerts',
     title: 'Alerts & Notifications',
+    group: 'Compliance',
     content: [
       'The Alerts engine runs a daily automated sweep at 08:00 UTC via a scheduled cron job. It scans all open suspense items, groups them by owner email, and sends color-coded compliance reminder emails.',
       'Alert windows: Overdue (red) for items past due, Due Today (orange), 7-Day Warning (yellow), 14-Day Warning, and 30-Day Warning. Each owner receives one consolidated email listing all their items by severity.',
@@ -79,8 +120,124 @@ const SECTIONS: { id: string; title: string; content: string[] }[] = [
     ],
   },
   {
+    id: 'suspense',
+    title: 'Suspense Items',
+    group: 'Compliance',
+    content: [
+      'Suspense items are compliance tasks that require action. Think of them as your regulatory to-do list with teeth — every item has a severity level, due date, owner, and audit trail.',
+      'Each suspense item includes: title, description, due date, severity (Critical, High, Medium, Low), alert window (overdue, due-today, 7-day, 14-day, 30-day), owner email, source type (driver CDL, medical card, permit, vehicle inspection, maintenance, activity), source record ID (linked to the originating record), resolution status (open, resolved, snoozed), and notes.',
+      'Suspense items can be created manually from the "New Suspense Item" form, or they are auto-generated when you import fleet data with approaching deadlines.',
+      'To resolve an item, click "Resolve" on its detail page. You must enter resolution notes. The system records who resolved it, when, and what notes were provided — creating a permanent audit trail for compliance documentation.',
+      'Filter the suspense queue by severity, alert state, status, or source type to focus on what matters most right now.',
+    ],
+  },
+  {
+    id: 'fmcsa',
+    title: 'FMCSA Carrier Lookup',
+    group: 'Compliance',
+    content: [
+      'Pull live carrier safety data from the federal FMCSA QCMobile API by entering a USDOT number. Results include carrier identity (legal name, DBA, address, operation type), operating authority status (common, contract, broker), BASIC safety scores (Safety, Fitness, Crash Indicator, Hours of Service, Driver Fitness, Hazmat), safety rating, out-of-service rates, cargo carried, and violation history.',
+      'Lookup results can be saved as compliance snapshots for your records. Saved snapshots appear on the Dashboard FMCSA card and provide a historical record of carrier safety data over time — useful for audits and DOT inspections.',
+    ],
+  },
+
+  /* ── TRAINING GROUP ──────────────────────────────────────────────── */
+  {
+    id: 'training-hub',
+    title: 'Training Hub',
+    group: 'Training',
+    content: [
+      'The Training Hub is the landing page for the built-in compliance training LMS. It shows available training courses, completion status, and upcoming certification deadlines for your organization.',
+      'Training content is authored from authoritative sources: Emergency Response Guidebook (ERG 2024), CFR Parts (FMCSA/PHMSA regulations), and DOT training requirements. Content is delivered as slide-based presentations with embedded assessments.',
+      'From the Training Hub, employees can browse available courses, see their completion progress, and launch training sessions. Admins can view organization-wide training status and identify employees with overdue or upcoming certifications.',
+    ],
+  },
+  {
+    id: 'my-training',
+    title: 'My Training',
+    group: 'Training',
+    content: [
+      'The My Training page shows your personal training dashboard. It lists all courses assigned to you, your progress in each, assessment scores, and earned certificates.',
+      'Active courses show a progress bar and a "Continue" button to resume where you left off. Completed courses show your score, completion date, and a link to download your certificate.',
+      'Courses with expiring certifications are flagged with warnings so you can re-certify before the deadline. Expiring training certifications also appear as Suspense Items in the compliance workflow.',
+    ],
+  },
+  {
+    id: 'training-admin',
+    title: 'Training Admin',
+    group: 'Training',
+    content: [
+      'Training Admin is an admin-only page for managing the training program. It provides tools to assign courses to employees, set due dates, review assessment results, and manage the training module catalog.',
+      'The admin view includes: organization-wide completion metrics, per-employee training status, course assignment management, and the ability to configure passing score thresholds for each course.',
+      'Training completions automatically update the hazmat training compliance records in the database, ensuring that DQ files and compliance tracking stay current without manual data entry.',
+    ],
+  },
+  {
+    id: 'hazmat-reports',
+    title: 'Hazmat Training Reports',
+    group: 'Training',
+    content: [
+      'The Hazmat Training Reports page (admin-only) provides detailed compliance reporting for hazmat-endorsed drivers. It tracks initial training, refresher training (required every 3 years under 49 CFR Part 172.704), and certification expiration dates.',
+      'Reports can be filtered by employee, training type, completion status, and date range. Export options allow you to generate compliance documentation for DOT audits.',
+      'The module covers 12 required PHMSA modules, 6 NFPA Awareness modules, 12 NFPA Operations modules, and supplemental training — 31 total training modules.',
+    ],
+  },
+  {
+    id: 'courses',
+    title: 'Courses & Workshops',
+    group: 'Training',
+    content: [
+      'The Courses & Workshops page lists the full catalog of available training content. Each course card shows the title, description, estimated duration, required CFR references, and whether a certificate is issued on completion.',
+      'Courses use a slide-based delivery format with embedded multiple-choice and scenario-based assessments. You must achieve the passing score threshold to earn a completion certificate.',
+      'This module is enabled per-organization through Module Toggles.',
+    ],
+  },
+
+  /* ── FINANCE GROUP ───────────────────────────────────────────────── */
+  {
+    id: 'financial',
+    title: 'Financial Overview',
+    group: 'Finance',
+    content: [
+      'The Financial module provides a high-level view of your fleet financial operations. It consolidates data from Invoices, Spend Dashboard, and Sales into a unified financial summary.',
+      'Key metrics include total spend, revenue tracking, profit margins, and cost-per-mile or cost-per-asset breakdowns when sufficient data is available.',
+      'This module is enabled per-organization through Module Toggles.',
+    ],
+  },
+  {
+    id: 'sales',
+    title: 'Sales',
+    group: 'Finance',
+    content: [
+      'The Sales module provides sales analytics, CSV import capability, and revenue forecasting. It tracks products, customers, and sales records with full reporting.',
+      'Core features include: 5 KPI calculations (revenue, deal size, conversion, profit, margin), time-series trend data (daily/weekly/monthly/quarterly), period-over-period comparison, top product rankings, and channel breakdown analysis.',
+      'Import sales data from CSV files with automatic field mapping and validation. The module supports up to 10,000 rows per import with batch processing.',
+      'Revenue forecasting uses moving average projections. Forecasts can be saved and compared against actual results over time.',
+      'This module is enabled per-organization through Module Toggles.',
+    ],
+  },
+  {
+    id: 'proposals',
+    title: 'Proposals',
+    group: 'Finance',
+    content: [
+      'The Proposals module supports generation and tracking of business proposals. Create proposals from templates, track their status through the pipeline, and manage revisions.',
+      'This module is enabled per-organization through Module Toggles.',
+    ],
+  },
+  {
+    id: 'contracts',
+    title: 'Contracts',
+    group: 'Finance',
+    content: [
+      'The Contracts module tracks active contracts, renewal dates, and contract terms. It helps ensure fleet service agreements and vendor contracts stay current.',
+      'This module is enabled per-organization through Module Toggles.',
+    ],
+  },
+  {
     id: 'invoices',
     title: 'Invoices',
+    group: 'Finance',
     content: [
       'The Invoices module tracks maintenance invoices with full vendor, amount, category, and asset linkage. The invoice register shows a sortable table with Invoice ID, Vendor, Date, Category, Linked Asset, and Amount.',
       'Add invoices manually using the form, or upload a PDF invoice for automatic parsing. The PDF parser extracts vendor name, invoice number, date, amounts, and line items (parts, labor, shop supplies, tax) from 12 supported fleet maintenance vendors.',
@@ -89,25 +246,48 @@ const SECTIONS: { id: string; title: string; content: string[] }[] = [
     ],
   },
   {
-    id: 'spend',
-    title: 'Spend Dashboard',
+    id: 'realty',
+    title: 'Realty',
+    group: 'Finance',
     content: [
-      'The Spend Dashboard gives you monthly financial visibility across your entire fleet operation. The main view shows a trend line chart of total spend by month and a category breakdown (Maintenance, Permits, Fuel, Insurance, Other).',
-      'Key monthly metrics include: total invoices processed, largest vendor by spend, and category percentage split.',
-      'Click any asset row to drill into per-asset spending — see exactly how much each vehicle, trailer, or piece of equipment is costing you month over month. This per-unit view helps identify high-maintenance assets that may need replacement.',
+      'The Realty module tracks real estate and facility-related compliance for fleet operations — yard locations, terminal leases, storage facilities, and environmental permits tied to physical locations.',
+      'This module is enabled per-organization through Module Toggles.',
+    ],
+  },
+
+  /* ── INTELLIGENCE GROUP ──────────────────────────────────────────── */
+  {
+    id: 'email-analytics',
+    title: 'Email Analytics',
+    group: 'Intelligence',
+    content: [
+      'The Email Analytics module provides visibility into compliance email communications. Track alert delivery success rates, open rates, and response patterns to ensure your team is receiving and acting on compliance notifications.',
+      'This module is enabled per-organization through Module Toggles.',
     ],
   },
   {
-    id: 'fmcsa',
-    title: 'FMCSA Carrier Lookup',
+    id: 'readiness',
+    title: 'Readiness',
+    group: 'Intelligence',
     content: [
-      'Pull live carrier safety data from the federal FMCSA QCMobile API by entering a USDOT number. Results include carrier identity (legal name, DBA, address, operation type), operating authority status (common, contract, broker), BASIC safety scores (Safety, Fitness, Crash Indicator, Hours of Service, Driver Fitness, Hazmat), safety rating, out-of-service rates, cargo carried, and violation history.',
-      'Lookup results can be saved as compliance snapshots for your records. Saved snapshots appear on the Dashboard FMCSA card and provide a historical record of carrier safety data over time — useful for audits and DOT inspections.',
+      'The Readiness module provides a compliance readiness score for your fleet operation. It evaluates data completeness across all compliance categories — driver qualifications, permits, vehicle inspections, maintenance records, and training status — to give you a single readiness metric.',
+      'Use this as a preparation tool before DOT audits or carrier reviews to identify gaps in your compliance posture.',
+      'This module is enabled per-organization through Module Toggles.',
+    ],
+  },
+  {
+    id: 'govcon',
+    title: 'GovCon',
+    group: 'Intelligence',
+    content: [
+      'The GovCon (Government Contracting) module supports fleet operators who work with federal, state, or local government contracts. It tracks contract compliance requirements, certifications (VOSB, SDVOSB, 8(a), HUBZone), and government-specific reporting deadlines.',
+      'This module is enabled per-organization through Module Toggles.',
     ],
   },
   {
     id: 'telematics',
     title: 'Telematics',
+    group: 'Intelligence',
     content: [
       'The Telematics module displays real-time fleet risk scores from your connected telematics provider (currently supporting Verizon Connect Reveal).',
       'The Vehicle Risk Table shows: vehicle number, make/model/year, numeric risk score, risk level (HIGH/MEDIUM/LOW), last seen timestamp, 7-day GPS event count, and associated exception flags.',
@@ -119,20 +299,40 @@ const SECTIONS: { id: string; title: string; content: string[] }[] = [
     ],
   },
   {
-    id: 'module-tools',
-    title: 'Module Tools (Admin)',
+    id: 'forecasting',
+    title: 'Forecasting',
+    group: 'Intelligence',
     content: [
-      'Module Tools is an admin-only operator panel for running integrated backend modules directly from the UI. It connects to the Module Gateway — a unified execution layer that orchestrates four integrated tooling modules.',
-      'Available modules: ML-EIA Petroleum Intel (energy market analysis and price forecasting), ML-Signal Stack (multi-source business signal processing), PaperStack (document generation, conversion, and inspection), and Command Center (tool discovery and routing hub).',
-      'To run a module action: select the module from the catalog dropdown, choose an action, configure arguments using the JSON editor, set a timeout, choose dry-run or live mode, and click Execute. Each run gets a unique correlation ID for tracking.',
-      'The run history panel shows all recent executions with status (queued, running, success, fail), output preview (stdout/stderr), error detail, result payload, and generated artifacts.',
-      'For non-technical users, use the Command Center Catalog page to browse discovered tools in a simple table without JSON payload handling.',
-      'All module actions are restricted to a fixed allowlist — no arbitrary shell execution is possible. Admin role authentication is required for all Module Tools operations.',
+      'The Forecasting module provides predictive analytics powered by the ML-Signal Stack. It processes multi-source business signals to generate trend forecasts, anomaly detection, and predictive compliance risk indicators.',
+      'This module is enabled per-organization through Module Toggles.',
+    ],
+  },
+
+  /* ── ADMIN GROUP ─────────────────────────────────────────────────── */
+  {
+    id: 'settings',
+    title: 'Settings',
+    group: 'Admin',
+    content: [
+      'The Settings page manages your alert engine configuration and organization preferences. Set your organization name (used in email subject lines), the "from" email address for alert delivery, the manager summary email address, and alert threshold windows.',
+      'Configuration values are stored locally in the browser for preview purposes. For production delivery, the same values must be set as Vercel environment variables. Copy-to-clipboard buttons are provided for each setting to make this easy.',
+      'Admin users can manage team member access and role assignments through the Clerk dashboard integration.',
+    ],
+  },
+  {
+    id: 'spend',
+    title: 'Spend Dashboard',
+    group: 'Admin',
+    content: [
+      'The Spend Dashboard gives you monthly financial visibility across your entire fleet operation. The main view shows a trend line chart of total spend by month and a category breakdown (Maintenance, Permits, Fuel, Insurance, Other).',
+      'Key monthly metrics include: total invoices processed, largest vendor by spend, and category percentage split.',
+      'Click any asset row to drill into per-asset spending — see exactly how much each vehicle, trailer, or piece of equipment is costing you month over month. This per-unit view helps identify high-maintenance assets that may need replacement.',
     ],
   },
   {
     id: 'import',
     title: 'Import Data',
+    group: 'Admin',
     content: [
       'The Import Data module supports bulk upload of fleet records from Excel files. It validates data across 13 collection types: Drivers, Assets Master, Vehicles & Equipment, Permits & Licenses, Employees, Storage Tanks, Maintenance Schedule, Activity Log, Maintenance Tracker, Invoices, Maintenance Line Items, Colorado Contacts, and Emergency Contacts.',
       'Import workflow: (1) Download the XLSX template with pre-built sheets and validation hints. (2) Fill in your data following the column headers and format notes. (3) Upload your completed file (CSV or XLSX). (4) The system parses and validates every row against the collection schema. (5) Review flagged rows — errors are highlighted with explanations. (6) Approve or reject individual rows. (7) Commit approved rows to the database.',
@@ -141,45 +341,73 @@ const SECTIONS: { id: string; title: string; content: string[] }[] = [
     ],
   },
   {
-    id: 'penny',
-    title: 'Pipeline Penny (AI Assistant)',
+    id: 'command-center',
+    title: 'Command Center',
+    group: 'Admin',
     content: [
-      'Pipeline Penny is a document-grounded assistant that now searches the live CFR corpus (including Part 172 and Part 397), ERG handbook content, and indexed demo knowledge folders (Realty Command, HubSpot, Tenstreet, JJ Keller, and other local categories discovered at build time).',
-      'Penny automatically receives server-side context about your fleet: active drivers, assets, permits, and open suspense items. This means Penny can answer questions like "Which of my drivers have medical cards expiring this month?" or "What are my current high-severity compliance gaps?"',
-      'Choose your preferred LLM provider from the chat interface: Anthropic Claude (default), OpenAI GPT-4o-mini, Google Gemini 2.5 Flash, or Ollama for fully local/private processing. Each provider offers multiple model options.',
-      'Penny includes security hardening: 6 injection defense rules on every query, keyword-based fast-reject filtering, sanitized markdown output, and OWASP LLM Top 10 compliance. Driver data is anonymized (IDs only, no PII sent to LLM providers).',
-      'The Penny sidebar shows the currently indexed catalog with category counts and document titles, and each response still includes sources so operators can verify answers. A backend health indicator shows connection status (online/offline/checking). Rate limiting is set at 20 queries per 60 seconds per user.',
-      'Use the helper question buttons for quick starts, or type your own question. Penny cites source documents in every response so you can verify answers against the original CFR text.',
+      'The Command Center Catalog is a browsable directory of all discovered tools across the module gateway. It shows each tool\'s name, module, description, and available actions in a simple table view.',
+      'Use the Command Center to understand what capabilities are available before running module actions through Module Tools. This is designed for non-technical users who want to browse available tools without dealing with JSON payloads.',
+      'The Command Center integrates with the tool discovery service, search service, and router service to provide real-time status and capability information.',
     ],
   },
   {
-    id: 'settings',
-    title: 'Settings',
+    id: 'module-tools',
+    title: 'Module Tools',
+    group: 'Admin',
     content: [
-      'The Settings page (accessible under Settings in the sidebar) manages your alert engine configuration. Set your organization name (used in email subject lines), the "from" email address for alert delivery, the manager summary email address, and alert threshold windows.',
-      'Configuration values are stored locally in the browser for preview purposes. For production delivery, the same values must be set as Vercel environment variables. Copy-to-clipboard buttons are provided for each setting to make this easy.',
-      'Admin users can manage team member access and role assignments through the Clerk dashboard integration.',
+      'Module Tools is an admin-only operator panel for running integrated backend modules directly from the UI. It connects to the Module Gateway — a unified execution layer that orchestrates four integrated tooling modules.',
+      'Available modules: ML-EIA Petroleum Intel (energy market analysis and price forecasting with 9 actions), ML-Signal Stack (multi-source business signal processing with 8 actions), PaperStack (document generation, conversion, and inspection with 13 actions), and Command Center (tool discovery and routing hub with 13 actions). Total: 43 gateway actions.',
+      'To run a module action: select the module from the catalog dropdown, choose an action, configure arguments using the JSON editor, set a timeout, choose dry-run or live mode, and click Execute. Each run gets a unique correlation ID for tracking.',
+      'The run history panel shows all recent executions with status (queued, running, success, fail), output preview (stdout/stderr), error detail, result payload, and generated artifacts.',
+      'All module actions are restricted to a fixed allowlist — no arbitrary shell execution is possible. Admin role authentication is required for all Module Tools operations.',
+      'The module gateway is undergoing 7-layer enterprise hardening: tool registry, schema validation, execution sandbox, retry manager, token/cost attribution, audit logging, and tenant isolation.',
     ],
   },
+  {
+    id: 'penny',
+    title: 'Pipeline Penny (AI Assistant)',
+    group: 'Admin',
+    content: [
+      'Pipeline Penny is a document-grounded compliance assistant that searches the live CFR corpus (13 Parts including Part 172 and Part 397), ERG handbook content, and indexed knowledge folders.',
+      'Penny automatically receives server-side context about your fleet: active drivers, assets, permits, and open suspense items. This means Penny can answer questions like "Which of my drivers have medical cards expiring this month?" or "What are my current high-severity compliance gaps?"',
+      'Choose your preferred LLM provider from the chat interface: Anthropic Claude (default), OpenAI GPT-4o-mini, Google Gemini 2.5 Flash, or Ollama for fully local/private processing. Each provider offers multiple model options.',
+      'Penny includes security hardening: 6 injection defense rules on every query, keyword-based fast-reject filtering, sanitized markdown output, and OWASP LLM Top 10 compliance. Driver data is anonymized (IDs only, no PII sent to LLM providers).',
+      'The Penny sidebar shows the currently indexed catalog with category counts and document titles. Each response includes source citations so operators can verify answers against the original CFR text. A backend health indicator shows connection status.',
+      'Rate limiting: 20 queries per 60 seconds per user. Use the helper question buttons for quick starts, or type your own question.',
+    ],
+  },
+  {
+    id: 'module-toggles',
+    title: 'Module Toggles',
+    group: 'Admin',
+    content: [
+      'The Module Toggles page (admin-only, under Admin > Module Toggles) lets you enable or disable individual modules for your organization. This controls which sidebar links and features are visible to your team.',
+      'Toggle modules on or off based on your fleet operation needs. Changes take effect immediately — disabled modules are hidden from the sidebar and their routes are inaccessible.',
+      'This allows each organization to have a tailored experience without unnecessary modules cluttering the interface. Default module states are configured at the platform level.',
+    ],
+  },
+
+  /* ── PLATFORM SECTIONS ───────────────────────────────────────────── */
   {
     id: 'security',
     title: 'Data Security & Compliance',
     content: [
       'All data is encrypted in transit (TLS) and at rest. Organization data is fully isolated — no tenant can access another tenant\'s records. Telematics credentials are encrypted using pgcrypto.',
-      'The platform is SOC 2 Type I audit-ready with comprehensive audit logging covering: organization lifecycle events, data access, record changes, import/export operations, and administrative actions.',
-      'PII protection: driver data sent to AI providers is anonymized (IDs only). Sentry error reporting includes PII scrubbing. No fleet data is used to train AI models.',
-      'Authentication is handled by Clerk with org-scoped RBAC. Subscription state enforcement (trial, active, past due, canceled) is managed through Stripe integration with automatic access gating.',
-      'Content Security Policy violation reporting is active. All API endpoints enforce authentication and role-based authorization.',
+      'The platform is SOC 2 Type I audit-ready with 73 evidence artifacts across 9 control domains. Comprehensive audit logging covers: organization lifecycle events, data access, record changes, import/export operations, and administrative actions.',
+      'PII protection: driver data sent to AI providers is anonymized (IDs only). Sentry error reporting includes PII scrubbing with an 8-key deny-list. No fleet data is used to train AI models.',
+      'Authentication is handled by Clerk with org-scoped RBAC. Two roles: admin (full CRUD, import/rollback, alert configuration, module tools) and member (read access, create suspense items). Subscription state enforcement (trial, active, past due, canceled) is managed through Stripe with automatic access gating.',
+      'Security headers include: HSTS (2-year max-age), CSP (default-src self), X-Frame-Options DENY, X-Content-Type-Options nosniff, Referrer-Policy strict-origin-when-cross-origin, and Permissions-Policy (camera, microphone, geolocation disabled).',
+      'OWASP ZAP penetration testing baseline: 59 PASS, 8 WARN, 0 FAIL. All API endpoints use parameterized SQL queries (100% injection prevention). Content Security Policy violation reporting is active.',
     ],
   },
   {
     id: 'billing',
     title: 'Subscription & Billing',
     content: [
-      'Fleet-Compliance Sentinel uses Stripe for subscription management. New organizations start with a trial period. A trial countdown banner appears in the app showing days remaining.',
+      'Fleet-Compliance Sentinel uses Stripe for subscription management. New organizations start with a 30-day trial period. A trial countdown banner appears in the app showing days remaining.',
       'When the trial expires, access is gated until a subscription is activated. Use the "Subscribe" or "Upgrade" buttons to start a paid plan through the Stripe checkout flow.',
       'Manage your subscription, update payment methods, or view invoices through the Stripe Customer Portal (accessible from the app). Subscription states include: trial, active, past_due, and canceled.',
-      'If a subscription is canceled, a grace period applies before data offboarding begins. The offboarding lifecycle includes: soft-delete of records, then hard-delete after a configured retention period.',
+      'If a subscription is canceled, a 30-day grace period applies during which records are soft-deleted. After 60 days total, records are permanently removed. The offboarding lifecycle is fully automated and tracked in the audit log.',
     ],
   },
   {
@@ -192,16 +420,19 @@ const SECTIONS: { id: string; title: string; content: string[] }[] = [
       'The Alerts preview (dry-run) mode lets you see exactly what emails will be sent before triggering a live run. Use this to verify your configuration is correct.',
       'Suspense items linked to source records (driver CDL, medical card, permit) include a direct link back to the originating record for quick reference.',
       'FMCSA snapshots saved from lookups appear on your Dashboard card — save one after each DOT audit or carrier review to build a compliance history.',
+      'Use Pipeline Penny for quick regulatory lookups — ask about specific CFR parts or your fleet data and get cited, verifiable answers.',
+      'Module Toggles (Admin) lets you customize which modules appear in the sidebar for your team.',
     ],
   },
   {
     id: 'support',
     title: 'Support',
     content: [
-      'Fleet-Compliance Sentinel is built and maintained by True North Data Strategies. For questions, support, or feature requests:',
+      'Fleet-Compliance Sentinel is built and maintained by True North Data Strategies LLC. For questions, support, or feature requests:',
       'Phone: 555-555-5555',
       'Email: jacob@truenorthstrategyops.com',
-      'SBA-certified VOSB/SDVOSB.',
+      'Website: truenorthstrategyops.com',
+      'SBA-certified VOSB/SDVOSB. Service-Disabled Veteran-Owned Small Business.',
     ],
   },
 ];
@@ -218,20 +449,29 @@ function TableOfContents({
   activeId: string;
   onSelect: (id: string) => void;
 }) {
+  let lastGroup = '';
   return (
     <nav className="manual-toc" aria-label="Manual table of contents">
       <p className="manual-toc-heading">Contents</p>
-      {sections.map((s, i) => (
-        <button
-          key={s.id}
-          type="button"
-          className={`manual-toc-item${s.id === activeId ? ' active' : ''}`}
-          onClick={() => onSelect(s.id)}
-        >
-          <span className="manual-toc-num">{String(i + 1).padStart(2, '0')}</span>
-          {s.title}
-        </button>
-      ))}
+      {sections.map((s, i) => {
+        const groupLabel = s.group && s.group !== lastGroup ? s.group : null;
+        if (s.group) lastGroup = s.group;
+        return (
+          <div key={s.id}>
+            {groupLabel && (
+              <p className="manual-toc-group">{groupLabel}</p>
+            )}
+            <button
+              type="button"
+              className={`manual-toc-item${s.id === activeId ? ' active' : ''}`}
+              onClick={() => onSelect(s.id)}
+            >
+              <span className="manual-toc-num">{String(i + 1).padStart(2, '0')}</span>
+              {s.title}
+            </button>
+          </div>
+        );
+      })}
     </nav>
   );
 }
@@ -372,6 +612,16 @@ export default function UserManualModal() {
               opacity: 0.5;
               padding: 0 16px;
               margin: 0 0 8px;
+            }
+            .manual-toc-group {
+              font-size: 0.65rem;
+              text-transform: uppercase;
+              letter-spacing: 0.1em;
+              opacity: 0.4;
+              padding: 10px 16px 4px;
+              margin: 0;
+              border-top: 1px solid rgba(255,255,255,0.06);
+              color: #3d8eb9;
             }
             .manual-toc-item {
               display: flex;

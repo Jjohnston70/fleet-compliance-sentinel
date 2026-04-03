@@ -9,7 +9,7 @@ import {
 import { runSalesCommandTool } from '@/lib/sales-command-runtime';
 
 interface CsvImportResponse {
-  status?: string;
+  status?: 'success' | 'partial' | 'error' | string;
   rowsProcessed?: number;
   rowsInserted?: number;
   errors?: string[];
@@ -17,6 +17,15 @@ interface CsvImportResponse {
 
 function moduleSetupResponse(error: unknown): NextResponse | null {
   const message = error instanceof Error ? error.message : String(error);
+  if (message.includes('DATABASE_URL environment variable is not set')) {
+    return NextResponse.json(
+      {
+        ok: false,
+        error: 'DATABASE_URL is not configured for Sales Command.',
+      },
+      { status: 503 },
+    );
+  }
   if (!message.includes('Cannot find module')) return null;
   return NextResponse.json(
     {
@@ -89,14 +98,21 @@ export async function POST(req: NextRequest) {
       has_header: hasHeader,
     });
 
+    const rowsProcessed = Number(result.rowsProcessed || 0);
+    const rowsInserted = Number(result.rowsInserted || 0);
     const errors = Array.isArray(result.errors)
       ? result.errors.map((entry) => String(entry))
       : [];
+    const status = result.status || 'error';
+    const partial = status === 'partial' || (rowsInserted > 0 && errors.length > 0);
+    const ok = status !== 'error' || rowsInserted > 0;
 
     return NextResponse.json({
-      ok: result.status !== 'error',
-      rowsProcessed: Number(result.rowsProcessed || 0),
-      rowsInserted: Number(result.rowsInserted || 0),
+      ok,
+      partial,
+      status,
+      rowsProcessed,
+      rowsInserted,
       errors,
     });
   } catch (error) {

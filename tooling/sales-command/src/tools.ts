@@ -80,8 +80,12 @@ export const tools = [
     },
     handler: async (params: any) => {
       const result = await importSalesData(params.csv_content);
+      const hasErrors = Array.isArray(result.errors) && result.errors.length > 0;
+      const status = hasErrors && result.rowsInserted > 0
+        ? 'partial'
+        : (result.success ? 'success' : 'error');
       return {
-        status: result.success ? 'success' : 'error',
+        status,
         rowsProcessed: result.rowsProcessed,
         rowsInserted: result.rowsInserted,
         errors: result.errors

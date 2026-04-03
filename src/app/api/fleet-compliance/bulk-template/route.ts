@@ -5,8 +5,37 @@ import { auditLog } from '@/lib/audit-logger';
 
 export const runtime = 'nodejs';
 
+const SALES_TEMPLATE_HEADERS = [
+  'Date',
+  'Product',
+  'Region',
+  'SalesRep',
+  'Channel',
+  'Revenue',
+  'UnitsSold',
+  'COGS',
+];
+
+const SALES_TEMPLATE_SAMPLE = {
+  Date: '2026-04-01',
+  Product: 'Diesel Fuel',
+  Region: 'Front Range',
+  SalesRep: 'A. Johnson',
+  Channel: 'direct',
+  Revenue: '12500.00',
+  UnitsSold: '2500',
+  COGS: '9100.00',
+};
+
 function createManifestRows() {
-  return fleetComplianceUploadTemplateManifest.map((sheet) => ({
+  const rows: Array<{
+    Sheet: string;
+    Source: string;
+    Type: string;
+    Worksheet: string;
+    Headers: string;
+    Notes: string;
+  }> = fleetComplianceUploadTemplateManifest.map((sheet) => ({
     Sheet: sheet.sheetName,
     Source: sheet.sourcePath,
     Type: sheet.kind,
@@ -14,6 +43,17 @@ function createManifestRows() {
     Headers: sheet.headers.join(', '),
     Notes: sheet.notes,
   }));
+
+  rows.push({
+    Sheet: 'SALES CSV FORMAT',
+    Source: '/api/fleet-compliance/sales/template',
+    Type: 'csv',
+    Worksheet: '',
+    Headers: SALES_TEMPLATE_HEADERS.join(', '),
+    Notes: 'Use this format for /fleet-compliance/sales CSV import.',
+  });
+
+  return rows;
 }
 
 function addRowsToWorksheet(
@@ -60,6 +100,9 @@ export async function GET(request: Request) {
       : [Object.fromEntries(sheet.headers.map((header) => [header, '']))];
     addRowsToWorksheet(worksheet, sheet.headers.length ? [...sheet.headers] : ['Column'], sampleRows);
   }
+
+  const salesWorksheet = workbook.addWorksheet('SALES CSV FORMAT');
+  addRowsToWorksheet(salesWorksheet, SALES_TEMPLATE_HEADERS, [SALES_TEMPLATE_SAMPLE]);
 
   const workbookBuffer = await workbook.xlsx.writeBuffer();
   const buffer = Buffer.from(workbookBuffer as ArrayBuffer);

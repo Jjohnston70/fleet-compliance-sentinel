@@ -26,13 +26,23 @@ interface ToggleLogEntry {
   enabledBy: string | null;
 }
 
+interface ModuleGatewayToggleItem {
+  moduleId: string;
+  displayName: string;
+  runtime: string;
+  actionCount: number;
+  enabled: boolean;
+}
+
 export default function DevModulesPage() {
   const [orgs, setOrgs] = useState<OrgOption[]>([]);
   const [catalog, setCatalog] = useState<CatalogItem[]>([]);
   const [selectedOrgId, setSelectedOrgId] = useState('');
   const [enabledModules, setEnabledModules] = useState<string[]>([]);
+  const [moduleGatewayModules, setModuleGatewayModules] = useState<ModuleGatewayToggleItem[]>([]);
   const [planDefaults, setPlanDefaults] = useState<string[]>([]);
   const [recentToggles, setRecentToggles] = useState<ToggleLogEntry[]>([]);
+  const [accessScope, setAccessScope] = useState<'platform' | 'org_admin' | null>(null);
   const [loading, setLoading] = useState(true);
   const [toggling, setToggling] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -58,8 +68,15 @@ export default function DevModulesPage() {
       setOrgs(data.orgs ?? []);
       setCatalog(data.catalog ?? []);
       setEnabledModules(data.enabledModules ?? []);
+      setModuleGatewayModules(data.moduleGatewayModules ?? []);
       setPlanDefaults(data.planDefaults ?? []);
       setRecentToggles(data.recentToggles ?? []);
+      if (data.accessScope === 'platform' || data.accessScope === 'org_admin') {
+        setAccessScope(data.accessScope);
+      }
+      if (typeof data.selectedOrgId === 'string' && data.selectedOrgId) {
+        setSelectedOrgId((previous) => previous || data.selectedOrgId);
+      }
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Fetch failed');
     } finally {
@@ -77,6 +94,7 @@ export default function DevModulesPage() {
       fetchData(orgId);
     } else {
       setEnabledModules([]);
+      setModuleGatewayModules([]);
       setPlanDefaults([]);
       setRecentToggles([]);
     }
@@ -131,13 +149,41 @@ export default function DevModulesPage() {
     }
   };
 
+  const handleGatewayToggle = async (moduleId: string, currentlyEnabled: boolean) => {
+    if (!selectedOrgId) return;
+    const toggleKey = `gw:${moduleId}`;
+    setToggling(toggleKey);
+    try {
+      const res = await fetch('/api/fleet-compliance/dev/modules', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          orgId: selectedOrgId,
+          kind: 'module-gateway',
+          moduleId,
+          enabled: !currentlyEnabled,
+        }),
+      });
+      const data = await res.json();
+      if (data.ok) {
+        await fetchData(selectedOrgId);
+      } else {
+        setError(data.error ?? 'Gateway toggle failed');
+      }
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Gateway toggle failed');
+    } finally {
+      setToggling(null);
+    }
+  };
+
   if (forbidden) {
     return (
       <main className="fleet-compliance-shell">
         <section className="fleet-compliance-hero">
           <h1>Access Denied</h1>
           <p className="fleet-compliance-subcopy">
-            This page is restricted to platform administrators.
+            This page is restricted to organization admins.
           </p>
         </section>
       </main>
@@ -166,6 +212,11 @@ export default function DevModulesPage() {
         <p className="fleet-compliance-subcopy">
           Enable or disable modules per organization. Changes take effect immediately.
         </p>
+        {accessScope === 'org_admin' && (
+          <p className="fleet-compliance-subcopy" style={{ marginTop: '0.5rem', color: '#94a3b8' }}>
+            Organization admin mode: scoped to your current organization.
+          </p>
+        )}
       </section>
 
       {error && (
@@ -396,6 +447,115 @@ export default function DevModulesPage() {
               </div>
             </div>
           ))}
+        </section>
+      )}
+
+      {selectedOrgId && !loading && moduleGatewayModules.length > 0 && (
+        <section className="fleet-compliance-section" style={{ marginTop: '1.5rem' }}>
+          <h3
+            style={{
+              textTransform: 'uppercase',
+              fontSize: '0.75rem',
+              letterSpacing: '0.12em',
+              color: '#94a3b8',
+              marginBottom: '0.75rem',
+              borderBottom: '1px solid rgba(255,255,255,0.08)',
+              paddingBottom: '0.4rem',
+            }}
+          >
+            Module Gateway (CLI Modules)
+          </h3>
+          <div
+            style={{
+              display: 'grid',
+              gridTemplateColumns: 'repeat(auto-fill, minmax(340px, 1fr))',
+              gap: '0.75rem',
+            }}
+          >
+            {moduleGatewayModules.map((mod) => {
+              const isBeingToggled = toggling === `gw:${mod.moduleId}`;
+
+              return (
+                <div
+                  key={mod.moduleId}
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '0.75rem',
+                    padding: '0.75rem 1rem',
+                    borderRadius: '8px',
+                    background: mod.enabled
+                      ? 'rgba(61, 142, 185, 0.08)'
+                      : 'rgba(255,255,255,0.02)',
+                    border: `1px solid ${mod.enabled ? 'rgba(61,142,185,0.3)' : 'rgba(255,255,255,0.06)'}`,
+                    opacity: isBeingToggled ? 0.6 : 1,
+                    transition: 'all 0.2s',
+                  }}
+                >
+                  <div style={{ flex: 1, minWidth: 0 }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                      <span style={{ fontWeight: 600, fontSize: '0.9rem' }}>
+                        {mod.displayName}
+                      </span>
+                    </div>
+                    <p
+                      style={{
+                        fontSize: '0.8rem',
+                        color: '#94a3b8',
+                        margin: '0.2rem 0 0',
+                        whiteSpace: 'nowrap',
+                        overflow: 'hidden',
+                        textOverflow: 'ellipsis',
+                      }}
+                    >
+                      Runtime: {mod.runtime} | Actions: {mod.actionCount}
+                    </p>
+                    <div
+                      style={{
+                        fontSize: '0.7rem',
+                        color: '#64748b',
+                        marginTop: '0.25rem',
+                      }}
+                    >
+                      ACL key: <code style={{ fontSize: '0.72rem' }}>{mod.moduleId}</code>
+                    </div>
+                  </div>
+
+                  <button
+                    type="button"
+                    onClick={() => handleGatewayToggle(mod.moduleId, mod.enabled)}
+                    disabled={isBeingToggled || toggling !== null}
+                    title={mod.enabled ? 'Click to disable module gateway access' : 'Click to enable module gateway access'}
+                    style={{
+                      position: 'relative',
+                      width: '44px',
+                      height: '24px',
+                      borderRadius: '12px',
+                      border: 'none',
+                      background: mod.enabled ? '#3d8eb9' : '#374151',
+                      cursor: toggling !== null ? 'not-allowed' : 'pointer',
+                      flexShrink: 0,
+                      transition: 'background 0.2s',
+                    }}
+                    aria-label={`Toggle ${mod.displayName}`}
+                  >
+                    <span
+                      style={{
+                        position: 'absolute',
+                        top: '2px',
+                        left: mod.enabled ? '22px' : '2px',
+                        width: '20px',
+                        height: '20px',
+                        borderRadius: '50%',
+                        background: '#fff',
+                        transition: 'left 0.2s',
+                      }}
+                    />
+                  </button>
+                </div>
+              );
+            })}
+          </div>
         </section>
       )}
 

@@ -33,25 +33,68 @@ export async function parseCSV(content: string, hasHeader: boolean = true): Prom
   return records;
 }
 
+function readField(record: CSVRow, candidates: string[]): string {
+  for (const candidate of candidates) {
+    const value = record[candidate];
+    if (value === undefined || value === null) continue;
+    const normalized = String(value).trim();
+    if (normalized.length > 0) return normalized;
+  }
+  return '';
+}
+
+function parseNumberField(value: string): number | null {
+  if (!value) return null;
+  const parsed = Number.parseFloat(value.replace(/,/g, ''));
+  return Number.isFinite(parsed) ? parsed : null;
+}
+
+function parseIntegerField(value: string): number | null {
+  if (!value) return null;
+  const parsed = Number.parseInt(value.replace(/,/g, ''), 10);
+  return Number.isFinite(parsed) ? parsed : null;
+}
+
+function isValidDateValue(value: string): boolean {
+  if (!value) return false;
+  const parsed = new Date(value);
+  return !Number.isNaN(parsed.getTime());
+}
+
 export function validateSalesRecord(record: CSVRow, index: number): { valid: boolean; errors: string[] } {
   const errors: string[] = [];
-  
-  if (!record.Date && !record.date) {
+
+  const dateStr = readField(record, ['Date', 'date']);
+  const productName = readField(record, ['Product', 'product', 'Product Name', 'product_name']);
+  const revenueStr = readField(record, ['Revenue', 'revenue', 'Total Revenue', 'total_revenue', 'Sales', 'Amount', 'Total Sales']);
+  const unitPriceStr = readField(record, ['Sales Price', 'sales_price', 'Unit Price', 'unit_price', 'Rate', 'rate']);
+  const unitsSoldStr = readField(record, ['UnitsSold', 'unitsSold', 'Units Sold', 'units_sold', 'Qty', 'Quantity']);
+
+  if (!dateStr) {
     errors.push(`Row ${index + 1}: Missing date field`);
+  } else if (!isValidDateValue(dateStr)) {
+    errors.push(`Row ${index + 1}: Invalid date "${dateStr}"`);
   }
-  
-  if (!record.Product && !record.product) {
+
+  if (!productName) {
     errors.push(`Row ${index + 1}: Missing product field`);
   }
-  
-  if (!record.Revenue && record.revenue === undefined) {
-    errors.push(`Row ${index + 1}: Missing revenue field`);
-  } else if (isNaN(parseFloat(String(record.Revenue || record.revenue || 0)))) {
+
+  const revenue = parseNumberField(revenueStr);
+  const unitPrice = parseNumberField(unitPriceStr);
+  const unitsSold = parseIntegerField(unitsSoldStr);
+
+  if (revenue === null && unitPrice === null) {
+    errors.push(`Row ${index + 1}: Missing revenue/price fields`);
+  } else if (revenueStr && revenue === null) {
     errors.push(`Row ${index + 1}: Revenue must be a number`);
   }
-  
-  if (!record.Region && !record.region) {
-    errors.push(`Row ${index + 1}: Missing region field`);
+  if (unitPriceStr && unitPrice === null) {
+    errors.push(`Row ${index + 1}: Unit price must be a number`);
+  }
+
+  if (unitsSoldStr && (unitsSold === null || unitsSold <= 0)) {
+    errors.push(`Row ${index + 1}: Units sold must be a positive integer`);
   }
   
   return {
@@ -84,14 +127,28 @@ export async function importSalesData(csvContent: string): Promise<ImportResult>
         }
         
         try {
-          const dateStr = String(record.Date || record.date || '').trim();
-          const productName = String(record.Product || record.product || '').trim();
-          const revenue = parseFloat(String(record.Revenue || record.revenue || 0));
-          const region = String(record.Region || record.region || '').trim();
-          const channel = String(record.Channel || record.channel || '').trim();
-          const salesRep = String(record.SalesRep || record.salesRep || record['Sales Rep'] || '').trim();
-          const unitsSold = parseInt(String(record.UnitsSold || record.unitsSold || record['Units Sold'] || 0), 10);
-          const cogs = record.COGS || record.cogs ? parseFloat(String(record.COGS || record.cogs)) : null;
+          const dateStr = readField(record, ['Date', 'date']);
+          const productName = readField(record, ['Product', 'product', 'Product Name', 'product_name']);
+          const region = readField(record, ['Region', 'region']) || 'Unknown';
+          const channel = readField(record, ['Channel', 'channel']) || 'direct';
+          const salesRep = readField(record, ['SalesRep', 'salesRep', 'Sales Rep', 'sales_rep']);
+          const unitsSoldRaw = parseIntegerField(readField(record, ['UnitsSold', 'unitsSold', 'Units Sold', 'units_sold', 'Qty', 'Quantity']));
+          const revenueRaw = parseNumberField(readField(record, ['Revenue', 'revenue', 'Total Revenue', 'total_revenue', 'Sales', 'Amount', 'Total Sales']));
+          const unitPriceRaw = parseNumberField(readField(record, ['Sales Price', 'sales_price', 'Unit Price', 'unit_price', 'Rate', 'rate']));
+          const cogs = parseNumberField(readField(record, ['COGS', 'cogs', 'Cost Of Goods', 'cost_of_goods']));
+
+          const unitsSold = unitsSoldRaw && unitsSoldRaw > 0 ? unitsSoldRaw : 1;
+          const revenue = revenueRaw ?? (unitPriceRaw !== null ? unitPriceRaw * unitsSold : 0);
+          const unitPrice = unitPriceRaw ?? (unitsSold > 0 ? revenue / unitsSold : revenue);
+
+          if (!Number.isFinite(revenue) || revenue < 0) {
+            errors.push(`Row ${i + index + 1}: Revenue must be a non-negative number`);
+            continue;
+          }
+          if (!Number.isFinite(unitPrice) || unitPrice < 0) {
+            errors.push(`Row ${i + index + 1}: Unit price must be a non-negative number`);
+            continue;
+          }
           
           // Try to get or create product
           let productId: string | null = null;
@@ -115,7 +172,7 @@ export async function importSalesData(csvContent: string): Promise<ImportResult>
             `INSERT INTO sales_records 
             (date, product_id, quantity, unit_price, total_revenue, cost_of_goods, channel, sales_rep, region)
             VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)`,
-            [dateStr, productId, unitsSold, revenue / unitsSold, revenue, cogs, channel, salesRep, region]
+            [dateStr, productId, unitsSold, unitPrice, revenue, cogs, channel, salesRep, region]
           );
           
           rowsInserted++;
@@ -126,7 +183,7 @@ export async function importSalesData(csvContent: string): Promise<ImportResult>
     }
     
     return {
-      success: errors.length === 0,
+      success: errors.length === 0 || rowsInserted > 0,
       rowsProcessed: records.length,
       rowsInserted,
       errors

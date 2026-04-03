@@ -123,6 +123,15 @@ function getCurrentAndPreviousMonthRanges(referenceDate: Date) {
 
 function moduleSetupResponse(error: unknown): NextResponse | null {
   const message = error instanceof Error ? error.message : String(error);
+  if (message.includes('DATABASE_URL environment variable is not set')) {
+    return NextResponse.json(
+      {
+        ok: false,
+        error: 'DATABASE_URL is not configured for Sales Command.',
+      },
+      { status: 503 },
+    );
+  }
   if (!message.includes('Cannot find module')) return null;
   return NextResponse.json(
     {

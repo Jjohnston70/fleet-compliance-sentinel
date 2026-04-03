@@ -32,6 +32,9 @@ export default async function FleetComplianceImportPage() {
             <Link href="/api/fleet-compliance/bulk-template" className="btn-secondary">
               Download Template
             </Link>
+            <Link href="/api/fleet-compliance/sales/template" className="btn-secondary">
+              Download Sales CSV Template
+            </Link>
           </div>
           <div className="fleet-compliance-breadcrumbs">
             <Link href="/fleet-compliance">Fleet-Compliance</Link>
@@ -44,6 +47,17 @@ export default async function FleetComplianceImportPage() {
           committing. Rows with validation issues are flagged automatically — you can override
           any decision per row. Approved rows download as JSON ready for Firestore import.
         </p>
+
+        <div className="fleet-compliance-list-card" style={{ marginBottom: '1rem' }}>
+          <h3>Sales CSV Import Format</h3>
+          <p className="fleet-compliance-table-note">
+            Sales dashboard CSV expects headers:
+            {' '}
+            <code>Date, Product, Region, SalesRep, Channel, Revenue, UnitsSold, COGS</code>.
+            {' '}
+            You can also use aliases like <code>Qty</code> and <code>Sales Price</code>.
+          </p>
+        </div>
 
         {/* Schema reference */}
         <div className="fleet-compliance-list-card" style={{ marginBottom: '1.5rem' }}>

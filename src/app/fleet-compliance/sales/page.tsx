@@ -219,6 +219,8 @@ export default function SalesDashboardPage() {
       });
       const payload = (await response.json()) as {
         ok: boolean;
+        partial?: boolean;
+        status?: string;
         rowsProcessed: number;
         rowsInserted: number;
         errors?: string[];
@@ -229,9 +231,13 @@ export default function SalesDashboardPage() {
         throw new Error(firstError || payload.error || 'Import failed');
       }
 
-      setImportMessage(
-        `Import complete: ${payload.rowsInserted} inserted of ${payload.rowsProcessed} processed.`,
-      );
+      const warningCount = Array.isArray(payload.errors) ? payload.errors.length : 0;
+      const summary = `Import complete: ${payload.rowsInserted} inserted of ${payload.rowsProcessed} processed.`;
+      if (payload.partial && warningCount > 0) {
+        setImportMessage(`${summary} ${warningCount} warning(s) were skipped.`);
+      } else {
+        setImportMessage(summary);
+      }
       setCsvFile(null);
       await fetchDashboard();
     } catch (err) {
