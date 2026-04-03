@@ -1,5 +1,4 @@
 import type { Metadata } from 'next';
-import { ClerkProvider } from '@clerk/nextjs';
 import '../styles/globals.css';
 import Navigation from '@/components/Navigation';
 import CookieConsent from '@/components/CookieConsent';
@@ -53,7 +52,7 @@ export const metadata: Metadata = {
   },
 };
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+export default async function RootLayout({ children }: { children: React.ReactNode }) {
   const hasClerk = isClerkEnabled();
   const redirectConfig = getClerkRedirectConfig();
   const shell = (
@@ -64,10 +63,16 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     </>
   );
 
+  let wrappedShell = shell;
+  if (hasClerk) {
+    const { ClerkProvider } = await import('@clerk/nextjs');
+    wrappedShell = <ClerkProvider {...redirectConfig}>{shell}</ClerkProvider>;
+  }
+
   return (
     <html lang="en">
       <body>
-        {hasClerk ? <ClerkProvider {...redirectConfig}>{shell}</ClerkProvider> : shell}
+        {wrappedShell}
       </body>
     </html>
   );

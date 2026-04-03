@@ -1,0 +1,92 @@
+{
+  "Bosselman 48.16 Hauling #415.pdf": {
+    "vendor": "Bosselman",
+    "grand_total": 48.16,
+    "parts_total": 44.08,
+    "labor_total": 0,
+    "unit_number": "",
+    "invoice_date": "2025-10-08",
+    "line_item_count": 1
+  },
+  "Colorado Truck Repair 2,682.69 TW #249.pdf": {
+    "vendor": "Colorado Truck Repair",
+    "grand_total": 2682.69,
+    "parts_total": 1168.16,
+    "labor_total": 1320.0,
+    "unit_number": "CP 49",
+    "invoice_date": "2025-10-24",
+    "line_item_count": 25
+  },
+  "MHC 83.22 Lubes #571.pdf": {
+    "vendor": "MHC Kenworth",
+    "grand_total": 83.22,
+    "parts_total": 6.53,
+    "labor_total": 68.47,
+    "unit_number": "7119",
+    "invoice_date": "2025-09-17",
+    "line_item_count": 1
+  },
+  "Napa 116.90 - TW 45.pdf": {
+    "vendor": "NAPA",
+    "grand_total": 116.90,
+    "parts_total": 116.90,
+    "labor_total": 0,
+    "unit_number": "",
+    "invoice_date": "2025-09-09",
+    "line_item_count": 1
+  },
+  "PSC Custom 1,817.99 TW #248.pdf": {
+    "vendor": "PSC Custom",
+    "grand_total": 1817.99,
+    "parts_total": 75.16,
+    "labor_total": 1491.0,
+    "unit_number": "48",
+    "invoice_date": "2025-10-14",
+    "line_item_count": 7
+  },
+  "Purcell 2,521.68 Lubes #544.pdf": {
+    "vendor": "Purcell Tire",
+    "grand_total": 2521.68,
+    "parts_total": 1976.80,
+    "labor_total": 240.0,
+    "unit_number": "44",
+    "invoice_date": "2025-10-31",
+    "line_item_count": 6
+  },
+  "Randy's Towing 654.00 TW #247.pdf": {
+    "vendor": "Randy's Towing",
+    "grand_total": 654.0,
+    "parts_total": 0,
+    "labor_total": 654.0,
+    "unit_number": "",
+    "invoice_date": "2025-09-12",
+    "line_item_count": 2
+  },
+  "Rush Truck Centers 450.42 Hauling #411.pdf": {
+    "vendor": "Rush Truck Centers",
+    "grand_total": 450.42,
+    "parts_total": 395.0,
+    "labor_total": 0,
+    "unit_number": "",
+    "invoice_date": "2025-08-26",
+    "line_item_count": 3
+  },
+  "Service Auto Glass 432.05 Lubes #595.pdf": {
+    "vendor": "Service Auto Glass",
+    "grand_total": 432.05,
+    "parts_total": 223.49,
+    "labor_total": 190.23,
+    "unit_number": "9518",
+    "invoice_date": "2025-09-04",
+    "line_item_count": 1
+  },
+  "Southern Tire Mart 1,465.24 Hauling #373.pdf": {
+    "vendor": "Southern Tire Mart",
+    "grand_total": 1465.24,
+    "parts_total": 1142.94,
+    "labor_total": 160.0,
+    "unit_number": "373",
+    "invoice_date": "2025-10-16",
+    "line_item_count": 6
+  }
+}

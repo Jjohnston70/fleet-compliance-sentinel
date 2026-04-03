@@ -1,0 +1,145 @@
+{
+  "module": {
+    "name": "compliance-command",
+    "version": "0.1.0",
+    "description": "Client fills out company info once, all compliance documents auto-populate",
+    "author": "True North Data Strategies",
+    "license": "proprietary",
+    "category": "platform-module"
+  },
+
+  "runtime": {
+    "platform": "google-apps-script",
+    "runtimeVersion": "V8",
+    "entrypoint": "src/router.gs",
+    "boundTo": "spreadsheet",
+    "deployAs": "web-app"
+  },
+
+  "concept": {
+    "description": "The client fills out a single intake form (or spreadsheet) with company info — name, address, EIN, CAGE code, DUNS, POCs, org structure, etc. The module then generates all compliance documents from templates, replacing placeholders with the client's data. Output is a complete compliance package ready for review.",
+    "inputMethod": "Google Form, Spreadsheet intake tab, or API POST",
+    "outputMethod": "Google Docs generated from templates, organized in Drive folders",
+    "templateSource": "FEDERAL-COMPLIANCE-TEMPLATE packages 1-7 + constitution-compliance-gov-docs"
+  },
+
+  "actions": {
+    "submitCompanyInfo": {
+      "description": "Submit or update company info for compliance document generation",
+      "requiredFields": ["companyName", "companyAddress", "primaryContact"],
+      "optionalFields": ["ein", "cageCode", "dunsNumber", "samUei", "naicsCodes", "sicCodes", "companyEmail", "companyPhone", "website", "yearFounded", "employeeCount", "annualRevenue", "clearanceLevel", "contractTypes", "stateOfIncorporation", "insuranceCarrier", "cyberInsurance", "itPoc", "securityPoc", "compliancePoc", "ceo", "cfo", "cto", "ciso"],
+      "returns": "{ companyId, status, timestamp }"
+    },
+    "generatePackage": {
+      "description": "Generate a specific compliance package from templates",
+      "requiredFields": ["companyId", "packageNumber"],
+      "optionalFields": ["outputFolderId", "format"],
+      "returns": "{ packageName, documentsGenerated, folderUrl }"
+    },
+    "generateAll": {
+      "description": "Generate all 7 compliance packages for a company",
+      "requiredFields": ["companyId"],
+      "optionalFields": ["outputFolderId"],
+      "returns": "{ packages[], totalDocuments, folderUrl }"
+    },
+    "getCompanyInfo": {
+      "description": "Retrieve stored company info",
+      "requiredFields": ["companyId"],
+      "returns": "Full company profile object"
+    },
+    "listCompanies": {
+      "description": "List all companies with compliance profiles",
+      "returns": "{ companies[], count }"
+    },
+    "getPackageStatus": {
+      "description": "Check generation status for a company's packages",
+      "requiredFields": ["companyId"],
+      "returns": "{ packages[{ name, status, documentCount, lastGenerated }] }"
+    }
+  },
+
+  "companyInfoSchema": {
+    "_comment": "All placeholders that templates use. Client fills these once.",
+    "core": {
+      "companyName": "Full legal company name",
+      "companyShortName": "Abbreviated name for headers",
+      "companyAddress": "Full street address",
+      "companyCity": "City",
+      "companyState": "State",
+      "companyZip": "ZIP code",
+      "companyEmail": "Primary company email",
+      "companyPhone": "Primary phone",
+      "website": "Company website URL"
+    },
+    "legal": {
+      "ein": "Employer Identification Number",
+      "stateOfIncorporation": "State of incorporation",
+      "yearFounded": "Year established",
+      "entityType": "LLC | S-Corp | C-Corp | Sole Prop"
+    },
+    "government": {
+      "cageCode": "CAGE Code for government contracting",
+      "dunsNumber": "DUNS Number (legacy)",
+      "samUei": "SAM.gov Unique Entity ID",
+      "naicsCodes": "NAICS codes (comma-separated)",
+      "sicCodes": "SIC codes (comma-separated)",
+      "contractTypes": "Contract types pursued (FFP, T&M, CPFF, etc.)",
+      "clearanceLevel": "Facility clearance level if any",
+      "setAsideStatus": "SDVOSB | WOSB | 8(a) | HUBZone | none"
+    },
+    "personnel": {
+      "ceo": "CEO / Owner name",
+      "cfo": "CFO name",
+      "cto": "CTO name",
+      "ciso": "CISO / Security Officer name",
+      "primaryContact": "Primary POC name",
+      "itPoc": "IT Point of Contact",
+      "securityPoc": "Security Point of Contact",
+      "compliancePoc": "Compliance Point of Contact",
+      "hrPoc": "HR Point of Contact"
+    },
+    "operations": {
+      "employeeCount": "Number of employees",
+      "annualRevenue": "Annual revenue range",
+      "physicalLocations": "Number of physical offices",
+      "remoteWorkforce": "yes | no | hybrid",
+      "cloudProvider": "Primary cloud provider (Google, AWS, Azure)",
+      "emailPlatform": "Email platform (Google Workspace, M365)",
+      "insuranceCarrier": "General liability carrier",
+      "cyberInsurance": "Cyber insurance carrier and policy number"
+    }
+  },
+
+  "templateMapping": {
+    "_comment": "Maps compliance packages to template source folders",
+    "package1_internal_compliance": "FEDERAL-COMPLIANCE-TEMPLATE/PACKAGE_1_INTERNAL_COMPLIANCE/",
+    "package2_security_handbook": "FEDERAL-COMPLIANCE-TEMPLATE/PACKAGE_2_SECURITY_COMPLIANCE_HANDBOOK/",
+    "package3_data_handling": "FEDERAL-COMPLIANCE-TEMPLATE/PACKAGE_3_DATA_HANDLING_PRIVACY/",
+    "package4_government": "FEDERAL-COMPLIANCE-TEMPLATE/PACKAGE_4_GOVERNMENT_CONTRACTING/",
+    "package5_google_partner": "FEDERAL-COMPLIANCE-TEMPLATE/PACKAGE_5_GOOGLE_PARTNER/",
+    "package6_business_ops": "FEDERAL-COMPLIANCE-TEMPLATE/PACKAGE_6_BUSINESS_OPERATIONS/",
+    "package7_advanced": "FEDERAL-COMPLIANCE-TEMPLATE/PACKAGE_7_ADVANCED_COMPLIANCE/"
+  },
+
+  "dependencies": {
+    "googleApis": ["Spreadsheets", "Drive", "Documents"],
+    "oauthScopes": [
+      "https://www.googleapis.com/auth/spreadsheets",
+      "https://www.googleapis.com/auth/drive",
+      "https://www.googleapis.com/auth/documents",
+      "https://www.googleapis.com/auth/script.container.ui"
+    ],
+    "googleResourceIds": {
+      "spreadsheetId": "Company info intake and tracking sheet",
+      "templateFolderId": "Folder containing compliance doc templates (Google Docs)",
+      "outputRootFolderId": "Root folder where client packages are generated"
+    }
+  },
+
+  "deployment": {
+    "webAppUrl": "",
+    "executeAs": "ME",
+    "accessLevel": "ANYONE_WITH_ACCOUNT",
+    "notes": "Requires Google Doc templates created from the markdown source in FEDERAL-COMPLIANCE-TEMPLATE with {{PLACEHOLDER}} markers matching companyInfoSchema keys."
+  }
+}

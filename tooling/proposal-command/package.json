@@ -1,0 +1,63 @@
+{
+  "name": "tnds-proposal-command",
+  "version": "1.0.0",
+  "description": "TNDS Proposal Command Module - Standalone Next.js proposal generation system",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest",
+    "test:ui": "vitest --ui",
+    "test:coverage": "vitest --coverage",
+    "lint": "eslint src tests",
+    "format": "prettier --write \"src/**/*.ts\" \"tests/**/*.ts\"",
+    "prepare": "npm run build && npm run typecheck"
+  },
+  "keywords": [
+    "proposal",
+    "pdf",
+    "generator",
+    "nextjs",
+    "typescript",
+    "firestore",
+    "tnds"
+  ],
+  "author": "True North Data Strategies",
+  "license": "MIT",
+  "dependencies": {
+    "next": "^14.0.0",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "docx": "^8.5.0",
+    "handlebars": "^4.7.7",
+    "firebase": "^10.0.0",
+    "firebase-admin": "^12.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "@types/react": "^18.2.0",
+    "typescript": "^5.0.0",
+    "vitest": "^1.0.0",
+    "@vitest/ui": "^1.0.0",
+    "@vitest/coverage-v8": "^1.0.0",
+    "eslint": "^8.0.0",
+    "eslint-config-next": "^14.0.0",
+    "prettier": "^3.0.0",
+    "@types/jest": "^29.0.0",
+    "jest-environment-jsdom": "^29.0.0"
+  },
+  "engines": {
+    "node": ">=18.0.0",
+    "npm": ">=9.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/truenorthstrategyops/proposal-command"
+  },
+  "bugs": {
+    "url": "https://github.com/truenorthstrategyops/proposal-command/issues"
+  }
+}

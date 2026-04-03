@@ -5,7 +5,11 @@ const { withSentryConfig } = require('@sentry/nextjs');
 const nextConfig = {
   outputFileTracingRoot: path.join(__dirname),
   outputFileTracingIncludes: {
-    '/*': ['./tooling/command-center/dist/**/*'],
+    '/*': [
+      './tooling/command-center/dist/**/*',
+      './tooling/proposal-command/dist/**/*',
+      './tooling/sales-command/dist/**/*',
+    ],
   },
   outputFileTracingExcludes: {
     '/*': [

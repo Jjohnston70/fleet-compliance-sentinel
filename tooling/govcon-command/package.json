@@ -1,0 +1,31 @@
+{
+  "name": "@tnds/govcon-command",
+  "version": "1.0.0",
+  "description": "LLM-droppable TypeScript service for federal government contracting operations",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "lint": "tsc --noEmit"
+  },
+  "keywords": [
+    "federal-contracting",
+    "govcon",
+    "sam-gov",
+    "sdvosb",
+    "pipeline-management"
+  ],
+  "author": "True North Data Strategies LLC",
+  "license": "MIT",
+  "dependencies": {
+    "zod": "^3.22.4"
+  },
+  "devDependencies": {
+    "@types/node": "^20.10.0",
+    "typescript": "^5.3.3",
+    "vitest": "^1.1.0"
+  }
+}

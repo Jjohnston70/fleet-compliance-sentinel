@@ -77,24 +77,9 @@ pipeline_x_non_gov-main/
 # Generated demo data
 demo-fleet-data.xlsx
 
-# Tooling modules (local only until individually integrated)
-# fleet-compliance-sentinel is tracked — it contains core CFR data and import mappings
+# Tooling module build artifacts
 tooling/command-center/node_modules/
 tooling/command-center/.next/
-tooling/compliance-command/
-tooling/contract-command/
-tooling/dispatch-command/
-tooling/email-command/
-tooling/financial-command/
-tooling/govcon-command/
-tooling/invoice-module/
-tooling/onboard-command/
-tooling/proposal-command/
-tooling/readiness-command/
-tooling/realty-command/
-tooling/sales-command/
-tooling/task-command/
-tooling/training-command/
 
 # Integrated module payloads: keep source/data, ignore local build artifacts
 tooling/ML-EIA-PETROLEUM-INTEL/.git/

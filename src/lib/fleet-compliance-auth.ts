@@ -1,6 +1,7 @@
 import { auth } from '@clerk/nextjs/server';
 import { setSentryRequestContext } from '@/lib/sentry-context';
 import { getOrgPlan } from '@/lib/plan-gate';
+import { isClerkEnabled } from '@/lib/clerk';
 
 export class FleetComplianceAuthError extends Error {
   status: number;
@@ -18,6 +19,20 @@ export interface FleetComplianceAuthContext {
   userId: string;
   orgId: string;
   role: FleetComplianceRole;
+}
+
+function shouldBypassAuthForLocalDev(): boolean {
+  return !isClerkEnabled() && process.env.NODE_ENV !== 'production';
+}
+
+function getLocalDevAuthContext(): FleetComplianceAuthContext {
+  const orgId = (process.env.LOCAL_DEV_ORG_ID || process.env.DEV_ORG_ID || 'org_local_dev').trim();
+  const userId = (process.env.LOCAL_DEV_USER_ID || process.env.DEV_USER_ID || 'user_local_dev').trim();
+  return {
+    orgId: orgId || 'org_local_dev',
+    userId: userId || 'user_local_dev',
+    role: 'admin',
+  };
 }
 
 function assertRequestShape(request: Request) {
@@ -60,6 +75,11 @@ export async function requireFleetComplianceOrg(
   orgId: string;
 }> {
   assertRequestShape(request);
+  if (shouldBypassAuthForLocalDev()) {
+    const ctx = getLocalDevAuthContext();
+    setSentryRequestContext(ctx.userId, ctx.orgId);
+    return { userId: ctx.userId, orgId: ctx.orgId };
+  }
   const { userId, orgId } = await auth();
 
   if (!userId) {
@@ -83,6 +103,11 @@ export async function requireFleetComplianceOrgContext(
   options: { allowCanceled?: boolean } = {},
 ): Promise<FleetComplianceAuthContext> {
   assertRequestShape(request);
+  if (shouldBypassAuthForLocalDev()) {
+    const ctx = getLocalDevAuthContext();
+    setSentryRequestContext(ctx.userId, ctx.orgId);
+    return ctx;
+  }
   const { userId, orgId, sessionClaims } = await auth();
 
   if (!userId) {
@@ -107,6 +132,14 @@ export async function requireFleetComplianceOrgWithRole(
   options: { allowCanceled?: boolean } = {},
 ): Promise<{ userId: string; orgId: string }> {
   assertRequestShape(request);
+  if (shouldBypassAuthForLocalDev()) {
+    const ctx = getLocalDevAuthContext();
+    if (requiredRole === 'admin' && ctx.role !== 'admin') {
+      throw new FleetComplianceAuthError(403, 'Forbidden');
+    }
+    setSentryRequestContext(ctx.userId, ctx.orgId);
+    return { userId: ctx.userId, orgId: ctx.orgId };
+  }
   const { userId, orgId, sessionClaims } = await auth();
 
   if (!userId) {
