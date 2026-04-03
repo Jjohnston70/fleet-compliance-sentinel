@@ -2,10 +2,13 @@ import {
   fleetComplianceAuthErrorResponse,
   requireFleetComplianceOrgContext,
 } from '@/lib/fleet-compliance-auth';
-import { shouldUseRemoteModuleGateway, startRemoteModuleRun } from '@/lib/modules-gateway/remote';
+import {
+  isRecoverableRemoteGatewayStatus,
+  shouldUseRemoteModuleGateway,
+  startRemoteModuleRun,
+} from '@/lib/modules-gateway/remote';
 import {
   buildValidationError,
-  enforceModuleRunRateLimit,
   resolveModuleRunArtifact,
   startModuleRun,
   startModuleRunAndWait,
@@ -216,63 +219,70 @@ export async function POST(request: Request) {
   const shouldExecuteLocally = parsed.data.moduleId === 'command-center';
 
   if (shouldUseRemoteModuleGateway() && !shouldExecuteLocally) {
-    const rateLimitDecision = enforceModuleRunRateLimit({
-      orgId,
-      userId,
-      moduleId: parsed.data.moduleId,
-      actionId: parsed.data.actionId,
-    });
-    if (!rateLimitDecision.ok) {
-      return Response.json({ ok: false, error: rateLimitDecision.error }, { status: rateLimitDecision.httpStatus });
-    }
-
     try {
       const { res, body } = await startRemoteModuleRun(parsed.data, { orgId, userId, requestId });
-      const remoteRun = (body && typeof body === 'object' && 'run' in body)
-        ? (body.run as Partial<ModuleRunRecord> | undefined)
+      const bodyRecord = body && typeof body === 'object' ? (body as Record<string, unknown>) : null;
+      const remoteRun = (bodyRecord && 'run' in bodyRecord)
+        ? (bodyRecord.run as Partial<ModuleRunRecord> | undefined)
         : undefined;
-      const remoteStatus = remoteRun?.status;
-      const normalizedStatus = (
-        remoteStatus === 'queued'
-        || remoteStatus === 'running'
-        || remoteStatus === 'success'
-        || remoteStatus === 'fail'
-      ) ? remoteStatus : 'queued';
+      if (res.ok && bodyRecord?.ok === true && remoteRun) {
+        const remoteStatus = remoteRun.status;
+        const normalizedStatus = (
+          remoteStatus === 'queued'
+          || remoteStatus === 'running'
+          || remoteStatus === 'success'
+          || remoteStatus === 'fail'
+        ) ? remoteStatus : 'queued';
 
-      await appendModuleGatewayInvocationAudit({
-        runId: remoteRun?.id || `remote_${requestId}`,
-        eventType: 'remote_dispatch',
-        requestId,
-        orgId,
-        userId,
+        await appendModuleGatewayInvocationAudit({
+          runId: remoteRun.id || `remote_${requestId}`,
+          eventType: 'remote_dispatch',
+          requestId,
+          orgId,
+          userId,
+          moduleId: parsed.data.moduleId,
+          actionId: parsed.data.actionId,
+          qualifiedName: `${parsed.data.moduleId}.${parsed.data.actionId}`,
+          status: normalizedStatus,
+          attempt: typeof remoteRun.attemptCount === 'number' && remoteRun.attemptCount > 0 ? remoteRun.attemptCount : 0,
+          maxAttempts: typeof remoteRun.maxAttempts === 'number' && remoteRun.maxAttempts > 0 ? remoteRun.maxAttempts : 1,
+          correlationId: parsed.data.correlationId || requestId,
+          timeoutMs: typeof remoteRun.timeoutMs === 'number' ? remoteRun.timeoutMs : (parsed.data.timeoutMs || 0),
+          dryRun: Boolean(parsed.data.dryRun),
+          durationMs: typeof remoteRun.durationMs === 'number' ? remoteRun.durationMs : null,
+          errorCode: remoteRun.error?.code || null,
+          errorMessage: remoteRun.error?.message || null,
+          args: parsed.data.args,
+          result: remoteRun.result || null,
+          details: remoteRun.error?.details || remoteRun.error?.fieldErrors || null,
+        });
+        return Response.json(bodyRecord, { status: res.status });
+      }
+
+      if (!isRecoverableRemoteGatewayStatus(res.status)) {
+        return Response.json(
+          bodyRecord || {
+            ok: false,
+            error: {
+              code: 'INTERNAL_ERROR',
+              message: `Remote module gateway rejected request with HTTP ${res.status}`,
+            },
+          },
+          { status: res.status },
+        );
+      }
+
+      console.warn('[module-gateway] remote run dispatch unavailable, falling back to local execution', {
         moduleId: parsed.data.moduleId,
         actionId: parsed.data.actionId,
-        qualifiedName: `${parsed.data.moduleId}.${parsed.data.actionId}`,
-        status: normalizedStatus,
-        attempt: typeof remoteRun?.attemptCount === 'number' && remoteRun.attemptCount > 0 ? remoteRun.attemptCount : 0,
-        maxAttempts: typeof remoteRun?.maxAttempts === 'number' && remoteRun.maxAttempts > 0 ? remoteRun.maxAttempts : 1,
-        correlationId: parsed.data.correlationId || requestId,
-        timeoutMs: typeof remoteRun?.timeoutMs === 'number' ? remoteRun.timeoutMs : (parsed.data.timeoutMs || 0),
-        dryRun: Boolean(parsed.data.dryRun),
-        durationMs: typeof remoteRun?.durationMs === 'number' ? remoteRun.durationMs : null,
-        errorCode: remoteRun?.error?.code || null,
-        errorMessage: remoteRun?.error?.message || null,
-        args: parsed.data.args,
-        result: remoteRun?.result || null,
-        details: remoteRun?.error?.details || remoteRun?.error?.fieldErrors || null,
+        httpStatus: res.status,
       });
-      return Response.json(body, { status: res.status });
     } catch (error: unknown) {
-      return Response.json(
-        {
-          ok: false,
-          error: {
-            code: 'INTERNAL_ERROR',
-            message: error instanceof Error ? error.message : 'Remote module gateway unavailable',
-          },
-        },
-        { status: 502 },
-      );
+      console.warn('[module-gateway] remote run dispatch failed, falling back to local execution', {
+        moduleId: parsed.data.moduleId,
+        actionId: parsed.data.actionId,
+        message: error instanceof Error ? error.message : String(error),
+      });
     }
   }
 

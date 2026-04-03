@@ -7,6 +7,7 @@ import {
 import {
   fetchRemoteModuleArtifact,
   fetchRemoteModuleRun,
+  isRecoverableRemoteGatewayStatus,
   shouldUseRemoteModuleGateway,
 } from '@/lib/modules-gateway/remote';
 import { getModuleRun, resolveModuleRunArtifact } from '@/lib/modules-gateway/runner';
@@ -194,12 +195,25 @@ function buildDashboardHtml(input: {
 
 async function getRunRecord(runId: string, orgId: string): Promise<ModuleRunRecord | null> {
   if (shouldUseRemoteModuleGateway()) {
-    const { res, body } = await fetchRemoteModuleRun(runId, { orgId });
-    if (!res.ok || !body?.ok || !body?.run) return null;
-    const run = body.run as ModuleRunRecord;
-    if (typeof run.orgId !== 'string' || run.orgId.length === 0) return null;
-    if (run.orgId !== orgId) return null;
-    return run;
+    try {
+      const { res, body } = await fetchRemoteModuleRun(runId, { orgId });
+      if (res.ok && body && typeof body === 'object' && (body as { ok?: unknown }).ok === true) {
+        const run = (body as { run?: unknown }).run as ModuleRunRecord | undefined;
+        if (run && typeof run.orgId === 'string' && run.orgId.length > 0 && run.orgId === orgId) {
+          return run;
+        }
+      }
+      if (!isRecoverableRemoteGatewayStatus(res.status)) return null;
+      console.warn('[module-gateway] remote ML-EIA run lookup unavailable, falling back to local run lookup', {
+        runId,
+        httpStatus: res.status,
+      });
+    } catch (error) {
+      console.warn('[module-gateway] remote ML-EIA run lookup failed, falling back to local run lookup', {
+        runId,
+        message: error instanceof Error ? error.message : String(error),
+      });
+    }
   }
   return getModuleRun(runId);
 }
@@ -235,7 +249,20 @@ async function readArtifactJson(
   orgId: string,
 ): Promise<Record<string, unknown> | null> {
   if (shouldUseRemoteModuleGateway()) {
-    return readRemoteJson(runId, artifactPath, orgId);
+    try {
+      const remoteDoc = await readRemoteJson(runId, artifactPath, orgId);
+      if (remoteDoc) return remoteDoc;
+      console.warn('[module-gateway] remote ML-EIA artifact unavailable, falling back to local artifact lookup', {
+        runId,
+        artifactPath,
+      });
+    } catch (error) {
+      console.warn('[module-gateway] remote ML-EIA artifact fetch failed, falling back to local artifact lookup', {
+        runId,
+        artifactPath,
+        message: error instanceof Error ? error.message : String(error),
+      });
+    }
   }
   return readLocalJson(runId, artifactPath);
 }

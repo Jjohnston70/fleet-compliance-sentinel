@@ -2,6 +2,8 @@ import type { ModuleRunRequest } from '@/lib/modules-gateway/types';
 import { createHmac } from 'node:crypto';
 
 const DEFAULT_RAILWAY_MODULE_GATEWAY_URL = 'https://pipeline-punks-v2-production.up.railway.app';
+const TRUTHY_ENV_VALUES = new Set(['1', 'true', 'yes', 'on']);
+const FALSY_ENV_VALUES = new Set(['0', 'false', 'no', 'off']);
 
 export interface RemoteGatewayTenantContext {
   orgId: string;
@@ -13,15 +15,26 @@ function trimTrailingSlash(value: string): string {
   return value.replace(/\/+$/, '');
 }
 
+function parseExplicitRemoteMode(): boolean | null {
+  const explicit = process.env.MODULE_GATEWAY_USE_REMOTE?.trim().toLowerCase();
+  if (!explicit) return null;
+  if (TRUTHY_ENV_VALUES.has(explicit)) return true;
+  if (FALSY_ENV_VALUES.has(explicit)) return false;
+  return null;
+}
+
 function resolveRemoteBaseUrl(): string | null {
   const configured = (
     process.env.MODULE_GATEWAY_REMOTE_URL
-    || process.env.PENNY_API_URL
-    || process.env.RAILWAY_SYNC_URL
     || ''
   ).trim();
-  if (!configured) return null;
-  return trimTrailingSlash(configured);
+  if (configured) return trimTrailingSlash(configured);
+
+  const explicit = parseExplicitRemoteMode();
+  if (explicit === true) {
+    return DEFAULT_RAILWAY_MODULE_GATEWAY_URL;
+  }
+  return null;
 }
 
 function resolveRemoteApiKey(): string | null {
@@ -73,12 +86,30 @@ function buildRemoteUrl(pathname: string): string {
 }
 
 export function shouldUseRemoteModuleGateway(): boolean {
-  const explicit = process.env.MODULE_GATEWAY_USE_REMOTE?.trim().toLowerCase();
-  if (explicit === '1' || explicit === 'true' || explicit === 'yes' || explicit === 'on') return true;
-  if (explicit === '0' || explicit === 'false' || explicit === 'no' || explicit === 'off') return false;
+  const explicit = parseExplicitRemoteMode();
+  if (explicit !== null) return explicit;
   if (resolveRemoteBaseUrl()) return true;
-  if ((process.env.NODE_ENV || '').toLowerCase() !== 'production') return false;
-  return Boolean(resolveRemoteApiKey());
+  return false;
+}
+
+export function isRecoverableRemoteGatewayStatus(status: number): boolean {
+  return status === 401
+    || status === 403
+    || status === 404
+    || status === 408
+    || status === 429
+    || status === 500
+    || status === 502
+    || status === 503
+    || status === 504;
+}
+
+async function readJsonSafe(res: Response): Promise<unknown | null> {
+  try {
+    return await res.json();
+  } catch {
+    return null;
+  }
 }
 
 export async function fetchRemoteModuleCatalog() {
@@ -88,7 +119,7 @@ export async function fetchRemoteModuleCatalog() {
     cache: 'no-store',
     signal: AbortSignal.timeout(30_000),
   });
-  const body = await res.json();
+  const body = await readJsonSafe(res);
   return { res, body };
 }
 
@@ -117,7 +148,7 @@ export async function startRemoteModuleRun(input: ModuleRunRequest, tenantContex
     cache: 'no-store',
     signal: AbortSignal.timeout(30_000),
   });
-  const body = await res.json();
+  const body = await readJsonSafe(res);
   return { res, body };
 }
 
@@ -129,7 +160,7 @@ export async function fetchRemoteModuleRun(runId: string, tenantContext?: Remote
     cache: 'no-store',
     signal: AbortSignal.timeout(30_000),
   });
-  const body = await res.json();
+  const body = await readJsonSafe(res);
   return { res, body };
 }
 

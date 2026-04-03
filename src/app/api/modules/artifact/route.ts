@@ -7,6 +7,7 @@ import {
 import {
   fetchRemoteModuleArtifact,
   fetchRemoteModuleRun,
+  isRecoverableRemoteGatewayStatus,
   shouldUseRemoteModuleGateway,
 } from '@/lib/modules-gateway/remote';
 import { getModuleRun, resolveModuleRunArtifact } from '@/lib/modules-gateway/runner';
@@ -66,73 +67,64 @@ export async function GET(request: Request) {
   if (shouldUseRemoteModuleGateway()) {
     try {
       const runResponse = await fetchRemoteModuleRun(parsed.runId, { orgId });
-      if (!runResponse.res.ok || !runResponse.body?.ok || !runResponse.body?.run) {
+      if (runResponse.res.ok && runResponse.body && typeof runResponse.body === 'object' && (runResponse.body as { ok?: unknown }).ok === true) {
+        const remoteRun = (runResponse.body as { run?: unknown }).run as { orgId?: string } | undefined;
+        if (remoteRun && typeof remoteRun.orgId === 'string' && remoteRun.orgId.length > 0 && remoteRun.orgId === orgId) {
+          const { res } = await fetchRemoteModuleArtifact(parsed.runId, parsed.artifactPath, { orgId });
+          if (res.ok) {
+            const data = await res.arrayBuffer();
+            return new Response(data, {
+              status: 200,
+              headers: {
+                'Content-Type': res.headers.get('content-type') || fallbackContentType,
+                'Content-Disposition': `${disposition}; filename="${fileName}"`,
+                'Cache-Control': 'no-store',
+              },
+            });
+          }
+
+          if (!isRecoverableRemoteGatewayStatus(res.status)) {
+            let body: unknown = null;
+            try {
+              body = await res.json();
+            } catch {
+              body = null;
+            }
+            return Response.json(
+              body || { ok: false, error: { code: 'MODULE_NOT_FOUND', message: 'Artifact was not found' } },
+              { status: res.status },
+            );
+          }
+
+          console.warn('[module-gateway] remote artifact unavailable, falling back to local artifact lookup', {
+            runId: parsed.runId,
+            artifactPath: parsed.artifactPath,
+            httpStatus: res.status,
+          });
+        } else {
+          console.warn('[module-gateway] remote artifact run metadata invalid for current org, falling back to local artifact lookup', {
+            runId: parsed.runId,
+            orgId,
+            remoteOrgId: remoteRun?.orgId || null,
+          });
+        }
+      } else if (!isRecoverableRemoteGatewayStatus(runResponse.res.status)) {
         return Response.json(
           runResponse.body || { ok: false, error: { code: 'MODULE_NOT_FOUND', message: 'Run was not found' } },
           { status: runResponse.res.status },
         );
       }
 
-      const remoteRun = runResponse.body.run as { orgId?: string };
-      if (typeof remoteRun.orgId !== 'string' || remoteRun.orgId.length === 0) {
-        return Response.json(
-          {
-            ok: false,
-            error: {
-              code: 'TENANT_ISOLATION_VIOLATION',
-              message: 'Remote run is missing organization ownership metadata',
-            },
-          },
-          { status: 502 },
-        );
-      }
-      if (remoteRun.orgId !== orgId) {
-        return Response.json(
-          {
-            ok: false,
-            error: {
-              code: 'TENANT_ISOLATION_VIOLATION',
-              message: `Artifact '${parsed.artifactPath}' is not accessible for this organization`,
-            },
-          },
-          { status: 403 },
-        );
-      }
-
-      const { res } = await fetchRemoteModuleArtifact(parsed.runId, parsed.artifactPath, { orgId });
-      if (!res.ok) {
-        let body: unknown = null;
-        try {
-          body = await res.json();
-        } catch {
-          body = null;
-        }
-        return Response.json(
-          body || { ok: false, error: { code: 'MODULE_NOT_FOUND', message: 'Artifact was not found' } },
-          { status: res.status },
-        );
-      }
-
-      const data = await res.arrayBuffer();
-      return new Response(data, {
-        status: 200,
-        headers: {
-          'Content-Type': res.headers.get('content-type') || fallbackContentType,
-          'Content-Disposition': `${disposition}; filename="${fileName}"`,
-          'Cache-Control': 'no-store',
-        },
+      console.warn('[module-gateway] remote artifact run lookup unavailable, falling back to local artifact lookup', {
+        runId: parsed.runId,
+        httpStatus: runResponse.res.status,
       });
     } catch (error: unknown) {
-      return Response.json(
-        {
-          ok: false,
-          error: {
-            code: 'INTERNAL_ERROR',
-            message: error instanceof Error ? error.message : 'Remote module gateway unavailable',
-          },
-        },
-        { status: 502 },
-      );
+      console.warn('[module-gateway] remote artifact lookup failed, falling back to local artifact lookup', {
+        runId: parsed.runId,
+        artifactPath: parsed.artifactPath,
+        message: error instanceof Error ? error.message : String(error),
+      });
     }
   }
 

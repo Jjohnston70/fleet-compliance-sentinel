@@ -10,6 +10,16 @@ import type { ModuleCatalogEntry } from '@/lib/modules-gateway/types';
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
 
+async function buildLocalCatalogResponse(orgId: string, userId: string) {
+  const catalog = listModuleCatalog();
+  const filteredCatalog = await filterModuleCatalogByAcl({
+    orgId,
+    userId,
+    catalog,
+  });
+  return Response.json({ ok: true, catalog: filteredCatalog }, { status: 200 });
+}
+
 function mergeCatalogEntries(
   remoteCatalog: ModuleCatalogEntry[],
   localCatalog: ModuleCatalogEntry[],
@@ -65,38 +75,33 @@ export async function GET(request: Request) {
   if (shouldUseRemoteModuleGateway()) {
     try {
       const { res, body } = await fetchRemoteModuleCatalog();
-      if (!res.ok || !body?.ok || !Array.isArray(body?.catalog)) {
-        return Response.json(body, { status: res.status });
+      if (res.ok && body && typeof body === 'object' && (body as { ok?: unknown }).ok === true) {
+        const remoteCatalog = (body as { catalog?: unknown }).catalog;
+        if (Array.isArray(remoteCatalog)) {
+          const localCatalog = listModuleCatalog();
+          const mergedCatalog = mergeCatalogEntries(remoteCatalog as ModuleCatalogEntry[], localCatalog);
+          const filteredCatalog = await filterModuleCatalogByAcl({
+            orgId,
+            userId,
+            catalog: mergedCatalog,
+          });
+          return Response.json({ ...body, catalog: filteredCatalog }, { status: res.status });
+        }
       }
 
-      const localCatalog = listModuleCatalog();
-      const mergedCatalog = mergeCatalogEntries(body.catalog, localCatalog);
-      const filteredCatalog = await filterModuleCatalogByAcl({
-        orgId,
-        userId,
-        catalog: mergedCatalog,
+      console.warn('[module-gateway] remote catalog unavailable, falling back to local catalog', {
+        httpStatus: res.status,
+        hasBody: Boolean(body),
       });
-      return Response.json({ ...body, catalog: filteredCatalog }, { status: res.status });
+      return buildLocalCatalogResponse(orgId, userId);
     } catch (error: unknown) {
-      return Response.json(
-        {
-          ok: false,
-          error: {
-            code: 'INTERNAL_ERROR',
-            message: error instanceof Error ? error.message : 'Remote module gateway unavailable',
-          },
-        },
-        { status: 502 },
-      );
+      console.warn('[module-gateway] remote catalog fetch failed, falling back to local catalog', {
+        message: error instanceof Error ? error.message : String(error),
+      });
+      return buildLocalCatalogResponse(orgId, userId);
     }
   }
 
-  const catalog = listModuleCatalog();
-  const filteredCatalog = await filterModuleCatalogByAcl({
-    orgId,
-    userId,
-    catalog,
-  });
-  return Response.json({ ok: true, catalog: filteredCatalog }, { status: 200 });
+  return buildLocalCatalogResponse(orgId, userId);
 }
 

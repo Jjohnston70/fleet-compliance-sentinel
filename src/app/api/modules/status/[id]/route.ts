@@ -3,7 +3,11 @@ import {
   requireFleetComplianceOrgWithRole,
 } from '@/lib/fleet-compliance-auth';
 import { readFile } from 'node:fs/promises';
-import { fetchRemoteModuleRun, shouldUseRemoteModuleGateway } from '@/lib/modules-gateway/remote';
+import {
+  fetchRemoteModuleRun,
+  isRecoverableRemoteGatewayStatus,
+  shouldUseRemoteModuleGateway,
+} from '@/lib/modules-gateway/remote';
 import { getModuleRun, resolveModuleRunArtifact } from '@/lib/modules-gateway/runner';
 import { fetchRemoteModuleArtifact } from '@/lib/modules-gateway/remote';
 import { listModuleGatewayInvocationAudit, maybePersistModuleRunInsights } from '@/lib/modules-gateway/persistence';
@@ -88,61 +92,42 @@ export async function GET(request: Request, context: { params: Promise<{ id: str
   if (shouldUseRemoteModuleGateway()) {
     try {
       const { res, body } = await fetchRemoteModuleRun(runId, { orgId });
-      if (res.status !== 404) {
-        if (res.ok && body?.ok && body?.run && orgId) {
-          const run = body.run as ModuleRunRecord;
-          if (typeof run.orgId !== 'string' || run.orgId.length === 0) {
-            return Response.json(
-              {
-                ok: false,
-                error: {
-                  code: 'TENANT_ISOLATION_VIOLATION',
-                  message: 'Remote run is missing organization ownership metadata',
-                },
-              },
-              { status: 502 },
-            );
+      if (res.ok && body && typeof body === 'object' && (body as { ok?: unknown }).ok === true) {
+        const run = (body as { run?: unknown }).run as ModuleRunRecord | undefined;
+        if (run && orgId) {
+          if (typeof run.orgId === 'string' && run.orgId.length > 0 && run.orgId === orgId) {
+            await persistRunInsights(orgId, run, true);
+            const audit = await loadRunAudit(run.id, orgId);
+            return Response.json({ ...body, audit }, { status: res.status });
           }
-          if (run.orgId !== orgId) {
-            return Response.json(
-              { ok: false, error: { code: 'TENANT_ISOLATION_VIOLATION', message: 'Run belongs to another organization' } },
-              { status: 403 },
-            );
-          }
-          await persistRunInsights(orgId, run, true);
-          const audit = await loadRunAudit(run.id, orgId);
-          return Response.json({ ...body, audit }, { status: res.status });
+          console.warn('[module-gateway] remote run metadata invalid for current org, falling back to local status', {
+            runId,
+            remoteOrgId: run.orgId,
+            orgId,
+          });
         }
-        return Response.json(body, { status: res.status });
-      }
-
-      const localRun = getModuleRun(runId);
-      if (localRun) {
-        if (localRun.orgId !== orgId) {
-          return Response.json(
-            { ok: false, error: { code: 'TENANT_ISOLATION_VIOLATION', message: 'Run belongs to another organization' } },
-            { status: 403 },
-          );
-        }
-        if (orgId) {
-          await persistRunInsights(orgId, localRun, false);
-        }
-        const audit = await loadRunAudit(localRun.id, orgId);
-        return Response.json({ ok: true, run: localRun, audit }, { status: 200 });
-      }
-
-      return Response.json(body, { status: res.status });
-    } catch (error: unknown) {
-      return Response.json(
-        {
-          ok: false,
-          error: {
-            code: 'INTERNAL_ERROR',
-            message: error instanceof Error ? error.message : 'Remote module gateway unavailable',
+      } else if (!isRecoverableRemoteGatewayStatus(res.status)) {
+        return Response.json(
+          body || {
+            ok: false,
+            error: {
+              code: 'INTERNAL_ERROR',
+              message: `Remote module gateway status lookup failed with HTTP ${res.status}`,
+            },
           },
-        },
-        { status: 502 },
-      );
+          { status: res.status },
+        );
+      }
+
+      console.warn('[module-gateway] remote status unavailable, falling back to local status', {
+        runId,
+        httpStatus: res.status,
+      });
+    } catch (error: unknown) {
+      console.warn('[module-gateway] remote status fetch failed, falling back to local status', {
+        runId,
+        message: error instanceof Error ? error.message : String(error),
+      });
     }
   }
 
