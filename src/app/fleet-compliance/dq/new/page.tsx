@@ -50,8 +50,26 @@ export default function NewDQFilePage() {
         throw new Error(data.error || 'Failed to create DQ file');
       }
 
-      const data: NewDQResponse = await res.json();
-      setCreated(data);
+      const data = await res.json();
+      const fileId = data.fileId ?? data.dqf?.id;
+      const intakeToken = data.intakeToken ?? data.intake_token;
+      const intakeUrl =
+        data.intakeUrl ??
+        (data.intake_link
+          ? `${window.location.origin}${data.intake_link}`
+          : intakeToken
+            ? `${window.location.origin}/intake/${intakeToken}`
+            : '');
+
+      if (!fileId || !intakeUrl) {
+        throw new Error('DQ file created but response is missing intake link data');
+      }
+
+      setCreated({
+        fileId: String(fileId),
+        intakeToken: String(intakeToken ?? ''),
+        intakeUrl: String(intakeUrl),
+      });
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Unknown error');
     } finally {

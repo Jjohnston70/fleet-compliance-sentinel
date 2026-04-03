@@ -38,6 +38,7 @@ export async function GET(
   return NextResponse.json({
     ok: true,
     driver_name: file.driver_name,
+    driverName: file.driver_name,
     cdl_holder: file.cdl_holder,
     sections: INTAKE_SECTIONS,
     intake_status,
