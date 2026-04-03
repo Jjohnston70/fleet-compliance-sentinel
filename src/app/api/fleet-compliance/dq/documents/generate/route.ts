@@ -11,15 +11,19 @@ import {
 } from '@/lib/fleet-compliance-auth';
 
 export async function POST(req: NextRequest) {
-  const auth = await requireFleetComplianceOrgWithRole(['admin']);
-  if (!auth.ok) {
-    return fleetComplianceAuthErrorResponse(auth) ?? NextResponse.json({ ok: false, error: 'Unauthorized' }, { status: 401 });
+  let orgId: string;
+  try {
+    ({ orgId } = await requireFleetComplianceOrgWithRole(req, 'admin'));
+  } catch (error: unknown) {
+    const authResponse = fleetComplianceAuthErrorResponse(error);
+    if (authResponse) return authResponse;
+    return NextResponse.json({ ok: false, error: 'Unauthorized' }, { status: 401 });
   }
 
   const body = await req.json();
   const { dq_file_id, doc_type } = body;
 
-  const document = await generateDocument(dq_file_id, doc_type);
+  const document = generateDocument(orgId, Number(dq_file_id), doc_type);
 
   return NextResponse.json({
     ok: true,

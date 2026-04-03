@@ -62,7 +62,7 @@ export async function POST(
   const { section, response_data, action } = body;
 
   if (action === 'complete') {
-    await completeIntake(file.id);
+    await completeIntake(token);
     return NextResponse.json({ ok: true, message: 'Intake completed' });
   }
 

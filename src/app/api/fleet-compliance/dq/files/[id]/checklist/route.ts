@@ -14,16 +14,22 @@ export async function GET(
   req: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
-  const auth = await requireFleetComplianceOrg();
-  if (!auth.ok) {
-    return fleetComplianceAuthErrorResponse(auth) ?? NextResponse.json({ ok: false, error: 'Unauthorized' }, { status: 401 });
+  try {
+    await requireFleetComplianceOrg(req);
+  } catch (error: unknown) {
+    const authResponse = fleetComplianceAuthErrorResponse(error);
+    if (authResponse) return authResponse;
+    return NextResponse.json({ ok: false, error: 'Unauthorized' }, { status: 401 });
   }
 
   const { id } = await params;
-  const checklist = await getChecklist(id);
+  const numericId = Number(id);
+  const checklist = getChecklist(numericId);
 
   const total = checklist.length;
-  const completed = checklist.filter((item) => item.completed).length;
+  const completed = checklist.filter(
+    (item) => item.status === 'uploaded' || item.status === 'generated' || item.status === 'verified',
+  ).length;
   const completion_pct = total > 0 ? Math.round((completed / total) * 100) : 0;
 
   return NextResponse.json({

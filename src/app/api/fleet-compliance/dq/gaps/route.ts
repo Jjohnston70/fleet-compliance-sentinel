@@ -11,15 +11,19 @@ import {
 } from '@/lib/fleet-compliance-auth';
 
 export async function GET(req: NextRequest) {
-  const auth = await requireFleetComplianceOrg();
-  if (!auth.ok) {
-    return fleetComplianceAuthErrorResponse(auth) ?? NextResponse.json({ ok: false, error: 'Unauthorized' }, { status: 401 });
+  let orgId: string;
+  try {
+    ({ orgId } = await requireFleetComplianceOrg(req));
+  } catch (error: unknown) {
+    const authResponse = fleetComplianceAuthErrorResponse(error);
+    if (authResponse) return authResponse;
+    return NextResponse.json({ ok: false, error: 'Unauthorized' }, { status: 401 });
   }
 
   const expiringWithinDays = 
     parseInt(req.nextUrl.searchParams.get('expiringWithinDays') || '30', 10);
 
-  const gaps = await getGaps(auth.org_id, expiringWithinDays);
+  const gaps = getGaps(orgId, expiringWithinDays);
 
   return NextResponse.json({
     ok: true,
