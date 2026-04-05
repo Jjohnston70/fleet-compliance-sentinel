@@ -2,6 +2,17 @@
 
 A full-stack TypeScript financial tracking service with IRS compliance features. This module provides personal and business financial management with automated categorization, tax calculations, budget tracking, and comprehensive reporting.
 
+## Architecture and Roadmap
+
+Forward implementation for accounting-grade functionality is now tracked in:
+
+- [ARCHITECTURE.md](./ARCHITECTURE.md) - Target system design (double-entry ledger, AR/AP subledgers, reporting model, dashboard and ODBC strategy)
+- [IMPLEMENTATION.md](./IMPLEMENTATION.md) - Phase-by-phase execution plan to move from prototype to production accounting core
+
+Historical build snapshot remains in:
+
+- [IMPLEMENTATION_STATUS.md](./IMPLEMENTATION_STATUS.md)
+
 ## Architecture
 
 The module follows a 6-layer architecture:
