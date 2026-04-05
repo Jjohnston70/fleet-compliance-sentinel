@@ -219,8 +219,25 @@ Set `PENNY_API_URL=http://localhost:8000` in `.env.local` to connect.
 ├── tooling/                      # ML modules + command-center
 ├── scripts/                      # Build & utility scripts
 ├── public/                       # Static assets
+├── .claude/                      # Claude Code agent configs
+│   └── agents/
+│       └── pipeline-x-integrator.md  # Package integration agent
 └── archive/                      # Historical snapshots
 ```
+
+### Claude Code Agents (`.claude/agents/`)
+
+The `.claude/agents/` directory contains specialized instruction files for Claude Code sessions. These are **developer/operator tools only** — they are not client-facing, do not run in production, and are never shipped as part of the Fleet-Compliance Sentinel product. Each agent file defines a persona with specific domain knowledge, constraints, and verification protocols that Claude Code adopts during a session.
+
+The canonical agent library lives at `AGENTS-TNDS/` on the development workstation (outside this repo). Agents are copied into `.claude/agents/` when they are deployed for use on this project. The agent recommendation matrix is documented in `FCS-Agent-Deployment-Recommendations.docx` at the project root.
+
+**Currently deployed:**
+- `pipeline-x-integrator.md` — Systematic integration of @tnds/* workspace packages from legacy codebases. 12-task checklist with build verification protocol.
+
+**Recommended for deployment (see recommendation doc for full rationale):**
+- Tier 1 (Critical): `code-security-auditor`, `typescript-developer`, `database-designer`
+- Tier 2 (High Value): `code-reviewer`, `backend-developer`, `frontend-developer`, `auditor`
+- Tier 3 (As Needed): `python-developer`, `code-documenter`, `code-debugger`, `curriculum-designer`, `builder`
 
 ---
 
