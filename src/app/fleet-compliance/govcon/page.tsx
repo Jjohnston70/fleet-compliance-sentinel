@@ -49,6 +49,22 @@ interface DashboardPayload {
   error?: string;
 }
 
+interface FederalIntelSyncResponse {
+  ok: boolean;
+  imported?: number;
+  skippedDuplicates?: number;
+  skippedMissingNoticeId?: number;
+  importErrors?: string[];
+  remoteCounts?: {
+    sam?: number;
+    usaspending?: number;
+    grants?: number;
+    sbir?: number;
+    subawards?: number;
+  };
+  error?: string;
+}
+
 const currencyFormatter = new Intl.NumberFormat('en-US', {
   style: 'currency',
   currency: 'USD',
@@ -100,6 +116,8 @@ export default function GovConDashboardPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [payload, setPayload] = useState<DashboardPayload | null>(null);
+  const [runningFederalIntelSync, setRunningFederalIntelSync] = useState(false);
+  const [federalIntelMessage, setFederalIntelMessage] = useState('');
 
   const loadDashboard = useCallback(async () => {
     setLoading(true);
@@ -122,6 +140,50 @@ export default function GovConDashboardPage() {
   useEffect(() => {
     void loadDashboard();
   }, [loadDashboard]);
+
+  async function handleRunFederalIntelSync() {
+    setRunningFederalIntelSync(true);
+    setError('');
+    setFederalIntelMessage('');
+
+    try {
+      const response = await fetch('/api/fleet-compliance/govcon/federal-intel/run-all', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ months_back: 3 }),
+      });
+
+      const data = (await response.json().catch(() => ({}))) as FederalIntelSyncResponse;
+      if (!response.ok || !data.ok) {
+        throw new Error(data.error || 'Failed to run federal intelligence sync');
+      }
+
+      const imported = Number(data.imported ?? 0);
+      const duplicates = Number(data.skippedDuplicates ?? 0);
+      const missingIds = Number(data.skippedMissingNoticeId ?? 0);
+      const remoteSamCount = Number(data.remoteCounts?.sam ?? 0);
+
+      let message = `Federal sync complete. Imported ${imported} SAM opportunities`;
+      message += `, skipped ${duplicates} duplicates`;
+      if (missingIds > 0) {
+        message += `, and skipped ${missingIds} records missing notice IDs`;
+      }
+      message += `.`;
+      if (remoteSamCount > 0) {
+        message += ` Source SAM count: ${remoteSamCount}.`;
+      }
+      if (Array.isArray(data.importErrors) && data.importErrors.length > 0) {
+        message += ` ${data.importErrors.length} record(s) had import errors.`;
+      }
+
+      setFederalIntelMessage(message);
+      await loadDashboard();
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to run federal intelligence sync');
+    } finally {
+      setRunningFederalIntelSync(false);
+    }
+  }
 
   const opportunities = useMemo(
     () => (Array.isArray(payload?.opportunities) ? payload?.opportunities : []),
@@ -192,6 +254,32 @@ export default function GovConDashboardPage() {
                 <li>Move status through bid, submitted, awarded/lost.</li>
                 <li>Review alerts for deadlines and compliance renewals.</li>
               </ol>
+            </article>
+
+            <article className="fleet-compliance-list-card" style={{ marginTop: '1rem' }}>
+              <h3>Federal Intelligence Sync</h3>
+              <p className="fleet-compliance-table-note" style={{ marginTop: '0.6rem' }}>
+                Pull live federal opportunities through the Railway federal-intel orchestrator and import SAM results
+                into this GovCon pipeline.
+              </p>
+              <div className="fleet-compliance-action-row" style={{ marginTop: '0.8rem' }}>
+                <button
+                  type="button"
+                  className="btn-primary"
+                  onClick={() => void handleRunFederalIntelSync()}
+                  disabled={runningFederalIntelSync}
+                >
+                  {runningFederalIntelSync ? 'Running Sync...' : 'Run Federal Intel Sync'}
+                </button>
+              </div>
+              <p className="fleet-compliance-table-note" style={{ marginTop: '0.55rem' }}>
+                Requires `PENNY_API_URL` to point at the Railway backend and admin role access.
+              </p>
+              {federalIntelMessage ? (
+                <p className="fleet-compliance-table-note" style={{ marginTop: '0.55rem', color: 'var(--text-primary)' }}>
+                  {federalIntelMessage}
+                </p>
+              ) : null}
             </article>
 
             <div className="fleet-compliance-list-card" style={{ marginTop: '1.2rem' }}>
