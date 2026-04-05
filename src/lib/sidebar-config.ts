@@ -102,6 +102,20 @@ export const SIDEBAR_SECTIONS: readonly SidebarSection[] = [
     ],
   },
   {
+    title: 'Skills & Tools',
+    key: 'skills',
+    defaultExpanded: false,
+    items: [
+      { label: 'Readiness Skills', href: '/fleet-compliance/tools?skill=readiness', icon: 'Gauge', moduleId: 'skill-readiness-command' },
+      { label: 'Compliance Skills', href: '/fleet-compliance/tools?skill=compliance', icon: 'ShieldCheck', moduleId: 'skill-compliance-command' },
+      { label: 'Financial Skills', href: '/fleet-compliance/tools?skill=financial', icon: 'Wallet', moduleId: 'skill-financial-command' },
+      { label: 'GovCon Skills', href: '/fleet-compliance/tools?skill=govcon', icon: 'Landmark', moduleId: 'skill-govcon-command' },
+      { label: 'Realty Skills', href: '/fleet-compliance/tools?skill=realty', icon: 'Home', moduleId: 'skill-realty-command' },
+      { label: 'Proposal Skills', href: '/fleet-compliance/tools?skill=proposal', icon: 'FilePenLine', moduleId: 'skill-proposal-command' },
+      { label: 'Asset Skills', href: '/fleet-compliance/tools?skill=asset', icon: 'FolderOpen', moduleId: 'skill-asset-command' },
+    ],
+  },
+  {
     title: 'Admin',
     key: 'admin',
     defaultExpanded: false,

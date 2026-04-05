@@ -10,7 +10,7 @@
 
 ## Tool Definitions
 
-All 20 tools follow the same schema format for LLM integration. Each tool has a `name`, `description`, and `inputSchema` (JSON Schema with `type`, `properties`, and `required`).
+All 21 tools follow the same schema format for LLM integration. Each tool has a `name`, `description`, and `inputSchema` (JSON Schema with `type`, `properties`, and `required`).
 
 ### Tool 1: search_opportunities
 
@@ -266,7 +266,21 @@ Run compliance intake wizard for a company.
 
 ---
 
-### Tool 16: get_maturity_score
+### Tool 16: initialize_maturity_tracker
+
+Initialize a maturity tracker for a company based on intake results. Must run `run_intake_wizard` first.
+
+**Input**:
+
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| company_id | string (UUID) | Yes | Company ID (must have intake results) |
+
+**Returns**: MaturityTracker object with template_statuses populated from intake recommendations, all statuses set to "not_started", and overall_score of 0.
+
+---
+
+### Tool 17: get_maturity_score
 
 Get compliance maturity score (0-10) with domain breakdown.
 
@@ -280,7 +294,7 @@ Get compliance maturity score (0-10) with domain breakdown.
 
 ---
 
-### Tool 17: update_template_status
+### Tool 18: update_template_status
 
 Update implementation status of a compliance template.
 
@@ -297,7 +311,7 @@ Update implementation status of a compliance template.
 
 ---
 
-### Tool 18: generate_bid_document
+### Tool 19: generate_bid_document
 
 Generate a specific bid document for an opportunity.
 
@@ -314,7 +328,7 @@ Generate a specific bid document for an opportunity.
 
 ---
 
-### Tool 19: generate_full_bid_package
+### Tool 20: generate_full_bid_package
 
 Generate a complete bid package (all 7 document types) for an opportunity.
 
@@ -330,7 +344,7 @@ Generate a complete bid package (all 7 document types) for an opportunity.
 
 ---
 
-### Tool 20: list_bid_documents
+### Tool 21: list_bid_documents
 
 List all bid documents generated for an opportunity.
 
@@ -793,7 +807,7 @@ List all bid documents generated for an opportunity.
 
 | Export | Type | Description |
 |--------|------|-------------|
-| GOVCON_COMPLIANCE_TOOLS | Const | 20 tool definitions array |
+| GOVCON_COMPLIANCE_TOOLS | Const | 21 tool definitions array |
 | createToolHandlers | Factory | Tool handler map from repository |
 
 ### Types

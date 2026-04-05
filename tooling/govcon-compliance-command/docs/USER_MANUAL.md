@@ -16,7 +16,7 @@ One module handles the entire federal contracting lifecycle from "found an oppor
 
 ## Who This Is For
 
-This manual is for anyone operating the GovCon pipeline day-to-day: entering opportunities, running bid decisions, generating compliance documents, and tracking certifications. You don't need to write code. You interact with the system through 20 pre-built tools that an LLM (like Claude) can call on your behalf.
+This manual is for anyone operating the GovCon pipeline day-to-day: entering opportunities, running bid decisions, generating compliance documents, and tracking certifications. You don't need to write code. You interact with the system through 21 pre-built tools that an LLM (like Claude) can call on your behalf.
 
 ---
 
@@ -255,6 +255,14 @@ The maturity score measures how far along you are in implementing compliance acr
 | implemented | 0.75 | In place, not yet verified |
 | verified | 1.0 | In place and validated |
 
+### Initializing the Tracker
+
+**Tool**: `initialize_maturity_tracker`
+
+After running the intake wizard, initialize a maturity tracker for the company. This bridges the intake results into a tracker that `get_maturity_score` and `update_template_status` operate on. Without this step, those tools have nothing to work with.
+
+Requires: company must have intake results (run `run_intake_wizard` first).
+
 ### Getting Your Score
 
 **Tool**: `get_maturity_score`
@@ -339,9 +347,10 @@ These templates feed into the maturity scoring system and provide the foundation
 
 1. `submit_company_info` - Enter client company data
 2. `run_intake_wizard` - Get recommended compliance domains
-3. `generate_all_compliance_packages` - Generate their documentation
-4. `get_maturity_score` - Establish baseline score
-5. Work through recommended domains by priority
+3. `initialize_maturity_tracker` - Create the maturity tracker from intake results
+4. `generate_all_compliance_packages` - Generate their documentation
+5. `get_maturity_score` - Establish baseline score
+6. Work through recommended domains by priority
 
 ### Full Bid Submission
 
@@ -362,7 +371,7 @@ These templates feed into the maturity scoring system and provide the foundation
 
 **Package generation returns "error" status** - Check that the company record has enough data populated. The more fields completed in `submit_company_info`, the more complete the generated documents will be.
 
-**Maturity score is 0** - The tracker needs template statuses updated. Run `run_intake_wizard` first, then start updating template statuses with `update_template_status` as you implement them.
+**Maturity score is 0** - The tracker needs to be initialized and template statuses updated. Run `run_intake_wizard` first, then `initialize_maturity_tracker` to create the tracker, then start updating template statuses with `update_template_status` as you implement them.
 
 ---
 

@@ -31,6 +31,7 @@
 20. [Troubleshooting Guide](#20-troubleshooting-guide)
 21. [Common Errors & Solutions](#21-common-errors--solutions)
 22. [Key Files Quick Reference](#22-key-files-quick-reference)
+23. [Agent & Skill Library](#23-agent--skill-library)
 
 ---
 
@@ -219,9 +220,18 @@ Set `PENNY_API_URL=http://localhost:8000` in `.env.local` to connect.
 ├── tooling/                      # ML modules + command-center
 ├── scripts/                      # Build & utility scripts
 ├── public/                       # Static assets
-├── .claude/                      # Claude Code agent configs
-│   └── agents/
-│       └── pipeline-x-integrator.md  # Package integration agent
+├── .claude/                      # Claude Code configs
+│   ├── agents/                   # 13 operator agent personas
+│   ├── skills/                   # 36 skill directories (ATLAS pattern)
+│   │   ├── MANIFEST.md           # Skill library governance
+│   │   ├── SKILLS-README.md      # Audience classification
+│   │   └── 00_skill-intake/      # New skill onboarding pipeline
+│   └── skill-packs/              # Module skill-pack manifests
+│       ├── fleet-compliance.json
+│       ├── govcon.json
+│       └── realty.json
+├── tooling/skills/               # 15 client-facing skill wrappers
+├── skills-registry.json          # Unified 38-skill registry
 └── archive/                      # Historical snapshots
 ```
 
@@ -229,15 +239,27 @@ Set `PENNY_API_URL=http://localhost:8000` in `.env.local` to connect.
 
 The `.claude/agents/` directory contains specialized instruction files for Claude Code sessions. These are **developer/operator tools only** — they are not client-facing, do not run in production, and are never shipped as part of the Fleet-Compliance Sentinel product. Each agent file defines a persona with specific domain knowledge, constraints, and verification protocols that Claude Code adopts during a session.
 
-The canonical agent library lives at `AGENTS-TNDS/` on the development workstation (outside this repo). Agents are copied into `.claude/agents/` when they are deployed for use on this project. The agent recommendation matrix is documented in `FCS-Agent-Deployment-Recommendations.docx` at the project root.
+The canonical agent library lives at `AGENTS-TNDS/` on the development workstation (outside this repo). The agent recommendation matrix is documented in `FCS-Agent-Deployment-Recommendations.docx` at the project root.
 
-**Currently deployed:**
-- `pipeline-x-integrator.md` — Systematic integration of @tnds/* workspace packages from legacy codebases. 12-task checklist with build verification protocol.
+**All 13 agents are deployed:**
 
-**Recommended for deployment (see recommendation doc for full rationale):**
-- Tier 1 (Critical): `code-security-auditor`, `typescript-developer`, `database-designer`
-- Tier 2 (High Value): `code-reviewer`, `backend-developer`, `frontend-developer`, `auditor`
-- Tier 3 (As Needed): `python-developer`, `code-documenter`, `code-debugger`, `curriculum-designer`, `builder`
+| Agent | Tier | Purpose |
+|-------|------|---------|
+| `pipeline-x-integrator` | 1 | @tnds/* workspace package integration (12-task checklist) |
+| `code-security-auditor` | 1 | OWASP/CWE vulnerability scanning, dependency audit |
+| `typescript-developer` | 1 | TypeScript + Next.js feature development |
+| `database-designer` | 1 | Schema design, migration authoring, query optimization |
+| `code-reviewer` | 2 | PR-style code review with severity scoring |
+| `backend-developer` | 2 | FastAPI + Node.js backend services |
+| `frontend-developer` | 2 | React/Tailwind UI implementation |
+| `auditor` | 2 | SOC 2 evidence collection and compliance audit |
+| `python-developer` | 3 | Python tooling, ML modules, data pipelines |
+| `code-documenter` | 3 | JSDoc, README, inline documentation generation |
+| `code-debugger` | 3 | Root-cause analysis and targeted bug fixes |
+| `curriculum-designer` | 3 | Training content and LMS course structure |
+| `builder` | 3 | General-purpose scaffolding and project setup |
+
+See [Section 23](#23-agent--skill-library) for full agent and skill documentation.
 
 ---
 
@@ -676,16 +698,28 @@ railway-backend/
 │   │   ├── /query               # RAG query endpoint
 │   │   └── /catalog             # Knowledge catalog
 │   ├── telematics_router.py     # Verizon Reveal routes
-│   └── modules_router.py        # Module execution routes
+│   ├── modules_router.py        # Module execution routes
+│   └── federal_intel_router.py  # Federal intel search endpoints (10 routes)
 ├── integrations/
-│   └── verizon_reveal/          # Verizon Reveal adapter
-│       ├── adapter.py           # Main adapter logic
-│       ├── auth.py              # Reveal authentication
-│       ├── normalizer.py        # Data normalization
-│       ├── rest_client.py       # REST API client
-│       └── webhook_receiver.py  # Webhook handler
+│   ├── verizon_reveal/          # Verizon Reveal adapter
+│   │   ├── adapter.py           # Main adapter logic
+│   │   ├── auth.py              # Reveal authentication
+│   │   ├── normalizer.py        # Data normalization
+│   │   ├── rest_client.py       # REST API client
+│   │   └── webhook_receiver.py  # Webhook handler
+│   └── federal_intel/           # Federal data source clients
+│       ├── sam.py               # SAM.gov opportunities (per-NAICS, dedupe)
+│       ├── usaspending.py       # USAspending contract awards
+│       ├── grants.py            # Grants.gov opportunity search
+│       ├── sbir.py              # SBIR/STTR awards (rate-limit retry)
+│       ├── subawards.py         # Contract + Assistance subawards
+│       ├── psc.py               # PSC code lookup
+│       ├── regulations.py       # Regulations.gov document search
+│       ├── labor_rates.py       # GSA CALC+ ceiling rates
+│       └── orchestrator.py      # "Run all" coordinated ingest
 ├── models/
-│   └── telematics_event.py      # Data models
+│   ├── telematics_event.py      # Telematics data models
+│   └── federal_intel.py         # Federal intel normalized models (9 Pydantic models)
 ├── scripts/
 │   └── reveal_sync_neon.py      # Sync utility
 └── data/                        # Knowledge store volume
@@ -718,6 +752,29 @@ uvicorn app.main:app --reload --port 8000
 ### Authentication
 
 Railway backend authenticates incoming requests using the `X-Penny-Api-Key` header. The Next.js proxy adds this header automatically using `PENNY_API_KEY`.
+
+### Federal Intelligence Integration
+
+The `integrations/federal_intel/` package provides async Python clients for 8 federal data sources, ported from the APPSCRIPT GOV.txt Google Apps Script. All clients return normalized Pydantic models defined in `models/federal_intel.py`.
+
+**Data Sources:**
+
+| Client | API | Auth | Key Behavior |
+|--------|-----|------|-------------|
+| `SAMClient` | SAM.gov Opportunities v2 | `SAM_API_KEY` | Per-NAICS loop + dedupe by noticeId |
+| `USAspendingClient` | USAspending Spending by Award | None | POST API, contract/grant/IDV type codes |
+| `GrantsGovClient` | Grants.gov Search v1 | None | oppHits response parsing |
+| `SBIRClient` | SBIR.gov Public Awards | None | Progressive backoff on 429 (2s/4s/6s) |
+| `SubawardsClient` | SAM.gov Subawards | `SAM_API_KEY` | Contract + Assistance (two endpoints) |
+| `PSCClient` | SAM.gov PSC Details | `SAM_API_KEY` | Product/Service Code lookup |
+| `RegulationsClient` | Regulations.gov v4 | `REGULATIONS_API_KEY` | X-Api-Key header auth |
+| `LaborRatesClient` | GSA CALC+ v3 | None | Returns results + wage_stats |
+
+**Orchestrator:** `FederalIntelOrchestrator.run_all()` coordinates SAM, USAspending, Grants.gov, SBIR, and Subaward searches with 1-second pauses between sources. Default NAICS codes: 541512, 541519, 541511, 518210, 541611.
+
+**Router:** `app/federal_intel_router.py` exposes 10 POST endpoints under `/api/federal-intel/`. See `railway-backend/README.md` for the full endpoint table.
+
+**Tests:** `tests/test_federal_intel.py` — 20 tests covering model validation, client construction, and orchestrator logic. Run with `python -m pytest tests/test_federal_intel.py -v`.
 
 ---
 
@@ -821,7 +878,7 @@ Training has its own sidebar group with 5 items:
 
 ### How the Sidebar Works
 
-The sidebar is configured in `src/lib/sidebar-config.ts`. It defines 6 groups:
+The sidebar is configured in `src/lib/sidebar-config.ts`. It defines 7 groups:
 
 | Group | Key | Default Expanded | Admin Only |
 |-------|-----|-----------------|------------|
@@ -830,6 +887,7 @@ The sidebar is configured in `src/lib/sidebar-config.ts`. It defines 6 groups:
 | Training | `training` | Yes | No |
 | Finance | `finance` | No | No |
 | Intelligence | `intel` | No | No |
+| Skills & Tools | `skills` | No | No |
 | Admin | `admin` | No | Yes |
 
 ### Module Toggles
@@ -1393,6 +1451,136 @@ Solution:
 | `docs/GIT_WORKFLOW.md` | PR workflow |
 | `docs/integration/MODULE_GATEWAY_CONTRACT.md` | Gateway API contract |
 | `docs/integration/OPERATIONS_RUNBOOK.md` | Gateway operations |
+
+---
+
+## 23. Agent & Skill Library
+
+### Overview
+
+The platform ships two distinct tooling layers: **agents** (operator-only Claude Code personas) and **skills** (reusable methodology modules, some client-facing). Both live under `.claude/` in the repo. A unified registry at `skills-registry.json` tracks all 38 skills with status, audience, surface, and gateway mapping metadata.
+
+### Architecture: Three-Layer Skill System
+
+```
+Layer 1: Canonical Library (.claude/skills/)
+    36 skill directories, each following the ATLAS 5-file pattern.
+    Governance: MANIFEST.md, SKILLS-README.md, 00_skill-intake/ pipeline.
+
+Layer 2: Module Skill Packs (.claude/skill-packs/)
+    JSON manifests bundling operator + client-facing skills per module domain.
+    Current packs: fleet-compliance, govcon, realty.
+
+Layer 3: Gateway Integration (tooling/skills/)
+    15 client-facing skill wrappers with gateway module mappings.
+    Activation path: Skill -> Gateway wrapper -> Module Gateway registry -> Client surface.
+```
+
+### ATLAS 5-File Skill Pattern
+
+Every skill follows this standard structure:
+
+| File | Purpose | Required |
+|------|---------|----------|
+| `SKILL.md` | Entry point — methodology, steps, decision trees | Yes |
+| `contract.json` | Output enforcement — required sections, forbidden phrases, fail-closed | Yes |
+| `registry.json` | Discovery metadata — ID, version, tags, token budget | Yes |
+| `triggers.json` | Activation rules — trigger phrases, confidence thresholds | Yes |
+| `system.prompt` | Governance identity and behavioral constraints | Optional |
+
+### Skill Audience Classification
+
+Skills are classified by who uses them:
+
+| Audience | Where They Run | Examples |
+|----------|---------------|---------|
+| **Operator** | Claude Code sessions, dev tooling | direction-protocol, command-protocol, armed-bandits, cyber-security |
+| **Client-Facing** | Pipeline Penny, Module Gateway, Tools UI | data-privacy-coach, risk-manager, financial-analyst, bid-strategist |
+| **Dual** | Both operator and client contexts | aro-assessment, world-model-mapper |
+
+### Client-Facing Skills — Gateway Module Mappings
+
+Client-facing skills route through the Module Gateway via command modules. Each skill maps to exactly one gateway module:
+
+| Skill | Gateway Module | Penny Enabled | What It Does |
+|-------|---------------|---------------|-------------|
+| `aro-assessment` | readiness-command | Yes | AI/automation readiness scoring (6-dimension matrix) |
+| `risk-manager` | readiness-command | Yes | Risk identification, scoring, and mitigation planning |
+| `data-privacy-coach` | compliance-command | Yes | HIPAA/SOC2/GDPR/CCPA compliance guidance |
+| `financial-analyst` | financial-command | Yes | Financial data analysis, trend detection, KPI tracking |
+| `bid-strategist` | govcon-command | Yes | Federal opportunity evaluation and bid/no-bid decisions |
+| `grant-proposal-writer` | govcon-command | Yes | End-to-end grant proposal drafting (SAMHSA, VA, DOL, etc.) |
+| `grant-proposal-evaluation` | govcon-command | Yes | Proposal scoring, compliance checking, gap analysis |
+| `realty-command` | realty-command | Yes | Colorado real estate regulation and transaction compliance |
+| `world-model-mapper` | (standalone) | Yes | Process mapping against world-model principles |
+| `invoice-organizer` | financial-command | No | Invoice parsing, categorization, and reconciliation |
+| `file-organizer` | asset-command | No | File taxonomy, naming convention enforcement |
+| `proposal-generator` | proposal-command | No | Proposal content generation from templates |
+| `docgen-command` | proposal-command | No | Document generation from structured data |
+| `copywriter` | email-command | No | Marketing and outreach copy generation |
+| `marketing-strategist` | sales-command | No | Marketing strategy and campaign planning |
+
+### Operator-Only Skills Reference
+
+| Skill | Purpose |
+|-------|---------|
+| `direction-protocol` | TNDS 5-stage sales methodology (Identify, Assess, Map, Chart, Launch) |
+| `command-protocol` | TNDS 3-service delivery framework (Command Center, Battle Rhythm, Command Partner) |
+| `armed-bandits` | Multi-armed bandit prompt testing methodology |
+| `cyber-security` | Security assessment and hardening guidance |
+| `cloud-engineer` | GCP/Firebase/Vercel infrastructure patterns |
+| `database-admin` | Database design, optimization, migration authoring |
+| `python-programmer` | Python development patterns and best practices |
+| `webapp-testing` | Web application test strategy and execution |
+| `context-ingest` | Document ingestion pipeline configuration |
+| `penny-chunking` | Knowledge base chunk validation for Penny vector store |
+| `competitive-ads-extractor` | Competitive ad intelligence extraction |
+| `bearing-check` | 8-checkpoint decision validation framework |
+| `documentation` | TNDS branded documentation standards |
+
+### Skill Pack Manifests
+
+Skill packs define which skills activate per module domain. Located at `.claude/skill-packs/`:
+
+**fleet-compliance.json** — 15 operator skills + 6 client-facing (data-privacy-coach, risk-manager, aro-assessment, file-organizer, invoice-organizer, financial-analyst)
+
+**govcon.json** — 9 operator skills + 5 client-facing (grant-proposal-writer, grant-proposal-evaluation, bid-strategist, data-privacy-coach, risk-manager)
+
+**realty.json** — 8 operator skills + 4 client-facing (realty-command, financial-analyst, proposal-generator, data-privacy-coach)
+
+### Module Toggle Integration
+
+Skills are toggled per-org through the Module Toggle Console (`/fleet-compliance/dev/modules`). The toggle system uses two mechanisms:
+
+1. **App Modules** (`modules` + `org_modules` tables): Platform-level modules registered in `MODULE_SEEDS` in `src/lib/modules.ts`. Each skill-command module (readiness-command, compliance-command, govcon-command, financial-command, realty-command, asset-command, proposal-command) is registered as a toggleable module.
+
+2. **Gateway ACL** (`module_gateway_acl` table): Fine-grained per-action access control managed through `src/lib/modules-gateway/persistence.ts`. Gateway modules can be toggled independently from app modules.
+
+When an installer enables/disables a skill-command module for an org, all skills mapped to that command module become available or hidden for that org's users.
+
+### Adding a New Skill
+
+1. Create the skill directory under `.claude/skills/<skill-name>/`
+2. Build the ATLAS 5-file pattern (SKILL.md, contract.json, registry.json, triggers.json)
+3. Run through the intake pipeline at `.claude/skills/00_skill-intake/`
+4. Update `skills-registry.json` at project root
+5. If client-facing: create a gateway wrapper in `tooling/skills/<skill-name>/`
+6. If client-facing: register the action in the Module Gateway contract
+7. Add to the relevant skill-pack manifest in `.claude/skill-packs/`
+8. If Penny-enabled: update Penny's tool catalog
+
+### Key Files
+
+| File | Purpose |
+|------|---------|
+| `skills-registry.json` | Unified registry (38 skills, status, audience, surface, gateway mapping) |
+| `.claude/skills/MANIFEST.md` | Skill library governance and naming conventions |
+| `.claude/skills/SKILLS-README.md` | Audience classification matrix |
+| `.claude/skill-packs/*.json` | Module-scoped skill bundle manifests |
+| `tooling/skills/README.md` | Client-facing skill activation path and gateway mappings |
+| `FCS-Agent-Deployment-Recommendations.docx` | Agent selection rationale |
+| `FCS-Skills-Activation-Strategy.docx` | Skill activation architecture (3-layer design) |
+| `FCS-Unified-Skills-Registry.docx` | Registry reconciliation documentation |
 
 ---
 

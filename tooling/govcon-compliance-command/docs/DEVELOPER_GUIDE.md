@@ -40,7 +40,7 @@ Each layer depends only on layers above it. Services depend on data and config. 
 
 **reporting/** - Three reporting generators: PipelineDashboard (aggregate metrics, action items, high-value opportunities), WinLossReportGenerator (performance analysis, loss patterns), OutreachReport (engagement metrics, cold contacts, OSDBU summary).
 
-**tools.ts** - 20 LLM tool definitions with JSON Schema input specifications. The `createToolHandlers()` factory instantiates all services and returns a handler map.
+**tools.ts** - 21 LLM tool definitions with JSON Schema input specifications. The `createToolHandlers()` factory instantiates all services and returns a handler map.
 
 **index.ts** - Public exports. Everything accessible from outside the module is re-exported here.
 

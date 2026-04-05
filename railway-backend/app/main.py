@@ -113,9 +113,11 @@ origins = [origin.strip() for origin in os.getenv("CORS_ORIGINS", "*").split(","
 app = FastAPI(title="Pipeline Penny API", version=APP_VERSION)
 from app.modules_router import modules_router
 from app.telematics_router import telematics_router
+from app.federal_intel_router import router as federal_intel_router
 
 app.include_router(modules_router)
 app.include_router(telematics_router)
+app.include_router(federal_intel_router)
 app.add_middleware(
     CORSMiddleware,
     allow_origins=origins if origins else ["*"],

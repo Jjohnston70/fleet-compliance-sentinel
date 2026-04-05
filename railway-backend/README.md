@@ -4,10 +4,33 @@ This is a standalone FastAPI service for Pipeline Penny.
 
 ## Endpoints
 
+### Core (Pipeline Penny)
+
 - `GET /health` - service health and config status
 - `GET /status` - knowledge store stats (API key protected)
 - `POST /ingest` - add docs to local JSON store (admin role + API key)
 - `POST /query` - answer user questions from indexed docs (API key protected)
+
+### Federal Intelligence (`/api/federal-intel`)
+
+Live federal data search endpoints ported from APPSCRIPT GOV.txt. All POST requests accept JSON bodies.
+
+| Endpoint | Source | Auth |
+|----------|--------|------|
+| `/api/federal-intel/sam/search` | SAM.gov Opportunities | SAM_API_KEY |
+| `/api/federal-intel/usaspending/search` | USAspending Awards | None (public) |
+| `/api/federal-intel/grants/search` | Grants.gov | None (public) |
+| `/api/federal-intel/sbir/search` | SBIR.gov Awards | None (public) |
+| `/api/federal-intel/labor-rates/search` | GSA CALC+ Rates | None (public) |
+| `/api/federal-intel/psc/search` | PSC Codes | SAM_API_KEY |
+| `/api/federal-intel/regulations/search` | Regulations.gov | REGULATIONS_API_KEY |
+| `/api/federal-intel/subawards/contract/search` | Contract Subawards | SAM_API_KEY |
+| `/api/federal-intel/subawards/assistance/search` | Assistance Subawards | SAM_API_KEY |
+| `/api/federal-intel/run-all` | Orchestrated full ingest | SAM_API_KEY |
+
+### Telematics
+
+- Verizon Reveal integration routes (see `app/telematics_router.py`)
 
 ## Local run
 
@@ -31,6 +54,9 @@ uvicorn app.main:app --reload --port 8000
      - `OPENAI_API_KEY`
      - `GEMINI_API_KEY`
      - `OLLAMA_BASE_URL` + `OLLAMA_MODEL` (for local Ollama/testing)
+   - For Federal Intelligence endpoints:
+     - `SAM_API_KEY` — SAM.gov API key (register at https://api.sam.gov)
+     - `REGULATIONS_API_KEY` — Regulations.gov API key (register at https://api.regulations.gov)
    - For longer responses, raise `ANTHROPIC_MAX_TOKENS` (for model output) and `FALLBACK_MAX_CHARS` (non-LLM fallback output).
 4. Deploy and copy service URL (example: `https://penny-api-production.up.railway.app`).
 

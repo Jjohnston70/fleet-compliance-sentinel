@@ -412,6 +412,97 @@ const SECTIONS: { id: string; title: string; group?: string; content: string[] }
       'If a subscription is canceled, a 30-day grace period applies during which records are soft-deleted. After 60 days total, records are permanently removed. The offboarding lifecycle is fully automated and tracked in the audit log.',
     ],
   },
+  /* ── SKILLS & TOOLS GROUP ─────────────────────────────────────────── */
+  {
+    id: 'skills-overview',
+    title: 'Skills & Tools',
+    group: 'Skills & Tools',
+    content: [
+      'Fleet-Compliance Sentinel includes a library of AI-powered skills accessible through Pipeline Penny and the Module Tools interface. Skills are specialized capabilities that analyze your data, assess risks, generate documents, and provide expert guidance on demand.',
+      'Available skills depend on your organization\'s plan tier and which modules your admin has enabled. Skills appear in Pipeline Penny\'s tool menu and can also be triggered by asking Penny directly (for example: "Run a risk assessment" or "Check our privacy compliance").',
+      'Each skill is designed to produce structured, actionable output following consistent quality standards. Results include citations, scoring matrices, or step-by-step recommendations depending on the skill type.',
+    ],
+  },
+  {
+    id: 'skill-readiness',
+    title: 'AI Readiness Assessment',
+    group: 'Skills & Tools',
+    content: [
+      'The AI Readiness Assessment (ARO) evaluates your organization\'s preparedness for AI and automation adoption across six dimensions: Data Maturity, Process Readiness, Technology Stack, Team Capability, Governance, and Change Management.',
+      'Each dimension is scored on a 1-5 scale with specific criteria. The assessment produces a composite readiness score, identifies gaps, and generates prioritized recommendations for improvement.',
+      'Use this skill when evaluating new technology investments, planning digital transformation initiatives, or benchmarking your operational maturity. Ask Penny: "Run an AI readiness assessment" or "How ready are we for automation?"',
+    ],
+  },
+  {
+    id: 'skill-risk-manager',
+    title: 'Risk Manager',
+    group: 'Skills & Tools',
+    content: [
+      'The Risk Manager skill identifies, scores, and tracks operational risks using a structured probability-impact matrix. It generates risk registers with severity ratings, mitigation strategies, and owner assignments.',
+      'Risk categories include: regulatory compliance, operational disruption, financial exposure, technology failure, personnel, and reputational. Each risk gets a composite score and recommended response (avoid, mitigate, transfer, or accept).',
+      'Ask Penny: "What are our top risks?" or "Run a risk assessment on our compliance posture" to activate this skill.',
+    ],
+  },
+  {
+    id: 'skill-privacy-coach',
+    title: 'Data Privacy Coach',
+    group: 'Skills & Tools',
+    content: [
+      'The Data Privacy Coach provides guidance on HIPAA, SOC 2, GDPR, CCPA/CPRA, GLBA, PCI, and state privacy law compliance. It reviews your data handling practices and identifies gaps against regulatory requirements.',
+      'The coach can assess specific scenarios (storing driver medical records, sharing data with vendors, handling breach notifications) and provide step-by-step remediation guidance with regulatory citations.',
+      'Ask Penny: "Are we HIPAA compliant for driver medical records?" or "What privacy requirements apply to our fleet data?" to get targeted compliance guidance.',
+    ],
+  },
+  {
+    id: 'skill-financial-analyst',
+    title: 'Financial Analyst',
+    group: 'Skills & Tools',
+    content: [
+      'The Financial Analyst skill performs data analysis on your financial records including trend detection, KPI tracking, variance analysis, and cost optimization identification.',
+      'It works with your invoice data, spend records, and budget information to surface patterns, flag anomalies, and generate executive-ready financial summaries.',
+      'Ask Penny: "Analyze our spending trends" or "What are our top cost drivers this quarter?" to activate financial analysis.',
+    ],
+  },
+  {
+    id: 'skill-bid-strategist',
+    title: 'Bid Strategist (GovCon)',
+    group: 'Skills & Tools',
+    content: [
+      'The Bid Strategist evaluates federal contracting opportunities and produces structured bid/no-bid decisions. It analyzes solicitations against your capabilities, past performance, pricing competitiveness, and win probability.',
+      'The skill generates opportunity scorecards, competitive positioning analysis, and go/no-go recommendation memos. It covers SAM.gov opportunities, GSA schedules, and agency-specific procurement vehicles.',
+      'This skill is available when the GovCon module is enabled. Ask Penny: "Evaluate this opportunity" or "Should we bid on this RFP?"',
+    ],
+  },
+  {
+    id: 'skill-grant-writer',
+    title: 'Grant Proposal Writer (GovCon)',
+    group: 'Skills & Tools',
+    content: [
+      'The Grant Proposal Writer drafts complete grant proposals for federal, state, local, and nonprofit funding applications. It handles SAMHSA, VA, DOL, community foundations (El Pomar, Pikes Peak), and state agencies (CDHS).',
+      'The skill produces: need statements, program designs, budget narratives, logic models, evaluation plans, sustainability plans, and SF-424 content. Each section follows funder-specific formatting and compliance requirements.',
+      'This skill is available when the GovCon module is enabled. Ask Penny: "Draft a grant proposal for [funder]" or "Write a need statement for our veteran services program."',
+    ],
+  },
+  {
+    id: 'skill-grant-evaluator',
+    title: 'Grant Proposal Evaluator (GovCon)',
+    group: 'Skills & Tools',
+    content: [
+      'The Grant Proposal Evaluator reviews draft proposals against funder scoring criteria, compliance requirements, and best practices. It identifies gaps, scores sections, and provides specific improvement recommendations.',
+      'The evaluation covers: 2 CFR 200 compliance, funder-specific rubrics, narrative strength, budget alignment, evidence quality, and competitive positioning. Results include a scored rubric and prioritized action items.',
+      'This skill is available when the GovCon module is enabled. Ask Penny: "Evaluate this grant proposal" or "Score our SAMHSA application."',
+    ],
+  },
+  {
+    id: 'skill-realty',
+    title: 'Realty Operations',
+    group: 'Skills & Tools',
+    content: [
+      'The Realty Operations skill provides Colorado and U.S. real estate regulation guidance, transaction compliance checking, and property operations support.',
+      'It covers: Colorado Real Estate Commission rules, fair housing compliance, disclosure requirements, contract review, and transaction timeline management.',
+      'This skill is available when the Realty module is enabled. Ask Penny: "What are the disclosure requirements for this property?" or "Review this transaction for compliance."',
+    ],
+  },
   {
     id: 'keyboard',
     title: 'Tips & Shortcuts',

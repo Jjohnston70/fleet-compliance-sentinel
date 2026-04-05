@@ -1,0 +1,1583 @@
+     QuickBooks
+  Custom Reporting
+       ODBC
+Implementation Guide
+         QuickBooks Custom Reporting-ODBC Implementation Guide
+
+Table of Contents
+Chapter 1: Introduction ........................................................................... Page 2
+
+Chapter 2: Understanding the QuickBooks Database............................ Page 4
+
+Chapter 3: Create an ODBC user in QuickBooks .................................. Page 14
+
+Chapter 4: Create ODBC Connections/Reports .................................... Page 16
+   Microsoft Access ............................................................................. Page 17
+   Microsoft Excel ................................................................................ Page 31
+   SAP Crystal Reports ......................................................................... Page 40
+
+Chapter 5: Custom Report Examples .................................................... Page 51
+   Unpaid Bills by Class ....................................................................... Page 52
+   Names Lists with Contact Information by List Type ...................... Page 56
+
+
+
+
+1 | Page
+          QuickBooks Custom Reporting-ODBC Implementation Guide
+
+
+Chapter 1: Introduction
+
+
+Welcome to the QuickBooks custom reporting-ODBC (Open Database Connectivity) implementation
+guide. This guide shows you how to get started with QuickBooks custom reporting capabilities.
+
+Why ODBC Custom Reports?
+QuickBooks has over 100 built-in reports, so why is custom reporting with ODBC even necessary?
+Companies big and small use QuickBooks to run their business. The built-in reports satisfy the needs of
+most QuickBooks users. However, what if:
+
+      You need to tweak a report to make it perfect, but the report modifications in QuickBooks just
+       aren't doing it.
+      You have exported reports to Excel, but found the repetitive nature of reporting too labor
+       intensive.
+      Your company has grown and now you need to synchronize QuickBooks data with other
+       software applications or reporting systems.
+
+These are all good reasons to dive into custom reporting with ODBC.
+
+Custom reporting provides direct, read-only access to your QuickBooks company file. This lets you
+create custom reports in ODBC compliant applications such as Microsoft Access, Microsoft Excel, and
+others.
+
+Creating custom reports with QuickBooks can be challenging. But once you master the basic steps and
+techniques, you'll find a whole new world of reporting open up to you. Most important: when you need a
+report that QuickBooks doesn't provide, you'll have a solution. You'll be able to access QuickBooks
+data and massage it into useful information to help you run your business.
+
+What You Will Learn
+Here's what you will learn in this guide:
+
+      Understand the QuickBooks database
+      How to create an ODBC user in QuickBooks
+      How to create ODBC connections with:
+          o Microsoft Access
+          o Microsoft Excel
+          o SAP Crystal Reports
+      Sample custom reports
+      Tables Cross Reference and Field Guide
+
+
+
+
+2 | Page
+         QuickBooks Custom Reporting-ODBC Implementation Guide
+
+Process Overview
+There are several steps to create a custom report using ODBC.
+
+   1. Create an ODBC user in QuickBooks.
+   2. Create an ODBC connection with an ODBC compliant application.
+   3. Create a custom report:
+         a. Open the ODBC connection from your ODBC compliant application.
+         b. Select the data (tables) you want to use on your report (typically using queries).
+         c. Build relationships (or joins) as necessary between the selected data tables.
+         d. Select the QuickBooks fields to display on your custom report.
+         e. Organize and format the report based on your needs and the capabilities of your ODBC
+             compliant application.
+
+This guide teaches you each of these steps and provides examples to help you get started.
+
+Recommendation for New Users
+Whether you are new to QuickBooks or new to Open Database Connectivity, you can learn to create
+custom reports with some practice, some experimentation, and some time. Parts of this guide are
+highly technical and may be beyond what you would ever want to know. Focus on the chapters that are
+relevant to you. Here is our recommendation:
+     Skip directly to chapter 3 and create an ODBC user.
+     Decide which application to use to create custom reports (Access, Excel, or Crystal Reports)
+        and follow the steps to create an ODBC connection and your first simple custom report.
+     Practice creating custom reports using the additional examples provided in this guide.
+     Practice creating custom reports using information you are already very familiar with. For
+        example, take a simple report you run within QuickBooks and try to reproduce it with custom
+        reporting. This will give you the confidence to start experimenting.
+     Finally, try creating that custom report you've always wanted.
+
+Expect to stumble a little along the way. When you hit a roadblock, pick up this guide and see if it
+provides an answer to your problem. Don’t be afraid to ask other people for help. Search the internet
+and you'll find many people willing to help you along. Good luck and happy reporting.
+
+Requirements
+To create custom reports with QuickBooks Enterprise Solutions, you need version 11.0 or higher, and
+an ODBC compliant application. You should have strong technical computer skills and be comfortable
+working with relational databases.
+
+Versions Used
+The examples used in this guide are based on the versions listed below. If you use different versions,
+the concepts still apply but the actual steps may vary. If you use a different ODBC-compliant
+application, the steps will be slightly different but the principles are the same.
+     QuickBooks Enterprise Solutions 11.0
+     Microsoft Access 2007
+     Microsoft Excel 2007
+     SAP Crystal Reports 2008
+
+
+
+
+3 | Page
+         QuickBooks Custom Reporting-ODBC Implementation Guide
+
+
+Chapter 2: Understanding the QuickBooks Database
+
+
+The QuickBooks company file is a database made up of many tables of data. To create custom reports,
+it's crucial that you understand:
+      Different types of tables
+      QuickBooks lists and transactions and matching tables and key fields
+      Field ID Cross References
+      Which fields contain usable information in each table
+      Table relationships
+
+
+Different Types of QuickBooks Tables accessible via ODBC
+There are several types of tables accessible via ODBC.
+
+      List Tables: have _v_lst_(list name) in the table name.
+       Such as _v_lst_customer
+
+      Transaction Tables: have _v_txn_(transaction type) in the table name.
+       Such as _v_txn_check_line
+
+              There are several sub-categories of transaction tables:
+
+                 Header (contains no line item detail): has _hdr at the end of the table name.
+                  Such as: _v_txn_invoice_hdr
+
+                 Line (contains header information + line item detail): has _line at the end of the table
+                  name.
+                  Such as: _v_txn_invoice_line
+
+                 Inventory (contains inventory accounting information such as asset and COGS
+                  accounts on inventory transactions): has _line_inv at the end of the table name.
+                  Such as: _v_txn_invoice_ line_inv
+
+      Other Tables: There are a few other tables that are explained where applicable in this guide.
+
+
+
+
+4 | Page
+           QuickBooks Custom Reporting-ODBC Implementation Guide
+
+QuickBooks Tables and Key Fields
+QuickBooks Lists
+The key field for all list tables is the ID field.
+List Name                            Table Name
+                                     (Group Prefix_View/Table Suffix)
+Customers & Jobs List                QBReportAdminGroup_v_lst_customer
+Chart of Accounts                    QBReportAdminGroup_v_lst_account
+Class List                           QBReportAdminGroup_v_lst_class
+Currency List                        QBReportAdminGroup_v_lst_currency
+Customer Messages List               QBReportAdminGroup_v_lst_customer_message
+Customer Type List                   QBReportAdminGroup_v_lst_customer_type
+Employees List                       QBReportAdminGroup_v_lst_employee
+Fixed Assets List                    QBReportAdminGroup_v_lst_fixed_asset
+Item List                            QBReportAdminGroup_v_lst_item
+Job Types List                       QBReportAdminGroup_v_lst_job_type
+Other Names List                     QBReportAdminGroup_v_lst_other
+Payment Method List                  QBReportAdminGroup_v_lst_payment_method
+Price Level List                     QBReportAdminGroup_v_lst_price_level
+Sales Rep List                       QBReportAdminGroup_v_lst_sales_rep
+Ship Via List                        QBReportAdminGroup_v_lst_ship_via
+Terms List                           QBReportAdminGroup_v_lst_terms
+Vendors List                         QBReportAdminGroup_v_lst_vendor
+Vendor Type List                     QBReportAdminGroup_v_lst_vendor_type
+
+Miscellaneous Internal QuickBooks Lists
+The key field for all list tables is the ID field.
+List Name                                            Table Name
+Transaction Types List                               QBReportAdminGroup_v_lookup_txn_type
+Customer Custom Fields List                          QBReportAdminGroup_v_cf_customer
+Vendor Custom Fields List                            QBReportAdminGroup_v_cf_vendor
+Employee Custom Fields List                          QBReportAdminGroup_v_cf_employee
+Item Custom Fields List                              QBReportAdminGroup_v_cf_item
+Ship To Addresses List                               QBReportAdminGroup_v_lst_ship_to
+TimeSheet Entries List                               QBReportAdminGroup_v_lst_time_activity
+Unit of Measure List                                 QBReportAdminGroup_v_lst_unit
+Contacts (combined list of names and                 QBReportAdminGroup_v_lst_contacts
+contact information for customers,
+vendors, employees, and other names)
+Names (combined list of names and                    QBReportAdminGroup_v_lst_names
+associated type for customers, vendors,
+employees, and other names)
+
+
+
+
+5 | Page
+          QuickBooks Custom Reporting-ODBC Implementation Guide
+
+QuickBooks Transactions
+Table Types
+For each transaction type, there is a table that ends in _hdr and a table that ends in _line. Some
+transaction types also have a table that ends in _line_inv.
+The _hdr or "header" table only includes a summary of the transaction (no line item detail). It's useful if
+you are looking for a simple count or listing of transactions, but no detail.
+The _line table includes all of the fields in the _hdr table, but also includes fields to hold line item
+details and amounts.
+The _line_inv table includes the inventory accounting part of the transaction, such as the inventory
+asset and cost of good sold account references.
+Key Fields
+The key field for all _hdr tables is the transaction_id field.
+The key field for all _line tables is the combination of transaction_id and target_id fields.
+The key field for _line_inv tables is the inventory_record_id field. The target_id field is a link back to the
+target_id field in the _line table.
+Table Examples
+Below, we show the table name prefix for each transaction type such as
+QBReportAdminGroup_v_txn_check.
+When selecting a table or tables in an ODBC connection, select the appropriate table type to get the
+level of detail you need, such as QBReportAdminGroup_v_txn_check_line.
+Table Description                                   Table Name
+                                                    (Group Prefix_View/Table Suffix)
+AR-Refund Line Item Detail                          QBReportAdminGroup_v_txn_ar_refund
+Inventory Build Assemblies                          QBReportAdminGroup_v_txn_assembly
+Bill Payment (by Credit Card)                       QBReportAdminGroup_v_txn_bill_cc
+Bill Payment (by Check)                             QBReportAdminGroup_v_txn_bill_check
+Vendor Bills                                        QBReportAdminGroup_v_txn_bill
+Credit Card Charges                                 QBReportAdminGroup_v_txn_cc_charge
+Credit Card Credits                                 QBReportAdminGroup_v_txn_cc_credit
+Statement Charges                                   QBReportAdminGroup_v_txn_charge
+Checks                                              QBReportAdminGroup_v_txn_check
+Credit Memos                                        QBReportAdminGroup_v_txn_credit_memo
+Deposits                                            QBReportAdminGroup_v_txn_deposit
+Estimates                                           QBReportAdminGroup_v_txn_estimate
+Inventory Adjustments                               QBReportAdminGroup_v_txn_inv_adjust
+Invoices                                            QBReportAdminGroup_v_txn_invoice
+Item Receipts                                       QBReportAdminGroup_v_txn_item_receipt
+General Journal Entries                             QBReportAdminGroup_v_txn_journal
+Purchase Orders                                     QBReportAdminGroup_v_txn_po
+Receive Payments (Customer Payments)                QBReportAdminGroup_v_txn_received_payment
+Sales Orders                                        QBReportAdminGroup_v_txn_sales_order
+Sales Receipts                                      QBReportAdminGroup_v_txn_sales_receipt
+Vendor Credit Memos                                 QBReportAdminGroup_v_txn_vendor_credit
+
+
+
+
+6 | Page
+          QuickBooks Custom Reporting-ODBC Implementation Guide
+
+
+Field ID Cross References
+Item Types (no associated table)
+
+Item_Type Code   Item Type Description
+0                Service
+1                Inventory Part
+2                Inventory Assembly
+3                Non-inventory Part
+4                Fixed Asset
+5                Other Charge
+6                Subtotal
+7                Group
+8                Discount
+9                Payment
+10               Sales Tax Item
+11               Sales Tax Group
+
+Account Types (no associated table)
+
+Type             Account Type Description
+0                Bank
+1                Accounts Receivable
+2                Other Current Asset
+3                Fixed Asset
+4                Other Asset
+5                Accounts Payable
+6                Credit Card
+7                Other Current Liability
+8                Long Term Liability
+9                Equity
+10               Income
+11               Cost of Goods Sold
+12               Expense
+13               Other Income
+14               Other Expense
+15               Non-Posting
+
+Names Lists (v_lst_names)
+
+Type_Id          List Type
+0                Customer
+1                Vendor
+2                Employee
+3                Other Name
+
+
+
+
+7 | Page
+           QuickBooks Custom Reporting-ODBC Implementation Guide
+
+Tables and Important Fields
+QBReportAdminGroup_v_lst_customer                                 Customers & Jobs List
+
+Field Name          Description                                   Possible Values
+Id                  Unique number identifying the entry in the
+                    list
+Name                Name of the list entry
+Is_hidden           Is the customer:job active or inactive?       0 = ACTIVE
+                                                                  -1 or 1 = INACTIVE
+Open_date           Date the list entry was first used on a
+                    transaction
+Credit_limit_amt    Credit limit for the customer:job
+Customer_type_id    Type of Customer – on Customer Type           Depends on the
+                    list                                          number of customer
+                                                                  types
+Parent_id           Applies to Jobs.                              If this is a job for a
+                                                                  customer, the
+                                                                  parent_id will point to
+                                                                  the customer the job is
+                                                                  related to. Otherwise,
+                                                                  the parent_id = 0.
+Ship_to_id        Id of the ship to address
+End_balance_amt Customer's current balance
+Sales_tax_code_id Is this customer taxable or non-taxable?        Points to list of sales
+                                                                  tax codes which are
+                                                                  either taxable or non-
+                                                                  taxable.
+Tax_item_id         Id of the sales tax item – defines what tax
+                    rate the customer pays on taxable sales
+Terms_id            The customer's payment terms
+
+QBReportAdminGroup_v_lst_vendor                                   Vendor List
+
+Field Name          Description                                   Possible Values
+Id                  Unique number identifying the entry in the
+                    list
+Name                Name of the list entry
+Is_hidden           Is the vendor active or inactive?             0 = ACTIVE
+                                                                  -1 or 1 = INACTIVE
+Open_date           Date the list entry was first used on a
+                    transaction
+Credit_limit_amt    Credit limit for the vendor
+Vendor_type_id      Type of Vendor – on Vendor Type list          Depends on the
+                                                                  number of customer
+                                                                  types
+End_balance_amt     Vendor's current balance
+Terms_id            The vendor's payment terms
+Is_1099_vendor      Is the vendor eligible for a 1099 form        0 = NOT ELIGIBLE
+                                                                  -1 of 1 = ELIGIBLE
+Tax_identifier      Vendor's tax id number
+
+8 | Page
+           QuickBooks Custom Reporting-ODBC Implementation Guide
+
+QBReportAdminGroup_v_lst_item                                  Item List
+
+Field Name                 Description                                 Possible Values
+Id                         Unique number identifying the entry in
+                           the list
+Name                       Name of the list entry
+Description                Description of item on sales forms
+Purchase_description       Description of item on purchases
+Is_hidden                  Is the vendor active or inactive?           0 = ACTIVE
+                                                                       -1 or 1 = INACTIVE
+item_type_id               Type of Item                                See separate list under
+                                                                       Field ID Cross References
+                                                                       on page 7
+Parent_id                  If item is a subitem, shows id of parent    If this is a subitem for an item,
+                           item                                        the parent_id will point to the
+                                                                       item it is related to. Otherwise,
+                                                                       the parent_id = 0.
+Mfg_part_num               Manufacturer's part number
+Unit_cost_amt              Cost of item (on purchases)
+Average_cost_qnty          Average cost of item from prior
+                           purchasaes
+Sales_price_amt            Sales price of item to customers
+Post_account_id            Income account for items sold
+Preferred_vendor_id        Id of vendor you typically purchase
+                           item from
+Asset_account_id           Id of asset account used to hold the
+                           value of inventory until the item is sold
+Cogs_account_id            The account used to store the cost of
+                           the items after being sold to a
+                           customer
+Is_group                   Is this a "group" type item?                0 = Not a group item
+                                                                       -1 or 1 = Is a group item
+Sales_tax_code_id          Is this item taxable or non-taxable?        Points to list of sales tax codes
+                                                                       which are either taxable or
+                                                                       non-taxable.
+Tax_agency_id              Id of tax agency (only applies to sales
+                           tax items)
+Assembly_build_point_qty   Quantity at which the item should be
+                           assembled (to build more)
+Reorder_point_qty          Quantity at which the item should be
+                           purchased (to have more on-hand)
+On_hand_qty                Current on-hand quantity
+Value_on_hand_amt          Value of inventory on hand in dollars
+On_po_order_qty            Quantity of item already on outstanding
+                           purchase order(s)
+Reserved_for_pending_      Quantity of item on pending inventory
+assemblies_qty             assembly (component)
+On_so_order_qty            Quantity of item on sales order
+Pending_assemblies_qty     Quantity of item on pending inventory
+                           assembly (final product)
+
+
+
+9 | Page
+        QuickBooks Custom Reporting-ODBC Implementation Guide
+
+QBReportAdminGroup_v_lst_account                              Chart of Accounts List
+
+Field Name          Description                                  Possible Values
+Id                  Unique number identifying the entry in the
+                    list
+Type                Type of Account                              See separate list under
+                                                                 Field ID Cross
+                                                                 References
+                                                                 on page 7
+Account_num         Account Number
+Name                Name of the list entry
+Description         Description of account
+Is_hidden           Is the account active or inactive?           0 = ACTIVE
+                                                                 -1 or 1 = INACTIVE
+Parent_id           If account is a subaccount, shows id of      If this is a subaccount
+                    parent account                               for an account, the
+                                                                 parent_id will point to
+                                                                 the account it is related
+                                                                 to. Otherwise, the
+                                                                 parent_id = 0.
+Ending_balance_amt Account's current balance
+Bank_number        The bank account number for bank type         Can also be a “Note” or
+                   accounts                                      “Credit Card Number”
+                                                                 depending on account
+                                                                 type.
+
+
+
+
+10 | P a g e
+         QuickBooks Custom Reporting-ODBC Implementation Guide
+
+
+Table Relationships
+The following list shows important tables and which relate to other tables.
+
+Parent Table       Parent Field            Related Table                 Related Field
+Names              Id                      Customers                     Id
+(v_lst_names)                              (v_lst_customer)
+                                           Vendors                       Id
+                                           (v_lst_vendor)
+                                           Employees                     Id
+                                           (v_lst_employee)
+                                           Other Names                   Id
+                                           (v_lst_other)
+Contacts           Name_Id                 Customers                     Id
+(v_lst_contacts)                           (v_lst_customer)
+                                           Vendors                       Id
+                                           (v_lst_vendor)
+                                           Employees                     Id
+                                           (v_lst_employee)
+                                           Other Names                   Id
+                                           (v_lst_other)
+Customers        Id                        Contacts                      Name_id
+(v_lst_customer)                           (v_lst_contacts)
+                                           Names                         Id
+                                           (v_lst_names)
+                   Customer_type_id        Customer Types                Id
+                                           (v_lst_customer_type)
+                   Sales_tax_code_id       Sales Tax Codes               Id
+                                           (v_lst_sales_tax)
+                   Ship_to_id              Ship To Addresses             Id
+                                           (v_lst_ship_to)
+                   Terms_id                Payment Terms                 Id
+                                           (v_lst_terms)
+
+
+
+
+11 | P a g e
+          QuickBooks Custom Reporting-ODBC Implementation Guide
+
+Additional Information
+Source and Target Records:
+QuickBooks transactions consist of multiple table records: one source (also called a "master" or
+"header") record and one or more target records for each line item of detail. For transactions including
+sales tax, QuickBooks adds an additional target record.
+
+The first record for a transaction is the source record (is_source = -1 or 1). The source record includes
+the first target (target_id field). Then each target points to the next target record (next_target_id field).
+This creates a chain or link between line items for the same transaction and to the source record.
+
+When a transaction is created, the source record is assigned a record number N. The target records
+are assigned a record number N+1, N+2, etc. A transaction can be modified later, and target records
+can be added and deleted. See diagram below for help understanding this structure.
+
+When added later, target records are assigned the next available sequential record number (not next
+available for the particular transaction, but next available target number based on the last target
+number (N) for the last transaction entered in the company file. Line items (targets) in QuickBooks can
+be added between exiting line items of an existing transaction, thus causing target_id numbers to no
+longer be consecutive.
+
+To recreate the transaction detail records the same way they are viewed in QuickBooks, it's necessary
+to list each record based on the next_target_id, which numerically may be out of sequence, but on
+screen will match what QuickBooks displays.
+
+Each record in a transaction table is therefore unique by using the transaction_id field and the target_id
+field as a combined primary key. Also, this combined primary key is unique across all records and all
+transaction tables within a QuickBooks company file.
+
+
+
+
+12 | P a g e
+         QuickBooks Custom Reporting-ODBC Implementation Guide
+
+For example: Let's examine a Check transaction that includes two expense accounts.
+
+       Check in QuickBooks
+
+
+
+
+       QBReportAdminGroup_v_txn_check_line
+       (filtered to just show this one transaction, and only showing important fields)
+
+
+
+
+13 | P a g e
+         QuickBooks Custom Reporting‐ODBC Implementation Guide
+
+
+Chapter 3: Create an ODBC user in QuickBooks
+
+
+An ODBC user is like a "gatekeeper" between ODBC applications and your company data. The user
+creates the connection to a compliant application.
+
+An ODBC user is different than a QuickBooks user. ODBC users:
+    Have permission to access your company data only for custom reporting purposes.
+    Can create custom reports through an ODBC connection.
+    Have full admin, read-only access to your company file.
+    Can’t sign in to QuickBooks to perform any other activities.
+
+Note: Unlike a QuickBooks user, you can’t customize or limit an OBDC user’s access to company data.
+
+Create an ODBC user
+To create an ODBC user, complete the following steps:
+
+   1.  Open QuickBooks and sign in to your company file as the administrator.
+   2.  Choose Reports > Custom Reporting.
+   3.  Click the Manage ODBC Users button. QuickBooks opens the ODBC Users window.
+   4.  Click the New button. QuickBooks opens the New ODBC User window.
+   5.  In the ODBC User Name field, enter the name of the person.
+   6.  In the Password field, enter a password (must be at least 6 characters).
+   7.  In the Confirm Password field, reenter your password.
+   8.  Add the user to one or more groups. In the Available Groups pane, select one or more groups
+       and click the Add button. You must assign the user to at least one group. To remove a user
+       from a group, select a group and click the Remove button. To view a group’s privileges, select a
+       group and click the Views button.
+   9. Click OK.
+   10. In the ODBC Users window, click the Close button.
+
+
+
+
+14 | P a g e
+          QuickBooks Custom Reporting‐ODBC Implementation Guide
+
+What's Next?
+After you create an ODBC user, your next step is to create an ODBC connection. This is discussed in
+the next chapter.
+
+
+Common Questions
+
+How do I change an ODBC user's password?
+
+   1.   Open QuickBooks and sign in to your company file.
+   2.   Choose Reports > Custom Reporting.
+   3.   Click the Manage ODBC Users button.
+   4.   In the ODBC Users window, select the ODBC user to edit.
+   5.   Click the Change Password button.
+   6.   In the Password field, enter a new password (must be at least 6 characters).
+   7.   In the Confirm Password field, reenter your new password.
+   8.   Click OK.
+   9.   In the ODBC Users window, click the Close button.
+
+How do I edit an ODBC user's group assignment?
+
+   1. Open QuickBooks and sign in to your company file.
+   2. Choose Reports > Custom Reporting.
+   3. Click the Manage ODBC Users button.
+   4. In the ODBC Users window, select the ODBC user to edit.
+   5. Click the Edit button.
+   6. To add the user to a group, in the Available Groups pane, select one or more groups and click
+      the Add button. To remove the user from a group, select a group and click the Remove button.
+      To view the specific privileges of a group, select a group and click the Views button.
+   7. Click OK.
+   8. In the ODBC Users window, click the Close button.
+
+How do I delete an ODBC user?
+
+   1.   Open QuickBooks and sign in to your company file.
+   2.   Choose Reports > Custom Reporting.
+   3.   Click the Manage ODBC Users button.
+   4.   In the ODBC Users window, select the ODBC user to delete.
+   5.   Click the Delete button.
+   6.   In the Delete User window, click the Yes button.
+   7.   In the ODBC Users window, click the Close button.
+
+How do I reestablish an existing ODBC connection in Access?
+
+   1.   Open QuickBooks and sign in to your company file.
+   2.   Open Access and open the appropriate database.
+   3.   From the Access Ribon, choose Database Tools > Linked Table Manager.
+   4.   Select the tables to be refreshed and click OK.
+
+
+
+15 | P a g e
+         QuickBooks Custom Reporting-ODBC Implementation Guide
+
+
+Chapter 4: Create ODBC Connections/Reports
+
+
+An ODBC connection is like a "bridge" between your company data and an ODBC compliant
+application. It determines which applications you can use to import data and create custom reports.
+
+Note: You must create an ODBC user before you create an ODBC connection.
+
+
+Check your settings
+To establish an ODBC connection, your company file must be:
+
+Open when making a connection
+
+   1. Open QuickBooks and sign in to your company file.
+
+Set to host multi-user access
+
+   1. Choose File > Utilities > Host Multi-User Access. (If the File menu shows Stop Hosting
+      Multi-user Access, no change is necessary).
+   2. Click Yes.
+   3. Click Yes to close and reopen QuickBooks in single-user mode.
+   4. In the Multi-user setup information window, click OK.
+
+Toggled to multi-user mode
+
+   1. Choose File > Switch to Multi-user Mode. (If the File menu shows Switch to Single-user
+      Mode, no change is necessary).
+   2. If prompted to set up new QuickBooks users, click No.
+
+Leave your company file open during the ODBC connection steps below.
+
+Next, complete the steps for your application:
+      Microsoft Access, Page 17
+      Microsoft Excel, Page 31
+      SAP Crystal Reports, Page 40
+
+
+
+
+16 | P a g e
+         QuickBooks Custom Reporting-ODBC Implementation Guide
+
+Microsoft Access
+Note: These steps are for Access 2007. The steps vary slightly if you use a different version.
+
+Create an ODBC Connection/Report with Access 2007
+
+   1. Open QuickBooks and sign in to your company file.
+   2. Open Access.
+   3. Click the Blank Database button.
+
+
+
+
+17 | P a g e
+        QuickBooks Custom Reporting-ODBC Implementation Guide
+
+   4. On the right side of the window, in the File Name field, enter a database name.
+   5. (Optional) Browse to an appropriate folder to save the database.
+   6. Click the Create button.
+
+
+
+
+   7. Right-click the Table1 tab and select Close.
+
+
+
+
+18 | P a g e
+         QuickBooks Custom Reporting-ODBC Implementation Guide
+
+   8. On the Access ribbon, choose External Data > More > ODBC Database.
+
+
+
+
+   9. In the Get External Data - ODBC Database window, select Import the source data into a
+      new table in the current database.
+      Note: We recommend you import the data instead of creating a link. With both options, you are
+      prevented from updating data in the QuickBooks company file. However, when you import, you
+      are allowed to make changes to the data in Access as necessary for custom reporting
+      purposes. With a link, you are also prevented from making changes to the data in Access. If you
+      don’t need to change the data in Access, the link option is preferred since it will read in live data
+      every time you run a query or report.
+   10. Click OK.
+
+
+
+
+19 | P a g e
+        QuickBooks Custom Reporting-ODBC Implementation Guide
+
+   11. In the Look in field, browse to the location of your QuickBooks company file. Tip: Click the
+       yellow folder button to go up a folder level.
+   12. Select the company file with the .DSN extension. For example: sample company.QBW.DSN.
+       Tip: If your computer is set to hide file extensions, your company file appears like sample
+       company. In this case, select the .DSN file which appears like sample company.QBW.
+   13. Click OK.
+
+
+
+
+20 | P a g e
+        QuickBooks Custom Reporting-ODBC Implementation Guide
+
+   14. In the User ID field, enter your ODBC user name.
+   15. In the Password field, enter your ODBC user password.
+   16. Select the Encrypt password checkbox for added security.
+   17. Click OK.
+
+
+
+
+   If you get an error message, check your User Id and Password. If you continue to get an error,
+   review Check your settings on Page 16.
+
+
+
+
+21 | P a g e
+        QuickBooks Custom Reporting-ODBC Implementation Guide
+
+   18. Scroll down until you see tables that begin with QBReportAdminGroup.
+   19. To import a single table:
+           a. From the Tables list, select the table to import. For example, to import the Customers &
+               Jobs list, select QBReportAdminGroup_v_lst_customer.
+           b. Click OK.
+           c. (Optional) If you plan to repeat this import, select Save import steps and complete the
+               remaining windows.
+           d. Click the Close button.
+           e. Press Ctrl+S to save the Access database.
+
+
+
+
+22 | P a g e
+        QuickBooks Custom Reporting-ODBC Implementation Guide
+
+   20. To import multiple tables:
+           a. From the Tables list, select the tables to import. For example, to import the Customers &
+              Jobs list and the Customer Types list, select QBReportAdminGroup_v_lst_customer
+              and QBReportAdminGroup_v_lst_customer_type.
+           a. Click OK.
+           b. (Optional) If you plan to repeat this import, select Save import steps and complete the
+              remaining windows.
+           c. Click the Close button.
+           d. Press Ctrl+S to save the Access database.
+
+
+
+
+23 | P a g e
+         QuickBooks Custom Reporting-ODBC Implementation Guide
+
+Create a Custom Report with Access 2007
+To create a custom report, first complete the connection steps starting on page 17.
+
+Important Concepts:
+We assume you understand the basic Access techniques necessary to create relationships, queries,
+and reports. This guide shows typical steps to follow. However, the recommendations and steps to
+create a custom report vary depending on the report complexity.
+    For a simple list report, you could use a single table as the source for the custom report.
+    For a report using multiple tables, you might need to create a query to combine and join the
+       relational data. Then, use the query as the source for the report.
+    If you need to create many queries and reports using a set of tables, you should create
+       relationships first. This makes reporting easier since the data is related automatically in your
+       queries. Then, use the Report Wizard with the queries as the data source for your custom
+       reports.
+
+For our example, we create queries using the Query Designer. The Query Designer allows you to
+create links between related tables as you go. However, you may prefer the Query Wizard.
+The Query Wizard assumes you've already created relationships between tables (Database Tools >
+Relationships). If so, use the Query Wizard since it guides you through the process.
+
+Report Example: Customer Balances and Credit Limits Summarized by Customer Type
+In this example, we create a customer list by customer type report showing customer balances and
+credit limits. The report uses the multi-table connection example from the previous section.
+
+   1. On the Access ribbon, choose Create > Query Design.
+
+
+
+
+24 | P a g e
+         QuickBooks Custom Reporting-ODBC Implementation Guide
+
+   2.   In the Show Table window, click the QBReportAdminGroup_v_lst_customer table.
+   3.   Click the Add button.
+   4.   Click the QBReportAdminGroup_v_lst_customer_type table.
+   5.   Click the Add button.
+   6.   After adding appropriate tables to the query window, click the Close button.
+
+
+
+
+   7. Resize the tables in the query window so you can see the available fields.
+   8. To create relationships, drag related fields between the tables. In our example, drag the id field
+      from the customer types table onto the customer_type_id field in the customer list table. This
+      relationship allows you to use the customer type name on the eventual report instead of a
+      meaningless customer_type_id number. Review Chapter 2: Understanding the QuickBooks
+      Database on Page 4 for help with the tables and important fields.
+
+
+
+
+25 | P a g e
+        QuickBooks Custom Reporting-ODBC Implementation Guide
+
+   9. Drag appropriate fields from each table to the query design grid. You can also double-click a
+      field to add it to the design grid. In our example, add the following fields:
+           a. From the customer type table: name.
+           b. From the customer list table: credit_limit_amt, end_balance_amt.
+
+
+
+
+   10. To add grouping/totals, on the Access ribbon click the    Totals button. This adds the Total
+       row to the query grid, and automatically Groups By each field.
+   11. To summarize the credit limit and balance fields, change Group By to Sum. Click in the Total
+       row for each field. Click the Total drop-down arrow and select Sum.
+
+
+
+
+26 | P a g e
+         QuickBooks Custom Reporting-ODBC Implementation Guide
+
+   12. The data from QuickBooks is unformatted. So, add appropriate formatting to fields as
+       necessary. For better presentation, change the format of the credit limit and balance fields to
+       currency.
+           a. To open the property sheet, choose Design > Property Sheet.
+           b. Select the credit_limit_amt field in the query design grid.
+           c. On the property sheet, click in the Format row.
+           d. Click the Format drop-down arrow and select Currency.
+           e. Select the end_balance_amt field in the query design grid.
+           f. On the property sheet, click in the Format row.
+           g. Click the Format drop-down arrow and select Currency.
+           h. To close the property sheet, choose Design > Property Sheet.
+
+
+
+
+   13. To sort the results:
+          a. In the query design grid, click in the Sort row of the appropriate field.
+          b. Click the Sort drop-down arrow and select Ascending or Descending.
+               In our example, sort the name field in Ascending order.
+
+
+
+
+27 | P a g e
+        QuickBooks Custom Reporting-ODBC Implementation Guide
+
+   14. Press Ctrl+S to save your work.
+   15. Enter Customer List by Customer Type as the Query Name.
+
+
+
+
+   16. Click OK.
+
+
+
+
+28 | P a g e
+         QuickBooks Custom Reporting-ODBC Implementation Guide
+
+   17. (Optional) In queries with groups/totals, the field names are changed in the query results. For
+       example, credit_limit_amt appears as SumOfcredit_limit_amt in the query results. For
+       clearer presentation, replace the field name in the query design grid as follows:
+           a. In the query design grid, click to the left of the field name to modify. Enter a new field
+               name followed by a : symbol. Don't delete the original field name or the query won't
+               work. For example:
+           b. Replace name with Customer Type: name.
+           c. Replace credit_limit_amt with Credit Limit: credit_limit_amt.
+           d. Replace end_balance_amt with Enter Balance: end_balance_amt.
+
+
+
+
+          e. To see the query results, on the Access ribbon choose Design > View > Datasheet
+             View. To go back to design view, choose Home > View > Design View.
+
+
+
+
+   18. Press Ctrl+S to save your work.
+   19. To close the query, right-click the query tab and select Close.
+
+
+
+
+What's Next?
+For some, the query result IS the custom report. Others might use the Access Report Wizard with the
+query as the data source for a more elaborate custom report. We assume you know how to use the
+Report Wizard on your own. Otherwise, refer to Access Help for more details. We also recommend you:
+    Practice with your own data.
+    Explore other custom report examples starting on Page 51 this guide.
+
+
+
+
+29 | P a g e
+         QuickBooks Custom Reporting-ODBC Implementation Guide
+
+Common Questions
+How do I reestablish an existing ODBC connection in Access?
+
+   1.   Open QuickBooks and sign in to your company file.
+   2.   Open Access and open the appropriate database.
+   3.   On the Access ribbon, choose Database Tools > Linked Table Manager.
+   4.   Select the tables to be refreshed and click OK.
+
+
+
+
+30 | P a g e
+         QuickBooks Custom Reporting-ODBC Implementation Guide
+
+Microsoft Excel
+Note: These steps are for Excel 2007. The steps vary slightly if you use a different version.
+
+Create an ODBC Connection/Report with Excel 2007
+
+   1. Open QuickBooks and sign in to your company file.
+   2. Open Excel.
+   3. On the Excel ribbon, choose Data > From Other Sources > From Microsoft Query.
+
+
+
+
+   4. In the Choose Data Source window, click the Databases tab.
+   5. Click to clear the Use the Query Wizard to create/edit queries checkbox.
+      Tip:
+          a. For single table imports, select the checkbox. After you select the data source, the
+              Query Wizard guides your steps.
+          b. For multi-table imports, clear the checkbox. After you select the data source, you use
+              Microsoft Query to join the tables and make other selections. Our example is a multi-
+              table import since this is more typical, so clear the checkbox.
+   6. Click the Browse button.
+
+
+
+
+31 | P a g e
+        QuickBooks Custom Reporting-ODBC Implementation Guide
+
+   7. Browse to the folder where you store your QuickBooks company file.
+   8. Select the company file with the .DSN extension. For example: sample company.QBW.DSN.
+      Tip: If your computer is set to hide file extensions, your company file appears like sample
+      company. In this case, select the .DSN file which appears like sample company.QBW.
+
+
+
+
+   9. Click Open. In the Choose Data Source window, Excel automatically selects your company file.
+   10. Click OK. Excel opens the Connect to SQL Anywhere window.
+   11. In the User ID field, enter your ODBC user name.
+   12. In the Password field, enter the ODBC user password.
+   13. Select the Encrypt password checkbox for added security.
+
+
+
+
+   If you get an error message, check your User Id and Password. If you continue to get an error,
+   review Check your settings on Page 16.
+
+
+
+32 | P a g e
+        QuickBooks Custom Reporting-ODBC Implementation Guide
+
+   14. Click OK. Excel opens Microsoft Query and the Add Tables window.
+   15. Click the Creator drop-down arrow and select QBReportAdminGroup.
+
+
+
+
+   16. Select a table to import and click the Add button. For example, add the v_lst_customer and
+       v_lst_customer_type tables.
+   17. After you've added tables to Microsoft Query, click the Close button.
+   18. Resize the tables in the query window so you can see the available fields.
+
+      Tip: You may need to resize the upper/lower pane separator to see all of the available fields.
+
+
+
+
+33 | P a g e
+        QuickBooks Custom Reporting-ODBC Implementation Guide
+
+   19. To create relationships (or joins), drag related fields between the tables. In our example, drag
+       the id field from the customer types table onto the customer_type_id field in the customer list
+       table. This relationship allows you to use the customer type name on the eventual report instead
+       of a meaningless customer_type_id number. Review Chapter 2: Understanding the QuickBooks
+       Database on Page 4 for help with the tables and important fields.
+
+
+
+
+34 | P a g e
+         QuickBooks Custom Reporting-ODBC Implementation Guide
+
+   20. Drag appropriate fields from each table to the lower pane. You can also double-click a field to
+       add it to the lower pane. In our example, add the following fields:
+          a. From the customer type table: name.
+          b. From the customer list table: credit_limit_amt, end_balance_amt.
+
+
+
+
+35 | P a g e
+        QuickBooks Custom Reporting-ODBC Implementation Guide
+
+   20. To sort the results:
+          a. Choose Records > Sort.
+          b. Click the Column drop-down arrow and select the appropriate column.
+          c. Select Ascending or Descending.
+          d. Click the Add button.
+          e. Click the Close button.
+               For example, sort by the v_lst_customer_type.name column.
+
+
+
+
+   21. To add grouping/totals:
+          a. Select the column to total from the bottom pane.
+          b. Choose Records > Edit Column.
+          c. Click the Total drop-down arrow and select Sum.
+          d. Enter an appropriate Column heading.
+          e. Click OK.
+               For example, make the following selections for the credit_limit_amt and
+               end_balance_amt fields.
+
+
+
+
+   22. To rename a field/column:
+           a. Select the column to rename from the bottom pane.
+           b. Choose Records > Edit Column.
+           c. Enter an appropriate Column heading.
+           d. Click OK.
+               For example, rename the v_lst_customer_type.name field to Customer Type.
+
+
+
+
+36 | P a g e
+        QuickBooks Custom Reporting-ODBC Implementation Guide
+
+   23. To save your work, choose File > Save.
+   24. Enter Customer List by Customer Type as the Query Name.
+   25. Click the Save button.
+
+
+
+
+   26. To see the query results, choose File > Return Data to Microsoft Office Excel.
+   27. In the Import Data window, click OK.
+
+
+
+
+37 | P a g e
+        QuickBooks Custom Reporting-ODBC Implementation Guide
+
+   28. The data from QuickBooks is unformatted. So, add appropriate formatting to cells. For better
+       presentation, change the format of the credit limit and balance cells to currency.
+          a. Select the cells to format: cells B2:C4 in our example.
+          b. On the Excel ribbon, choose Home > $.
+
+
+
+
+   29. Press Ctrl+S to save your work. Excel opens the Save As window.
+   30. Browse to where you want to save the custom report.
+   31. Enter a File name. For example, Customer List by Customer Type.
+
+
+
+
+   32. Click the Save button.
+
+
+
+
+38 | P a g e
+          QuickBooks Custom Reporting-ODBC Implementation Guide
+
+Common Questions
+
+How do I refresh the custom report with updated QuickBooks data?
+   1.   Open the spreadsheet in Excel.
+   2.   On the Excel ribbon, choose Data > Refresh All.
+   3.   (If prompted) Enter login information.
+   4.   Click OK.
+
+How do I make additional changes to the Microsoft Query?
+   1. Open the spreadsheet in Excel.
+   2. On the Excel ribbon, choose Data > Connections. The existing connection should be selected.
+   3. Click the Properties button.
+   4. Click the Definition tab.
+   5. Click the Edit Query button.
+   6. (If prompted) Enter login information.
+   7. Click OK.
+   8. Make appropriate changes.
+   9. Choose File > Save to save your changes.
+   10. To see the updated query results, choose File > Return Data to Microsoft Office Excel.
+   11. Click OK.
+   12. Click the Close button.
+
+Microsoft Query is not installed on my computer. How do I install it?
+   1. Go to the Add/Remove Programs window on your computer.
+   2. From the list of installed programs, select Microsoft Office.
+   3. Click the Repair or Change button.
+   4. Select Add or Remove Features.
+   5. Click the Continue button.
+   6. Expand the Office Tools category.
+   7. Click the Microsoft Query button.
+   8. Select Run from My Computer.
+   9. Click the Continue button,
+   10. Follow the remaining onscreen instructions.
+
+
+What's Next?
+       Practice with your own data.
+       Explore other custom report examples starting on Page 51 this guide.
+
+
+
+
+39 | P a g e
+         QuickBooks Custom Reporting-ODBC Implementation Guide
+
+SAP Crystal Reports
+Note: These steps are for SAP Crystal Reports 2008. The steps vary slightly if you use a different
+version.
+
+Create an ODBC Connection/Report with SAP Crystal Reports 2008
+
+   1. Open QuickBooks and sign in to your company file.
+   2. Open Crystal Reports.
+   3. Choose File > New > Standard Report. Cyrstal Reports opens the Standard Report Creation
+      Wizard window.
+
+
+
+
+   4. In the Available Data Sources pane, select the Create New Connection button.
+   5. Select the ODBC (RDO) button. Crystal Reports opens the ODBC (RDO) Window.
+
+
+
+
+40 | P a g e
+        QuickBooks Custom Reporting-ODBC Implementation Guide
+
+   6. Select the Find File DSN option.
+   7. Select the File DSN    button.
+
+
+
+
+   8. Browse to the folder where you store your QuickBooks company file.
+   9. Select the company file with the .DSN extension. For example: sample company.QBW.DSN.
+       Tip: If your computer is set to hide file extensions, your company file appears like sample
+       company. In this case, select the .DSN file which appears like sample company.QBW.
+   10. Click Open.
+
+
+
+
+41 | P a g e
+        QuickBooks Custom Reporting-ODBC Implementation Guide
+
+   11. Click the Next button.
+   12. In the User ID field, enter your ODBC user name.
+   13. In the Password field, enter the ODBC user password.
+   21. Click the Finish button.
+
+
+
+
+   If you get an error message, check your User Id and Password. If you continue to get an error,
+   review Check your settings on Page 16.
+
+   22. Select the company file data source    button.
+   23. Select the QBReportAdminGroup         button.
+   24. Select the Views button.
+
+
+
+
+42 | P a g e
+        QuickBooks Custom Reporting-ODBC Implementation Guide
+
+   25. To import a single table:
+           a. Select the table to import and click the > button. For example, to import the Customers &
+              Jobs list, scroll down and select v_lst_customer.
+           b. Click the Next button.
+   26. To import and link multiple tables:
+           a. Select the table(s) to import one at a time and click the > button.
+           b. Click the Next button. Crystal Reports opens a window to help you link related tables.
+              Move and resize tables as necessary to making linking easier. Crystal Reports
+              automatically links all matching field names. However, this isn't appropriate in many
+              cases.
+
+
+
+
+43 | P a g e
+        QuickBooks Custom Reporting-ODBC Implementation Guide
+
+         c. Click the Clear Links button.
+         d. Click Yes to remove all the links.
+         e. Drag an appropriate field from one table to the matching field in another table.
+            For example, to link the v_lst_customer table to the v_lst_customer_type table, drag
+            the id field from the v_lst_customer_type table onto the customer_type_id field in the
+            v_lst_customer table. Crystal Reports links the related fields.
+         f. (Optional) Repeat as necessary for additional related fields.
+         g. Click the Next button.
+
+
+
+
+44 | P a g e
+         QuickBooks Custom Reporting-ODBC Implementation Guide
+
+   27. Select fields to import and click the > button. Or click the >> button import all fields.
+   28. Click the Next button.
+
+
+
+
+45 | P a g e
+        QuickBooks Custom Reporting-ODBC Implementation Guide
+
+   29. Optional Selections:
+          a. Grouping:
+                   i. Select a field to group on. For example, to group the Customers & Jobs list by
+                      Customer Type, use the v_lst_customer_type.name field.
+                  ii. Click the > button.
+                 iii. At the bottom of the Group By pane, select how to sort within the group (in
+                      ascending order or in descending order).
+                 iv. Click the Next button. Crystal Reports opens the optional Summaries window.
+
+
+
+
+46 | P a g e
+        QuickBooks Custom Reporting-ODBC Implementation Guide
+
+         b. Summarizing:
+                i. Select a field to summarize on. For example, to summarize customer balances
+                   by customer type, use the v_lst_customer.end_balance_amt field.
+               ii. Click the > button.
+              iii. At the bottom of the Summarize Fields pane, select how to summarize the
+                   group (for example: Sum or Average).
+              iv. Click the Next button.
+
+
+
+
+         c. Group Sorting:
+               i. Specify if Crystal Reports should perform group ordering and click the Next
+                   button. For example, you may want to see balances for all customer types, or just
+                   the 5 largest or smallest customer type balances.
+         d. Charting:
+               i. Specify charting options and click the Next button.
+
+
+
+
+47 | P a g e
+         QuickBooks Custom Reporting-ODBC Implementation Guide
+
+   30. (Optional) Record selection/filtering:
+          a. Select a field to filter on. For example, to only include customer that have a credit limit >
+              0, use the v_lst_customer.credit_limit_amt field.
+          b. Click the > button.
+          c. At the bottom of the Filter Fields pane, select how to filter the records. For example,
+              select is greater than, and enter 0 as the amount.
+          d. Click the Next button.
+
+
+
+
+48 | P a g e
+        QuickBooks Custom Reporting-ODBC Implementation Guide
+
+   31. (Optional) Select a report template:
+          a. From the Available Templates list, select the template you want to use.
+
+
+
+
+   32. Click the Finish button.
+   33. Choose File > Save.
+   34. Enter a name for the custom report.
+
+
+
+
+49 | P a g e
+         QuickBooks Custom Reporting-ODBC Implementation Guide
+
+   35. Click the Save button.
+
+
+
+
+What's Next?
+      Practice with your own data.
+      Explore other custom report examples starting on Page 51 this guide.
+
+
+
+
+50 | P a g e
+         QuickBooks Custom Reporting-ODBC Implementation Guide
+
+
+Chapter 5: Custom Report Examples
+
+
+This chapter helps you create some of the most requested custom reports.
+
+Each example shows:
+    Which tables and fields are important.
+    How the tables are linked by key fields.
+    Grouping order, sorting, filtering, and totaling recommendations.
+    Formatting tips.
+    Problem areas or common mistakes to avoid.
+    Preferred application for custom report.
+
+Examples:
+    Unpaid Bills by Class
+    List of Names by Names List Type
+
+
+
+
+51 | P a g e
+         QuickBooks Custom Reporting-ODBC Implementation Guide
+
+Unpaid Bills by Class
+This report helps companies that use class tracking to manage divisions, departments, or cost centers.
+This report lists all bills you have entered but not paid, grouped by class, and summarized per bill. It
+helps forecast cash going out for each class.
+
+Here's what you need:
+Tables:
+   QBReportAdminGroup_v_lst_class
+      id
+      name
+   QBReportAdminGroup_v_lst_vendor
+      id
+      name
+   QBReportAdminGroup_v_txn_bill_hdr
+      trans_num
+      vendor_id_h
+      is_paid_h
+      doc_num_h
+      transaction_date_h
+      (optional) due_date_h
+   QBReportAdminGroup_v_txn_bill_line
+      trans_num
+      is_source
+      class_id
+      amount_amt
+
+Table Relationships:
+   QBReportAdminGroup_v_txn_bill_hdr.trans_num = QBReportAdminGroup_v_txn_bill_line.trans_num
+   QBReportAdminGroup_v_txn_bill_hdr.vendor_id_h = QBReportAdminGroup_v_lst_vendor.id
+   QBReportAdminGroup_v_txn_bill_line.class_id = QBReportAdminGroup_v_lst_class.id
+      (1 to many, include all lines from QBReportAdminGroup_v_txn_bill_line and only those lines from
+      QBReportAdminGroup_v_lst_class where the joined fields are equal)
+       Relationships
+
+
+
+
+52 | P a g e
+            QuickBooks Custom Reporting-ODBC Implementation Guide
+       Class Relationship
+
+
+
+
+Grouping Order:
+   QBReportAdminGroup_v_lst_class.name
+   QBReportAdminGroup_v_lst_vendor.name
+   QBReportAdminGroup_v_txn_bill_hdr.transaction_date_h
+   QBReportAdminGroup_v_txn_bill_hdr.due_date_h
+   QBReportAdminGroup_v_txn_bill_hdr.doc_num_h
+
+Sorting:
+   QBReportAdminGroup_v_lst_class.name (Ascending)
+   QBReportAdminGroup_v_lst_vendor.name (Ascending)
+   QBReportAdminGroup_v_txn_bill_hdr.transaction_date_h (Ascending)
+   QBReportAdminGroup_v_txn_bill_hdr.due_date_h (Ascending)
+   QBReportAdminGroup_v_txn_bill_hdr.doc_num_h (Ascending)
+
+Totaling:
+   QBReportAdminGroup_v_txn_bill_line.amount_amt (Sum)
+
+
+
+
+Filtering:
+   QBReportAdminGroup_v_txn_bill_hdr.is_paid_h = 0
+   QBReportAdminGroup_v_txn_bill_line.is_source = 0
+
+
+
+
+53 | P a g e
+         QuickBooks Custom Reporting-ODBC Implementation Guide
+
+Formatting:
+   QBReportAdminGroup_v_txn_bill_line.amount_amt (Currency)
+
+Problem areas:
+    Some bill lines might not be classified.
+         o The Microsoft Query in Excel can join the class id fields on the transaction lines to the
+             class list, however it eliminates unclassified lines.
+         o Access can create a more inclusive relationship to show the matching classes and still
+             show unclassified amounts.
+    The line item detail "is_source" field should be filtered to only show lines where is_source = 0.
+      Here is an explanation:
+         o Let's consider a $5,000 bill. The bill has an accounts payable entry of $5,000. It also has
+             line items that point to expenses or maybe inventory assets (via an item) equaling
+             $5,000.
+         o In QuickBooks, debits equal credits. Credits are displayed as negative amounts and
+             Debits are displayed as positive amounts.
+         o Accounts payable is a credit (-5,000). The line items are debits (5,000). If you include
+             and total all bill line items, the net total is $0.
+         o So, to get an accurate outstanding bill amount, you either must filter for amounts > 0, or
+             apply a filter to the is_source field.
+         o Apply an is_source = 0 filter to exclude Accounts Payable (negative amounts).
+
+Recommended Application: Transaction reports and reports involving multiple tables are complex.
+You need advanced capabilities to group, sort, filter, and summarize the data sufficiently. Microsoft
+Access or Crystal Reports are preferred. Access is shown in this custom reporting example.
+       Query Results
+
+
+
+
+54 | P a g e
+         QuickBooks Custom Reporting-ODBC Implementation Guide
+       Unpaid Bills by Class-Custom Report
+
+
+
+
+Note: The report above used the report wizard and required additional formatting improvements beyond
+the scope of this guide.
+
+
+
+
+55 | P a g e
+        QuickBooks Custom Reporting-ODBC Implementation Guide
+
+Names Lists with Contact Information by List Type
+This report provides an all-in-one listing of your QuickBooks names lists (customers, vendors,
+employees, and other names) with associated contact information such as Phone Number and Email
+Address, grouped by Names List type, and sorted by LastName, Firstname.
+
+Here's what you need:
+Tables:
+   QBReportAdminGroup_v_lst_names
+      Id (key field)
+      name_type
+   QBReportAdminGroup_v_lst_contacts
+      name_id (key field)
+      last_name
+      first_name
+      telephone_num1
+      email
+
+Table Relationships:
+   QBReportAdminGroup_v_lst_names.id = QBReportAdminGroup_v_lst_contacts.name_id
+      Relationships
+
+
+
+
+56 | P a g e
+           QuickBooks Custom Reporting-ODBC Implementation Guide
+
+Grouping Order:
+   QBReportAdminGroup_v_lst_names.id
+
+Sorting:
+   QBReportAdminGroup_v_lst_names.name_type (Ascending)
+   QBReportAdminGroup_v_lst_contacts.last_name (Ascending)
+   QBReportAdminGroup_v_lst_contacts.first_name (Ascending)
+
+Problem areas:
+    Query results may show duplicates for a particular name. This may be due to a customer also
+      have sub-jobs. You may need to filter out record duplicates.
+    Some records may be blank or have missing information. Make sure the QuickBooks fields are
+      filled in for each list entry.
+
+Recommended Application: Excel, Access, or Crystal Reports
+      Query Design
+
+
+
+
+      Query Results
+
+
+
+
+57 | P a g e
+         QuickBooks Custom Reporting-ODBC Implementation Guide
+       Report Wizard (Access)
+
+
+
+
+       Names Lists with Contact Information by List Type-Custom Report
+
+
+
+
+Note: The report above used the report wizard and required additional formatting improvements beyond
+the scope of this guide.
+
+58 | P a g e
+

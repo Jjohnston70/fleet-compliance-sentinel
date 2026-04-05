@@ -78,7 +78,7 @@ govcon-compliance-command/
     hooks/               # Deadline + compliance monitors
     reporting/           # Pipeline dashboard, win-loss, outreach reports
     templates/           # 216 regulatory templates + CMMC knowledge base
-    tools.ts             # 20 LLM tool definitions
+    tools.ts             # 21 LLM tool definitions
     index.ts             # Main exports
 ```
 
@@ -86,7 +86,7 @@ Follows the TNDS 6-layer module pattern: config → data → services → api �
 
 ---
 
-## 20 LLM Tools
+## 21 LLM Tools
 
 ### Pipeline (1-10)
 
@@ -112,21 +112,22 @@ Follows the TNDS 6-layer module pattern: config → data → services → api �
 | 13 | `generate_all_compliance_packages` | Generate all 7 packages |
 | 14 | `get_package_status` | Check generation status |
 
-### Intake & Maturity (15-17)
+### Intake & Maturity (15-18)
 
 | # | Tool | Description |
 |---|------|-------------|
 | 15 | `run_intake_wizard` | Business profile to compliance recommendations |
-| 16 | `get_maturity_score` | Governance-weighted score with domain breakdown |
-| 17 | `update_template_status` | Update template implementation status |
+| 16 | `initialize_maturity_tracker` | Create tracker from intake results (bridges intake → maturity) |
+| 17 | `get_maturity_score` | Governance-weighted score with domain breakdown |
+| 18 | `update_template_status` | Update template implementation status |
 
-### Bid Documents (18-20)
+### Bid Documents (19-21)
 
 | # | Tool | Description |
 |---|------|-------------|
-| 18 | `generate_bid_document` | Generate specific bid document type |
-| 19 | `generate_full_bid_package` | Generate all 7 bid documents |
-| 20 | `list_bid_documents` | List documents for an opportunity |
+| 19 | `generate_bid_document` | Generate specific bid document type |
+| 20 | `generate_full_bid_package` | Generate all 7 bid documents |
+| 21 | `list_bid_documents` | List documents for an opportunity |
 
 ---
 
@@ -207,9 +208,9 @@ const handlers = createToolHandlers(repo);
 // Pipeline dashboard
 const dashboard = await handlers.get_pipeline_status({});
 
-// Run bid decision
+// Run bid decision (use seed UUID from seeds.ts)
 const bidResult = await handlers.run_bid_decision({
-  opportunity_id: "opp-001",
+  opportunity_id: "a0000000-0000-4000-8000-000000000001",
   technical_fit: 85,
   set_aside_match: 100,
   competition_level: 70,
@@ -220,12 +221,18 @@ const bidResult = await handlers.run_bid_decision({
 });
 
 // Generate compliance documents
-await handlers.submit_company_info({ company_name: "True North Data Strategies LLC" });
-await handlers.generate_all_compliance_packages({ company_id: "company-001" });
+const company = await handlers.submit_company_info({ company_name: "True North Data Strategies LLC" });
+
+// Run intake wizard → initialize maturity tracker
+const intake = await handlers.run_intake_wizard({ company_id: company.id });
+const tracker = await handlers.initialize_maturity_tracker({ company_id: company.id });
+
+// Generate all compliance packages
+await handlers.generate_all_compliance_packages({ company_id: company.id });
 
 // Generate bid package
 const bidPackage = await handlers.generate_full_bid_package({
-  opportunity_id: "opp-001",
+  opportunity_id: "a0000000-0000-4000-8000-000000000001",
 });
 ```
 
