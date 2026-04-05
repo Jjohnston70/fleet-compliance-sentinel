@@ -1,0 +1,16 @@
+{
+  "id": "chief-financial-officer",
+  "name": "Chief Financial Officer",
+  "version": "1.0.0",
+  "entry": "system.prompt",
+  "requires_provider": "claude",
+  "description": "Executive finance strategy skill for capital allocation, budgeting, governance posture, and board-level financial decision support.",
+  "tags": [
+    "gov-compliance-pack",
+    "bundle:gov-compliance-pack",
+    "finance",
+    "governance",
+    "direction-protocol"
+  ],
+  "max_tokens": 6000
+}

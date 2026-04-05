@@ -1,0 +1,1319 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Direction Protocol Navigator | TNDS</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --navy: #1a3a5c;
+            --teal: #3d8eb9;
+            --light-gray: #f4f6f8;
+            --dark-gray: #2c3e50;
+            --success: #27ae60;
+            --warning: #f39c12;
+            --danger: #e74c3c;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: var(--light-gray);
+            color: var(--dark-gray);
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        header {
+            background: var(--navy);
+            color: white;
+            padding: 30px 20px;
+            margin-bottom: 30px;
+            border-radius: 8px;
+        }
+
+        header h1 {
+            font-size: 2rem;
+            margin-bottom: 10px;
+        }
+
+        header p {
+            opacity: 0.9;
+            font-size: 1.1rem;
+        }
+
+        .protocol-flow {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 30px;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            overflow-x: auto;
+        }
+
+        .stage {
+            flex: 1;
+            text-align: center;
+            padding: 15px;
+            position: relative;
+            cursor: pointer;
+            transition: all 0.3s;
+            border-radius: 6px;
+        }
+
+        .stage:hover {
+            background: var(--light-gray);
+        }
+
+        .stage.active {
+            background: var(--teal);
+            color: white;
+        }
+
+        .stage.completed {
+            background: var(--success);
+            color: white;
+        }
+
+        .stage-number {
+            display: inline-block;
+            width: 40px;
+            height: 40px;
+            line-height: 40px;
+            background: var(--navy);
+            color: white;
+            border-radius: 50%;
+            margin-bottom: 10px;
+            font-weight: bold;
+        }
+
+        .stage.active .stage-number,
+        .stage.completed .stage-number {
+            background: white;
+            color: var(--navy);
+        }
+
+        .stage-name {
+            font-weight: bold;
+            font-size: 1.1rem;
+            margin-bottom: 5px;
+        }
+
+        .stage-time {
+            font-size: 0.85rem;
+            opacity: 0.8;
+        }
+
+        .stage::after {
+            content: '→';
+            position: absolute;
+            right: -15px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 1.5rem;
+            opacity: 0.3;
+        }
+
+        .stage:last-child::after {
+            display: none;
+        }
+
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 400px;
+            gap: 20px;
+        }
+
+        .workspace {
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .sidebar {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .card {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .card h3 {
+            color: var(--navy);
+            margin-bottom: 15px;
+            font-size: 1.2rem;
+        }
+
+        .question-set {
+            margin-bottom: 30px;
+        }
+
+        .question-set h4 {
+            color: var(--navy);
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid var(--teal);
+        }
+
+        .question {
+            background: var(--light-gray);
+            padding: 15px;
+            margin-bottom: 10px;
+            border-radius: 6px;
+            border-left: 4px solid var(--teal);
+        }
+
+        .pain-signal {
+            background: #fff3cd;
+            border-left-color: var(--warning);
+        }
+
+        .disqualifier {
+            background: #f8d7da;
+            border-left-color: var(--danger);
+        }
+
+        textarea {
+            width: 100%;
+            min-height: 100px;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 6px;
+            font-family: inherit;
+            font-size: 0.95rem;
+            margin-top: 10px;
+            resize: vertical;
+        }
+
+        textarea:focus {
+            outline: none;
+            border-color: var(--teal);
+        }
+
+        button {
+            background: var(--teal);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 6px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: 500;
+        }
+
+        button:hover {
+            background: #2e7a9c;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        }
+
+        button.secondary {
+            background: var(--dark-gray);
+        }
+
+        button.danger {
+            background: var(--danger);
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .score-display {
+            background: linear-gradient(135deg, var(--navy) 0%, var(--teal) 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 8px;
+            text-align: center;
+        }
+
+        .score-number {
+            font-size: 3rem;
+            font-weight: bold;
+            margin: 10px 0;
+        }
+
+        .score-label {
+            font-size: 0.9rem;
+            opacity: 0.9;
+        }
+
+        .recommendation {
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px solid rgba(255,255,255,0.3);
+        }
+
+        .alert {
+            padding: 15px;
+            border-radius: 6px;
+            margin-bottom: 20px;
+        }
+
+        .alert-success {
+            background: #d4edda;
+            border-left: 4px solid var(--success);
+            color: #155724;
+        }
+
+        .alert-warning {
+            background: #fff3cd;
+            border-left: 4px solid var(--warning);
+            color: #856404;
+        }
+
+        .alert-danger {
+            background: #f8d7da;
+            border-left: 4px solid var(--danger);
+            color: #721c24;
+        }
+
+        .checklist {
+            list-style: none;
+        }
+
+        .checklist li {
+            padding: 10px;
+            margin-bottom: 8px;
+            background: var(--light-gray);
+            border-radius: 4px;
+            position: relative;
+            padding-left: 35px;
+        }
+
+        .checklist li::before {
+            content: '○';
+            position: absolute;
+            left: 10px;
+            font-size: 1.2rem;
+            color: var(--teal);
+        }
+
+        .checklist li.checked::before {
+            content: '●';
+            color: var(--success);
+        }
+
+        .input-group {
+            margin-bottom: 20px;
+        }
+
+        .input-group label {
+            display: block;
+            font-weight: 500;
+            margin-bottom: 8px;
+            color: var(--navy);
+        }
+
+        input[type="text"],
+        input[type="email"],
+        input[type="tel"],
+        input[type="number"],
+        select {
+            width: 100%;
+            padding: 10px 12px;
+            border: 2px solid #ddd;
+            border-radius: 6px;
+            font-family: inherit;
+            font-size: 0.95rem;
+        }
+
+        input:focus,
+        select:focus {
+            outline: none;
+            border-color: var(--teal);
+        }
+
+        .scoring-matrix {
+            margin-top: 20px;
+        }
+
+        .scoring-row {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 10px;
+            margin-bottom: 15px;
+            align-items: center;
+        }
+
+        .scoring-label {
+            font-weight: 500;
+        }
+
+        .radio-group {
+            display: flex;
+            gap: 15px;
+        }
+
+        .radio-option {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .pricing-result {
+            background: var(--navy);
+            color: white;
+            padding: 20px;
+            border-radius: 8px;
+            margin-top: 20px;
+        }
+
+        .pricing-result h4 {
+            margin-bottom: 10px;
+        }
+
+        .price-amount {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: var(--teal);
+            margin: 10px 0;
+        }
+
+        .price-breakdown {
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px solid rgba(255,255,255,0.3);
+            font-size: 0.9rem;
+        }
+
+        .notes-section {
+            margin-top: 30px;
+            padding-top: 30px;
+            border-top: 2px solid var(--light-gray);
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .module-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .module-tag {
+            background: var(--light-gray);
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-size: 0.9rem;
+            text-align: center;
+            border: 2px solid transparent;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .module-tag:hover {
+            border-color: var(--teal);
+        }
+
+        .module-tag.selected {
+            background: var(--teal);
+            color: white;
+            border-color: var(--teal);
+        }
+
+        @media (max-width: 1024px) {
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+
+            .protocol-flow {
+                flex-direction: column;
+            }
+
+            .stage::after {
+                content: '↓';
+                right: auto;
+                left: 50%;
+                top: auto;
+                bottom: -15px;
+                transform: translateX(-50%);
+            }
+        }
+
+        .export-section {
+            margin-top: 30px;
+            padding: 20px;
+            background: var(--light-gray);
+            border-radius: 8px;
+        }
+
+        .doc-preview {
+            background: white;
+            padding: 20px;
+            border-radius: 6px;
+            margin-top: 15px;
+            border: 1px solid #ddd;
+            max-height: 400px;
+            overflow-y: auto;
+            font-family: 'Georgia', serif;
+            line-height: 1.8;
+        }
+
+        .doc-preview h2 {
+            color: var(--navy);
+            border-bottom: 2px solid var(--teal);
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+        }
+
+        .doc-preview h3 {
+            color: var(--navy);
+            margin-top: 20px;
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Direction Protocol Navigator</h1>
+            <p>Turning Data into Direction | True North Data Strategies</p>
+        </header>
+
+        <div class="protocol-flow">
+            <div class="stage active" data-stage="1">
+                <div class="stage-number">1</div>
+                <div class="stage-name">IDENTIFY</div>
+                <div class="stage-time">15-20 min</div>
+            </div>
+            <div class="stage" data-stage="2">
+                <div class="stage-number">2</div>
+                <div class="stage-name">ASSESS</div>
+                <div class="stage-time">30 min</div>
+            </div>
+            <div class="stage" data-stage="3">
+                <div class="stage-number">3</div>
+                <div class="stage-name">MAP</div>
+                <div class="stage-time">90-120 min</div>
+            </div>
+            <div class="stage" data-stage="4">
+                <div class="stage-number">4</div>
+                <div class="stage-name">CHART</div>
+                <div class="stage-time">30-45 min</div>
+            </div>
+            <div class="stage" data-stage="5">
+                <div class="stage-number">5</div>
+                <div class="stage-name">LAUNCH</div>
+                <div class="stage-time">varies</div>
+            </div>
+        </div>
+
+        <div class="main-content">
+            <div class="workspace" id="workspace">
+                <!-- Stage content will be dynamically loaded here -->
+            </div>
+
+            <div class="sidebar">
+                <div class="card score-display">
+                    <div class="score-label">Qualification Score</div>
+                    <div class="score-number" id="qualScore">-</div>
+                    <div class="recommendation" id="recommendation">
+                        Complete the questions to see recommendation
+                    </div>
+                </div>
+
+                <div class="card">
+                    <h3>Current Lead</h3>
+                    <div class="input-group">
+                        <label>Company Name</label>
+                        <input type="text" id="companyName" placeholder="Enter company name">
+                    </div>
+                    <div class="input-group">
+                        <label>Contact Name</label>
+                        <input type="text" id="contactName" placeholder="Enter contact name">
+                    </div>
+                    <div class="input-group">
+                        <label>Lead Source</label>
+                        <select id="leadSource">
+                            <option value="">Select source...</option>
+                            <option value="referral">Warm Referral</option>
+                            <option value="inbound">Inbound (Website)</option>
+                            <option value="networking">Networking Event</option>
+                            <option value="outbound">Cold Outreach</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <h3>Quick Actions</h3>
+                    <button onclick="saveProgress()">Save Progress</button>
+                    <button onclick="exportReport()" class="secondary" style="margin-top: 10px; width: 100%;">Export Report</button>
+                    <button onclick="resetProtocol()" class="danger" style="margin-top: 10px; width: 100%;">Reset</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Application State
+        const state = {
+            currentStage: 1,
+            leadData: {
+                company: '',
+                contact: '',
+                source: '',
+                industry: '',
+                teamSize: 0
+            },
+            responses: {},
+            scores: {
+                qualification: 0,
+                mapping: {}
+            },
+            completedStages: []
+        };
+
+        // Stage Templates
+        const stages = {
+            1: {
+                title: 'IDENTIFY: Is There a Fit?',
+                subtitle: '15-20 minute conversation to determine if deeper conversation is warranted',
+                content: `
+                    <div class="alert alert-warning">
+                        <strong>Critical Rule:</strong> Never skip this stage. A 15-minute conversation saves hours of wasted time.
+                    </div>
+
+                    <div class="question-set">
+                        <h4>The Three Core Questions</h4>
+                        <div class="question">
+                            <strong>Question 1:</strong> "Tell me about your operation. What do you do, and how many people are involved?"
+                            <textarea id="q1" placeholder="Document their response here..." oninput="updateScore()"></textarea>
+                        </div>
+                        <div class="question">
+                            <strong>Question 2:</strong> "What's the thing that keeps you up at night about the business right now?"
+                            <textarea id="q2" placeholder="Document their response here..." oninput="updateScore()"></textarea>
+                        </div>
+                        <div class="question">
+                            <strong>Question 3:</strong> "If you could wave a magic wand and fix one thing tomorrow, what would it be?"
+                            <textarea id="q3" placeholder="Document their response here..." oninput="updateScore()"></textarea>
+                        </div>
+                    </div>
+
+                    <div class="question-set">
+                        <h4>Listen For: Pain Signals (Good)</h4>
+                        <ul class="checklist">
+                            <li onclick="toggleCheck(this)">"I can't see what's happening"</li>
+                            <li onclick="toggleCheck(this)">"I find out about problems too late"</li>
+                            <li onclick="toggleCheck(this)">"Everything depends on me"</li>
+                            <li onclick="toggleCheck(this)">"I can't take a day off"</li>
+                            <li onclick="toggleCheck(this)">"My guys don't do things consistently"</li>
+                            <li onclick="toggleCheck(this)">"I'm drowning in spreadsheets / paper / texts"</li>
+                        </ul>
+                    </div>
+
+                    <div class="question-set">
+                        <h4>Watch For: Disqualifiers (Bad)</h4>
+                        <ul class="checklist">
+                            <li onclick="toggleCheck(this)" class="disqualifier">"I just need someone to build me an app"</li>
+                            <li onclick="toggleCheck(this)" class="disqualifier">"I want AI to handle everything"</li>
+                            <li onclick="toggleCheck(this)" class="disqualifier">"What's the cheapest option?"</li>
+                            <li onclick="toggleCheck(this)" class="disqualifier">"I don't really have a problem, just exploring"</li>
+                        </ul>
+                    </div>
+
+                    <div class="input-group">
+                        <label>Industry</label>
+                        <input type="text" id="industry" placeholder="e.g., HVAC, Plumbing, Real Estate">
+                    </div>
+
+                    <div class="input-group">
+                        <label>Team Size</label>
+                        <input type="number" id="teamSize" placeholder="Number of employees" min="1">
+                    </div>
+
+                    <div class="notes-section">
+                        <h4>Additional Notes</h4>
+                        <textarea id="identifyNotes" placeholder="Any other observations, gut feelings, or important details..."></textarea>
+                    </div>
+
+                    <div class="btn-group">
+                        <button onclick="completeStage(1)">Mark Complete & Move to ASSESS</button>
+                        <button onclick="walkAway()" class="danger">Walk Away</button>
+                    </div>
+                `
+            },
+            2: {
+                title: 'ASSESS: Is the Problem Real?',
+                subtitle: '30 minute deep dive to validate the problem and gauge readiness',
+                content: `
+                    <div class="alert alert-success">
+                        <strong>Goal:</strong> Determine if there's a real problem you can solve, if they're a good fit, and if they're ready to invest.
+                    </div>
+
+                    <div class="question-set">
+                        <h4>Section 1: Operational Reality (10 min)</h4>
+                        <div class="question">
+                            <strong>"Walk me through a typical day or week in your operation"</strong>
+                            <textarea id="opReality1" placeholder="Document their workflow..." oninput="updateScore()"></textarea>
+                        </div>
+                        <div class="question">
+                            <strong>"Where in that flow do things usually go wrong?"</strong>
+                            <textarea id="opReality2" placeholder="Identify failure points..." oninput="updateScore()"></textarea>
+                        </div>
+                        <div class="question">
+                            <strong>"How do you find out when something's off?"</strong>
+                            <textarea id="opReality3" placeholder="Current detection methods..." oninput="updateScore()"></textarea>
+                        </div>
+                    </div>
+
+                    <div class="question-set">
+                        <h4>Section 2: Current State (8 min)</h4>
+                        <div class="question">
+                            <strong>"Where does all your business information live right now?"</strong>
+                            <textarea id="currentState1" placeholder="List all data sources..." oninput="updateScore()"></textarea>
+                        </div>
+                        <div class="question">
+                            <strong>"If you needed to know [relevant metric] right now, how would you find out?"</strong>
+                            <textarea id="currentState2" placeholder="Their current process..." oninput="updateScore()"></textarea>
+                        </div>
+                    </div>
+
+                    <div class="question-set">
+                        <h4>Section 3: Stakes and Readiness (5 min)</h4>
+                        <div class="question pain-signal">
+                            <strong>"What's this costing you? Not just money, but time, stress, missed opportunities?"</strong>
+                            <textarea id="stakes1" placeholder="Quantify the pain..." oninput="updateScore()"></textarea>
+                        </div>
+                        <div class="question">
+                            <strong>"If nothing changes, where are you in a year?"</strong>
+                            <textarea id="stakes2" placeholder="Future state without change..." oninput="updateScore()"></textarea>
+                        </div>
+                        <div class="question">
+                            <strong>"If we fixed this, what would be different?"</strong>
+                            <textarea id="stakes3" placeholder="Desired outcome..." oninput="updateScore()"></textarea>
+                        </div>
+                    </div>
+
+                    <div class="input-group">
+                        <label>Budget Range</label>
+                        <select id="budgetRange">
+                            <option value="">Select range...</option>
+                            <option value="under2k">Under $2,000 (Pipeline Punks territory)</option>
+                            <option value="2k-5k">$2,000 - $5,000 (Command Center range)</option>
+                            <option value="5k-10k">$5,000 - $10,000 (Premium build)</option>
+                            <option value="10k-plus">$10,000+ (Enterprise)</option>
+                            <option value="unknown">Haven't discussed yet</option>
+                        </select>
+                    </div>
+
+                    <div class="notes-section">
+                        <h4>Assessment Notes</h4>
+                        <textarea id="assessNotes" placeholder="Key insights, concerns, readiness indicators..."></textarea>
+                    </div>
+
+                    <div class="btn-group">
+                        <button onclick="completeStage(2)">Mark Complete & Move to MAP</button>
+                        <button onclick="offerPipelinePunks()" class="secondary">Recommend Pipeline Punks</button>
+                        <button onclick="walkAway()" class="danger">Walk Away</button>
+                    </div>
+                `
+            },
+            3: {
+                title: 'MAP: Deep Operational Diagnostic',
+                subtitle: '90-120 minute comprehensive workflow and systems mapping session',
+                content: `
+                    <div class="alert alert-warning">
+                        <strong>Critical:</strong> This is where you earn your fee. Take your time. Map everything. Miss nothing.
+                    </div>
+
+                    <div class="question-set">
+                        <h4>Command Center Build Scoring Matrix</h4>
+                        <p>Rate each factor to calculate pricing recommendation:</p>
+
+                        <div class="scoring-matrix">
+                            <div class="scoring-row">
+                                <div class="scoring-label">1. Number of Crews/Employees</div>
+                                <div class="radio-group">
+                                    <div class="radio-option">
+                                        <input type="radio" name="teamSize" value="1" onchange="calculatePrice()">
+                                        <label>5-8 (1pt)</label>
+                                    </div>
+                                    <div class="radio-option">
+                                        <input type="radio" name="teamSize" value="2" onchange="calculatePrice()">
+                                        <label>9-14 (2pt)</label>
+                                    </div>
+                                    <div class="radio-option">
+                                        <input type="radio" name="teamSize" value="3" onchange="calculatePrice()">
+                                        <label>15-20 (3pt)</label>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="scoring-row">
+                                <div class="scoring-label">2. Current State of Systems</div>
+                                <div class="radio-group">
+                                    <div class="radio-option">
+                                        <input type="radio" name="systemState" value="1" onchange="calculatePrice()">
+                                        <label>Organized (1pt)</label>
+                                    </div>
+                                    <div class="radio-option">
+                                        <input type="radio" name="systemState" value="2" onchange="calculatePrice()">
+                                        <label>Scattered (2pt)</label>
+                                    </div>
+                                    <div class="radio-option">
+                                        <input type="radio" name="systemState" value="3" onchange="calculatePrice()">
+                                        <label>Chaos (3pt)</label>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="scoring-row">
+                                <div class="scoring-label">3. Number of Data Sources</div>
+                                <div class="radio-group">
+                                    <div class="radio-option">
+                                        <input type="radio" name="dataSources" value="1" onchange="calculatePrice()">
+                                        <label>2-3 (1pt)</label>
+                                    </div>
+                                    <div class="radio-option">
+                                        <input type="radio" name="dataSources" value="2" onchange="calculatePrice()">
+                                        <label>4-5 (2pt)</label>
+                                    </div>
+                                    <div class="radio-option">
+                                        <input type="radio" name="dataSources" value="3" onchange="calculatePrice()">
+                                        <label>6+ (3pt)</label>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="scoring-row">
+                                <div class="scoring-label">4. Owner Availability</div>
+                                <div class="radio-group">
+                                    <div class="radio-option">
+                                        <input type="radio" name="availability" value="1" onchange="calculatePrice()">
+                                        <label>High (1pt)</label>
+                                    </div>
+                                    <div class="radio-option">
+                                        <input type="radio" name="availability" value="2" onchange="calculatePrice()">
+                                        <label>Medium (2pt)</label>
+                                    </div>
+                                    <div class="radio-option">
+                                        <input type="radio" name="availability" value="3" onchange="calculatePrice()">
+                                        <label>Low (3pt)</label>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="scoring-row">
+                                <div class="scoring-label">5. Technical Comfort</div>
+                                <div class="radio-group">
+                                    <div class="radio-option">
+                                        <input type="radio" name="techComfort" value="1" onchange="calculatePrice()">
+                                        <label>Quick (1pt)</label>
+                                    </div>
+                                    <div class="radio-option">
+                                        <input type="radio" name="techComfort" value="2" onchange="calculatePrice()">
+                                        <label>Needs Support (2pt)</label>
+                                    </div>
+                                    <div class="radio-option">
+                                        <input type="radio" name="techComfort" value="3" onchange="calculatePrice()">
+                                        <label>Resistant (3pt)</label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="pricing-result" id="pricingResult" style="display: none;">
+                            <h4>Recommended Pricing</h4>
+                            <div class="price-amount" id="basePrice">$0</div>
+                            <div class="price-breakdown">
+                                <div id="priceBreakdown"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="question-set">
+                        <h4>Pricing Adjustments</h4>
+                        <ul class="checklist">
+                            <li onclick="toggleCheck(this)" data-adjustment="+500">Multiple locations (+$500)</li>
+                            <li onclick="toggleCheck(this)" data-adjustment="+500">Field AND office operations (+$500)</li>
+                            <li onclick="toggleCheck(this)" data-adjustment="+1000">Custom reporting needed (+$1,000)</li>
+                            <li onclick="toggleCheck(this)" data-adjustment="+1000">Tight timeline (+$1,000)</li>
+                            <li onclick="toggleCheck(this)" data-adjustment="-500">Some systems working (-$500)</li>
+                            <li onclick="toggleCheck(this)" data-adjustment="-500">Very small operation (-$500)</li>
+                            <li onclick="toggleCheck(this)" data-adjustment="-500">Strong referral (-$500)</li>
+                        </ul>
+                    </div>
+
+                    <div class="question-set">
+                        <h4>Required Command Modules</h4>
+                        <p>Select all modules needed for this build:</p>
+                        <div class="module-list">
+                            <div class="module-tag" onclick="toggleModule(this)">data-command</div>
+                            <div class="module-tag" onclick="toggleModule(this)">financial-command</div>
+                            <div class="module-tag" onclick="toggleModule(this)">analytics-command</div>
+                            <div class="module-tag" onclick="toggleModule(this)">asset-command</div>
+                            <div class="module-tag" onclick="toggleModule(this)">office-command</div>
+                            <div class="module-tag" onclick="toggleModule(this)">onboard-command</div>
+                            <div class="module-tag" onclick="toggleModule(this)">proposal-command</div>
+                            <div class="module-tag" onclick="toggleModule(this)">workspace-command</div>
+                            <div class="module-tag" onclick="toggleModule(this)">sms-command</div>
+                            <div class="module-tag" onclick="toggleModule(this)">contract-command</div>
+                            <div class="module-tag" onclick="toggleModule(this)">realty-command</div>
+                            <div class="module-tag" onclick="toggleModule(this)">tax-command</div>
+                        </div>
+                    </div>
+
+                    <div class="notes-section">
+                        <h4>Operational Map Notes</h4>
+                        <textarea id="mapNotes" placeholder="Document workflows, pain points, root causes, integration requirements..."></textarea>
+                    </div>
+
+                    <div class="btn-group">
+                        <button onclick="completeStage(3)">Complete Mapping & Move to CHART</button>
+                        <button onclick="calculatePrice()" class="secondary">Recalculate Pricing</button>
+                    </div>
+                `
+            },
+            4: {
+                title: 'CHART: Present Findings & Quote',
+                subtitle: '30-45 minute presentation of solution and pricing',
+                content: `
+                    <div class="alert alert-success">
+                        <strong>This is the moment.</strong> Present with confidence. You've earned the right to be here.
+                    </div>
+
+                    <div class="question-set">
+                        <h4>Presentation Structure</h4>
+                        <ol style="list-style-position: inside; line-height: 2;">
+                            <li><strong>Opening:</strong> "Here's what I heard..." (5 min)</li>
+                            <li><strong>The Course:</strong> Present operational map and solution (15 min)</li>
+                            <li><strong>The Investment:</strong> Present pricing and terms (10 min)</li>
+                            <li><strong>The Outcome:</strong> Paint the "after" picture (5 min)</li>
+                            <li><strong>Close:</strong> "Does this make sense for you?" (5 min)</li>
+                        </ol>
+                    </div>
+
+                    <div class="question-set">
+                        <h4>Objection Handling Reference</h4>
+                        <div class="question">
+                            <strong>"Just tell me the price first"</strong>
+                            <p style="margin-top: 10px; font-style: italic;">→ "Need to Map first to scope correctly. Every operation is different."</p>
+                        </div>
+                        <div class="question">
+                            <strong>"That's expensive"</strong>
+                            <p style="margin-top: 10px; font-style: italic;">→ "Fixed price, defined outcome, real results. What would fixing [specific pain] be worth?"</p>
+                        </div>
+                        <div class="question">
+                            <strong>"I need to think about it"</strong>
+                            <p style="margin-top: 10px; font-style: italic;">→ "What questions would help you decide? What's missing?"</p>
+                        </div>
+                        <div class="question">
+                            <strong>"I found someone cheaper"</strong>
+                            <p style="margin-top: 10px; font-style: italic;">→ "Cheaper doesn't mean it solves the problem. What specifically are you comparing?"</p>
+                        </div>
+                    </div>
+
+                    <div class="input-group">
+                        <label>Client Response</label>
+                        <select id="clientResponse">
+                            <option value="">Select response...</option>
+                            <option value="yes">Yes - Ready to move forward</option>
+                            <option value="negotiate">Want to negotiate terms</option>
+                            <option value="thinking">Need time to think</option>
+                            <option value="objection">Have objections/concerns</option>
+                            <option value="no">Not interested</option>
+                        </select>
+                    </div>
+
+                    <div class="notes-section">
+                        <h4>Chart Meeting Notes</h4>
+                        <textarea id="chartNotes" placeholder="Document their reactions, concerns, questions, next steps..."></textarea>
+                    </div>
+
+                    <div class="btn-group">
+                        <button onclick="completeStage(4)">Client Signed - Move to LAUNCH</button>
+                        <button onclick="scheduleFollowup()" class="secondary">Schedule Follow-up</button>
+                        <button onclick="closeLost()" class="danger">Mark as Closed-Lost</button>
+                    </div>
+                `
+            },
+            5: {
+                title: 'LAUNCH: Execute & Kickoff',
+                subtitle: 'Contract execution and project initiation',
+                content: `
+                    <div class="alert alert-success">
+                        <strong>Congratulations!</strong> Deal is signed. Now deliver excellence.
+                    </div>
+
+                    <div class="question-set">
+                        <h4>Launch Checklist</h4>
+                        <ul class="checklist">
+                            <li onclick="toggleCheck(this)">Service agreement executed</li>
+                            <li onclick="toggleCheck(this)">50% deposit received (or first payment)</li>
+                            <li onclick="toggleCheck(this)">Kickoff meeting scheduled</li>
+                            <li onclick="toggleCheck(this)">Project team assigned</li>
+                            <li onclick="toggleCheck(this)">Project tracking setup complete</li>
+                            <li onclick="toggleCheck(this)">Client onboarding materials sent</li>
+                            <li onclick="toggleCheck(this)">Implementation timeline confirmed</li>
+                            <li onclick="toggleCheck(this)">Success metrics defined</li>
+                        </ul>
+                    </div>
+
+                    <div class="input-group">
+                        <label>Project Start Date</label>
+                        <input type="date" id="startDate">
+                    </div>
+
+                    <div class="input-group">
+                        <label>Expected Completion Date</label>
+                        <input type="date" id="endDate">
+                    </div>
+
+                    <div class="input-group">
+                        <label>Project Manager</label>
+                        <input type="text" id="projectManager" placeholder="Assigned PM name">
+                    </div>
+
+                    <div class="notes-section">
+                        <h4>Launch Notes & Next Actions</h4>
+                        <textarea id="launchNotes" placeholder="Kickoff details, special requirements, implementation notes..."></textarea>
+                    </div>
+
+                    <div class="btn-group">
+                        <button onclick="completeProtocol()">Mark Project as Active</button>
+                        <button onclick="exportFinalReport()" class="secondary">Export Complete Report</button>
+                    </div>
+                `
+            }
+        };
+
+        // Initialize app
+        function init() {
+            loadStage(1);
+            loadFromLocalStorage();
+            
+            // Auto-save on input changes
+            document.getElementById('companyName').addEventListener('input', saveProgress);
+            document.getElementById('contactName').addEventListener('input', saveProgress);
+            document.getElementById('leadSource').addEventListener('change', saveProgress);
+        }
+
+        // Load stage content
+        function loadStage(stageNum) {
+            state.currentStage = stageNum;
+            const stage = stages[stageNum];
+            document.getElementById('workspace').innerHTML = `
+                <h2>${stage.title}</h2>
+                <p style="color: var(--teal); font-size: 1.1rem; margin-bottom: 30px;">${stage.subtitle}</p>
+                ${stage.content}
+            `;
+
+            // Update stage indicators
+            document.querySelectorAll('.stage').forEach(el => {
+                const stageId = parseInt(el.dataset.stage);
+                el.classList.remove('active', 'completed');
+                if (stageId === stageNum) {
+                    el.classList.add('active');
+                } else if (state.completedStages.includes(stageId)) {
+                    el.classList.add('completed');
+                }
+            });
+
+            // Add stage click handlers
+            document.querySelectorAll('.stage').forEach(el => {
+                el.addEventListener('click', () => {
+                    const targetStage = parseInt(el.dataset.stage);
+                    if (confirm(`Navigate to stage ${targetStage}? Any unsaved changes will be lost.`)) {
+                        loadStage(targetStage);
+                    }
+                });
+            });
+
+            // Restore saved data for this stage
+            restoreStageData(stageNum);
+        }
+
+        // Update qualification score
+        function updateScore() {
+            let score = 0;
+            let painSignals = 0;
+            let disqualifiers = 0;
+
+            // Check for responses
+            const q1 = document.getElementById('q1')?.value || '';
+            const q2 = document.getElementById('q2')?.value || '';
+            const q3 = document.getElementById('q3')?.value || '';
+
+            if (q1.length > 50) score += 20;
+            if (q2.length > 50) score += 30;
+            if (q3.length > 50) score += 20;
+
+            // Check pain signals
+            document.querySelectorAll('.checklist li:not(.disqualifier).checked').forEach(() => {
+                painSignals++;
+                score += 10;
+            });
+
+            // Check disqualifiers
+            document.querySelectorAll('.checklist li.disqualifier.checked').forEach(() => {
+                disqualifiers++;
+                score -= 25;
+            });
+
+            // Update display
+            state.scores.qualification = Math.max(0, score);
+            document.getElementById('qualScore').textContent = state.scores.qualification;
+
+            // Update recommendation
+            let recommendation = '';
+            if (disqualifiers > 0) {
+                recommendation = '⚠️ Disqualifiers detected. Consider walking away.';
+            } else if (painSignals >= 3 && score >= 70) {
+                recommendation = '✓ Strong fit. Schedule ASSESS immediately.';
+            } else if (score >= 50) {
+                recommendation = '~ Potential fit. Continue conversation carefully.';
+            } else if (score > 0) {
+                recommendation = '⚠️ Weak signals. May not be ready.';
+            } else {
+                recommendation = 'Complete questions to see recommendation';
+            }
+
+            document.getElementById('recommendation').textContent = recommendation;
+        }
+
+        // Calculate pricing
+        function calculatePrice() {
+            const teamSize = parseInt(document.querySelector('input[name="teamSize"]:checked')?.value || 0);
+            const systemState = parseInt(document.querySelector('input[name="systemState"]:checked')?.value || 0);
+            const dataSources = parseInt(document.querySelector('input[name="dataSources"]:checked')?.value || 0);
+            const availability = parseInt(document.querySelector('input[name="availability"]:checked')?.value || 0);
+            const techComfort = parseInt(document.querySelector('input[name="techComfort"]:checked')?.value || 0);
+
+            const baseScore = teamSize + systemState + dataSources + availability + techComfort;
+
+            let basePrice = 0;
+            if (baseScore >= 5 && baseScore <= 7) basePrice = 2500;
+            else if (baseScore >= 8 && baseScore <= 11) basePrice = 3500;
+            else if (baseScore >= 12 && baseScore <= 15) basePrice = 5000;
+
+            // Calculate adjustments
+            let adjustments = 0;
+            let adjustmentDetails = [];
+            document.querySelectorAll('.checklist li.checked[data-adjustment]').forEach(el => {
+                const adj = parseInt(el.dataset.adjustment);
+                adjustments += adj;
+                const text = el.textContent.trim();
+                adjustmentDetails.push(`${text}`);
+            });
+
+            const finalPrice = basePrice + adjustments;
+
+            // Display results
+            if (basePrice > 0) {
+                document.getElementById('pricingResult').style.display = 'block';
+                document.getElementById('basePrice').textContent = '$' + finalPrice.toLocaleString();
+                
+                let breakdown = `Base Price (Score ${baseScore}): $${basePrice.toLocaleString()}<br>`;
+                if (adjustmentDetails.length > 0) {
+                    breakdown += `<br>Adjustments:<br>`;
+                    adjustmentDetails.forEach(detail => {
+                        breakdown += `• ${detail}<br>`;
+                    });
+                }
+                document.getElementById('priceBreakdown').innerHTML = breakdown;
+
+                state.scores.mapping = {
+                    baseScore,
+                    basePrice,
+                    adjustments,
+                    finalPrice,
+                    adjustmentDetails
+                };
+            }
+        }
+
+        // Toggle checklist items
+        function toggleCheck(element) {
+            element.classList.toggle('checked');
+            updateScore();
+            calculatePrice();
+            saveProgress();
+        }
+
+        // Toggle module selection
+        function toggleModule(element) {
+            element.classList.toggle('selected');
+            saveProgress();
+        }
+
+        // Complete stage
+        function completeStage(stageNum) {
+            if (!state.completedStages.includes(stageNum)) {
+                state.completedStages.push(stageNum);
+            }
+            
+            if (stageNum < 5) {
+                loadStage(stageNum + 1);
+            }
+            
+            saveProgress();
+        }
+
+        // Action handlers
+        function walkAway() {
+            if (confirm('Are you sure you want to walk away from this lead?')) {
+                const reason = prompt('Brief reason for walking away:');
+                alert('Lead marked as disqualified. Reason saved: ' + reason);
+                resetProtocol();
+            }
+        }
+
+        function offerPipelinePunks() {
+            const message = `Consider offering Pipeline Punks as alternative:
+
+"I think you'd be a great fit for building your own system. Have you considered Pipeline Punks? It's our training program where I teach you exactly how to build what we've been discussing - you get all the templates, frameworks, and guidance.
+
+Investment is $500-1,000 depending on complexity. And here's the best part: if you start building it yourself and realize you don't have the time, we'll give you 50% credit toward having us build it. So you're not wasting money - you're just deciding whether to invest time or money.
+
+Want me to send you more details?"`;
+            
+            alert(message);
+        }
+
+        function scheduleFollowup() {
+            const notes = prompt('Follow-up notes and next action:');
+            alert('Follow-up scheduled. Notes saved: ' + notes);
+        }
+
+        function closeLost() {
+            if (confirm('Mark this deal as closed-lost?')) {
+                const reason = prompt('Reason for losing deal:');
+                alert('Deal marked closed-lost. Reason: ' + reason);
+                resetProtocol();
+            }
+        }
+
+        function completeProtocol() {
+            alert('🎉 Congratulations! Deal is closed and project is active.\n\nNow deliver excellence. The Direction Protocol got you clarity - the Command Protocol will give them control.');
+            // In real app, would transition to project management
+        }
+
+        // Save/Load functionality
+        function saveProgress() {
+            // Collect all lead data
+            state.leadData.company = document.getElementById('companyName')?.value || '';
+            state.leadData.contact = document.getElementById('contactName')?.value || '';
+            state.leadData.source = document.getElementById('leadSource')?.value || '';
+
+            // Save to localStorage
+            localStorage.setItem('directionProtocolState', JSON.stringify(state));
+        }
+
+        function loadFromLocalStorage() {
+            const saved = localStorage.getItem('directionProtocolState');
+            if (saved) {
+                const savedState = JSON.parse(saved);
+                Object.assign(state, savedState);
+                
+                // Restore lead data
+                if (document.getElementById('companyName')) {
+                    document.getElementById('companyName').value = state.leadData.company;
+                }
+                if (document.getElementById('contactName')) {
+                    document.getElementById('contactName').value = state.leadData.contact;
+                }
+                if (document.getElementById('leadSource')) {
+                    document.getElementById('leadSource').value = state.leadData.source;
+                }
+            }
+        }
+
+        function restoreStageData(stageNum) {
+            // Would restore specific stage data from state.responses
+            // Implementation depends on data structure
+        }
+
+        function resetProtocol() {
+            if (confirm('Reset entire protocol? All data will be lost.')) {
+                localStorage.removeItem('directionProtocolState');
+                state.currentStage = 1;
+                state.completedStages = [];
+                state.responses = {};
+                state.scores = { qualification: 0, mapping: {} };
+                loadStage(1);
+            }
+        }
+
+        // Export functionality
+        function exportReport() {
+            const report = generateReport();
+            const blob = new Blob([report], { type: 'text/markdown' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `${state.leadData.company || 'Lead'}_Direction_Protocol_Report.md`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        }
+
+        function generateReport() {
+            return `# Direction Protocol Report
+## ${state.leadData.company || 'Company Name'}
+
+**Contact:** ${state.leadData.contact || 'Not provided'}
+**Lead Source:** ${state.leadData.source || 'Not provided'}
+**Date:** ${new Date().toLocaleDateString()}
+
+---
+
+## Qualification Score: ${state.scores.qualification}
+
+## Stages Completed
+${state.completedStages.map(s => `- Stage ${s}: ${stages[s].title}`).join('\n')}
+
+---
+
+## Pricing Recommendation
+${state.scores.mapping.finalPrice ? `
+**Final Price:** $${state.scores.mapping.finalPrice.toLocaleString()}
+**Base Price:** $${state.scores.mapping.basePrice.toLocaleString()} (Score: ${state.scores.mapping.baseScore})
+**Adjustments:** $${state.scores.mapping.adjustments}
+
+### Adjustment Details:
+${state.scores.mapping.adjustmentDetails?.map(d => `- ${d}`).join('\n') || 'None'}
+` : 'Not yet calculated'}
+
+---
+
+Generated by Direction Protocol Navigator
+True North Data Strategies
+Jacob Johnston | 555-555-5555 | jacob@truenorthstrategyops.com
+`;
+        }
+
+        function exportFinalReport() {
+            exportReport();
+        }
+
+        // Initialize on load
+        window.addEventListener('DOMContentLoaded', init);
+    </script>
+</body>
+</html>

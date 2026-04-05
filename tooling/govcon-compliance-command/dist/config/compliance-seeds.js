@@ -38,7 +38,7 @@ export const DEFAULT_COMPLIANCE_ITEMS = [
         itemType: "filing",
         name: "Colorado State Tax Return",
         description: "Annual Colorado state income tax return filing.",
-        authority: "IRS",
+        authority: "state",
         renewalFrequencyMonths: 12,
         reminderDaysBefore: 30,
     },

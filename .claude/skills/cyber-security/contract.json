@@ -1,0 +1,49 @@
+{
+  "skill": "cyber-security",
+  "version": "1.0.0",
+  "mode": "fail_closed",
+  "description": "Fail-closed contract for Cyber Security outputs.",
+  "required_sections": {
+    "full": [
+      "Security Assessment",
+      "Threats and Risk Prioritization",
+      "Remediation Actions",
+      "Verification Checkpoints"
+    ],
+    "quick_pass": [
+      "Security Assessment",
+      "Threats and Risk Prioritization",
+      "Remediation Actions",
+      "Verification Checkpoints"
+    ],
+    "single": [
+      "Security Assessment",
+      "Threats and Risk Prioritization",
+      "Remediation Actions",
+      "Verification Checkpoints"
+    ]
+  },
+  "out_of_scope_marker": "SKILL_OUT_OF_SCOPE",
+  "out_of_scope_handling": "pass_through",
+  "out_of_scope_phrases": [
+    "i can't help with that",
+    "i cannot help with that",
+    "i can't assist with that",
+    "i cannot assist with that",
+    "i can't provide that",
+    "i cannot provide that",
+    "offensive or unauthorized",
+    "keylogger",
+    "malware",
+    "exploit payload",
+    "credential theft",
+    "unauthorized access"
+  ],
+  "forbidden_phrases": [
+    "I'm just an AI",
+    "as an AI language model",
+    "please consult a professional"
+  ],
+  "forbidden_action": "strip_and_warn",
+  "contract_fail_response": "Cyber Security output did not satisfy contract requirements. Rephrase with defensive scope, environment context, and expected remediation deliverables."
+}

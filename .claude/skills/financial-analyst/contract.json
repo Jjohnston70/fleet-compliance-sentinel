@@ -1,0 +1,50 @@
+{
+  "skill": "financial-analyst",
+  "version": "1.0.0",
+  "mode": "fail_closed",
+  "description": "Fail-closed contract for Financial Analyst outputs.",
+  "required_sections": {
+    "full": [
+      "Professional Advice Boundary",
+      "Financial Analysis",
+      "Flagged Concerns",
+      "Scenario Considerations"
+    ],
+    "quick_pass": [
+      "Professional Advice Boundary",
+      "Financial Analysis",
+      "Flagged Concerns",
+      "Scenario Considerations"
+    ],
+    "single": [
+      "Professional Advice Boundary",
+      "Financial Analysis",
+      "Flagged Concerns",
+      "Scenario Considerations"
+    ]
+  },
+  "out_of_scope_marker": "SKILL_OUT_OF_SCOPE",
+  "out_of_scope_handling": "pass_through",
+  "forbidden_phrases": [
+    "I'm just an AI",
+    "as an AI language model",
+    "please consult a professional",
+    "this is legal advice",
+    "this is tax advice",
+    "this is financial advice",
+    "this is investment advice",
+    "this is compliance advice",
+    "i am providing legal advice",
+    "i am providing tax advice",
+    "i am providing financial advice",
+    "i am providing investment advice",
+    "i am providing compliance advice",
+    "guaranteed return",
+    "invest in",
+    "tax advice",
+    "legal opinion",
+    "binding recommendation"
+  ],
+  "forbidden_action": "strip_and_warn",
+  "contract_fail_response": "Financial Analyst output did not satisfy contract requirements. Rephrase the request with available context, assumptions, and required analysis deliverables."
+}

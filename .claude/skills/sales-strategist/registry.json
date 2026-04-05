@@ -1,0 +1,16 @@
+{
+  "id": "sales-strategist",
+  "name": "Sales Strategist",
+  "version": "1.0.0",
+  "entry": "system.prompt",
+  "requires_provider": "claude",
+  "description": "Strategic sales design skill for segmentation, sales motions, funnel optimization, and target metric definition.",
+  "tags": [
+    "revenue-command",
+    "bundle:revenue-command",
+    "sales",
+    "gtm",
+    "pipeline"
+  ],
+  "max_tokens": 6000
+}

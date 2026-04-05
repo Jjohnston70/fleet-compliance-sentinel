@@ -1,0 +1,16 @@
+{
+  "id": "proposal-generator",
+  "name": "Proposal Generator Intake",
+  "version": "1.0.0",
+  "description": "Normalizes proposal intake from direct requests and MAP notes into a structured payload for executable proposal APIs and SOP workflows.",
+  "author": "True North Data Strategies",
+  "entry": "system.prompt",
+  "requires_provider": "claude",
+  "enabled": true,
+  "tags": [
+    "proposal",
+    "intake",
+    "map-notes",
+    "sop"
+  ]
+}

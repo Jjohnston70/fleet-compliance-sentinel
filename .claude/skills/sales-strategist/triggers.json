@@ -1,0 +1,19 @@
+{
+  "skill": "sales-strategist",
+  "version": "1.0.0",
+  "phrases": [
+    "help me build a sales motion for smb clients",
+    "build a sales motion",
+    "sales motion for",
+    "customer segmentation for sales",
+    "design a sales funnel",
+    "optimize funnel conversion",
+    "set revenue targets",
+    "quota and incentive alignment",
+    "pipeline velocity strategy",
+    "sales gtm architecture"
+  ],
+  "match_mode": "substring_case_insensitive",
+  "min_confidence": 0.62,
+  "description": "Trigger phrases for sales strategist requests in the Revenue Command Pack."
+}

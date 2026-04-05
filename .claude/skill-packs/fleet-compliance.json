@@ -1,0 +1,58 @@
+{
+  "name": "fleet-compliance",
+  "description": "Skill pack for the Fleet-Compliance Sentinel module. Includes DOT/FMCSA compliance skills, risk management, privacy coaching, and cross-module operational skills.",
+  "version": "1.0.0",
+  "created": "2026-04-05",
+  "module_domain": "fleet-compliance",
+  "skills": {
+    "operator": [
+      "direction-protocol",
+      "command-protocol",
+      "documentation",
+      "world-model-mapper",
+      "aro-assessment",
+      "bearing-check",
+      "armed-bandits",
+      "cyber-security",
+      "cloud-engineer",
+      "database-admin",
+      "python-programmer",
+      "webapp-testing",
+      "docgen-command",
+      "context-ingest",
+      "penny-chunking"
+    ],
+    "client_facing": [
+      {
+        "skill": "data-privacy-coach",
+        "gateway_module": "compliance-command",
+        "penny_enabled": true
+      },
+      {
+        "skill": "risk-manager",
+        "gateway_module": "readiness-command",
+        "penny_enabled": true
+      },
+      {
+        "skill": "aro-assessment",
+        "gateway_module": "readiness-command",
+        "penny_enabled": true
+      },
+      {
+        "skill": "file-organizer",
+        "gateway_module": "asset-command",
+        "penny_enabled": false
+      },
+      {
+        "skill": "invoice-organizer",
+        "gateway_module": "financial-command",
+        "penny_enabled": false
+      },
+      {
+        "skill": "financial-analyst",
+        "gateway_module": "financial-command",
+        "penny_enabled": true
+      }
+    ]
+  }
+}

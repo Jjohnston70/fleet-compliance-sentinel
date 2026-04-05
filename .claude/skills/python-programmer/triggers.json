@@ -1,0 +1,16 @@
+{
+  "skill": "python-programmer",
+  "version": "1.0.0",
+  "phrases": [
+    "write a python script to parse csv files and output json",
+    "write a python script that reads a csv and outputs a json summary",
+    "write python code to connect to a postgresql database",
+    "python automation script",
+    "build a python api endpoint",
+    "python data parsing utility",
+    "generate runnable python code"
+  ],
+  "match_mode": "substring_case_insensitive",
+  "min_confidence": 0.62,
+  "description": "Trigger phrases for python programmer requests in the Standalone Skills pack."
+}

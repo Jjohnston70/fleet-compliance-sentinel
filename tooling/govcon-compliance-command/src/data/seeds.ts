@@ -11,7 +11,7 @@ import { DEFAULT_COMPLIANCE_ITEMS } from "../config/compliance-seeds.js";
  */
 export const SEED_OPPORTUNITIES: Opportunity[] = [
   {
-    id: "opp-001",
+    id: "a0000000-0000-4000-8000-000000000001",
     title: "Workflow Automation Platform Implementation",
     solicitation_number: "PRC-2025-001",
     agency: "General Services Administration",
@@ -32,7 +32,7 @@ export const SEED_OPPORTUNITIES: Opportunity[] = [
     updated_at: new Date("2025-03-05"),
   },
   {
-    id: "opp-002",
+    id: "a0000000-0000-4000-8000-000000000002",
     title: "Data Dashboard Development for Army Corps",
     solicitation_number: "W9124C-2025-0042",
     agency: "Department of Defense",
@@ -59,7 +59,7 @@ export const SEED_OPPORTUNITIES: Opportunity[] = [
  */
 export const SEED_OUTREACH_CONTACTS: OutreachContact[] = [
   {
-    id: "contact-001",
+    id: "b0000000-0000-4000-8000-000000000001",
     agency: "General Services Administration",
     office: "Federal Acquisition Service",
     name: "Sarah Mitchell",
@@ -74,7 +74,7 @@ export const SEED_OUTREACH_CONTACTS: OutreachContact[] = [
     created_at: new Date("2025-02-10"),
   },
   {
-    id: "contact-002",
+    id: "b0000000-0000-4000-8000-000000000002",
     agency: "Department of Veterans Affairs",
     office: "Office of Small and Disadvantaged Business Utilization",
     name: "James Rodriguez",
@@ -95,7 +95,7 @@ export const SEED_OUTREACH_CONTACTS: OutreachContact[] = [
  */
 export const SEED_COMPLIANCE_ITEMS: ComplianceItem[] =
   DEFAULT_COMPLIANCE_ITEMS.map((item, idx) => ({
-    id: `comp-${String(idx + 1).padStart(3, "0")}`,
+    id: `c0000000-0000-4000-8000-${String(idx + 1).padStart(12, "0")}`,
     item_type: item.itemType as
       | "registration"
       | "certification"

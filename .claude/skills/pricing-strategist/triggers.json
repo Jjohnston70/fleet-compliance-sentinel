@@ -1,0 +1,18 @@
+{
+  "skill": "pricing-strategist",
+  "version": "1.0.0",
+  "phrases": [
+    "analyze our pricing model against competitors",
+    "analyze our pricing model",
+    "pricing model against competitors",
+    "competitive pricing benchmark",
+    "willingness to pay analysis",
+    "price elasticity",
+    "pricing tier strategy",
+    "packaging and bundling strategy",
+    "margin impact of pricing"
+  ],
+  "match_mode": "substring_case_insensitive",
+  "min_confidence": 0.62,
+  "description": "Trigger phrases for pricing strategist requests in the Revenue Command Pack."
+}

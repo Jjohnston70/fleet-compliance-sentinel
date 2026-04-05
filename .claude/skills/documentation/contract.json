@@ -1,0 +1,35 @@
+{
+  "skill": "documentation",
+  "version": "1.0.0",
+  "mode": "fail_closed",
+  "description": "Fail-closed contract for Documentation outputs.",
+  "required_sections": {
+    "full": [
+      "Document Objective",
+      "Brand and Voice Requirements",
+      "Document Structure",
+      "Draft Content"
+    ],
+    "quick_pass": [
+      "Document Objective",
+      "Brand and Voice Requirements",
+      "Document Structure",
+      "Draft Content"
+    ],
+    "single": [
+      "Document Objective",
+      "Brand and Voice Requirements",
+      "Document Structure",
+      "Draft Content"
+    ]
+  },
+  "out_of_scope_marker": "SKILL_OUT_OF_SCOPE",
+  "out_of_scope_handling": "pass_through",
+  "forbidden_phrases": [
+    "I'm just an AI",
+    "as an AI language model",
+    "please consult a professional"
+  ],
+  "forbidden_action": "strip_and_warn",
+  "contract_fail_response": "Documentation output did not satisfy contract requirements. Rephrase with document type, audience, and expected branded sections."
+}

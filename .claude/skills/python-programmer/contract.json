@@ -1,0 +1,38 @@
+{
+  "skill": "python-programmer",
+  "version": "1.0.0",
+  "mode": "fail_closed",
+  "description": "Fail-closed contract for Python Programmer outputs.",
+  "required_sections": {
+    "full": [
+      "Problem Framing",
+      "Code",
+      "Usage",
+      "Validation Notes"
+    ],
+    "quick_pass": [
+      "Problem Framing",
+      "Code",
+      "Usage",
+      "Validation Notes"
+    ],
+    "single": [
+      "Problem Framing",
+      "Code",
+      "Usage",
+      "Validation Notes"
+    ]
+  },
+  "out_of_scope_marker": "SKILL_OUT_OF_SCOPE",
+  "out_of_scope_handling": "pass_through",
+  "forbidden_phrases": [
+    "I'm just an AI",
+    "as an AI language model",
+    "pseudo-code",
+    "pseudocode",
+    "this is only conceptual",
+    "please consult a professional"
+  ],
+  "forbidden_action": "strip_and_warn",
+  "contract_fail_response": "Python Programmer output did not satisfy contract requirements. Rephrase with Python requirements, input/output expectations, and runtime constraints."
+}

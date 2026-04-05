@@ -1,0 +1,23 @@
+{
+  "skill": "proposal-generator",
+  "version": "1.0.0",
+  "phrases": [
+    "run client proposal generation",
+    "generate a proposal",
+    "i need a proposal",
+    "need a proposal",
+    "build a client proposal",
+    "create a proposal",
+    "proposal intake",
+    "proposal payload",
+    "validate proposal inputs",
+    "extract proposal fields from map notes",
+    "extract from map notes",
+    "map notes to proposal",
+    "normalize proposal data",
+    "proposal from map notes"
+  ],
+  "match_mode": "substring_case_insensitive",
+  "min_confidence": 0.62,
+  "description": "Triggers for proposal generation intake and MAP-note extraction workflows."
+}

@@ -1,0 +1,16 @@
+{
+  "id": "pricing-strategist",
+  "name": "Pricing Strategist",
+  "version": "1.0.0",
+  "entry": "system.prompt",
+  "requires_provider": "claude",
+  "description": "Analytical pricing strategy skill for competitive benchmarks, elasticity assessment, packaging design, and revenue-margin impact modeling.",
+  "tags": [
+    "revenue-command",
+    "bundle:revenue-command",
+    "pricing",
+    "revenue",
+    "margin"
+  ],
+  "max_tokens": 6000
+}

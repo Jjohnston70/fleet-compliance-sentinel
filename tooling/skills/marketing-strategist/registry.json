@@ -1,0 +1,16 @@
+{
+  "id": "marketing-strategist",
+  "name": "Marketing Strategist",
+  "version": "1.0.0",
+  "entry": "system.prompt",
+  "requires_provider": "claude",
+  "description": "Strategic marketing skill for go-to-market planning, positioning, campaign architecture, and budget-to-ROI mapping.",
+  "tags": [
+    "revenue-command",
+    "bundle:revenue-command",
+    "marketing",
+    "gtm",
+    "demand-generation"
+  ],
+  "max_tokens": 6000
+}

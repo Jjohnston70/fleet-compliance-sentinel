@@ -1,0 +1,16 @@
+{
+  "skill": "data-scientist",
+  "version": "1.0.0",
+  "phrases": [
+    "build a forecasting model for our monthly revenue data",
+    "build a churn prediction model methodology for our client retention data",
+    "forecasting methodology",
+    "model evaluation framework",
+    "feature engineering approach for prediction",
+    "statistical significance analysis",
+    "predictive analytics interpretation"
+  ],
+  "match_mode": "substring_case_insensitive",
+  "min_confidence": 0.62,
+  "description": "Trigger phrases for data scientist requests in the Standalone Skills pack."
+}

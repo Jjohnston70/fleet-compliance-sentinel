@@ -1,0 +1,16 @@
+{
+  "id": "financial-analyst",
+  "name": "Financial Analyst",
+  "version": "1.0.0",
+  "entry": "system.prompt",
+  "requires_provider": "claude",
+  "description": "Analytical finance skill for financial statement diagnostics, scenario modeling, concern flagging, and risk-adjusted interpretation.",
+  "tags": [
+    "gov-compliance-pack",
+    "bundle:gov-compliance-pack",
+    "finance",
+    "analysis",
+    "direction-protocol"
+  ],
+  "max_tokens": 6000
+}

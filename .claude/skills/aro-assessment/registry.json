@@ -1,0 +1,16 @@
+{
+  "id": "aro-assessment",
+  "name": "ARO Assessment",
+  "version": "1.0.0",
+  "entry": "system.prompt",
+  "requires_provider": "claude",
+  "description": "TNDS operational readiness assessment skill for agent-readiness diagnostics, scoring, and context architecture handoff recommendations.",
+  "tags": [
+    "tnds-ops",
+    "bundle:tnds-ops",
+    "tnds-methodology",
+    "assessment",
+    "command-protocol"
+  ],
+  "max_tokens": 6000
+}

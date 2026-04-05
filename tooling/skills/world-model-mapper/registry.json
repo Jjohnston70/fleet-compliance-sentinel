@@ -1,0 +1,16 @@
+{
+  "id": "world-model-mapper",
+  "name": "World Model Mapper",
+  "version": "1.0.0",
+  "entry": "system.prompt",
+  "requires_provider": "claude",
+  "description": "TNDS process-analysis skill for state-space mapping, action-path analysis, feedback-loop diagnostics, and prioritized gap reporting.",
+  "tags": [
+    "tnds-ops",
+    "bundle:tnds-ops",
+    "tnds-methodology",
+    "analysis",
+    "direction-protocol"
+  ],
+  "max_tokens": 6000
+}

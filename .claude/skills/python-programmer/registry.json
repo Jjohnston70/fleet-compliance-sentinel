@@ -1,0 +1,16 @@
+{
+  "id": "python-programmer",
+  "name": "Python Programmer",
+  "version": "1.0.0",
+  "entry": "system.prompt",
+  "requires_provider": "claude",
+  "description": "Python execution skill for production-grade scripting, backend utilities, and implementation-ready code output.",
+  "tags": [
+    "standalone-pack",
+    "bundle:standalone-pack",
+    "python",
+    "software-engineering",
+    "execution"
+  ],
+  "max_tokens": 6000
+}

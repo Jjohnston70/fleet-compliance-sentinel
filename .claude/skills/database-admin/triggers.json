@@ -1,0 +1,16 @@
+{
+  "skill": "database-admin",
+  "version": "1.0.0",
+  "phrases": [
+    "optimize this slow database query and recommend index changes",
+    "optimize our slow client query and recommend index strategy",
+    "database query optimization",
+    "index strategy recommendation",
+    "analyze execution plan bottlenecks",
+    "schema migration plan",
+    "database backup and recovery validation"
+  ],
+  "match_mode": "substring_case_insensitive",
+  "min_confidence": 0.62,
+  "description": "Trigger phrases for database admin requests in the Standalone Skills pack."
+}

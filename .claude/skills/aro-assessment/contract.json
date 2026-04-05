@@ -1,0 +1,38 @@
+{
+  "skill": "aro-assessment",
+  "version": "1.0.0",
+  "mode": "fail_closed",
+  "description": "Fail-closed contract for ARO Assessment outputs.",
+  "required_sections": {
+    "full": [
+      "Assessment Scope",
+      "4-Phase Assessment Process",
+      "Operational Dimensions",
+      "Scoring Summary",
+      "Context Graph and Deliverables"
+    ],
+    "quick_pass": [
+      "Assessment Scope",
+      "4-Phase Assessment Process",
+      "Operational Dimensions",
+      "Scoring Summary",
+      "Context Graph and Deliverables"
+    ],
+    "single": [
+      "Assessment Scope",
+      "4-Phase Assessment Process",
+      "Operational Dimensions",
+      "Scoring Summary",
+      "Context Graph and Deliverables"
+    ]
+  },
+  "out_of_scope_marker": "SKILL_OUT_OF_SCOPE",
+  "out_of_scope_handling": "pass_through",
+  "forbidden_phrases": [
+    "I'm just an AI",
+    "as an AI language model",
+    "please consult a professional"
+  ],
+  "forbidden_action": "strip_and_warn",
+  "contract_fail_response": "ARO Assessment output did not satisfy contract requirements. Rephrase with client operational context and expected assessment deliverables."
+}

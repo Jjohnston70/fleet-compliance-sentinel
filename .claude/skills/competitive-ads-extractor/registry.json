@@ -1,0 +1,7 @@
+{
+  "id": "competitive-ads-extractor",
+  "version": "1.0.0",
+  "type": "llm",
+  "enabled": true,
+  "source": "compiled"
+}

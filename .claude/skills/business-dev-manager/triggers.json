@@ -1,0 +1,17 @@
+{
+  "skill": "business-dev-manager",
+  "version": "1.0.0",
+  "phrases": [
+    "identify new partnership opportunities",
+    "identify partnership opportunities",
+    "business development strategy",
+    "market entry partnership map",
+    "pipeline health diagnostics",
+    "conversion bottleneck in pipeline",
+    "revenue forecast implications",
+    "qualify growth opportunities"
+  ],
+  "match_mode": "substring_case_insensitive",
+  "min_confidence": 0.62,
+  "description": "Trigger phrases for business development manager requests in the Revenue Command Pack."
+}

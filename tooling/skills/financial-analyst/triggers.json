@@ -1,0 +1,16 @@
+{
+  "skill": "financial-analyst",
+  "version": "1.0.0",
+  "phrases": [
+    "analyze the financial statements and flag any concerns",
+    "analyze our revenue model and flag any structural concerns",
+    "financial statement analysis",
+    "scenario modeling for revenue risk",
+    "flag structural financial concerns",
+    "anomaly detection in pnl and cash flow",
+    "financial diagnostics"
+  ],
+  "match_mode": "substring_case_insensitive",
+  "min_confidence": 0.62,
+  "description": "Trigger phrases for financial analyst requests in the Gov/Compliance Pack."
+}

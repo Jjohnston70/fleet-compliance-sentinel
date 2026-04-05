@@ -1,0 +1,18 @@
+{
+  "skill": "marketing-strategist",
+  "version": "1.0.0",
+  "phrases": [
+    "develop a go-to-market strategy for our new product",
+    "go-to-market strategy",
+    "gtm planning",
+    "market positioning strategy",
+    "identify target segments",
+    "channel strategy for campaign",
+    "campaign sequence with budget allocation",
+    "messaging hierarchy",
+    "demand generation strategy"
+  ],
+  "match_mode": "substring_case_insensitive",
+  "min_confidence": 0.62,
+  "description": "Trigger phrases for marketing strategist requests in the Revenue Command Pack."
+}

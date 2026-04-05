@@ -1,0 +1,41 @@
+{
+  "name": "realty",
+  "description": "Skill pack for the Realty module. Colorado and U.S. real estate regulation, transaction compliance, and property operations.",
+  "version": "1.0.0",
+  "created": "2026-04-05",
+  "module_domain": "realty-module",
+  "skills": {
+    "operator": [
+      "direction-protocol",
+      "command-protocol",
+      "documentation",
+      "world-model-mapper",
+      "aro-assessment",
+      "bearing-check",
+      "proposal-generator",
+      "docgen-command"
+    ],
+    "client_facing": [
+      {
+        "skill": "realty-command",
+        "gateway_module": "realty-command",
+        "penny_enabled": true
+      },
+      {
+        "skill": "financial-analyst",
+        "gateway_module": "financial-command",
+        "penny_enabled": true
+      },
+      {
+        "skill": "proposal-generator",
+        "gateway_module": "proposal-command",
+        "penny_enabled": false
+      },
+      {
+        "skill": "data-privacy-coach",
+        "gateway_module": "compliance-command",
+        "penny_enabled": true
+      }
+    ]
+  }
+}

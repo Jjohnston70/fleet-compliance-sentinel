@@ -1,0 +1,16 @@
+{
+  "id": "realty-command",
+  "name": "Realty Command",
+  "version": "1.0.0",
+  "entry": "system.prompt",
+  "requires_provider": "claude",
+  "description": "Colorado and U.S. real-estate regulation and compliance guidance skill grounded in the Realty Command corpus.",
+  "tags": [
+    "real-estate",
+    "compliance",
+    "colorado",
+    "federal-requirements",
+    "industry-standards"
+  ],
+  "max_tokens": 5000
+}

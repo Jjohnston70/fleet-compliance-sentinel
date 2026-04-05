@@ -1,0 +1,54 @@
+{
+  "skill": "docgen-command",
+  "version": "1.0.0",
+  "mode": "fail_closed",
+  "description": "Fail-closed contract for docgen-command execution responses.",
+  "required_sections": {
+    "GENERATE_PROPOSAL": [
+      "Intent",
+      "Template Selected",
+      "Payment Structure",
+      "Generated File",
+      "Next Action"
+    ],
+    "PARSE_DOCUMENT": [
+      "Intent",
+      "Schema Used",
+      "Fields Matched",
+      "Next Action"
+    ],
+    "PARSE_DOCUMENT_WITH_UNMATCHED": [
+      "Intent",
+      "Schema Used",
+      "Fields Matched",
+      "Unmatched Required Fields",
+      "Next Action"
+    ],
+    "EXPORT_PDF": [
+      "Intent",
+      "Generated File",
+      "Next Action"
+    ],
+    "LIST_TEMPLATES": [
+      "Intent",
+      "Template List",
+      "Next Action"
+    ]
+  },
+  "out_of_scope_marker": "SKILL_OUT_OF_SCOPE",
+  "out_of_scope_handling": "pass_through",
+  "forbidden_phrases": [
+    "I cannot help with that",
+    "I'm just an AI",
+    "I don't have the ability to",
+    "Unfortunately I can't",
+    "I'm unable to generate",
+    "I'm unable to parse",
+    "as an AI language model",
+    "I don't have access to your files",
+    "please consult a professional"
+  ],
+  "forbidden_action": "strip_and_warn",
+  "contract_fail_response": "docgen-command did not return a valid operation response. Confirm the operation type (GENERATE_PROPOSAL, PARSE_DOCUMENT, EXPORT_PDF, LIST_TEMPLATES) and retry with complete inputs.",
+  "notes": "EXPORT_PDF requires local docgen-render pipeline with LibreOffice on PATH. If running in Claude cloud runtime, EXPORT_PDF is unavailable — inform the user and direct them to run export_pdf=True locally."
+}

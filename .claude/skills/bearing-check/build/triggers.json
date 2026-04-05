@@ -1,0 +1,26 @@
+{
+  "skill": "bearing-check",
+  "priority": 70,
+  "match": [
+    {
+      "type": "phrase",
+      "value": "should I"
+    },
+    {
+      "type": "phrase",
+      "value": "is this a good idea"
+    },
+    {
+      "type": "phrase",
+      "value": "evaluate this strategy"
+    },
+    {
+      "type": "phrase",
+      "value": "what are the risks"
+    },
+    {
+      "type": "phrase",
+      "value": "copy this approach"
+    }
+  ]
+}

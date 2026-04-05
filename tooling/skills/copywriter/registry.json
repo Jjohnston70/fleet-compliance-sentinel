@@ -1,0 +1,16 @@
+{
+  "id": "copywriter",
+  "name": "Copywriter",
+  "version": "1.0.0",
+  "entry": "system.prompt",
+  "requires_provider": "claude",
+  "description": "Execution copywriting skill for headlines, body copy, and CTAs across landing pages, ads, and email formats.",
+  "tags": [
+    "revenue-command",
+    "bundle:revenue-command",
+    "copywriting",
+    "conversion",
+    "messaging"
+  ],
+  "max_tokens": 800
+}

@@ -1,0 +1,36 @@
+{
+  "skill": "cloud-engineer",
+  "version": "1.0.0",
+  "mode": "fail_closed",
+  "description": "Fail-closed contract for Cloud Engineer outputs.",
+  "required_sections": {
+    "full": [
+      "Architecture Design",
+      "Security and Compliance Controls",
+      "Deployment Plan",
+      "Verification and Operations"
+    ],
+    "quick_pass": [
+      "Architecture Design",
+      "Security and Compliance Controls",
+      "Deployment Plan",
+      "Verification and Operations"
+    ],
+    "single": [
+      "Architecture Design",
+      "Security and Compliance Controls",
+      "Deployment Plan",
+      "Verification and Operations"
+    ]
+  },
+  "out_of_scope_marker": "SKILL_OUT_OF_SCOPE",
+  "out_of_scope_handling": "pass_through",
+  "forbidden_phrases": [
+    "I'm just an AI",
+    "as an AI language model",
+    "I don't have access to your infrastructure",
+    "please consult a professional"
+  ],
+  "forbidden_action": "strip_and_warn",
+  "contract_fail_response": "Cloud Engineer output did not satisfy contract requirements. Rephrase with workload scope, constraints, and expected implementation deliverables."
+}

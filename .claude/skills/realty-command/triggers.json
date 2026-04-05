@@ -1,0 +1,23 @@
+{
+  "skill": "realty-command",
+  "version": "1.0.0",
+  "phrases": [
+    "first time home buyers in colorado",
+    "first-time home buyers in colorado",
+    "home buyer requirements colorado",
+    "what access to knowledge for real estate do we have",
+    "colorado real estate requirements",
+    "colorado real estate rules",
+    "real estate compliance in colorado",
+    "colorado dora real estate",
+    "respa tila trid real estate",
+    "firpta withholding requirements real estate",
+    "1099-s reporting real estate",
+    "hoa disclosure requirements colorado",
+    "nar post-settlement rules",
+    "ppar mls rules"
+  ],
+  "match_mode": "substring_case_insensitive",
+  "min_confidence": 0.68,
+  "description": "Trigger phrases for Colorado and U.S. real-estate regulation/compliance questions."
+}

@@ -1,0 +1,17 @@
+{
+  "skill": "brand-manager",
+  "version": "1.0.0",
+  "phrases": [
+    "audit our brand voice consistency",
+    "audit our brand voice",
+    "brand messaging alignment",
+    "brand consistency gaps",
+    "brand touchpoint audit",
+    "voice and tone guidelines",
+    "cross-channel brand coherence",
+    "brand equity messaging"
+  ],
+  "match_mode": "substring_case_insensitive",
+  "min_confidence": 0.62,
+  "description": "Trigger phrases for brand manager requests in the Revenue Command Pack."
+}

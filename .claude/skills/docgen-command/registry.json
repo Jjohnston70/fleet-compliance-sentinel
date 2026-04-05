@@ -1,0 +1,23 @@
+{
+  "id": "docgen-command",
+  "name": "DocGen Command",
+  "version": "1.0.0",
+  "description": "Execution layer for TNDS document operations. Generates branded proposals, parses vendor documents, exports PDF, and lists available templates. Downstream from proposal-generator intake skill.",
+  "author": "True North Data Strategies",
+  "entry": "system.prompt",
+  "requires_provider": "claude",
+  "enabled": true,
+  "tags": [
+    "document-generation",
+    "document-parsing",
+    "proposals",
+    "parse-command",
+    "pdf-export"
+  ],
+  "operations": [
+    "GENERATE_PROPOSAL",
+    "PARSE_DOCUMENT",
+    "EXPORT_PDF",
+    "LIST_TEMPLATES"
+  ]
+}

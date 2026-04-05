@@ -1,0 +1,22 @@
+{
+  "skill": "competitive-ads-extractor",
+  "priority": 50,
+  "match": [
+    {
+      "type": "phrase",
+      "value": "competitive ads extractor"
+    },
+    {
+      "type": "phrase",
+      "value": "competitor ads"
+    },
+    {
+      "type": "phrase",
+      "value": "ad analysis"
+    },
+    {
+      "type": "phrase",
+      "value": "facebook ads"
+    }
+  ]
+}

@@ -1,0 +1,16 @@
+{
+  "id": "risk-manager",
+  "name": "Risk Manager",
+  "version": "1.0.0",
+  "entry": "system.prompt",
+  "requires_provider": "claude",
+  "description": "Risk strategy skill for identifying, prioritizing, and mitigating operational, financial, cybersecurity, and compliance risks.",
+  "tags": [
+    "gov-compliance-pack",
+    "bundle:gov-compliance-pack",
+    "risk",
+    "governance",
+    "direction-protocol"
+  ],
+  "max_tokens": 6000
+}

@@ -1,0 +1,39 @@
+{
+  "skill": "proposal-generator",
+  "version": "1.0.0",
+  "mode": "fail_closed",
+  "description": "Fail-closed contract for structured proposal intake normalization.",
+  "required_sections": {
+    "full": [
+      "Intent",
+      "Template Selection",
+      "Intake Payload",
+      "Missing Required Fields",
+      "Validation Notes",
+      "Execution Path",
+      "Next Action"
+    ],
+    "quick_pass": [
+      "Intent",
+      "Intake Payload",
+      "Missing Required Fields",
+      "Execution Path",
+      "Next Action"
+    ],
+    "single": [
+      "Intent",
+      "Next Action"
+    ]
+  },
+  "out_of_scope_marker": "SKILL_OUT_OF_SCOPE",
+  "out_of_scope_handling": "pass_through",
+  "forbidden_phrases": [
+    "I'm just an AI",
+    "I cannot access your files",
+    "I cannot help with that",
+    "this may be wrong",
+    "I don't know"
+  ],
+  "forbidden_action": "strip_and_warn",
+  "contract_fail_response": "Proposal intake output did not satisfy contract requirements. Provide proposal details or MAP notes and retry with structured input."
+}

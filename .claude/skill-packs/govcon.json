@@ -1,0 +1,47 @@
+{
+  "name": "govcon",
+  "description": "Skill pack for the GovCon module. Federal contracting, grant funding, and procurement operations.",
+  "version": "1.0.0",
+  "created": "2026-04-05",
+  "module_domain": "govcon-module",
+  "skills": {
+    "operator": [
+      "direction-protocol",
+      "command-protocol",
+      "documentation",
+      "world-model-mapper",
+      "aro-assessment",
+      "bearing-check",
+      "bid-strategist",
+      "proposal-generator",
+      "docgen-command"
+    ],
+    "client_facing": [
+      {
+        "skill": "grant-proposal-writer",
+        "gateway_module": "govcon-command",
+        "penny_enabled": true
+      },
+      {
+        "skill": "grant-proposal-evaluation",
+        "gateway_module": "govcon-command",
+        "penny_enabled": true
+      },
+      {
+        "skill": "bid-strategist",
+        "gateway_module": "govcon-command",
+        "penny_enabled": true
+      },
+      {
+        "skill": "data-privacy-coach",
+        "gateway_module": "compliance-command",
+        "penny_enabled": true
+      },
+      {
+        "skill": "risk-manager",
+        "gateway_module": "readiness-command",
+        "penny_enabled": true
+      }
+    ]
+  }
+}

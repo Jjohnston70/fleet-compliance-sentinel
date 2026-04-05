@@ -1,0 +1,16 @@
+{
+  "skill": "world-model-mapper",
+  "version": "1.0.0",
+  "phrases": [
+    "map the business processes and identify operational gaps",
+    "map the operational processes for this client and identify the top workflow gaps",
+    "map this process and find the gaps",
+    "world model analysis for this workflow",
+    "state space mapping for operations",
+    "identify shadow vs reality process signals",
+    "analyze feedback loops in this system"
+  ],
+  "match_mode": "substring_case_insensitive",
+  "min_confidence": 0.62,
+  "description": "Trigger phrases for TNDS world-model process analysis requests."
+}

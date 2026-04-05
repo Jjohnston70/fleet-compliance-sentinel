@@ -1,0 +1,16 @@
+{
+  "id": "bid-strategist",
+  "name": "Bid Strategist",
+  "version": "1.0.0",
+  "entry": "system.prompt",
+  "requires_provider": "claude",
+  "description": "Execution-oriented bid strategy skill for go/no-go assessment, compliance mapping, win themes, pricing posture, and proposal launch planning.",
+  "tags": [
+    "revenue-command",
+    "bundle:revenue-command",
+    "bids",
+    "proposals",
+    "execution"
+  ],
+  "max_tokens": 6000
+}

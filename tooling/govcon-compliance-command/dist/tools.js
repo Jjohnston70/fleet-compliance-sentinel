@@ -1,6 +1,6 @@
 /**
  * LLM Tool Definitions for govcon-compliance-command
- * 20 tools covering pipeline, compliance docs, intake, maturity, and bid documents
+ * 21 tools covering pipeline, compliance docs, intake, maturity, and bid documents
  */
 import { OpportunityService } from "./services/opportunity-service.js";
 import { BidDecisionService } from "./services/bid-decision-service.js";
@@ -16,6 +16,7 @@ import { ComplianceMonitor } from "./hooks/compliance-monitor.js";
 import { PipelineDashboard } from "./reporting/pipeline-dashboard.js";
 import { WinLossReportGenerator } from "./reporting/win-loss-report.js";
 import { OutreachReport } from "./reporting/outreach-report.js";
+import { COMPLIANCE_SKILL_DOMAINS } from "./config/index.js";
 export const GOVCON_COMPLIANCE_TOOLS = [
     // ============================================================
     // GOVCON PIPELINE TOOLS (1-10, from govcon-command)
@@ -208,7 +209,7 @@ export const GOVCON_COMPLIANCE_TOOLS = [
         },
     },
     // ============================================================
-    // INTAKE & MATURITY TOOLS (15-17, from compliance-gov-module)
+    // INTAKE & MATURITY TOOLS (15-18, from compliance-gov-module)
     // ============================================================
     {
         name: "run_intake_wizard",
@@ -216,6 +217,15 @@ export const GOVCON_COMPLIANCE_TOOLS = [
         inputSchema: {
             type: "object",
             properties: { company_id: { type: "string", description: "Company ID (must have company info submitted first)" } },
+            required: ["company_id"],
+        },
+    },
+    {
+        name: "initialize_maturity_tracker",
+        description: "Initialize a maturity tracker for a company based on intake results. Must run run_intake_wizard first. Creates the tracker that get_maturity_score and update_template_status operate on.",
+        inputSchema: {
+            type: "object",
+            properties: { company_id: { type: "string", description: "Company ID (must have intake results)" } },
             required: ["company_id"],
         },
     },
@@ -351,6 +361,20 @@ export function createToolHandlers(repo) {
         // Intake & maturity tools
         async run_intake_wizard(input) {
             return intakeService.runIntake(input.company_id);
+        },
+        async initialize_maturity_tracker(input) {
+            const intake = await intakeService.getIntakeResult(input.company_id);
+            if (!intake)
+                throw new Error(`No intake result for company ${input.company_id}. Run run_intake_wizard first.`);
+            const templateIds = intake.recommended_skills.map((skill) => {
+                const domain = COMPLIANCE_SKILL_DOMAINS.find(d => d.id === skill.skill_id);
+                return {
+                    template_id: skill.skill_id,
+                    skill_domain: skill.skill_name,
+                    governance_level: domain?.governance || "SUPPORT",
+                };
+            });
+            return maturityService.initializeTracker(input.company_id, templateIds);
         },
         async get_maturity_score(input) {
             return maturityService.getScoreBreakdown(input.company_id);

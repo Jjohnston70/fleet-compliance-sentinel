@@ -1,0 +1,17 @@
+{
+  "skill": "copywriter",
+  "version": "1.0.0",
+  "phrases": [
+    "write a landing page headline",
+    "landing page headline and subheadline",
+    "write ad copy",
+    "conversion-focused copy",
+    "call-to-action copy",
+    "email copy draft",
+    "headline variations",
+    "ready-to-publish copy"
+  ],
+  "match_mode": "substring_case_insensitive",
+  "min_confidence": 0.62,
+  "description": "Trigger phrases for copywriter requests in the Revenue Command Pack."
+}

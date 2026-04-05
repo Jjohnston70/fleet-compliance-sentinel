@@ -1,0 +1,35 @@
+{
+  "skill": "brand-manager",
+  "version": "1.0.0",
+  "mode": "fail_closed",
+  "description": "Fail-closed contract for Brand Manager outputs.",
+  "required_sections": {
+    "full": [
+      "Voice Assessment",
+      "Consistency Gaps",
+      "Recommendations"
+    ],
+    "quick_pass": [
+      "Voice Assessment",
+      "Consistency Gaps",
+      "Recommendations"
+    ],
+    "single": [
+      "Voice Assessment",
+      "Consistency Gaps",
+      "Recommendations"
+    ]
+  },
+  "out_of_scope_marker": "SKILL_OUT_OF_SCOPE",
+  "out_of_scope_handling": "pass_through",
+  "forbidden_phrases": [
+    "I'm just an AI",
+    "I cannot provide legal advice",
+    "I cannot provide tax advice",
+    "I cannot provide investment advice",
+    "as an AI language model",
+    "please consult a professional"
+  ],
+  "forbidden_action": "strip_and_warn",
+  "contract_fail_response": "Brand Manager output did not satisfy contract requirements. Rephrase the request with scope and required deliverables."
+}

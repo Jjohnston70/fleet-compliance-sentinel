@@ -1,0 +1,16 @@
+{
+  "id": "cloud-engineer",
+  "name": "Cloud Engineer",
+  "version": "1.0.0",
+  "entry": "system.prompt",
+  "requires_provider": "claude",
+  "description": "Technical cloud execution skill for architecture, security controls, infrastructure rollout, and reliability/cost optimization.",
+  "tags": [
+    "standalone-pack",
+    "bundle:standalone-pack",
+    "cloud",
+    "infrastructure",
+    "execution"
+  ],
+  "max_tokens": 6000
+}

@@ -1,0 +1,48 @@
+{
+  "skill": "data-privacy-coach",
+  "version": "1.0.0",
+  "mode": "fail_closed",
+  "description": "Fail-closed contract for Data Privacy Coach outputs.",
+  "required_sections": {
+    "full": [
+      "Professional Advice Boundary",
+      "Compliance Gap Assessment",
+      "Remediation Actions",
+      "Verification Plan"
+    ],
+    "quick_pass": [
+      "Professional Advice Boundary",
+      "Compliance Gap Assessment",
+      "Remediation Actions",
+      "Verification Plan"
+    ],
+    "single": [
+      "Professional Advice Boundary",
+      "Compliance Gap Assessment",
+      "Remediation Actions",
+      "Verification Plan"
+    ]
+  },
+  "out_of_scope_marker": "SKILL_OUT_OF_SCOPE",
+  "out_of_scope_handling": "pass_through",
+  "forbidden_phrases": [
+    "I'm just an AI",
+    "as an AI language model",
+    "please consult a professional",
+    "this is legal advice",
+    "this is tax advice",
+    "this is financial advice",
+    "this is investment advice",
+    "this is compliance advice",
+    "i am providing legal advice",
+    "i am providing tax advice",
+    "i am providing financial advice",
+    "i am providing investment advice",
+    "i am providing compliance advice",
+    "share your full client list",
+    "send me personal data",
+    "provide names, emails, and phone numbers"
+  ],
+  "forbidden_action": "strip_and_warn",
+  "contract_fail_response": "Data Privacy Coach output did not satisfy contract requirements. Rephrase the request with privacy scope, jurisdiction, and expected execution deliverables."
+}

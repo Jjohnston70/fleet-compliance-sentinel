@@ -1,0 +1,24 @@
+{
+  "skill_id": "competitive-ads-extractor",
+  "version": "1.0.0",
+  "required_sections": [
+    "output",
+    "example_format"
+  ],
+  "forbidden_phrases": [
+    "you should",
+    "I recommend",
+    "just do",
+    "go all in",
+    "simply",
+    "obviously",
+    "clearly",
+    "of course"
+  ],
+  "enforcement": "fail_closed",
+  "output_constraints": {
+    "max_length": null,
+    "format": "markdown",
+    "structured": true
+  }
+}

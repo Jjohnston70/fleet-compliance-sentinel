@@ -1,0 +1,16 @@
+{
+  "skill": "chief-financial-officer",
+  "version": "1.0.0",
+  "phrases": [
+    "review our capital allocation strategy for next quarter",
+    "review our q2 budget variance and recommend capital reallocation",
+    "capital allocation strategy",
+    "budget variance review",
+    "financial governance strategy",
+    "board-level financial planning",
+    "capital structure decision support"
+  ],
+  "match_mode": "substring_case_insensitive",
+  "min_confidence": 0.62,
+  "description": "Trigger phrases for chief financial officer requests in the Gov/Compliance Pack."
+}

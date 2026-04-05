@@ -1,0 +1,16 @@
+{
+  "id": "data-scientist",
+  "name": "Data Scientist",
+  "version": "1.0.0",
+  "entry": "system.prompt",
+  "requires_provider": "claude",
+  "description": "Direction-protocol analytics skill for forecasting methodology, model evaluation, uncertainty analysis, and evidence-based recommendations.",
+  "tags": [
+    "standalone-pack",
+    "bundle:standalone-pack",
+    "data-science",
+    "analytics",
+    "direction-protocol"
+  ],
+  "max_tokens": 6000
+}

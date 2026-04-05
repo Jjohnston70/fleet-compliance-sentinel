@@ -1,0 +1,16 @@
+{
+  "id": "cyber-security",
+  "name": "Cyber Security",
+  "version": "1.0.0",
+  "entry": "system.prompt",
+  "requires_provider": "claude",
+  "description": "Defensive cybersecurity execution skill for posture assessment, threat prioritization, control hardening, and remediation planning.",
+  "tags": [
+    "standalone-pack",
+    "bundle:standalone-pack",
+    "security",
+    "defense",
+    "execution"
+  ],
+  "max_tokens": 6000
+}

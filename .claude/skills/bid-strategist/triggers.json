@@ -1,0 +1,20 @@
+{
+  "skill": "bid-strategist",
+  "version": "1.0.0",
+  "phrases": [
+    "run a go/no-go assessment on this rfp",
+    "go/no-go assessment",
+    "rfp response strategy",
+    "assess bid requirements",
+    "mandatory compliance items for the bid",
+    "map win themes to evaluation factors",
+    "proposal compliance matrix",
+    "launch proposal development plan",
+    "competitive bid strategy",
+    "rfq response plan",
+    "rfi response plan"
+  ],
+  "match_mode": "substring_case_insensitive",
+  "min_confidence": 0.62,
+  "description": "Trigger phrases for bid strategist requests in the Revenue Command Pack."
+}

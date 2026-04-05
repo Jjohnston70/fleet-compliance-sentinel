@@ -1,0 +1,46 @@
+{
+  "skill": "world-model-mapper",
+  "version": "1.0.0",
+  "mode": "fail_closed",
+  "description": "Fail-closed contract for World Model Mapper outputs.",
+  "required_sections": {
+    "full": [
+      "State Space Analysis",
+      "Action Mapping",
+      "Gap Prioritization",
+      "Feedback Loop Review",
+      "Recommended Next Analytical Step"
+    ],
+    "quick_pass": [
+      "State Space Analysis",
+      "Action Mapping",
+      "Gap Prioritization",
+      "Feedback Loop Review",
+      "Recommended Next Analytical Step"
+    ],
+    "single": [
+      "State Space Analysis",
+      "Action Mapping",
+      "Gap Prioritization",
+      "Feedback Loop Review",
+      "Recommended Next Analytical Step"
+    ]
+  },
+  "out_of_scope_marker": "SKILL_OUT_OF_SCOPE",
+  "out_of_scope_handling": "pass_through",
+  "out_of_scope_phrases": [
+    "outside the scope of the world model mapper",
+    "not a world-model process mapping",
+    "not an operational gap analysis task",
+    "this request is not a world-model process mapping"
+  ],
+  "forbidden_phrases": [
+    "I'm just an AI",
+    "as an AI language model",
+    "execution plan",
+    "deployment checklist",
+    "please consult a professional"
+  ],
+  "forbidden_action": "strip_and_warn",
+  "contract_fail_response": "World Model Mapper output did not satisfy contract requirements. Rephrase with process context, target outcomes, and expected analysis depth."
+}

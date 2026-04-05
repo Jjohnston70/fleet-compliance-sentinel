@@ -1,0 +1,16 @@
+{
+  "id": "documentation",
+  "name": "Documentation",
+  "version": "1.0.0",
+  "entry": "system.prompt",
+  "requires_provider": "claude",
+  "description": "TNDS documentation skill for branded proposals, SOPs, and technical documents with strict visual and voice standards.",
+  "tags": [
+    "tnds-ops",
+    "bundle:tnds-ops",
+    "tnds-methodology",
+    "documentation",
+    "command-protocol"
+  ],
+  "max_tokens": 6000
+}

@@ -1,0 +1,16 @@
+{
+  "id": "business-dev-manager",
+  "name": "Business Development Manager",
+  "version": "1.0.0",
+  "entry": "system.prompt",
+  "requires_provider": "claude",
+  "description": "Strategic business development skill for opportunity identification, partnership strategy, and pipeline impact analysis.",
+  "tags": [
+    "revenue-command",
+    "bundle:revenue-command",
+    "business-development",
+    "partnerships",
+    "growth"
+  ],
+  "max_tokens": 6000
+}

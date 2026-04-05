@@ -1,0 +1,16 @@
+{
+  "id": "brand-manager",
+  "name": "Brand Manager",
+  "version": "1.0.0",
+  "entry": "system.prompt",
+  "requires_provider": "claude",
+  "description": "Strategic brand management skill for voice consistency audits, messaging alignment, and governance recommendations.",
+  "tags": [
+    "revenue-command",
+    "bundle:revenue-command",
+    "brand",
+    "messaging",
+    "governance"
+  ],
+  "max_tokens": 2000
+}

@@ -1,0 +1,16 @@
+{
+  "skill": "data-privacy-coach",
+  "version": "1.0.0",
+  "phrases": [
+    "assess our gdpr compliance posture for client data handling",
+    "assess our gdpr compliance posture and identify gaps",
+    "privacy compliance gap assessment",
+    "gdpr readiness check",
+    "ccpa compliance controls",
+    "data handling policy remediation",
+    "privacy audit preparation steps"
+  ],
+  "match_mode": "substring_case_insensitive",
+  "min_confidence": 0.62,
+  "description": "Trigger phrases for data privacy coach requests in the Gov/Compliance Pack."
+}

@@ -1,0 +1,6 @@
+{
+  "id": "bearing-check",
+  "version": "1.0.0",
+  "entry": "build/system.prompt",
+  "enabled": true
+}

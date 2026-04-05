@@ -1,0 +1,16 @@
+{
+  "id": "data-privacy-coach",
+  "name": "Data Privacy Coach",
+  "version": "1.0.0",
+  "entry": "system.prompt",
+  "requires_provider": "claude",
+  "description": "Execution-oriented data privacy skill for compliance gap assessment, remediation planning, and verification workflows.",
+  "tags": [
+    "gov-compliance-pack",
+    "bundle:gov-compliance-pack",
+    "privacy",
+    "compliance",
+    "command-protocol"
+  ],
+  "max_tokens": 6000
+}

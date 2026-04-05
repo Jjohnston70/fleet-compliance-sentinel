@@ -1,0 +1,16 @@
+{
+  "skill": "cyber-security",
+  "version": "1.0.0",
+  "phrases": [
+    "assess the security posture of our web application",
+    "assess the security posture of our web application and identify the top threats",
+    "security posture assessment",
+    "threat modeling for web application",
+    "harden our application security controls",
+    "vulnerability remediation plan",
+    "least privilege access hardening"
+  ],
+  "match_mode": "substring_case_insensitive",
+  "min_confidence": 0.62,
+  "description": "Trigger phrases for cyber security requests in the Standalone Skills pack."
+}

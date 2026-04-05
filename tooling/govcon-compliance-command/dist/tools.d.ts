@@ -1,6 +1,6 @@
 /**
  * LLM Tool Definitions for govcon-compliance-command
- * 20 tools covering pipeline, compliance docs, intake, maturity, and bid documents
+ * 21 tools covering pipeline, compliance docs, intake, maturity, and bid documents
  */
 import { InMemoryRepository } from "./data/repository.js";
 export interface ToolDefinition {

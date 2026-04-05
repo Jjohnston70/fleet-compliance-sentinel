@@ -1,0 +1,16 @@
+{
+  "skill": "risk-manager",
+  "version": "1.0.0",
+  "phrases": [
+    "identify the top operational risks in our proposal pipeline",
+    "identify the top 5 operational risks in our federal proposal pipeline",
+    "operational risk assessment",
+    "risk matrix for proposal operations",
+    "prioritize enterprise risks",
+    "map compliance and cyber risks",
+    "risk mitigation strategy"
+  ],
+  "match_mode": "substring_case_insensitive",
+  "min_confidence": 0.62,
+  "description": "Trigger phrases for risk manager requests in the Gov/Compliance Pack."
+}

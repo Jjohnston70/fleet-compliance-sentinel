@@ -1,0 +1,18 @@
+{
+  "skill": "aro-assessment",
+  "version": "1.0.0",
+  "phrases": [
+    "assess this client operational readiness for ai implementation",
+    "assess this client's operational readiness",
+    "run a full client assessment and build a context graph",
+    "full client assessment and context graph",
+    "run an aro assessment",
+    "agent-ready operations assessment",
+    "ai legibility audit",
+    "create a context graph for this client",
+    "evaluate readiness for automation"
+  ],
+  "match_mode": "substring_case_insensitive",
+  "min_confidence": 0.62,
+  "description": "Trigger phrases for TNDS ARO assessment workflow requests."
+}

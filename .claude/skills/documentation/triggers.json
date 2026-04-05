@@ -1,0 +1,16 @@
+{
+  "skill": "documentation",
+  "version": "1.0.0",
+  "phrases": [
+    "create a tnds branded proposal document for this client",
+    "create a tnds branded proposal",
+    "draft a tnds service document",
+    "write an sop in tnds voice",
+    "format this document with tnds branding",
+    "turn this into a client-facing proposal",
+    "generate a branded operations document"
+  ],
+  "match_mode": "substring_case_insensitive",
+  "min_confidence": 0.62,
+  "description": "Trigger phrases for TNDS documentation and brand-standard output requests."
+}

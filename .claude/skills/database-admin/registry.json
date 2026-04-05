@@ -1,0 +1,16 @@
+{
+  "id": "database-admin",
+  "name": "Database Admin",
+  "version": "1.0.0",
+  "entry": "system.prompt",
+  "requires_provider": "claude",
+  "description": "Technical database execution skill for query optimization, schema tuning, indexing strategy, and reliability operations.",
+  "tags": [
+    "standalone-pack",
+    "bundle:standalone-pack",
+    "database",
+    "performance",
+    "execution"
+  ],
+  "max_tokens": 6000
+}

@@ -1,0 +1,16 @@
+{
+  "skill": "cloud-engineer",
+  "version": "1.0.0",
+  "phrases": [
+    "design a secure cloud architecture for a multi-tenant saas app",
+    "design a secure cloud architecture for a multi-tenant federal saas application",
+    "cloud architecture design",
+    "infrastructure as code deployment plan",
+    "kubernetes hardening plan",
+    "aws cost optimization implementation",
+    "high availability cloud deployment steps"
+  ],
+  "match_mode": "substring_case_insensitive",
+  "min_confidence": 0.62,
+  "description": "Trigger phrases for cloud engineer requests in the Standalone Skills pack."
+}
