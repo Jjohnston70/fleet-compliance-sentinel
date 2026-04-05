@@ -1,0 +1,32 @@
+{
+  "title": "Compliance Audit Skill",
+  "category": "compliance-audit",
+  "description": "## 1. SKILL IDENTITY",
+  "tags": [
+    "CCPA",
+    "CMMC",
+    "CUI",
+    "FedRAMP",
+    "GDPR",
+    "HIPAA",
+    "ISO 27001",
+    "NIST",
+    "PHI",
+    "SOC 2"
+  ],
+  "difficulty": "advanced",
+  "frameworks": [
+    "CCPA",
+    "CMMC",
+    "FedRAMP",
+    "GDPR",
+    "HIPAA",
+    "ISO 27001",
+    "NIST 800-171",
+    "NIST 800-53",
+    "NIST CSF",
+    "SOC 2"
+  ],
+  "template_id": "SKILL",
+  "skill": "compliance-audit"
+}

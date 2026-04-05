@@ -1,0 +1,18 @@
+{
+  "title": "TRAINING AND DEVELOPMENT PLAN",
+  "category": "business-operations",
+  "description": "[COMPANY_LEGAL_NAME] TRAINING AND DEVELOPMENT PLAN",
+  "tags": [
+    "CCPA",
+    "GDPR",
+    "HIPAA"
+  ],
+  "difficulty": "intermediate",
+  "frameworks": [
+    "CCPA",
+    "GDPR",
+    "HIPAA"
+  ],
+  "template_id": "08-training-development-plan",
+  "skill": "business-operations"
+}

@@ -1,0 +1,20 @@
+{
+  "title": "SKILL 5: GOOGLE PLATFORM SECURITY RESEARCH DOCUMENT",
+  "category": "compliance-research",
+  "description": "## Purpose",
+  "tags": [
+    "GDPR",
+    "NIST",
+    "PII",
+    "SOC 2"
+  ],
+  "difficulty": "intermediate",
+  "frameworks": [
+    "GDPR",
+    "NIST 800-53",
+    "NIST CSF",
+    "SOC 2"
+  ],
+  "template_id": "cloud-platform-security-research",
+  "skill": "compliance-research"
+}

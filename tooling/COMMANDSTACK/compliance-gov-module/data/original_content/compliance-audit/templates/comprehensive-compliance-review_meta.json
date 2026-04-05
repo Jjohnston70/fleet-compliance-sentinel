@@ -1,0 +1,31 @@
+{
+  "title": "COMPREHENSIVE COMPLIANCE REVIEW",
+  "category": "compliance-audit",
+  "description": "Executive Audit Template",
+  "tags": [
+    "CCPA",
+    "CMMC",
+    "CUI",
+    "FOIA",
+    "FedRAMP",
+    "GDPR",
+    "HIPAA",
+    "ISO 27001",
+    "NIST",
+    "SOC 2"
+  ],
+  "difficulty": "advanced",
+  "frameworks": [
+    "CCPA",
+    "CMMC",
+    "FedRAMP",
+    "GDPR",
+    "HIPAA",
+    "ISO 27001",
+    "NIST 800-171",
+    "NIST CSF",
+    "SOC 2"
+  ],
+  "template_id": "comprehensive-compliance-review",
+  "skill": "compliance-audit"
+}

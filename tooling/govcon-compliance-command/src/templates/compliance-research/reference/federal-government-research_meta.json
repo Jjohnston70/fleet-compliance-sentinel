@@ -1,0 +1,18 @@
+{
+  "title": "SKILL 4: FEDERAL AND GOVERNMENT RESEARCH DOCUMENT",
+  "category": "compliance-research",
+  "description": "## Purpose",
+  "tags": [
+    "CUI",
+    "FAR",
+    "FOIA",
+    "NIST"
+  ],
+  "difficulty": "intermediate",
+  "frameworks": [
+    "NIST 800-171",
+    "NIST 800-53"
+  ],
+  "template_id": "federal-government-research",
+  "skill": "compliance-research"
+}

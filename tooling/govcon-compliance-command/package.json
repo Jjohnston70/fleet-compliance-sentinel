@@ -1,0 +1,39 @@
+{
+  "name": "@tnds/govcon-compliance-command",
+  "version": "1.0.0",
+  "description": "Unified federal government contracting and compliance management system with document generation, regulatory templates, intake wizard, maturity scoring, and bid document creation",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "lint": "tsc --noEmit"
+  },
+  "keywords": [
+    "federal-contracting",
+    "govcon",
+    "compliance",
+    "cmmc",
+    "fedramp",
+    "sam-gov",
+    "sdvosb",
+    "pipeline-management",
+    "document-generation",
+    "nist-800-171"
+  ],
+  "author": "True North Data Strategies LLC",
+  "license": "MIT",
+  "dependencies": {
+    "docx": "^9.5.1",
+    "handlebars": "^4.7.8",
+    "pdf-lib": "^1.17.1",
+    "zod": "^3.22.4"
+  },
+  "devDependencies": {
+    "@types/node": "^20.10.0",
+    "typescript": "^5.3.3",
+    "vitest": "^1.1.0"
+  }
+}

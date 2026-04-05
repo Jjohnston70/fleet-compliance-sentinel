@@ -1,0 +1,22 @@
+{
+  "title": "ROLES AND RESPONSIBILITIES MATRIX (GOVERNMENT VERSION)",
+  "category": "government-contracting",
+  "description": "[COMPANY_LEGAL_NAME] ROLES AND RESPONSIBILITIES MATRIX (GOVERNMENT VERSION)",
+  "tags": [
+    "CCPA",
+    "FOIA",
+    "FedRAMP",
+    "GDPR",
+    "HIPAA",
+    "NIST"
+  ],
+  "difficulty": "advanced",
+  "frameworks": [
+    "CCPA",
+    "FedRAMP",
+    "GDPR",
+    "HIPAA"
+  ],
+  "template_id": "08-roles-responsibilities-matrix-gov",
+  "skill": "government-contracting"
+}

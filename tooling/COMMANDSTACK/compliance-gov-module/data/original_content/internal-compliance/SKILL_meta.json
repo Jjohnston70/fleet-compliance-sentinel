@@ -1,0 +1,21 @@
+{
+  "title": "Internal Compliance",
+  "category": "internal-compliance",
+  "description": "## 1. Skill Identity - **Name**: internal-compliance - **Version**: 1.0 - **Status**: Active - **Domain**: Federal Compliance — Internal Security Policies & Procedures - **Origin**: Converted from PAC",
+  "tags": [
+    "CCPA",
+    "CUI",
+    "GDPR",
+    "HIPAA",
+    "NIST",
+    "PHI"
+  ],
+  "difficulty": "intermediate",
+  "frameworks": [
+    "CCPA",
+    "GDPR",
+    "HIPAA"
+  ],
+  "template_id": "SKILL",
+  "skill": "internal-compliance"
+}

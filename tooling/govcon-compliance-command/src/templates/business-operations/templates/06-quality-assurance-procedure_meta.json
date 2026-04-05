@@ -1,0 +1,16 @@
+{
+  "title": "QUALITY ASSURANCE PROCEDURE",
+  "category": "business-operations",
+  "description": "[COMPANY_LEGAL_NAME] QUALITY ASSURANCE PROCEDURE",
+  "tags": [
+    "ISO 27001",
+    "NIST"
+  ],
+  "difficulty": "intermediate",
+  "frameworks": [
+    "ISO 27001",
+    "NIST CSF"
+  ],
+  "template_id": "06-quality-assurance-procedure",
+  "skill": "business-operations"
+}

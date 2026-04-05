@@ -277,10 +277,12 @@ const SECTIONS: { id: string; title: string; group?: string; content: string[] }
   },
   {
     id: 'govcon',
-    title: 'GovCon',
+    title: 'GovCon & Compliance',
     group: 'Intelligence',
     content: [
-      'The GovCon (Government Contracting) module supports fleet operators who work with federal, state, or local government contracts. It tracks contract compliance requirements, certifications (VOSB, SDVOSB, 8(a), HUBZone), and government-specific reporting deadlines.',
+      'The GovCon & Compliance module manages the full federal contracting lifecycle: opportunity tracking from SAM.gov, weighted bid/no-bid decisions (7 criteria, 14 weight points), outreach contact management, and pipeline reporting with win-loss analysis.',
+      'It generates 7 compliance document packages (Internal Policy, Security Handbook, Data Privacy, GovCon, Google Partner, Business Ops, CMMC/FedRAMP) in DOCX, PDF, and Markdown. Includes an intake wizard that maps business profiles to compliance skill domains, governance-weighted maturity scoring (0-10 scale), and bid document generation (capability statements, technical approaches, full proposals).',
+      'Backed by 216 regulatory templates covering NIST 800-53, NIST 800-171, CMMC, SOC 2, FedRAMP, HIPAA, PCI DSS, GDPR, CCPA, and ISO 27001.',
       'This module is enabled per-organization through Module Toggles.',
     ],
   },

@@ -96,7 +96,7 @@ export const SIDEBAR_SECTIONS: readonly SidebarSection[] = [
     items: [
       { label: 'Email Analytics', href: '/fleet-compliance/email-analytics', icon: 'Mail', moduleId: 'email-analytics' },
       { label: 'Readiness', href: '/fleet-compliance/readiness', icon: 'Gauge', moduleId: 'readiness' },
-      { label: 'GovCon', href: '/fleet-compliance/govcon', icon: 'Landmark', moduleId: 'govcon' },
+      { label: 'GovCon & Compliance', href: '/fleet-compliance/govcon', icon: 'Landmark', moduleId: 'govcon' },
       { label: 'Telematics', href: '/fleet-compliance/telematics', icon: 'MapPinned', moduleId: 'telematics' },
       { label: 'Forecasting', href: '/fleet-compliance/forecasting', icon: 'LineChart', moduleId: 'ml-signals' },
     ],

@@ -1,0 +1,20 @@
+{
+  "title": "Cloud Platform Security",
+  "category": "cloud-platform-security",
+  "description": "## 1. Skill Identity - **Name**: cloud-platform-security - **Version**: 1.0 - **Status**: Active - **Domain**: Federal Compliance — Cloud Security & Platform Governance - **Origin**: Converted from PA",
+  "tags": [
+    "CUI",
+    "FedRAMP",
+    "GDPR",
+    "HIPAA",
+    "NIST"
+  ],
+  "difficulty": "advanced",
+  "frameworks": [
+    "FedRAMP",
+    "GDPR",
+    "HIPAA"
+  ],
+  "template_id": "SKILL",
+  "skill": "cloud-platform-security"
+}

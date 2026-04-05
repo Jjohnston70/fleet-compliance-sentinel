@@ -1,0 +1,21 @@
+{
+  "title": "DATA HANDLING & PRIVACY USAGE GUIDE",
+  "category": "compliance-usage",
+  "description": "## Purpose",
+  "tags": [
+    "CCPA",
+    "CUI",
+    "FAR",
+    "FOIA",
+    "GDPR",
+    "HIPAA"
+  ],
+  "difficulty": "foundational",
+  "frameworks": [
+    "CCPA",
+    "GDPR",
+    "HIPAA"
+  ],
+  "template_id": "data-handling-privacy-usage",
+  "skill": "compliance-usage"
+}

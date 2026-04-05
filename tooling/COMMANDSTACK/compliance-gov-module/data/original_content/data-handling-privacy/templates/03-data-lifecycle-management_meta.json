@@ -1,0 +1,21 @@
+{
+  "title": "DATA LIFECYCLE MANAGEMENT",
+  "category": "data-handling-privacy",
+  "description": "[COMPANY_LEGAL_NAME] DATA LIFECYCLE MANAGEMENT",
+  "tags": [
+    "CCPA",
+    "GDPR",
+    "HIPAA",
+    "NIST",
+    "SOC 2"
+  ],
+  "difficulty": "intermediate",
+  "frameworks": [
+    "CCPA",
+    "GDPR",
+    "HIPAA",
+    "SOC 2"
+  ],
+  "template_id": "03-data-lifecycle-management",
+  "skill": "data-handling-privacy"
+}

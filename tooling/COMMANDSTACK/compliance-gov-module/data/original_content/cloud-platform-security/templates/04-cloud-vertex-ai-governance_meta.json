@@ -1,0 +1,19 @@
+{
+  "title": "Purpose",
+  "category": "cloud-platform-security",
+  "description": "[COMPANY_LEGAL_NAME] [CLOUD_AI_PLATFORM] GOVERNANCE AND RESPONSIBLE AI POLICY",
+  "tags": [
+    "CCPA",
+    "CUI",
+    "GDPR",
+    "HIPAA"
+  ],
+  "difficulty": "advanced",
+  "frameworks": [
+    "CCPA",
+    "GDPR",
+    "HIPAA"
+  ],
+  "template_id": "04-cloud-vertex-ai-governance",
+  "skill": "cloud-platform-security"
+}

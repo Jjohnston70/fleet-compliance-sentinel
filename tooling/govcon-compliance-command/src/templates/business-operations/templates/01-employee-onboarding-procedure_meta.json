@@ -1,0 +1,16 @@
+{
+  "title": "EMPLOYEE ONBOARDING PROCEDURE",
+  "category": "business-operations",
+  "description": "[COMPANY_LEGAL_NAME] EMPLOYEE ONBOARDING PROCEDURE",
+  "tags": [
+    "FedRAMP",
+    "HIPAA"
+  ],
+  "difficulty": "intermediate",
+  "frameworks": [
+    "FedRAMP",
+    "HIPAA"
+  ],
+  "template_id": "01-employee-onboarding-procedure",
+  "skill": "business-operations"
+}

@@ -1,0 +1,29 @@
+{
+  "title": "SKILL: security-governance",
+  "category": "security-governance",
+  "description": "## 1. Skill Identity",
+  "tags": [
+    "CCPA",
+    "CUI",
+    "FedRAMP",
+    "GDPR",
+    "HIPAA",
+    "ISO 27001",
+    "NIST",
+    "SOC 2"
+  ],
+  "difficulty": "foundational",
+  "frameworks": [
+    "CCPA",
+    "FedRAMP",
+    "GDPR",
+    "HIPAA",
+    "ISO 27001",
+    "NIST 800-171",
+    "NIST 800-53",
+    "NIST CSF",
+    "SOC 2"
+  ],
+  "template_id": "SKILL",
+  "skill": "security-governance"
+}

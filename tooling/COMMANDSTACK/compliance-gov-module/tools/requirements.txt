@@ -1,0 +1,3 @@
+# Tool-specific requirements (beyond main requirements.txt)
+# Currently all tool dependencies are included in ../requirements.txt
+# This file is reserved for future tool-specific packages

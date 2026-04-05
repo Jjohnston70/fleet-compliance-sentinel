@@ -129,14 +129,14 @@ const MODULE_SEEDS: readonly ModuleSeed[] = [
   },
   {
     id: 'govcon',
-    name: 'Government Contracting',
-    description: 'Federal opportunity and bid management.',
+    name: 'GovCon & Compliance',
+    description: 'Federal opportunity pipeline, bid decisions, compliance document generation, maturity scoring, and bid package creation.',
     category: 'contracts',
     icon: 'Landmark',
     routePrefix: '/govcon',
     isCore: false,
     requiresPlan: 'pro',
-    metadata: {},
+    metadata: { commandModule: 'govcon-compliance-command' },
   },
   {
     id: 'tasks',

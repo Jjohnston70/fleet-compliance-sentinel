@@ -1,0 +1,17 @@
+{
+  "title": "NIST-LITE ALIGNMENT DOCUMENT",
+  "category": "government-contracting",
+  "description": "[COMPANY_LEGAL_NAME] NIST-LITE ALIGNMENT DOCUMENT",
+  "tags": [
+    "FedRAMP",
+    "NIST"
+  ],
+  "difficulty": "advanced",
+  "frameworks": [
+    "FedRAMP",
+    "NIST 800-53",
+    "NIST CSF"
+  ],
+  "template_id": "05-nist-lite-alignment-document",
+  "skill": "government-contracting"
+}

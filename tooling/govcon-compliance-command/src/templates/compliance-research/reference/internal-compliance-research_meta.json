@@ -1,0 +1,22 @@
+{
+  "title": "SKILL 1: INTERNAL COMPLIANCE RESEARCH DOCUMENT",
+  "category": "compliance-research",
+  "description": "## Purpose",
+  "tags": [
+    "CUI",
+    "FAR",
+    "ISO 27001",
+    "NIST",
+    "SOC 2"
+  ],
+  "difficulty": "intermediate",
+  "frameworks": [
+    "ISO 27001",
+    "NIST 800-171",
+    "NIST 800-53",
+    "NIST CSF",
+    "SOC 2"
+  ],
+  "template_id": "internal-compliance-research",
+  "skill": "compliance-research"
+}

@@ -1,0 +1,26 @@
+{
+  "title": "GOVERNMENT READINESS STATEMENT",
+  "category": "government-contracting",
+  "description": "[COMPANY_LEGAL_NAME] GOVERNMENT READINESS STATEMENT",
+  "tags": [
+    "CCPA",
+    "FOIA",
+    "FedRAMP",
+    "GDPR",
+    "HIPAA",
+    "NIST",
+    "SOC 2"
+  ],
+  "difficulty": "advanced",
+  "frameworks": [
+    "CCPA",
+    "FedRAMP",
+    "GDPR",
+    "HIPAA",
+    "NIST 800-53",
+    "NIST CSF",
+    "SOC 2"
+  ],
+  "template_id": "02-government-readiness-statement",
+  "skill": "government-contracting"
+}

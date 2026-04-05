@@ -1,0 +1,27 @@
+{
+  "title": "SECURITY & COMPLIANCE HANDBOOK USAGE GUIDE",
+  "category": "compliance-usage",
+  "description": "## Purpose",
+  "tags": [
+    "CCPA",
+    "FedRAMP",
+    "GDPR",
+    "HIPAA",
+    "ISO 27001",
+    "NIST",
+    "SOC 2"
+  ],
+  "difficulty": "foundational",
+  "frameworks": [
+    "CCPA",
+    "FedRAMP",
+    "GDPR",
+    "HIPAA",
+    "ISO 27001",
+    "NIST 800-53",
+    "NIST CSF",
+    "SOC 2"
+  ],
+  "template_id": "security-compliance-handbook-usage",
+  "skill": "compliance-usage"
+}

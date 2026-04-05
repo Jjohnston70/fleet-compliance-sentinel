@@ -1,0 +1,21 @@
+{
+  "title": "Contracts, Risk & Assurance",
+  "category": "contracts-risk-assurance",
+  "description": "## 1. Skill Identity - **Name**: contracts-risk-assurance - **Version**: 1.0 - **Status**: Active - **Domain**: Federal Compliance — Contracts & Risk - **Origin**: Converted from PACKAGE_7_ADVANCED_CO",
+  "tags": [
+    "CCPA",
+    "CUI",
+    "FOIA",
+    "GDPR",
+    "HIPAA",
+    "PHI"
+  ],
+  "difficulty": "advanced",
+  "frameworks": [
+    "CCPA",
+    "GDPR",
+    "HIPAA"
+  ],
+  "template_id": "SKILL",
+  "skill": "contracts-risk-assurance"
+}

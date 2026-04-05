@@ -1,0 +1,20 @@
+{
+  "title": "COMPLIANCE AUDIT CHECKLIST",
+  "category": "contracts-risk-assurance",
+  "description": "[COMPANY_LEGAL_NAME] COMPLIANCE AUDIT CHECKLIST",
+  "tags": [
+    "CCPA",
+    "CUI",
+    "FOIA",
+    "GDPR",
+    "NIST",
+    "PII"
+  ],
+  "difficulty": "advanced",
+  "frameworks": [
+    "CCPA",
+    "GDPR"
+  ],
+  "template_id": "07-compliance-audit-checklist",
+  "skill": "contracts-risk-assurance"
+}

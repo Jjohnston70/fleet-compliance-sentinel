@@ -1,0 +1,29 @@
+{
+  "title": "GOVERNMENT CONTRACTING USAGE GUIDE",
+  "category": "compliance-usage",
+  "description": "## Purpose",
+  "tags": [
+    "CCPA",
+    "CUI",
+    "FAR",
+    "FOIA",
+    "FedRAMP",
+    "GDPR",
+    "HIPAA",
+    "NIST",
+    "SOC 2"
+  ],
+  "difficulty": "foundational",
+  "frameworks": [
+    "CCPA",
+    "FedRAMP",
+    "GDPR",
+    "HIPAA",
+    "NIST 800-171",
+    "NIST 800-53",
+    "NIST CSF",
+    "SOC 2"
+  ],
+  "template_id": "government-contracting-usage",
+  "skill": "compliance-usage"
+}

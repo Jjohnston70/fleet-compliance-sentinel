@@ -1,0 +1,19 @@
+{
+  "title": "CLOSEOUT AND OFFBOARDING PROCEDURE (GOVERNMENT VERSION)",
+  "category": "government-contracting",
+  "description": "[COMPANY_LEGAL_NAME] CLOSEOUT AND OFFBOARDING PROCEDURE (GOVERNMENT VERSION)",
+  "tags": [
+    "FAR",
+    "FOIA",
+    "HIPAA",
+    "NIST",
+    "PHI",
+    "PII"
+  ],
+  "difficulty": "advanced",
+  "frameworks": [
+    "HIPAA"
+  ],
+  "template_id": "07-closeout-offboarding-procedure-gov",
+  "skill": "government-contracting"
+}

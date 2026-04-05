@@ -1,0 +1,19 @@
+{
+  "title": "BREACH NOTIFICATION PROCEDURE",
+  "category": "data-handling-privacy",
+  "description": "[COMPANY_LEGAL_NAME] BREACH NOTIFICATION PROCEDURE",
+  "tags": [
+    "CCPA",
+    "CUI",
+    "GDPR",
+    "HIPAA"
+  ],
+  "difficulty": "intermediate",
+  "frameworks": [
+    "CCPA",
+    "GDPR",
+    "HIPAA"
+  ],
+  "template_id": "06-breach-notification-procedure",
+  "skill": "data-handling-privacy"
+}

@@ -1,0 +1,18 @@
+{
+  "title": "INCIDENT RESPONSE PLAN",
+  "category": "internal-compliance",
+  "description": "[COMPANY_LEGAL_NAME] INCIDENT RESPONSE PLAN",
+  "tags": [
+    "CUI",
+    "FOIA",
+    "GDPR",
+    "HIPAA"
+  ],
+  "difficulty": "intermediate",
+  "frameworks": [
+    "GDPR",
+    "HIPAA"
+  ],
+  "template_id": "04-incident-response-plan",
+  "skill": "internal-compliance"
+}

@@ -1,0 +1,30 @@
+{
+  "title": "AUDIT SCORING CRITERIA",
+  "category": "compliance-audit",
+  "description": "Reference Guide for Compliance Assessments",
+  "tags": [
+    "CCPA",
+    "CUI",
+    "FedRAMP",
+    "GDPR",
+    "HIPAA",
+    "ISO 27001",
+    "NIST",
+    "PHI",
+    "SOC 2"
+  ],
+  "difficulty": "advanced",
+  "frameworks": [
+    "CCPA",
+    "FedRAMP",
+    "GDPR",
+    "HIPAA",
+    "ISO 27001",
+    "NIST 800-171",
+    "NIST 800-53",
+    "NIST CSF",
+    "SOC 2"
+  ],
+  "template_id": "audit-scoring-criteria",
+  "skill": "compliance-audit"
+}

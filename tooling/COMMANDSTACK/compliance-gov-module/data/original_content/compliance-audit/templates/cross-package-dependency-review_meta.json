@@ -1,0 +1,29 @@
+{
+  "title": "CROSS-PACKAGE DEPENDENCY REVIEW",
+  "category": "compliance-audit",
+  "description": "Compliance Audit Checklist Template",
+  "tags": [
+    "CCPA",
+    "CUI",
+    "FOIA",
+    "FedRAMP",
+    "GDPR",
+    "HIPAA",
+    "ISO 27001",
+    "NIST",
+    "PII",
+    "SOC 2"
+  ],
+  "difficulty": "advanced",
+  "frameworks": [
+    "CCPA",
+    "FedRAMP",
+    "GDPR",
+    "HIPAA",
+    "ISO 27001",
+    "NIST CSF",
+    "SOC 2"
+  ],
+  "template_id": "cross-package-dependency-review",
+  "skill": "compliance-audit"
+}

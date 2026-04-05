@@ -1,0 +1,18 @@
+{
+  "title": "PRIVACY MANAGEMENT POLICY",
+  "category": "data-handling-privacy",
+  "description": "[COMPANY_LEGAL_NAME] PRIVACY MANAGEMENT POLICY",
+  "tags": [
+    "CCPA",
+    "GDPR",
+    "HIPAA"
+  ],
+  "difficulty": "intermediate",
+  "frameworks": [
+    "CCPA",
+    "GDPR",
+    "HIPAA"
+  ],
+  "template_id": "02-privacy-management-policy",
+  "skill": "data-handling-privacy"
+}

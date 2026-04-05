@@ -1,0 +1,28 @@
+{
+  "title": "compliance-research",
+  "category": "compliance-research",
+  "description": "## 1. Skill Overview",
+  "tags": [
+    "CCPA",
+    "FedRAMP",
+    "GDPR",
+    "HIPAA",
+    "ISO 27001",
+    "NIST",
+    "SOC 2"
+  ],
+  "difficulty": "intermediate",
+  "frameworks": [
+    "CCPA",
+    "FedRAMP",
+    "GDPR",
+    "HIPAA",
+    "ISO 27001",
+    "NIST 800-171",
+    "NIST 800-53",
+    "NIST CSF",
+    "SOC 2"
+  ],
+  "template_id": "SKILL",
+  "skill": "compliance-research"
+}

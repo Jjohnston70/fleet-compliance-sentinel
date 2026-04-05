@@ -1,0 +1,21 @@
+{
+  "title": "PROCUREMENT AND SUBCONTRACTOR POLICY",
+  "category": "government-contracting",
+  "description": "[COMPANY_LEGAL_NAME] PROCUREMENT AND SUBCONTRACTOR POLICY",
+  "tags": [
+    "CCPA",
+    "FAR",
+    "FOIA",
+    "GDPR",
+    "HIPAA",
+    "NIST"
+  ],
+  "difficulty": "advanced",
+  "frameworks": [
+    "CCPA",
+    "GDPR",
+    "HIPAA"
+  ],
+  "template_id": "09-procurement-subcontractor-policy",
+  "skill": "government-contracting"
+}

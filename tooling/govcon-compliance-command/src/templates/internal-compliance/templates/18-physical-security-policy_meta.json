@@ -1,0 +1,16 @@
+{
+  "title": "TRUE NORTH DATA STRATEGIES LLC",
+  "category": "internal-compliance",
+  "description": "TRUE NORTH DATA STRATEGIES LLC PHYSICAL SECURITY POLICY",
+  "tags": [
+    "ISO 27001",
+    "SOC 2"
+  ],
+  "difficulty": "intermediate",
+  "frameworks": [
+    "ISO 27001",
+    "SOC 2"
+  ],
+  "template_id": "18-physical-security-policy",
+  "skill": "internal-compliance"
+}

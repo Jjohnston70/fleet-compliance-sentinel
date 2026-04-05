@@ -1,0 +1,77 @@
+version: '3.8'
+
+services:
+  # FastAPI Backend API
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: compliance-gov-api
+    ports:
+      - "8000:8000"
+    environment:
+      - COMPLIANCE_ENV=production
+      - COMPLIANCE_LLM_PROVIDER=${COMPLIANCE_LLM_PROVIDER:-anthropic}
+      - COMPLIANCE_LLM_MODEL=${COMPLIANCE_LLM_MODEL:-claude-sonnet-4-20250514}
+      - COMPLIANCE_EMBEDDING_PROVIDER=${COMPLIANCE_EMBEDDING_PROVIDER:-openai}
+      - COMPLIANCE_EMBEDDING_MODEL=${COMPLIANCE_EMBEDDING_MODEL:-text-embedding-3-small}
+      - COMPLIANCE_LOG_LEVEL=${COMPLIANCE_LOG_LEVEL:-INFO}
+      - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY}
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+    volumes:
+      - ./data:/app/data
+    depends_on:
+      - ollama
+    networks:
+      - compliance-net
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 5s
+
+  # Next.js Frontend
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile.frontend
+    container_name: compliance-gov-frontend
+    ports:
+      - "3000:3000"
+    environment:
+      - NEXT_PUBLIC_API_URL=http://localhost:8000
+      - NODE_ENV=production
+    depends_on:
+      - api
+    networks:
+      - compliance-net
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 5s
+
+  # Optional: Local LLM provider (Ollama)
+  # Uncomment to enable local LLM capabilities
+  ollama:
+    image: ollama/ollama:latest
+    container_name: compliance-gov-ollama
+    ports:
+      - "11434:11434"
+    volumes:
+      - ollama_data:/root/.ollama
+    networks:
+      - compliance-net
+    profiles:
+      - optional
+    # To enable, run: docker-compose --profile optional up
+
+networks:
+  compliance-net:
+    driver: bridge
+
+volumes:
+  ollama_data:
+    driver: local

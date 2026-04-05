@@ -1,0 +1,22 @@
+{
+  "title": "Universal Retention Schedule",
+  "category": "shared-reference",
+  "description": "**Purpose:** Master retention schedule for all record types across all organizational contexts **Last Updated:** 2026-02-07 **Authority:** data-handling-privacy skill (Records Management Policy) **Sco",
+  "tags": [
+    "CCPA",
+    "FAR",
+    "GDPR",
+    "HIPAA",
+    "NIST",
+    "PHI"
+  ],
+  "difficulty": "intermediate",
+  "frameworks": [
+    "CCPA",
+    "GDPR",
+    "HIPAA",
+    "NIST 800-53"
+  ],
+  "template_id": "retention-schedule",
+  "skill": "shared-reference"
+}

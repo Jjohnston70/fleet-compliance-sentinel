@@ -1,0 +1,29 @@
+{
+  "title": "Federal Compliance Skill: Data Handling & Privacy",
+  "category": "data-handling-privacy",
+  "description": "## 1. Skill Identity",
+  "tags": [
+    "CCPA",
+    "CUI",
+    "FedRAMP",
+    "GDPR",
+    "HIPAA",
+    "ISO 27001",
+    "NIST",
+    "PHI",
+    "PII",
+    "SOC 2"
+  ],
+  "difficulty": "intermediate",
+  "frameworks": [
+    "CCPA",
+    "FedRAMP",
+    "GDPR",
+    "HIPAA",
+    "ISO 27001",
+    "NIST 800-171",
+    "SOC 2"
+  ],
+  "template_id": "SKILL",
+  "skill": "data-handling-privacy"
+}

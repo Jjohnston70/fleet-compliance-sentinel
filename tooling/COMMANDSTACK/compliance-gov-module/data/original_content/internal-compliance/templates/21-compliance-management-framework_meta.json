@@ -1,0 +1,31 @@
+{
+  "title": "TRUE NORTH DATA STRATEGIES LLC",
+  "category": "internal-compliance",
+  "description": "TRUE NORTH DATA STRATEGIES LLC COMPLIANCE MANAGEMENT FRAMEWORK",
+  "tags": [
+    "CCPA",
+    "CUI",
+    "FOIA",
+    "FedRAMP",
+    "GDPR",
+    "HIPAA",
+    "ISO 27001",
+    "NIST",
+    "PHI",
+    "SOC 2"
+  ],
+  "difficulty": "intermediate",
+  "frameworks": [
+    "CCPA",
+    "FedRAMP",
+    "GDPR",
+    "HIPAA",
+    "ISO 27001",
+    "NIST 800-171",
+    "NIST 800-53",
+    "NIST CSF",
+    "SOC 2"
+  ],
+  "template_id": "21-compliance-management-framework",
+  "skill": "internal-compliance"
+}

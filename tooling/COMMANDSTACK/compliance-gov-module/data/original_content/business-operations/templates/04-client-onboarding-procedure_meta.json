@@ -1,0 +1,16 @@
+{
+  "title": "CLIENT ONBOARDING PROCEDURE",
+  "category": "business-operations",
+  "description": "[COMPANY_LEGAL_NAME] CLIENT ONBOARDING PROCEDURE",
+  "tags": [
+    "FedRAMP",
+    "HIPAA"
+  ],
+  "difficulty": "intermediate",
+  "frameworks": [
+    "FedRAMP",
+    "HIPAA"
+  ],
+  "template_id": "04-client-onboarding-procedure",
+  "skill": "business-operations"
+}

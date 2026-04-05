@@ -1,0 +1,16 @@
+{
+  "title": "BUSINESS OPERATIONS USAGE GUIDE",
+  "category": "compliance-usage",
+  "description": "## Purpose",
+  "tags": [
+    "ISO 27001",
+    "SOC 2"
+  ],
+  "difficulty": "foundational",
+  "frameworks": [
+    "ISO 27001",
+    "SOC 2"
+  ],
+  "template_id": "business-operations-usage",
+  "skill": "compliance-usage"
+}
