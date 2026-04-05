@@ -48,9 +48,14 @@ interface BidDecision {
 interface BidDocument {
   id: string;
   document_type: string;
-  status: string;
+  status: 'draft' | 'review' | 'final' | string;
   version: number;
   created_at: string | null;
+  updated_at?: string | null;
+}
+
+interface BidDocumentDetail extends BidDocument {
+  content: string;
 }
 
 interface GeneratedOutputRow {
@@ -139,6 +144,72 @@ function getDecisionColor(decision: 'bid' | 'no_bid'): string {
   return decision === 'bid' ? '#16a34a' : '#dc2626';
 }
 
+function toTimestamp(value: string | null | undefined): number {
+  if (!value) return 0;
+  const parsed = new Date(value);
+  const millis = parsed.getTime();
+  return Number.isFinite(millis) ? millis : 0;
+}
+
+function toDocumentLabel(value: string): string {
+  return value
+    .split('_')
+    .map((part) => (part.length ? `${part[0].toUpperCase()}${part.slice(1)}` : part))
+    .join(' ');
+}
+
+function selectLatestBidDocuments(documents: BidDocument[]): BidDocument[] {
+  const byType = new Map<string, BidDocument>();
+
+  for (const document of documents) {
+    const type = String(document?.document_type ?? '').trim();
+    if (!type) continue;
+
+    const existing = byType.get(type);
+    if (!existing) {
+      byType.set(type, document);
+      continue;
+    }
+
+    const candidateTs = Math.max(
+      toTimestamp(document?.updated_at),
+      toTimestamp(document?.created_at),
+    );
+    const existingTs = Math.max(
+      toTimestamp(existing?.updated_at),
+      toTimestamp(existing?.created_at),
+    );
+
+    if (candidateTs >= existingTs) {
+      byType.set(type, document);
+    }
+  }
+
+  return Array.from(byType.values()).sort((a, b) => {
+    const aTs = Math.max(toTimestamp(a?.updated_at), toTimestamp(a?.created_at));
+    const bTs = Math.max(toTimestamp(b?.updated_at), toTimestamp(b?.created_at));
+    return bTs - aTs;
+  });
+}
+
+function downloadBlob(blob: Blob, filename: string) {
+  const objectUrl = window.URL.createObjectURL(blob);
+  const anchor = document.createElement('a');
+  anchor.href = objectUrl;
+  anchor.download = filename;
+  document.body.appendChild(anchor);
+  anchor.click();
+  anchor.remove();
+  window.URL.revokeObjectURL(objectUrl);
+}
+
+function fileNameFromDisposition(headerValue: string | null): string | null {
+  if (!headerValue) return null;
+  const match = /filename="([^"]+)"/i.exec(headerValue);
+  if (!match?.[1]) return null;
+  return match[1];
+}
+
 function defaultBidForm(contractValue: number | null): BidDecisionFormState {
   return {
     technical_fit: '70',
@@ -168,6 +239,13 @@ export default function GovConOpportunityDetailPage() {
   const [intakeMessage, setIntakeMessage] = useState('');
   const [bidGenerationMessage, setBidGenerationMessage] = useState('');
   const [generatedOutputs, setGeneratedOutputs] = useState<GeneratedOutputRow[]>([]);
+  const [reviewingDocument, setReviewingDocument] = useState<BidDocumentDetail | null>(null);
+  const [reviewContent, setReviewContent] = useState('');
+  const [reviewStatus, setReviewStatus] = useState<'draft' | 'review' | 'final'>('draft');
+  const [loadingReviewDocument, setLoadingReviewDocument] = useState(false);
+  const [savingReviewDocument, setSavingReviewDocument] = useState(false);
+  const [downloadingAsset, setDownloadingAsset] = useState('');
+  const [downloadingPackage, setDownloadingPackage] = useState(false);
 
   const loadDetail = useCallback(async () => {
     setLoading(true);
@@ -197,8 +275,15 @@ export default function GovConOpportunityDetailPage() {
 
   const opportunity = payload?.opportunity;
   const bidDecision = payload?.bidDecision;
-  const bidDocuments = Array.isArray(payload?.bidDocuments) ? payload?.bidDocuments : [];
-  const contacts = Array.isArray(payload?.contacts) ? payload?.contacts : [];
+  const bidDocuments = useMemo(
+    () => (Array.isArray(payload?.bidDocuments) ? payload.bidDocuments : []),
+    [payload?.bidDocuments],
+  );
+  const latestBidDocuments = useMemo(() => selectLatestBidDocuments(bidDocuments), [bidDocuments]);
+  const contacts = useMemo(
+    () => (Array.isArray(payload?.contacts) ? payload.contacts : []),
+    [payload?.contacts],
+  );
 
   const countdownLabel = useMemo(() => {
     const days = daysUntil(opportunity?.response_deadline ?? null);
@@ -207,6 +292,16 @@ export default function GovConOpportunityDetailPage() {
     if (!Number.isFinite(asNumber)) return '--';
     return `${days} day${asNumber === 1 ? '' : 's'}`;
   }, [opportunity?.response_deadline]);
+
+  useEffect(() => {
+    if (!reviewingDocument) return;
+    const stillExists = latestBidDocuments.some((entry) => entry.id === reviewingDocument.id);
+    if (!stillExists) {
+      setReviewingDocument(null);
+      setReviewContent('');
+      setReviewStatus('draft');
+    }
+  }, [latestBidDocuments, reviewingDocument]);
 
   async function handleUpdateStatus() {
     if (!opportunity) return;
@@ -336,6 +431,134 @@ export default function GovConOpportunityDetailPage() {
       setError(err instanceof Error ? err.message : 'Failed to generate bid documents');
     } finally {
       setGeneratingBidDocs(false);
+    }
+  }
+
+  async function handleOpenBidDocument(documentId: string) {
+    setLoadingReviewDocument(true);
+    setError('');
+
+    try {
+      const response = await fetch(`/api/fleet-compliance/govcon/bid-documents/${documentId}`, {
+        cache: 'no-store',
+      });
+      const data = (await response.json().catch(() => ({}))) as {
+        ok: boolean;
+        error?: string;
+        document?: BidDocumentDetail;
+      };
+
+      if (!response.ok || !data.ok || !data.document) {
+        throw new Error(data.error || 'Failed to load bid document');
+      }
+
+      setReviewingDocument(data.document);
+      setReviewContent(data.document.content || '');
+      const parsedStatus = data.document.status;
+      if (parsedStatus === 'draft' || parsedStatus === 'review' || parsedStatus === 'final') {
+        setReviewStatus(parsedStatus);
+      } else {
+        setReviewStatus('draft');
+      }
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to load bid document');
+    } finally {
+      setLoadingReviewDocument(false);
+    }
+  }
+
+  async function handleSaveBidDocumentReview() {
+    if (!reviewingDocument) return;
+
+    setSavingReviewDocument(true);
+    setError('');
+
+    try {
+      const response = await fetch(`/api/fleet-compliance/govcon/bid-documents/${reviewingDocument.id}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          content: reviewContent,
+          status: reviewStatus,
+        }),
+      });
+
+      const data = (await response.json().catch(() => ({}))) as {
+        ok: boolean;
+        error?: string;
+        document?: BidDocumentDetail;
+      };
+      if (!response.ok || !data.ok || !data.document) {
+        throw new Error(data.error || 'Failed to save bid document');
+      }
+
+      setReviewingDocument(data.document);
+      setBidGenerationMessage('Bid document saved. Download DOCX/PDF for client-side review before submission.');
+      await loadDetail();
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to save bid document');
+    } finally {
+      setSavingReviewDocument(false);
+    }
+  }
+
+  async function handleDownloadBidDocument(documentId: string, format: 'docx' | 'pdf' | 'markdown') {
+    setDownloadingAsset(`${documentId}:${format}`);
+    setError('');
+
+    try {
+      const response = await fetch('/api/fleet-compliance/govcon/bid-documents/download', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          document_id: documentId,
+          format,
+        }),
+      });
+      if (!response.ok) {
+        const data = (await response.json().catch(() => ({}))) as { error?: string };
+        throw new Error(data.error || 'Failed to download document');
+      }
+
+      const blob = await response.blob();
+      const fileName = fileNameFromDisposition(response.headers.get('content-disposition'))
+        || `bid-document.${format === 'markdown' ? 'md' : format}`;
+      downloadBlob(blob, fileName);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to download document');
+    } finally {
+      setDownloadingAsset('');
+    }
+  }
+
+  async function handleDownloadBidPackageZip() {
+    if (!opportunity) return;
+
+    setDownloadingPackage(true);
+    setError('');
+
+    try {
+      const response = await fetch('/api/fleet-compliance/govcon/bid-documents/download', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          opportunity_id: opportunity.id,
+          formats: ['docx', 'pdf', 'markdown'],
+        }),
+      });
+      if (!response.ok) {
+        const data = (await response.json().catch(() => ({}))) as { error?: string };
+        throw new Error(data.error || 'Failed to download bid package');
+      }
+
+      const blob = await response.blob();
+      const fileName = fileNameFromDisposition(response.headers.get('content-disposition'))
+        || `${opportunity.solicitation_number}_bid_package.zip`;
+      downloadBlob(blob, fileName);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to download bid package');
+    } finally {
+      setDownloadingPackage(false);
     }
   }
 
@@ -619,17 +842,27 @@ export default function GovConOpportunityDetailPage() {
             <article className="fleet-compliance-list-card">
               <div className="fleet-compliance-section-head" style={{ alignItems: 'center' }}>
                 <h3>Bid Documents</h3>
-                <button
-                  type="button"
-                  className="btn-secondary"
-                  onClick={() => void handleGenerateBidPackage()}
-                  disabled={generatingBidDocs}
-                >
-                  {generatingBidDocs ? 'Generating...' : 'Generate Bid Package'}
-                </button>
+                <div style={{ display: 'flex', gap: '0.55rem', flexWrap: 'wrap' }}>
+                  <button
+                    type="button"
+                    className="btn-secondary"
+                    onClick={() => void handleGenerateBidPackage()}
+                    disabled={generatingBidDocs}
+                  >
+                    {generatingBidDocs ? 'Generating...' : 'Generate Bid Package'}
+                  </button>
+                  <button
+                    type="button"
+                    className="btn-secondary"
+                    onClick={() => void handleDownloadBidPackageZip()}
+                    disabled={downloadingPackage}
+                  >
+                    {downloadingPackage ? 'Packaging...' : 'Download ZIP Package'}
+                  </button>
+                </div>
               </div>
 
-              {bidDocuments.length === 0 ? (
+              {latestBidDocuments.length === 0 ? (
                 <p className="fleet-compliance-table-note" style={{ marginTop: '0.6rem' }}>
                   No bid documents generated yet.
                 </p>
@@ -642,19 +875,122 @@ export default function GovConOpportunityDetailPage() {
                         <th>Status</th>
                         <th>Version</th>
                         <th>Created</th>
+                        <th>Actions</th>
                       </tr>
                     </thead>
                     <tbody>
-                      {bidDocuments.map((document) => (
+                      {latestBidDocuments.map((document) => (
                         <tr key={document.id}>
-                          <td>{document.document_type}</td>
+                          <td>{toDocumentLabel(document.document_type)}</td>
                           <td>{document.status}</td>
                           <td>v{document.version}</td>
                           <td>{formatDateTime(document.created_at)}</td>
+                          <td>
+                            <div style={{ display: 'flex', gap: '0.4rem', flexWrap: 'wrap' }}>
+                              <button
+                                type="button"
+                                className="btn-secondary"
+                                onClick={() => void handleOpenBidDocument(document.id)}
+                                disabled={loadingReviewDocument}
+                              >
+                                {loadingReviewDocument && reviewingDocument?.id === document.id ? 'Loading...' : 'Review/Edit'}
+                              </button>
+                              <button
+                                type="button"
+                                className="btn-secondary"
+                                onClick={() => void handleDownloadBidDocument(document.id, 'docx')}
+                                disabled={downloadingAsset === `${document.id}:docx`}
+                              >
+                                {downloadingAsset === `${document.id}:docx` ? '...' : 'DOCX'}
+                              </button>
+                              <button
+                                type="button"
+                                className="btn-secondary"
+                                onClick={() => void handleDownloadBidDocument(document.id, 'pdf')}
+                                disabled={downloadingAsset === `${document.id}:pdf`}
+                              >
+                                {downloadingAsset === `${document.id}:pdf` ? '...' : 'PDF'}
+                              </button>
+                              <button
+                                type="button"
+                                className="btn-secondary"
+                                onClick={() => void handleDownloadBidDocument(document.id, 'markdown')}
+                                disabled={downloadingAsset === `${document.id}:markdown`}
+                              >
+                                {downloadingAsset === `${document.id}:markdown` ? '...' : 'MD'}
+                              </button>
+                            </div>
+                          </td>
                         </tr>
                       ))}
                     </tbody>
                   </table>
+                </div>
+              )}
+
+              {reviewingDocument && (
+                <div style={{ marginTop: '1rem', borderTop: '1px solid var(--border)', paddingTop: '1rem' }}>
+                  <div className="fleet-compliance-section-head" style={{ marginBottom: '0.55rem' }}>
+                    <h3 style={{ margin: 0 }}>Review / Edit: {toDocumentLabel(reviewingDocument.document_type)}</h3>
+                    <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
+                      <label className="fleet-compliance-field-stack" style={{ minWidth: 150 }}>
+                        <span>Status</span>
+                        <select
+                          value={reviewStatus}
+                          onChange={(event) => setReviewStatus(event.target.value as 'draft' | 'review' | 'final')}
+                        >
+                          <option value="draft">draft</option>
+                          <option value="review">review</option>
+                          <option value="final">final</option>
+                        </select>
+                      </label>
+                    </div>
+                  </div>
+                  <label className="fleet-compliance-field-stack">
+                    <span>Editable Source (Markdown)</span>
+                    <textarea
+                      rows={14}
+                      value={reviewContent}
+                      onChange={(event) => setReviewContent(event.target.value)}
+                    />
+                  </label>
+                  <div style={{ marginTop: '0.7rem', display: 'flex', gap: '0.55rem', flexWrap: 'wrap' }}>
+                    <button
+                      type="button"
+                      className="btn-primary"
+                      disabled={savingReviewDocument}
+                      onClick={() => void handleSaveBidDocumentReview()}
+                    >
+                      {savingReviewDocument ? 'Saving...' : 'Save Revision'}
+                    </button>
+                    <button
+                      type="button"
+                      className="btn-secondary"
+                      onClick={() => void handleDownloadBidDocument(reviewingDocument.id, 'docx')}
+                      disabled={downloadingAsset === `${reviewingDocument.id}:docx`}
+                    >
+                      {downloadingAsset === `${reviewingDocument.id}:docx` ? 'Downloading...' : 'Download DOCX'}
+                    </button>
+                    <button
+                      type="button"
+                      className="btn-secondary"
+                      onClick={() => void handleDownloadBidDocument(reviewingDocument.id, 'pdf')}
+                      disabled={downloadingAsset === `${reviewingDocument.id}:pdf`}
+                    >
+                      {downloadingAsset === `${reviewingDocument.id}:pdf` ? 'Downloading...' : 'Download PDF'}
+                    </button>
+                    <button
+                      type="button"
+                      className="btn-secondary"
+                      onClick={() => void handleDownloadBidPackageZip()}
+                      disabled={downloadingPackage}
+                    >
+                      {downloadingPackage ? 'Packaging...' : 'Download Full ZIP'}
+                    </button>
+                  </div>
+                  <p className="fleet-compliance-table-note" style={{ marginTop: '0.55rem' }}>
+                    Word edits are done by downloading DOCX, editing locally, then including the revised files in the ZIP for portal submission.
+                  </p>
                 </div>
               )}
 
@@ -699,9 +1035,24 @@ export default function GovConOpportunityDetailPage() {
                 <li>Review opportunity details, deadline, and set-aside fit.</li>
                 <li>Run Bid Decision scoring to produce bid/no-bid rationale.</li>
                 <li>Generate bid package outputs (DOCX/PDF/Markdown).</li>
+                <li>Edit source content, then download DOCX/PDF or full ZIP package.</li>
                 <li>Set status to <strong>bid</strong>, then move to <strong>submitted</strong> after final review.</li>
                 <li>Track final outcome as <strong>awarded</strong> or <strong>lost</strong>.</li>
               </ol>
+            </article>
+
+            <article className="fleet-compliance-list-card">
+              <h3>Submittal Path</h3>
+              <ol style={{ margin: '0.7rem 0 0 1rem', padding: 0, display: 'grid', gap: '0.4rem', color: 'var(--text-secondary)' }}>
+                <li>Click <strong>Generate Bid Package</strong> to build all documents.</li>
+                <li>Open each document in <strong>Review/Edit</strong> and save revisions.</li>
+                <li>Download DOCX for client-side Word edits or export ZIP package.</li>
+                <li>Submit the package through the target portal (SAM, PIEE, agency portal, etc.).</li>
+                <li>In this app, update opportunity status to <strong>submitted</strong>.</li>
+              </ol>
+              <p className="fleet-compliance-table-note" style={{ marginTop: '0.65rem' }}>
+                Automated portal submittal is not wired yet; submission is currently a manual external step.
+              </p>
             </article>
 
             <article className="fleet-compliance-list-card">
@@ -736,6 +1087,14 @@ export default function GovConOpportunityDetailPage() {
                   onClick={() => void handleGenerateBidPackage()}
                 >
                   {generatingBidDocs ? 'Generating...' : 'Generate Bid Package'}
+                </button>
+                <button
+                  type="button"
+                  className="btn-secondary"
+                  disabled={downloadingPackage}
+                  onClick={() => void handleDownloadBidPackageZip()}
+                >
+                  {downloadingPackage ? 'Packaging...' : 'Download ZIP Package'}
                 </button>
                 <button
                   type="button"

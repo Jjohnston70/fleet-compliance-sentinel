@@ -19,6 +19,17 @@ interface GovConCommandModule {
   PipelineDashboard: new (opportunityService: any, pipelineService: any) => any;
   WinLossReportGenerator: new (pipelineService: any) => any;
   OutreachReport: new (outreachService: any) => any;
+  generateDocumentOutputs: (
+    title: string,
+    slug: string,
+    content: string,
+    formats?: ('docx' | 'pdf' | 'markdown')[],
+  ) => Promise<Array<{
+    filename: string;
+    format: 'docx' | 'pdf' | 'markdown';
+    content: Buffer | string;
+    mimeType: string;
+  }>>;
 }
 
 export interface GovConRuntime {
@@ -292,6 +303,10 @@ async function loadGovConCommandModule(): Promise<GovConCommandModule> {
     govConModulePromise = import('../../tooling/govcon-compliance-command/dist/index.js') as Promise<GovConCommandModule>;
   }
   return govConModulePromise;
+}
+
+export async function getGovConCommandModule(): Promise<GovConCommandModule> {
+  return loadGovConCommandModule();
 }
 
 function serializeMapValues(value: unknown): any[] {
