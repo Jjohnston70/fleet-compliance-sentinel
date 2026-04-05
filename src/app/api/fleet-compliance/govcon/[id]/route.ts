@@ -17,6 +17,7 @@ import {
   serializeContact,
   serializeOpportunity,
 } from '@/lib/govcon-compliance-command-runtime';
+import { getGovConIntelRecord } from '@/lib/govcon-intel';
 
 function parseDateOrUndefined(value: unknown): Date | undefined {
   if (value == null || value === '') return undefined;
@@ -54,10 +55,11 @@ export async function GET(
       return NextResponse.json({ ok: false, error: 'Opportunity not found' }, { status: 404 });
     }
 
-    const [bidDecision, bidDocuments, contacts] = await Promise.all([
+    const [bidDecision, bidDocuments, contacts, intel] = await Promise.all([
       runtimeRef.bidDecisionService.getBidDecision(id),
       runtimeRef.bidDocumentService.listBidDocuments(id),
       runtimeRef.outreachService.listContacts({ agency: opportunity.agency }),
+      getGovConIntelRecord(orgId, id),
     ]);
 
     return NextResponse.json({
@@ -66,6 +68,14 @@ export async function GET(
       bidDecision: bidDecision ? serializeBidDecision(bidDecision) : null,
       bidDocuments: bidDocuments.map((document: any) => serializeBidDocument(document)),
       contacts: contacts.map((contact: any) => serializeContact(contact)),
+      intel: intel
+        ? {
+          sourceUrl: intel.sourceUrl,
+          sourceSummary: intel.sourceSummary,
+          extractedAt: intel.extractedAt,
+          sourceLength: intel.sourceText.length,
+        }
+        : null,
     });
   } catch (error) {
     const setupError = getGovConModuleSetupError(error);

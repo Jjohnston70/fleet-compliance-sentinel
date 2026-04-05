@@ -500,19 +500,61 @@ async function ensureModuleSystemTables(): Promise<void> {
 export async function getOrgModules(orgId: string): Promise<string[]> {
   await ensureModuleSystemTables();
   const sql = getSQL();
+  const orgRows = await sql`
+    SELECT plan
+    FROM organizations
+    WHERE id = ${orgId}
+    LIMIT 1
+  `;
+  const orgPlan = normalizePlanTier(
+    typeof orgRows[0]?.plan === 'string'
+      ? orgRows[0].plan
+      : 'trial',
+  );
+  const planDefaultSet = new Set(getModulesByPlan(orgPlan));
+
   const rows = await sql`
-    SELECT m.id
+    SELECT
+      m.id,
+      m.is_core,
+      om.enabled
     FROM modules m
     LEFT JOIN org_modules om
       ON om.module_id = m.id
      AND om.org_id = ${orgId}
-    WHERE m.is_core = TRUE
-       OR COALESCE(om.enabled, FALSE) = TRUE
     ORDER BY m.id ASC
   `;
-  return rows
-    .map((row) => (typeof row.id === 'string' ? row.id : ''))
-    .filter(Boolean);
+
+  const enabled: string[] = [];
+  for (const row of rows) {
+    const moduleId = typeof row.id === 'string' ? row.id : '';
+    if (!moduleId) continue;
+
+    const isCore = parseBoolean(row.is_core);
+    const explicitEnabled = row.enabled === null || row.enabled === undefined
+      ? null
+      : parseBoolean(row.enabled);
+
+    if (isCore) {
+      enabled.push(moduleId);
+      continue;
+    }
+
+    if (explicitEnabled === true) {
+      enabled.push(moduleId);
+      continue;
+    }
+
+    if (explicitEnabled === false) {
+      continue;
+    }
+
+    if (planDefaultSet.has(moduleId)) {
+      enabled.push(moduleId);
+    }
+  }
+
+  return enabled.sort((a, b) => a.localeCompare(b));
 }
 
 export async function isModuleEnabled(orgId: string, moduleId: string): Promise<boolean> {

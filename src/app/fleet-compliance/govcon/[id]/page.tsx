@@ -80,6 +80,12 @@ interface OpportunityResponse {
   bidDecision?: BidDecision | null;
   bidDocuments?: BidDocument[];
   contacts?: Contact[];
+  intel?: {
+    sourceUrl: string | null;
+    sourceSummary: string | null;
+    extractedAt: string;
+    sourceLength: number;
+  } | null;
   error?: string;
 }
 
@@ -232,9 +238,12 @@ export default function GovConOpportunityDetailPage() {
   const [statusDraft, setStatusDraft] = useState<OpportunityStatus>('identified');
   const [savingStatus, setSavingStatus] = useState(false);
   const [runningBidDecision, setRunningBidDecision] = useState(false);
+  const [runningAutoBidDecision, setRunningAutoBidDecision] = useState(false);
   const [showBidForm, setShowBidForm] = useState(false);
   const [bidForm, setBidForm] = useState<BidDecisionFormState>(defaultBidForm(null));
   const [generatingBidDocs, setGeneratingBidDocs] = useState(false);
+  const [pullingIntel, setPullingIntel] = useState(false);
+  const [intelMessage, setIntelMessage] = useState('');
   const [runningIntake, setRunningIntake] = useState(false);
   const [intakeMessage, setIntakeMessage] = useState('');
   const [bidGenerationMessage, setBidGenerationMessage] = useState('');
@@ -284,6 +293,7 @@ export default function GovConOpportunityDetailPage() {
     () => (Array.isArray(payload?.contacts) ? payload.contacts : []),
     [payload?.contacts],
   );
+  const intel = payload?.intel || null;
 
   const countdownLabel = useMemo(() => {
     const days = daysUntil(opportunity?.response_deadline ?? null);
@@ -363,6 +373,96 @@ export default function GovConOpportunityDetailPage() {
     }
   }
 
+  async function handleRunAutoBidDecision() {
+    if (!opportunity) return;
+
+    setRunningAutoBidDecision(true);
+    setError('');
+    setIntelMessage('');
+
+    try {
+      const response = await fetch('/api/fleet-compliance/govcon/bid-decision', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          opportunity_id: opportunity.id,
+          mode: 'auto',
+          use_documentation: true,
+        }),
+      });
+
+      const data = (await response.json().catch(() => ({}))) as {
+        ok: boolean;
+        error?: string;
+        autoInput?: Record<string, unknown> | null;
+      };
+      if (!response.ok || !data.ok) {
+        throw new Error(data.error || 'Failed to run documentation-based scoring');
+      }
+
+      if (data.autoInput && typeof data.autoInput === 'object') {
+        const autoInput = data.autoInput as Record<string, unknown>;
+        setBidForm({
+          technical_fit: String(autoInput.technical_fit ?? ''),
+          set_aside_match: String(autoInput.set_aside_match ?? ''),
+          competition_level: String(autoInput.competition_level ?? ''),
+          contract_value: String(autoInput.contract_value ?? ''),
+          timeline_feasibility: String(autoInput.timeline_feasibility ?? ''),
+          relationship: String(autoInput.relationship ?? ''),
+          strategic_value: String(autoInput.strategic_value ?? ''),
+        });
+      }
+
+      setIntelMessage('Documentation-based scoring completed using extracted solicitation text.');
+      setShowBidForm(false);
+      await loadDetail();
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to run documentation-based scoring');
+    } finally {
+      setRunningAutoBidDecision(false);
+    }
+  }
+
+  async function handlePullSolicitationIntel(forceRefresh = false) {
+    if (!opportunity) return;
+
+    setPullingIntel(true);
+    setError('');
+    setIntelMessage('');
+
+    try {
+      const response = await fetch('/api/fleet-compliance/govcon/intel', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          opportunity_id: opportunity.id,
+          force_refresh: forceRefresh,
+        }),
+      });
+      const data = (await response.json().catch(() => ({}))) as {
+        ok: boolean;
+        error?: string;
+        intel?: {
+          sourceLength?: number;
+          extractedAt?: string;
+        };
+      };
+      if (!response.ok || !data.ok) {
+        throw new Error(data.error || 'Failed to pull solicitation intelligence');
+      }
+
+      const length = Number(data?.intel?.sourceLength ?? 0);
+      setIntelMessage(
+        `Solicitation documentation extracted (${Math.max(1, Math.round(length / 1024))} KB text).`,
+      );
+      await loadDetail();
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to pull solicitation intelligence');
+    } finally {
+      setPullingIntel(false);
+    }
+  }
+
   async function handleGenerateBidPackage() {
     if (!opportunity) return;
 
@@ -375,7 +475,7 @@ export default function GovConOpportunityDetailPage() {
       const response = await fetch('/api/fleet-compliance/govcon/bid-documents', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ opportunity_id: opportunity.id }),
+        body: JSON.stringify({ opportunity_id: opportunity.id, use_documentation: true }),
       });
 
       const data = (await response.json().catch(() => ({}))) as {
@@ -778,14 +878,23 @@ export default function GovConOpportunityDetailPage() {
                   <p className="fleet-compliance-table-note" style={{ marginTop: '0.7rem' }}>
                     No bid decision yet. Run the weighted bid/no-bid evaluation.
                   </p>
-                  <button
-                    type="button"
-                    className="btn-secondary"
-                    style={{ marginTop: '0.7rem' }}
-                    onClick={() => setShowBidForm((current) => !current)}
-                  >
-                    {showBidForm ? 'Hide Bid Decision Form' : 'Run Bid Decision'}
-                  </button>
+                  <div style={{ display: 'flex', gap: '0.55rem', flexWrap: 'wrap', marginTop: '0.7rem' }}>
+                    <button
+                      type="button"
+                      className="btn-secondary"
+                      onClick={() => setShowBidForm((current) => !current)}
+                    >
+                      {showBidForm ? 'Hide Bid Decision Form' : 'Run Manual Bid Decision'}
+                    </button>
+                    <button
+                      type="button"
+                      className="btn-secondary"
+                      onClick={() => void handleRunAutoBidDecision()}
+                      disabled={runningAutoBidDecision}
+                    >
+                      {runningAutoBidDecision ? 'Auto Scoring...' : 'Auto-Score from Docs'}
+                    </button>
+                  </div>
                 </>
               )}
 
@@ -836,6 +945,11 @@ export default function GovConOpportunityDetailPage() {
                     </button>
                   </div>
                 </div>
+              ) : null}
+              {intelMessage ? (
+                <p className="fleet-compliance-table-note" style={{ marginTop: '0.75rem', color: 'var(--text-primary)' }}>
+                  {intelMessage}
+                </p>
               ) : null}
             </article>
 
@@ -1026,6 +1140,24 @@ export default function GovConOpportunityDetailPage() {
                 {opportunity.description}
               </p>
             </article>
+
+            {intel ? (
+              <article className="fleet-compliance-list-card">
+                <h3>Solicitation Intelligence</h3>
+                <p className="fleet-compliance-table-note" style={{ marginTop: '0.55rem' }}>
+                  Extracted: {formatDateTime(intel.extractedAt)} | Source text: {Math.max(1, Math.round(intel.sourceLength / 1024))} KB
+                </p>
+                {intel.sourceSummary ? (
+                  <p style={{ marginTop: '0.55rem', color: 'var(--text-secondary)', whiteSpace: 'pre-wrap' }}>
+                    {intel.sourceSummary}
+                  </p>
+                ) : (
+                  <p className="fleet-compliance-table-note" style={{ marginTop: '0.55rem' }}>
+                    No summary available for the extracted source text yet.
+                  </p>
+                )}
+              </article>
+            ) : null}
           </div>
 
           <aside style={{ display: 'grid', gap: '1rem', alignContent: 'start' }}>
@@ -1104,6 +1236,22 @@ export default function GovConOpportunityDetailPage() {
                 >
                   {runningIntake ? 'Running Intake...' : 'Run Intake'}
                 </button>
+                <button
+                  type="button"
+                  className="btn-secondary"
+                  disabled={pullingIntel}
+                  onClick={() => void handlePullSolicitationIntel(true)}
+                >
+                  {pullingIntel ? 'Extracting Docs...' : 'Pull Solicitation Docs'}
+                </button>
+                <button
+                  type="button"
+                  className="btn-secondary"
+                  disabled={runningAutoBidDecision}
+                  onClick={() => void handleRunAutoBidDecision()}
+                >
+                  {runningAutoBidDecision ? 'Auto Scoring...' : 'Auto-Score from Docs'}
+                </button>
               </div>
             </article>
 
@@ -1124,6 +1272,16 @@ export default function GovConOpportunityDetailPage() {
                     style={{ color: 'var(--teal)', textDecoration: 'none', fontWeight: 600 }}
                   >
                     Open SAM.gov Listing
+                  </a>
+                ) : null}
+                {intel?.sourceUrl ? (
+                  <a
+                    href={intel.sourceUrl}
+                    target="_blank"
+                    rel="noreferrer"
+                    style={{ color: 'var(--teal)', textDecoration: 'none', fontWeight: 600 }}
+                  >
+                    Open Extracted Source URL
                   </a>
                 ) : null}
               </div>

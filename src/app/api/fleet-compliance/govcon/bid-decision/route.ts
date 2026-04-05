@@ -12,6 +12,11 @@ import {
   serializeBidDecision,
   serializeOpportunity,
 } from '@/lib/govcon-compliance-command-runtime';
+import {
+  deriveBidInputsFromDocumentation,
+  ensureGovConIntelForOpportunity,
+  getGovConIntelRecord,
+} from '@/lib/govcon-intel';
 
 function parseScore(value: unknown): number | null {
   const parsed = Number(value);
@@ -45,6 +50,8 @@ export async function POST(req: NextRequest) {
   }
 
   const opportunityId = String(body.opportunity_id ?? '').trim();
+  const autoMode = String(body.mode ?? '').trim().toLowerCase() === 'auto'
+    || body.use_documentation === true;
   const technicalFit = parseScore(body.technical_fit);
   const setAsideMatch = parseScore(body.set_aside_match);
   const competitionLevel = parseScore(body.competition_level);
@@ -57,7 +64,7 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ ok: false, error: 'opportunity_id is required' }, { status: 422 });
   }
 
-  if (
+  if (!autoMode && (
     technicalFit == null
     || setAsideMatch == null
     || competitionLevel == null
@@ -65,7 +72,7 @@ export async function POST(req: NextRequest) {
     || timelineFeasibility == null
     || relationship == null
     || strategicValue == null
-  ) {
+  )) {
     return NextResponse.json(
       {
         ok: false,
@@ -77,16 +84,66 @@ export async function POST(req: NextRequest) {
 
   try {
     const runtimeRef = await getGovConRuntime(orgId);
+    const opportunity = await runtimeRef.opportunityService.getOpportunity(opportunityId);
+    if (!opportunity) {
+      return NextResponse.json(
+        { ok: false, error: `Opportunity ${opportunityId} not found` },
+        { status: 404 },
+      );
+    }
 
-    const decision = await runtimeRef.bidDecisionService.runBidDecision(opportunityId, {
-      technicalFit,
-      setAsideMatch,
-      competitionLevel,
-      contractValue,
-      timelineFeasibility,
-      relationship,
-      strategicValue,
-    });
+    let scoringInput: {
+      technicalFit: number;
+      setAsideMatch: number;
+      competitionLevel: number;
+      contractValue: number;
+      timelineFeasibility: number;
+      relationship: number;
+      strategicValue: number;
+    };
+    let autoEvidence: string[] = [];
+    let usedIntel: { extractedAt: string; sourceUrl: string | null } | null = null;
+
+    if (autoMode) {
+      let intel = await getGovConIntelRecord(orgId, opportunityId);
+      if (!intel && opportunity.url) {
+        intel = await ensureGovConIntelForOpportunity({ orgId, opportunity });
+      }
+      if (!intel) {
+        return NextResponse.json(
+          {
+            ok: false,
+            error: 'No solicitation intelligence available. Pull documentation first from the opportunity page.',
+          },
+          { status: 422 },
+        );
+      }
+
+      const derived = deriveBidInputsFromDocumentation(opportunity, intel.sourceText);
+      scoringInput = {
+        technicalFit: derived.technical_fit,
+        setAsideMatch: derived.set_aside_match,
+        competitionLevel: derived.competition_level,
+        contractValue: derived.contract_value,
+        timelineFeasibility: derived.timeline_feasibility,
+        relationship: derived.relationship,
+        strategicValue: derived.strategic_value,
+      };
+      autoEvidence = derived.evidence;
+      usedIntel = { extractedAt: intel.extractedAt, sourceUrl: intel.sourceUrl };
+    } else {
+      scoringInput = {
+        technicalFit: technicalFit as number,
+        setAsideMatch: setAsideMatch as number,
+        competitionLevel: competitionLevel as number,
+        contractValue: contractValue as number,
+        timelineFeasibility: timelineFeasibility as number,
+        relationship: relationship as number,
+        strategicValue: strategicValue as number,
+      };
+    }
+
+    const decision = await runtimeRef.bidDecisionService.runBidDecision(opportunityId, scoringInput);
 
     const updatedOpportunity = await runtimeRef.opportunityService.markBidDecision(
       opportunityId,
@@ -97,6 +154,18 @@ export async function POST(req: NextRequest) {
       ok: true,
       decision: serializeBidDecision(decision),
       opportunity: serializeOpportunity(updatedOpportunity),
+      autoMode,
+      autoInput: autoMode ? {
+        technical_fit: scoringInput.technicalFit,
+        set_aside_match: scoringInput.setAsideMatch,
+        competition_level: scoringInput.competitionLevel,
+        contract_value: scoringInput.contractValue,
+        timeline_feasibility: scoringInput.timelineFeasibility,
+        relationship: scoringInput.relationship,
+        strategic_value: scoringInput.strategicValue,
+      } : null,
+      autoEvidence: autoMode ? autoEvidence : [],
+      intel: usedIntel,
     });
   } catch (error: any) {
     const setupError = getGovConModuleSetupError(error);

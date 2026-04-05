@@ -12,6 +12,11 @@ import {
   serializeBidDocument,
   serializeGeneratedDocuments,
 } from '@/lib/govcon-compliance-command-runtime';
+import {
+  buildDocumentationAppendix,
+  ensureGovConIntelForOpportunity,
+  getGovConIntelRecord,
+} from '@/lib/govcon-intel';
 
 type BidDocumentType =
   | 'capability_statement'
@@ -79,9 +84,40 @@ export async function POST(req: NextRequest) {
 
   const companyId = body.company_id ? String(body.company_id).trim() : undefined;
   const formats = parseFormats(body.formats);
+  const useDocumentation = body.use_documentation !== false;
 
   try {
     const runtimeRef = await getGovConRuntime(orgId);
+    const opportunity = await runtimeRef.opportunityService.getOpportunity(opportunityId);
+    if (!opportunity) {
+      return NextResponse.json({ ok: false, error: 'Opportunity not found' }, { status: 404 });
+    }
+
+    let intelUsed = false;
+    let intelSummary: string | null = null;
+    if (useDocumentation) {
+      let intel = await getGovConIntelRecord(orgId, opportunityId);
+      if (!intel && opportunity.url) {
+        intel = await ensureGovConIntelForOpportunity({ orgId, opportunity });
+      }
+
+      if (intel) {
+        const appendix = buildDocumentationAppendix(intel);
+        intelSummary = intel.sourceSummary || null;
+        intelUsed = appendix.length > 0;
+
+        if (appendix) {
+          const marker = '\n\n### Solicitation Intelligence (Auto-Extracted)';
+          const currentDescription = String(opportunity.description || '');
+          const cleaned = currentDescription.includes(marker)
+            ? currentDescription.slice(0, currentDescription.indexOf(marker)).trim()
+            : currentDescription.trim();
+          await runtimeRef.opportunityService.updateOpportunity(opportunityId, {
+            description: `${cleaned}\n\n${appendix}`.slice(0, 14000),
+          });
+        }
+      }
+    }
 
     if (documentType) {
       const result = await runtimeRef.bidDocumentService.generateBidDocument(
@@ -97,6 +133,8 @@ export async function POST(req: NextRequest) {
           record: serializeBidDocument(result?.bidDocument),
           outputs: serializeGeneratedDocuments(result?.outputs),
         },
+        intelUsed,
+        intelSummary,
       });
     }
 
@@ -119,6 +157,8 @@ export async function POST(req: NextRequest) {
         total: Number(result?.summary?.total ?? 0),
         generated: Number(result?.summary?.generated ?? 0),
       },
+      intelUsed,
+      intelSummary,
     });
   } catch (error: any) {
     const setupError = getGovConModuleSetupError(error);
