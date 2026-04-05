@@ -1,6 +1,6 @@
-import { DispatchRequest, Driver, Truck } from '../data/schema';
+import { DispatchRequest, Driver, DriverStatusSchema, Truck } from '../data/schema';
 import { InMemoryRepository } from '../data/repository';
-import { DispatchService } from '../services/dispatch-service';
+import { AssignmentResult, DispatchService } from '../services/dispatch-service';
 import { DriverService } from '../services/driver-service';
 import { TruckService } from '../services/truck-service';
 import { SLAService } from '../services/sla-service';
@@ -71,7 +71,7 @@ export class DispatchAPIHandlers {
     truckId?: string
   ): Promise<{
     success: boolean;
-    assignment?: any;
+    assignment?: AssignmentResult;
     error?: string;
   }> {
     try {
@@ -84,7 +84,7 @@ export class DispatchAPIHandlers {
 
   async reassignDriver(requestId: string, newDriverId: string): Promise<{
     success: boolean;
-    assignment?: any;
+    assignment?: AssignmentResult;
     error?: string;
   }> {
     try {
@@ -126,7 +126,9 @@ export class DispatchAPIHandlers {
   }
 
   async updateDriverStatus(id: string, status: string): Promise<Driver | null> {
-    return this.driverService.updateDriverStatus(id, status as any);
+    const parsedStatus = DriverStatusSchema.safeParse(status);
+    if (!parsedStatus.success) return null;
+    return this.driverService.updateDriverStatus(id, parsedStatus.data);
   }
 
   // Truck Handlers
@@ -142,7 +144,8 @@ export class DispatchAPIHandlers {
   async getZoneStatus(zoneId: string): Promise<{
     zoneId: string;
     name: string;
-    activeDriverts: Driver[];
+    activeDrivers: Driver[];
+    activeDriverts: Driver[]; // Backward-compatible typo alias, use activeDrivers moving forward.
     activeRequests: number;
     avgResponseTime: number;
   } | null> {
@@ -156,6 +159,7 @@ export class DispatchAPIHandlers {
     return {
       zoneId: zone.id,
       name: zone.name,
+      activeDrivers: drivers,
       activeDriverts: drivers,
       activeRequests: activeInZone,
       avgResponseTime: zone.avg_response_time_minutes,

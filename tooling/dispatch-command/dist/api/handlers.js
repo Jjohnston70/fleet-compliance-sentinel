@@ -1,6 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.DispatchAPIHandlers = void 0;
+const schema_1 = require("../data/schema");
 const dispatch_service_1 = require("../services/dispatch-service");
 const driver_service_1 = require("../services/driver-service");
 const truck_service_1 = require("../services/truck-service");
@@ -90,7 +91,10 @@ class DispatchAPIHandlers {
         };
     }
     async updateDriverStatus(id, status) {
-        return this.driverService.updateDriverStatus(id, status);
+        const parsedStatus = schema_1.DriverStatusSchema.safeParse(status);
+        if (!parsedStatus.success)
+            return null;
+        return this.driverService.updateDriverStatus(id, parsedStatus.data);
     }
     // Truck Handlers
     async listTrucks() {
@@ -110,6 +114,7 @@ class DispatchAPIHandlers {
         return {
             zoneId: zone.id,
             name: zone.name,
+            activeDrivers: drivers,
             activeDriverts: drivers,
             activeRequests: activeInZone,
             avgResponseTime: zone.avg_response_time_minutes,

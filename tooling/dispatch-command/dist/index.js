@@ -15,7 +15,7 @@ var __exportStar = (this && this.__exportStar) || function(m, exports) {
     for (var p in m) if (p !== "default" && !Object.prototype.hasOwnProperty.call(exports, p)) __createBinding(exports, m, p);
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.createToolDefinition = exports.createDispatchTools = exports.ResponseTimeReport = exports.DispatchDashboard = exports.AutoDispatcher = exports.SLAMonitor = exports.DispatchAPIHandlers = exports.SLAService = exports.SchedulingService = exports.RoutingService = exports.TruckService = exports.DriverService = exports.DispatchService = exports.calculateSLADeadline = exports.getSLAThreshold = exports.SLA_THRESHOLDS = exports.FIREBASE_CONFIG = exports.DISPATCH_CONFIG = exports.APP_CONFIG = exports.seedTrucks = exports.seedDrivers = exports.seedZones = exports.seedAll = exports.InMemoryRepository = void 0;
+exports.createToolDefinition = exports.createDispatchTools = exports.createDispatchToolHandlers = exports.DISPATCH_COMMAND_TOOLS = exports.ResponseTimeReport = exports.DispatchDashboard = exports.AutoDispatcher = exports.SLAMonitor = exports.DispatchAPIHandlers = exports.SLAService = exports.SchedulingService = exports.RoutingService = exports.TruckService = exports.DriverService = exports.DispatchService = exports.calculateSLADeadline = exports.getSLAThreshold = exports.SLA_THRESHOLDS = exports.FIREBASE_CONFIG = exports.DISPATCH_CONFIG = exports.APP_CONFIG = exports.seedTrucks = exports.seedDrivers = exports.seedZones = exports.seedAll = exports.InMemoryRepository = void 0;
 var repository_1 = require("./data/repository");
 Object.defineProperty(exports, "InMemoryRepository", { enumerable: true, get: function () { return repository_1.InMemoryRepository; } });
 __exportStar(require("./data/schema"), exports);
@@ -55,6 +55,8 @@ Object.defineProperty(exports, "DispatchDashboard", { enumerable: true, get: fun
 var response_time_report_1 = require("./reporting/response-time-report");
 Object.defineProperty(exports, "ResponseTimeReport", { enumerable: true, get: function () { return response_time_report_1.ResponseTimeReport; } });
 var tools_1 = require("./tools");
+Object.defineProperty(exports, "DISPATCH_COMMAND_TOOLS", { enumerable: true, get: function () { return tools_1.DISPATCH_COMMAND_TOOLS; } });
+Object.defineProperty(exports, "createDispatchToolHandlers", { enumerable: true, get: function () { return tools_1.createDispatchToolHandlers; } });
 Object.defineProperty(exports, "createDispatchTools", { enumerable: true, get: function () { return tools_1.createDispatchTools; } });
 Object.defineProperty(exports, "createToolDefinition", { enumerable: true, get: function () { return tools_1.createToolDefinition; } });
 //# sourceMappingURL=index.js.map

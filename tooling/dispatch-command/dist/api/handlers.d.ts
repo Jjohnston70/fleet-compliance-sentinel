@@ -1,5 +1,6 @@
 import { DispatchRequest, Driver, Truck } from '../data/schema';
 import { InMemoryRepository } from '../data/repository';
+import { AssignmentResult } from '../services/dispatch-service';
 /**
  * API handlers for dispatch operations.
  * These map to REST endpoints and LLM tool calls.
@@ -18,12 +19,12 @@ export declare class DispatchAPIHandlers {
     cancelDispatchRequest(id: string, reason: string): Promise<DispatchRequest | null>;
     assignDriver(requestId: string, driverId: string, truckId?: string): Promise<{
         success: boolean;
-        assignment?: any;
+        assignment?: AssignmentResult;
         error?: string;
     }>;
     reassignDriver(requestId: string, newDriverId: string): Promise<{
         success: boolean;
-        assignment?: any;
+        assignment?: AssignmentResult;
         error?: string;
     }>;
     listDrivers(): Promise<Driver[]>;
@@ -42,6 +43,7 @@ export declare class DispatchAPIHandlers {
     getZoneStatus(zoneId: string): Promise<{
         zoneId: string;
         name: string;
+        activeDrivers: Driver[];
         activeDriverts: Driver[];
         activeRequests: number;
         avgResponseTime: number;

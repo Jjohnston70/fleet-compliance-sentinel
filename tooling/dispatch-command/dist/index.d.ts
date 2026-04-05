@@ -14,6 +14,6 @@ export { SLAMonitor } from './hooks/sla-monitor';
 export { AutoDispatcher } from './hooks/auto-dispatcher';
 export { DispatchDashboard } from './reporting/dispatch-dashboard';
 export { ResponseTimeReport } from './reporting/response-time-report';
-export { createDispatchTools, createToolDefinition } from './tools';
-export type { ToolHandler, ToolResult } from './tools';
+export { DISPATCH_COMMAND_TOOLS, createDispatchToolHandlers, createDispatchTools, createToolDefinition, } from './tools';
+export type { ToolDefinition, ToolHandler, ToolResult } from './tools';
 //# sourceMappingURL=index.d.ts.map

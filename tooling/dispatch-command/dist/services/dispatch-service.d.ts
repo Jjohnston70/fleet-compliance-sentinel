@@ -1,4 +1,4 @@
-import { DispatchRequest, Location } from '../data/schema';
+import { DispatchRequest, Location, Zone } from '../data/schema';
 import { InMemoryRepository } from '../data/repository';
 export interface AssignmentResult {
     requestId: string;
@@ -36,7 +36,7 @@ export declare class DispatchService {
      * Find nearest available driver to a request address.
      * First tries primary zone drivers, then backup zones.
      */
-    findNearestDriver(zone: any, requestLocation: Location): Promise<{
+    findNearestDriver(zone: Zone, requestLocation: Location): Promise<{
         driverId: string;
         travelTimeMinutes: number;
     } | null>;

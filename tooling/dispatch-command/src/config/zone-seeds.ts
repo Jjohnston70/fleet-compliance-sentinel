@@ -1,29 +1,34 @@
 import { DEFAULT_ZONES, DEFAULT_DRIVERS, DEFAULT_TRUCKS } from '../data/seed-data';
+import { InMemoryRepository } from '../data/repository';
+import { Zone } from '../data/schema';
 
-export async function seedZones(repository: any): Promise<void> {
+const ZONE_NAME_BY_SEED_ID: Record<string, string> = {
+  'zone-pueblo': 'Pueblo',
+  'zone-cos-north': 'COS North',
+  'zone-cos-central': 'COS Central',
+  'zone-cos-east': 'COS East',
+  'zone-cos-south': 'COS South',
+};
+
+function resolveZoneId(zoneMap: Map<string, string>, seedZoneId: string): string {
+  const zoneName = ZONE_NAME_BY_SEED_ID[seedZoneId];
+  if (!zoneName) return seedZoneId;
+  return zoneMap.get(zoneName) ?? seedZoneId;
+}
+
+export async function seedZones(repository: InMemoryRepository): Promise<void> {
   for (const zone of DEFAULT_ZONES) {
     await repository.createZone(zone);
   }
 }
 
-export async function seedDrivers(repository: any): Promise<void> {
+export async function seedDrivers(repository: InMemoryRepository): Promise<void> {
   // Update drivers with actual zone IDs
   const zones = await repository.listZones();
-  const zoneMap = new Map(zones.map((z: any) => [z.name, z.id]));
+  const zoneMap = new Map(zones.map((z: Zone) => [z.name, z.id]));
 
   for (const driver of DEFAULT_DRIVERS) {
-    // Map driver zone names to IDs
-    let zoneId = driver.zone_id as string;
-    if (driver.zone_id === 'zone-pueblo') {
-      zoneId = (zoneMap.get('Pueblo') as string) || driver.zone_id;
-    } else if (driver.zone_id === 'zone-cos-north') {
-      zoneId = (zoneMap.get('COS North') as string) || driver.zone_id;
-    } else if (driver.zone_id === 'zone-cos-central') {
-      zoneId = (zoneMap.get('COS Central') as string) || driver.zone_id;
-    } else if (driver.zone_id === 'zone-cos-east') {
-      zoneId = (zoneMap.get('COS East') as string) || driver.zone_id;
-    }
-
+    const zoneId = resolveZoneId(zoneMap, driver.zone_id);
     const driverWithZoneId = { ...driver, zone_id: zoneId };
     await repository.createDriver(driverWithZoneId);
 
@@ -36,29 +41,18 @@ export async function seedDrivers(repository: any): Promise<void> {
   }
 }
 
-export async function seedTrucks(repository: any): Promise<void> {
+export async function seedTrucks(repository: InMemoryRepository): Promise<void> {
   const zones = await repository.listZones();
-  const zoneMap = new Map(zones.map((z: any) => [z.name, z.id]));
+  const zoneMap = new Map(zones.map((z: Zone) => [z.name, z.id]));
 
   for (const truck of DEFAULT_TRUCKS) {
-    // Map truck zone names to IDs
-    let zoneId = truck.zone_id as string;
-    if (truck.zone_id === 'zone-pueblo') {
-      zoneId = (zoneMap.get('Pueblo') as string) || truck.zone_id;
-    } else if (truck.zone_id === 'zone-cos-north') {
-      zoneId = (zoneMap.get('COS North') as string) || truck.zone_id;
-    } else if (truck.zone_id === 'zone-cos-central') {
-      zoneId = (zoneMap.get('COS Central') as string) || truck.zone_id;
-    } else if (truck.zone_id === 'zone-cos-east') {
-      zoneId = (zoneMap.get('COS East') as string) || truck.zone_id;
-    }
-
+    const zoneId = resolveZoneId(zoneMap, truck.zone_id);
     const truckWithZoneId = { ...truck, zone_id: zoneId };
     await repository.createTruck(truckWithZoneId);
   }
 }
 
-export async function seedAll(repository: any): Promise<void> {
+export async function seedAll(repository: InMemoryRepository): Promise<void> {
   await seedZones(repository);
   await seedDrivers(repository);
   await seedTrucks(repository);

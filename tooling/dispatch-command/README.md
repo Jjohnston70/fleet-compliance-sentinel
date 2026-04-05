@@ -278,12 +278,17 @@ const byZone = await report.getResponseTimeByZone();
 Export dispatch tools for LLM consumption:
 
 ```typescript
-import { createDispatchTools } from '@tnds/dispatch-command';
+import {
+  DISPATCH_COMMAND_TOOLS,
+  createDispatchToolHandlers,
+} from '@tnds/dispatch-command';
 
-const tools = createDispatchTools(repository);
-// Returns ToolHandler[] with handlers for:
+const tools = DISPATCH_COMMAND_TOOLS;
+const handlers = createDispatchToolHandlers(repository);
+// Tool names:
 // - create_dispatch_request
 // - assign_driver
+// - reassign_driver
 // - get_dispatch_status
 // - list_active_dispatches
 // - get_driver_availability

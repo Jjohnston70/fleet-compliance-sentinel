@@ -1,4 +1,4 @@
-import { DispatchRequest, Location } from '../data/schema';
+import { DispatchRequest, Location, Zone } from '../data/schema';
 import { InMemoryRepository } from '../data/repository';
 import { DriverService } from './driver-service';
 import { TruckService } from './truck-service';
@@ -76,7 +76,7 @@ export class DispatchService {
    * First tries primary zone drivers, then backup zones.
    */
   async findNearestDriver(
-    zone: any,
+    zone: Zone,
     requestLocation: Location
   ): Promise<{ driverId: string; travelTimeMinutes: number } | null> {
     // Try primary drivers first
@@ -137,9 +137,19 @@ export class DispatchService {
   ): Promise<AssignmentResult> {
     const request = await this.repository.getDispatchRequest(requestId);
     if (!request) throw new Error(`Request not found: ${requestId}`);
+    if (request.status === 'completed' || request.status === 'cancelled') {
+      throw new Error(`Cannot assign driver to request with status: ${request.status}`);
+    }
+    if (request.assigned_driver_id === driverId) {
+      throw new Error(`Driver ${driverId} is already assigned to request ${requestId}`);
+    }
 
     const driver = await this.driverService.getDriver(driverId);
     if (!driver) throw new Error(`Driver not found: ${driverId}`);
+    const canAcceptJob = await this.driverService.canAcceptJob(driverId);
+    if (!canAcceptJob) {
+      throw new Error(`Driver cannot accept new jobs: ${driverId}`);
+    }
 
     // Calculate estimated arrival
     const requestLocation: Location = {

@@ -19,6 +19,12 @@ export interface SLAComplianceReport {
   breachRate: number;
 }
 
+interface GroupedResponseTimeEntry {
+  zone: string;
+  priority: string;
+  responseTime: number;
+}
+
 /**
  * ResponseTimeReport analyzes response times and SLA compliance.
  */
@@ -37,7 +43,7 @@ export class ResponseTimeReport {
     const stats: ResponseTimeStats[] = [];
 
     // Group by zone and priority
-    const grouped = new Map<string, any[]>();
+    const grouped = new Map<string, GroupedResponseTimeEntry[]>();
 
     for (const request of requests) {
       if (!request.actual_arrival || !request.created_at) continue;

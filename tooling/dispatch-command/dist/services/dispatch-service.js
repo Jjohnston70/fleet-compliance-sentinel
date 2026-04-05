@@ -96,9 +96,19 @@ class DispatchService {
         const request = await this.repository.getDispatchRequest(requestId);
         if (!request)
             throw new Error(`Request not found: ${requestId}`);
+        if (request.status === 'completed' || request.status === 'cancelled') {
+            throw new Error(`Cannot assign driver to request with status: ${request.status}`);
+        }
+        if (request.assigned_driver_id === driverId) {
+            throw new Error(`Driver ${driverId} is already assigned to request ${requestId}`);
+        }
         const driver = await this.driverService.getDriver(driverId);
         if (!driver)
             throw new Error(`Driver not found: ${driverId}`);
+        const canAcceptJob = await this.driverService.canAcceptJob(driverId);
+        if (!canAcceptJob) {
+            throw new Error(`Driver cannot accept new jobs: ${driverId}`);
+        }
         // Calculate estimated arrival
         const requestLocation = {
             lat: 39.0, // Simplified for now
