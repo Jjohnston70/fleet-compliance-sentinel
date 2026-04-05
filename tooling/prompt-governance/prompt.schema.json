@@ -1,0 +1,81 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "LLM Prompt Registry Schema",
+  "type": "object",
+  "required": [
+    "id",
+    "role",
+    "tier",
+    "category",
+    "protocol",
+    "intent",
+    "system_prompt"
+  ],
+  "properties": {
+    "id": {
+      "type": "string"
+    },
+    "role": {
+      "type": "string"
+    },
+    "tier": {
+      "type": "string",
+      "enum": [
+        "free",
+        "low-cost",
+        "battle-tested"
+      ]
+    },
+    "category": {
+      "type": "string"
+    },
+    "protocol": {
+      "type": "string",
+      "enum": [
+        "direction",
+        "command"
+      ]
+    },
+    "intent": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "system_prompt": {
+      "type": "string"
+    },
+    "variables": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "constraints": {
+      "type": "object",
+      "properties": {
+        "tone": {
+          "type": "string"
+        },
+        "verbosity": {
+          "type": "string"
+        },
+        "no_fluff": {
+          "type": "boolean"
+        }
+      }
+    },
+    "output_bias": {
+      "type": "string"
+    },
+    "tags": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "usage_notes": {
+      "type": "string"
+    }
+  }
+}

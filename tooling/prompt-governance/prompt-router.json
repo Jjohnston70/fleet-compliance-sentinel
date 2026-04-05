@@ -1,0 +1,18 @@
+{
+  "version": "1.0.0",
+  "description": "Deterministic prompt router for role-based LLM invocation",
+  "rules": [
+    {
+      "if": {
+        "protocol": "direction"
+      },
+      "route_to": "strategy_models"
+    },
+    {
+      "if": {
+        "protocol": "command"
+      },
+      "route_to": "execution_models"
+    }
+  ]
+}
