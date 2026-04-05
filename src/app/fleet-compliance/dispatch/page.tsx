@@ -111,6 +111,19 @@ function isSameLocalDay(value: string | null, now: Date): boolean {
   );
 }
 
+function isNextDayCandidate(request: DispatchRequestRow, now: Date): boolean {
+  if (request.status !== 'pending') return false;
+  if (request.priority === 'scheduled') return true;
+  if (!request.slaDeadline) return false;
+
+  const sla = new Date(request.slaDeadline);
+  if (Number.isNaN(sla.getTime())) return false;
+
+  const endOfToday = new Date(now);
+  endOfToday.setHours(23, 59, 59, 999);
+  return sla.getTime() > endOfToday.getTime();
+}
+
 function formatAddress(request: DispatchRequestRow): string {
   return [request.address, request.city, request.state, request.zip]
     .map((part) => String(part ?? '').trim())
@@ -170,7 +183,7 @@ export default function DispatchDashboardPage() {
     [zones],
   );
 
-  const now = useMemo(() => new Date(), [requests, drivers]);
+  const now = useMemo(() => new Date(), []);
 
   const activeRequests = useMemo(
     () => requests.filter((request) => request.status !== 'completed' && request.status !== 'cancelled'),
@@ -201,6 +214,16 @@ export default function DispatchDashboardPage() {
     [activeRequests],
   );
 
+  const inProgressToday = useMemo(
+    () => activeRequests.filter((request) => request.status === 'en_route' || request.status === 'on_site'),
+    [activeRequests],
+  );
+
+  const nextDayPlanningQueue = useMemo(
+    () => requests.filter((request) => isNextDayCandidate(request, now)),
+    [requests, now],
+  );
+
   const availableDrivers = useMemo(
     () => drivers.filter((driver) => driver.active && driver.status === 'available'),
     [drivers],
@@ -220,7 +243,7 @@ export default function DispatchDashboardPage() {
             <p className="fleet-compliance-eyebrow">Operations</p>
             <h1>Dispatch Daily Overview</h1>
             <p className="fleet-compliance-subcopy">
-              Today&apos;s deliveries, map coverage, SLA pressure, and assignment readiness.
+              Daily operations across emergency assignment, active routes, and next-day planning.
             </p>
           </div>
           <div style={{ display: 'flex', gap: '0.65rem', flexWrap: 'wrap' }}>
@@ -255,6 +278,14 @@ export default function DispatchDashboardPage() {
               <article className="fleet-compliance-stat-card">
                 <p className="fleet-compliance-stat-label">Awaiting Route Approval</p>
                 <p className="fleet-compliance-stat-value">{awaitingRouteApproval.length}</p>
+              </article>
+              <article className="fleet-compliance-stat-card">
+                <p className="fleet-compliance-stat-label">In Progress</p>
+                <p className="fleet-compliance-stat-value">{inProgressToday.length}</p>
+              </article>
+              <article className="fleet-compliance-stat-card">
+                <p className="fleet-compliance-stat-label">Next-Day Planning Queue</p>
+                <p className="fleet-compliance-stat-value">{nextDayPlanningQueue.length}</p>
               </article>
               <article className="fleet-compliance-stat-card">
                 <p className="fleet-compliance-stat-label">Available Drivers</p>

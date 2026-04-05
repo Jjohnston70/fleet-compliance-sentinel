@@ -150,10 +150,52 @@ export async function PATCH(
 
       const result = await runtimeRef.apiHandlers.assignDriver(id, driverId, truckId);
       if (!result.success) {
-        return NextResponse.json(
-          { ok: false, error: result.error || 'Failed to assign driver' },
-          { status: 409 },
-        );
+        const driver = await runtimeRef.apiHandlers.getDriver(driverId);
+        const emergencyAddOnAllowed =
+          (existing.priority === 'emergency' || existing.priority === 'urgent')
+          && !!driver
+          && Boolean(driver.active)
+          && (driver.status === 'en_route' || driver.status === 'on_site')
+          && Number(driver.jobs_today ?? 0) < Number(driver.max_jobs_per_day ?? 0);
+
+        if (!emergencyAddOnAllowed) {
+          return NextResponse.json(
+            { ok: false, error: result.error || 'Failed to assign driver' },
+            { status: 409 },
+          );
+        }
+
+        const estimatedArrival = new Date(Date.now() + 35 * 60 * 1000);
+        const updatedRequest = await runtimeRef.repository.updateDispatchRequest(id, {
+          status: 'dispatched',
+          assigned_driver_id: driverId,
+          assigned_truck_id: truckId,
+          estimated_arrival: estimatedArrival,
+        });
+
+        if (!updatedRequest) {
+          return NextResponse.json(
+            { ok: false, error: 'Failed to assign emergency add-on to active route' },
+            { status: 409 },
+          );
+        }
+
+        await runtimeRef.repository.updateDriver(driverId, {
+          jobs_today: Number(driver.jobs_today ?? 0) + 1,
+        });
+
+        await runtimeRef.repository.createLog({
+          id: crypto.randomUUID(),
+          request_id: id,
+          action: 'assigned_add_on',
+          actor: 'dispatcher',
+          timestamp: new Date(),
+          details: {
+            driver_id: driverId,
+            truck_id: truckId,
+            reason: 'emergency_add_on_to_active_route',
+          },
+        });
       }
     } else if (action === 'reassign') {
       const driverId = String(body.driverId ?? '').trim();
