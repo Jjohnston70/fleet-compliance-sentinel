@@ -1,3 +1,8 @@
+import {
+  loadModuleRuntimeState,
+  saveModuleRuntimeState,
+} from '@/lib/module-runtime-state';
+
 interface GovConCommandModule {
   InMemoryRepository: new () => any;
   OpportunityService: new (repository: any) => any;
@@ -55,6 +60,46 @@ export type SetAsideType =
 
 let govConModulePromise: Promise<GovConCommandModule> | null = null;
 const runtimeByOrg = new Map<string, GovConRuntime>();
+
+const GOVCON_MUTATING_REPOSITORY_METHODS = new Set([
+  'createOpportunity',
+  'updateOpportunity',
+  'deleteOpportunity',
+  'createBidDecision',
+  'createProposal',
+  'updateProposal',
+  'createOutreachContact',
+  'updateOutreachContact',
+  'createOutreachActivity',
+  'createComplianceItem',
+  'updateComplianceItem',
+  'createPipelineMetrics',
+  'createCompany',
+  'updateCompany',
+  'createCompliancePackage',
+  'updateCompliancePackage',
+  'createIntakeResult',
+  'createMaturityTracker',
+  'updateMaturityTracker',
+  'createBidDocument',
+  'updateBidDocument',
+  'clear',
+]);
+
+interface GovConRuntimeSnapshot {
+  opportunities: any[];
+  bidDecisions: any[];
+  proposals: any[];
+  outreachContacts: any[];
+  outreachActivities: any[];
+  complianceItems: any[];
+  pipelineMetrics: any[];
+  companies: any[];
+  compliancePackages: any[];
+  intakeResults: any[];
+  maturityTrackers: any[];
+  bidDocuments: any[];
+}
 
 function normalizeDate(value: unknown): Date | null {
   if (value instanceof Date && !Number.isNaN(value.getTime())) return value;
@@ -249,6 +294,127 @@ async function loadGovConCommandModule(): Promise<GovConCommandModule> {
   return govConModulePromise;
 }
 
+function serializeMapValues(value: unknown): any[] {
+  if (value instanceof Map) return Array.from(value.values());
+  return [];
+}
+
+function serializeGovConRepositoryState(repository: any): GovConRuntimeSnapshot {
+  return {
+    opportunities: serializeMapValues(repository.opportunities),
+    bidDecisions: serializeMapValues(repository.bidDecisions),
+    proposals: serializeMapValues(repository.proposals),
+    outreachContacts: serializeMapValues(repository.outreachContacts),
+    outreachActivities: serializeMapValues(repository.outreachActivities),
+    complianceItems: serializeMapValues(repository.complianceItems),
+    pipelineMetrics: serializeMapValues(repository.pipelineMetrics),
+    companies: serializeMapValues(repository.companies),
+    compliancePackages: serializeMapValues(repository.compliancePackages),
+    intakeResults: serializeMapValues(repository.intakeResults),
+    maturityTrackers: serializeMapValues(repository.maturityTrackers),
+    bidDocuments: serializeMapValues(repository.bidDocuments),
+  };
+}
+
+function normalizeSnapshotArray(value: unknown): any[] {
+  return Array.isArray(value) ? value : [];
+}
+
+function hydrateGovConRepository(repository: any, snapshot: Record<string, unknown>) {
+  repository.opportunities = new Map(
+    normalizeSnapshotArray(snapshot.opportunities)
+      .map((entry) => [String(entry?.id ?? ''), entry] as const)
+      .filter(([id]) => id.length > 0),
+  );
+  repository.bidDecisions = new Map(
+    normalizeSnapshotArray(snapshot.bidDecisions)
+      .map((entry) => [String(entry?.id ?? ''), entry] as const)
+      .filter(([id]) => id.length > 0),
+  );
+  repository.proposals = new Map(
+    normalizeSnapshotArray(snapshot.proposals)
+      .map((entry) => [String(entry?.id ?? ''), entry] as const)
+      .filter(([id]) => id.length > 0),
+  );
+  repository.outreachContacts = new Map(
+    normalizeSnapshotArray(snapshot.outreachContacts)
+      .map((entry) => [String(entry?.id ?? ''), entry] as const)
+      .filter(([id]) => id.length > 0),
+  );
+  repository.outreachActivities = new Map(
+    normalizeSnapshotArray(snapshot.outreachActivities)
+      .map((entry) => [String(entry?.id ?? ''), entry] as const)
+      .filter(([id]) => id.length > 0),
+  );
+  repository.complianceItems = new Map(
+    normalizeSnapshotArray(snapshot.complianceItems)
+      .map((entry) => [String(entry?.id ?? ''), entry] as const)
+      .filter(([id]) => id.length > 0),
+  );
+  repository.pipelineMetrics = new Map(
+    normalizeSnapshotArray(snapshot.pipelineMetrics)
+      .map((entry) => [String(entry?.id ?? ''), entry] as const)
+      .filter(([id]) => id.length > 0),
+  );
+  repository.companies = new Map(
+    normalizeSnapshotArray(snapshot.companies)
+      .map((entry) => [String(entry?.id ?? ''), entry] as const)
+      .filter(([id]) => id.length > 0),
+  );
+  repository.compliancePackages = new Map(
+    normalizeSnapshotArray(snapshot.compliancePackages)
+      .map((entry) => [String(entry?.id ?? ''), entry] as const)
+      .filter(([id]) => id.length > 0),
+  );
+  repository.intakeResults = new Map(
+    normalizeSnapshotArray(snapshot.intakeResults)
+      .map((entry) => [String(entry?.id ?? ''), entry] as const)
+      .filter(([id]) => id.length > 0),
+  );
+  repository.maturityTrackers = new Map(
+    normalizeSnapshotArray(snapshot.maturityTrackers)
+      .map((entry) => [String(entry?.id ?? ''), entry] as const)
+      .filter(([id]) => id.length > 0),
+  );
+  repository.bidDocuments = new Map(
+    normalizeSnapshotArray(snapshot.bidDocuments)
+      .map((entry) => [String(entry?.id ?? ''), entry] as const)
+      .filter(([id]) => id.length > 0),
+  );
+}
+
+function createPersistenceAwareGovConRepository(orgId: string, repository: any): any {
+  let saveQueue: Promise<void> = Promise.resolve();
+
+  const queueSave = async () => {
+    saveQueue = saveQueue
+      .catch(() => undefined)
+      .then(async () => {
+        const snapshot = serializeGovConRepositoryState(repository);
+        await saveModuleRuntimeState(
+          orgId,
+          'govcon-compliance-command',
+          snapshot as unknown as Record<string, unknown>,
+        );
+      });
+    return saveQueue;
+  };
+
+  return new Proxy(repository, {
+    get(target, prop, receiver) {
+      const value = Reflect.get(target, prop, receiver);
+      if (typeof prop !== 'string' || typeof value !== 'function') return value;
+      if (!GOVCON_MUTATING_REPOSITORY_METHODS.has(prop)) return value.bind(target);
+
+      return async (...args: any[]) => {
+        const result = await value.apply(target, args);
+        await queueSave();
+        return result;
+      };
+    },
+  });
+}
+
 async function seedGovConRuntimeIfEmpty(runtimeRef: GovConRuntime) {
   const existingOpportunities = await runtimeRef.opportunityService.listOpportunities();
   if (Array.isArray(existingOpportunities) && existingOpportunities.length > 0) return;
@@ -343,7 +509,14 @@ export async function getGovConRuntime(orgId: string): Promise<GovConRuntime> {
   if (existing) return existing;
 
   const moduleRef = await loadGovConCommandModule();
-  const repo = new moduleRef.InMemoryRepository();
+  const rawRepo = new moduleRef.InMemoryRepository();
+  const snapshot = await loadModuleRuntimeState(orgId, 'govcon-compliance-command');
+
+  if (snapshot) {
+    hydrateGovConRepository(rawRepo, snapshot);
+  }
+
+  const repo = createPersistenceAwareGovConRepository(orgId, rawRepo);
 
   const opportunityService = new moduleRef.OpportunityService(repo);
   const bidDecisionService = new moduleRef.BidDecisionService(repo);
@@ -378,7 +551,14 @@ export async function getGovConRuntime(orgId: string): Promise<GovConRuntime> {
     outreachReport,
   };
 
-  await seedGovConRuntimeIfEmpty(runtimeRef);
+  if (!snapshot) {
+    await seedGovConRuntimeIfEmpty(runtimeRef);
+    await saveModuleRuntimeState(
+      orgId,
+      'govcon-compliance-command',
+      serializeGovConRepositoryState(rawRepo) as unknown as Record<string, unknown>,
+    );
+  }
   runtimeByOrg.set(orgId, runtimeRef);
   return runtimeRef;
 }

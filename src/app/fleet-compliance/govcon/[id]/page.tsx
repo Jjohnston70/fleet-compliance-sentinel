@@ -53,6 +53,13 @@ interface BidDocument {
   created_at: string | null;
 }
 
+interface GeneratedOutputRow {
+  filename: string;
+  format: string;
+  sizeBytes: number;
+  type?: string;
+}
+
 interface Contact {
   id: string;
   name: string;
@@ -159,6 +166,8 @@ export default function GovConOpportunityDetailPage() {
   const [generatingBidDocs, setGeneratingBidDocs] = useState(false);
   const [runningIntake, setRunningIntake] = useState(false);
   const [intakeMessage, setIntakeMessage] = useState('');
+  const [bidGenerationMessage, setBidGenerationMessage] = useState('');
+  const [generatedOutputs, setGeneratedOutputs] = useState<GeneratedOutputRow[]>([]);
 
   const loadDetail = useCallback(async () => {
     setLoading(true);
@@ -264,6 +273,8 @@ export default function GovConOpportunityDetailPage() {
 
     setGeneratingBidDocs(true);
     setError('');
+    setBidGenerationMessage('');
+    setGeneratedOutputs([]);
 
     try {
       const response = await fetch('/api/fleet-compliance/govcon/bid-documents', {
@@ -272,9 +283,52 @@ export default function GovConOpportunityDetailPage() {
         body: JSON.stringify({ opportunity_id: opportunity.id }),
       });
 
-      const data = (await response.json().catch(() => ({}))) as { ok: boolean; error?: string };
+      const data = (await response.json().catch(() => ({}))) as {
+        ok: boolean;
+        error?: string;
+        summary?: { total: number; generated: number };
+        documents?: Array<{
+          type: string;
+          outputs?: Array<{
+            filename: string;
+            format: string;
+            sizeBytes: number;
+          }>;
+        }>;
+        document?: {
+          outputs?: Array<{
+            filename: string;
+            format: string;
+            sizeBytes: number;
+          }>;
+        };
+      };
       if (!response.ok || !data.ok) {
         throw new Error(data.error || 'Failed to generate bid documents');
+      }
+
+      const outputsFromPackage = Array.isArray(data.documents)
+        ? data.documents.flatMap((entry) =>
+          (Array.isArray(entry.outputs) ? entry.outputs : []).map((output) => ({
+            ...output,
+            type: entry.type,
+          })))
+        : [];
+      const outputsFromSingle = Array.isArray(data.document?.outputs) ? data.document.outputs : [];
+      const outputs = [...outputsFromPackage, ...outputsFromSingle];
+
+      if (outputs.length > 0) {
+        setGeneratedOutputs(outputs);
+      }
+
+      if (data.summary) {
+        setBidGenerationMessage(
+          `Generated ${data.summary.generated} of ${data.summary.total} bid documents for ${opportunity.solicitation_number}.`,
+        );
+      } else if (outputs.length > 0) {
+        setBidGenerationMessage(`Generated ${outputs.length} output files for ${opportunity.solicitation_number}.`);
+      } else {
+        setBidGenerationMessage('Bid generation completed, but no output files were reported.');
       }
 
       await loadDetail();
@@ -410,6 +464,12 @@ export default function GovConOpportunityDetailPage() {
         {intakeMessage ? (
           <div className="fleet-compliance-info-banner" style={{ marginTop: '1rem' }}>
             {intakeMessage}
+          </div>
+        ) : null}
+
+        {bidGenerationMessage ? (
+          <div className="fleet-compliance-info-banner" style={{ marginTop: '1rem' }}>
+            {bidGenerationMessage}
           </div>
         ) : null}
 
@@ -597,6 +657,31 @@ export default function GovConOpportunityDetailPage() {
                   </table>
                 </div>
               )}
+
+              {generatedOutputs.length > 0 && (
+                <div className="fleet-compliance-table-wrap" style={{ marginTop: '0.9rem' }}>
+                  <table className="fleet-compliance-table">
+                    <thead>
+                      <tr>
+                        <th>Output File</th>
+                        <th>Format</th>
+                        <th>Size (KB)</th>
+                        <th>Document Type</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {generatedOutputs.map((output, index) => (
+                        <tr key={`${output.filename}-${index}`}>
+                          <td>{output.filename}</td>
+                          <td>{output.format}</td>
+                          <td>{Math.max(1, Math.round(output.sizeBytes / 1024))}</td>
+                          <td>{output.type || '--'}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              )}
             </article>
 
             <article className="fleet-compliance-list-card">
@@ -608,6 +693,17 @@ export default function GovConOpportunityDetailPage() {
           </div>
 
           <aside style={{ display: 'grid', gap: '1rem', alignContent: 'start' }}>
+            <article className="fleet-compliance-list-card">
+              <h3>Bid Workflow</h3>
+              <ol style={{ margin: '0.7rem 0 0 1rem', padding: 0, display: 'grid', gap: '0.4rem', color: 'var(--text-secondary)' }}>
+                <li>Review opportunity details, deadline, and set-aside fit.</li>
+                <li>Run Bid Decision scoring to produce bid/no-bid rationale.</li>
+                <li>Generate bid package outputs (DOCX/PDF/Markdown).</li>
+                <li>Set status to <strong>bid</strong>, then move to <strong>submitted</strong> after final review.</li>
+                <li>Track final outcome as <strong>awarded</strong> or <strong>lost</strong>.</li>
+              </ol>
+            </article>
+
             <article className="fleet-compliance-list-card">
               <h3>Actions</h3>
               <label className="fleet-compliance-field-stack" style={{ marginTop: '0.6rem' }}>

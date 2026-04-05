@@ -2465,6 +2465,28 @@ a.penny-source-pill:hover {
   align-items: start;
 }
 
+.dispatch-overview-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 2.5fr) minmax(260px, 0.8fr);
+  gap: 1.1rem;
+  align-items: start;
+}
+
+.dispatch-map-frame {
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  overflow: hidden;
+  background: #e2e8f0;
+}
+
+.dispatch-map-frame-tall {
+  height: 360px;
+}
+
+.dispatch-map-frame-xl {
+  height: 420px;
+}
+
 .dispatch-active-requests-card .fleet-compliance-table th,
 .dispatch-active-requests-card .fleet-compliance-table td {
   white-space: nowrap;
@@ -2477,6 +2499,56 @@ a.penny-source-pill:hover {
 
 .dispatch-driver-card .btn-secondary {
   font-size: 0.82rem;
+}
+
+.dispatch-driver-status-compact {
+  padding: 0.75rem;
+}
+
+.dispatch-driver-status-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.6rem;
+  align-items: flex-start;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 0.5rem;
+  background: #f8fafc;
+}
+
+.dispatch-assignment-grid {
+  display: grid;
+  grid-template-columns: minmax(280px, 0.9fr) minmax(0, 1.1fr);
+  gap: 1rem;
+  align-items: start;
+}
+
+.dispatch-request-card {
+  width: 100%;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 0.7rem;
+  background: #f8fafc;
+  text-align: left;
+  cursor: grab;
+}
+
+.dispatch-request-card:active {
+  cursor: grabbing;
+}
+
+.dispatch-drop-zone {
+  border: 1px dashed rgba(61, 142, 185, 0.4);
+  border-radius: 10px;
+  padding: 0.65rem;
+  background: rgba(239, 246, 255, 0.7);
+  min-height: 78px;
+}
+
+.dispatch-drop-zone-disabled {
+  border-style: solid;
+  border-color: var(--border);
+  background: #f8fafc;
 }
 
 .fleet-compliance-module-card {
@@ -3013,6 +3085,19 @@ a.penny-source-pill:hover {
 
   .dispatch-dashboard-grid {
     grid-template-columns: 1fr;
+  }
+
+  .dispatch-overview-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .dispatch-assignment-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .dispatch-map-frame-xl,
+  .dispatch-map-frame-tall {
+    height: 320px;
   }
 }
 

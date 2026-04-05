@@ -183,6 +183,17 @@ export default function GovConDashboardPage() {
               </article>
             </div>
 
+            <article className="fleet-compliance-list-card" style={{ marginTop: '1rem' }}>
+              <h3>GovCon Workflow</h3>
+              <ol style={{ margin: '0.7rem 0 0 1rem', padding: 0, display: 'grid', gap: '0.35rem', color: 'var(--text-secondary)' }}>
+                <li>Capture or create the opportunity.</li>
+                <li>Run bid/no-bid scoring from the opportunity detail page.</li>
+                <li>Generate bid package outputs (DOCX/PDF/Markdown).</li>
+                <li>Move status through bid, submitted, awarded/lost.</li>
+                <li>Review alerts for deadlines and compliance renewals.</li>
+              </ol>
+            </article>
+
             <div className="fleet-compliance-list-card" style={{ marginTop: '1.2rem' }}>
               <h3>Pipeline</h3>
               {!hasOpportunities ? (
