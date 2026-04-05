@@ -140,6 +140,14 @@ function getNextDriverStatus(status: DriverStatus): DriverStatus {
   return 'off_duty';
 }
 
+function toMapQuery(request: DispatchRequestRow | null): string {
+  if (!request) return 'Colorado Springs, CO';
+  return [request.address, request.city, request.state, request.zip]
+    .map((part) => String(part ?? '').trim())
+    .filter(Boolean)
+    .join(', ');
+}
+
 export default function DispatchDashboardPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -212,6 +220,23 @@ export default function DispatchDashboardPage() {
     () => new Map(zones.map((zone) => [zone.id, zone.name])),
     [zones],
   );
+
+  const mapQuery = useMemo(() => {
+    const priorityRequest = [...activeRequests].sort((a, b) => {
+      const priorityOrder: Record<DispatchRequestRow['priority'], number> = {
+        emergency: 0,
+        urgent: 1,
+        standard: 2,
+        scheduled: 3,
+      };
+      const byPriority = priorityOrder[a.priority] - priorityOrder[b.priority];
+      if (byPriority !== 0) return byPriority;
+      const aCreated = a.createdAt ? new Date(a.createdAt).getTime() : 0;
+      const bCreated = b.createdAt ? new Date(b.createdAt).getTime() : 0;
+      return aCreated - bCreated;
+    })[0] ?? null;
+    return toMapQuery(priorityRequest);
+  }, [activeRequests]);
 
   async function handleAssignDriver(requestId: string) {
     const driverId = assignments[requestId];
@@ -314,15 +339,8 @@ export default function DispatchDashboardPage() {
               </article>
             </div>
 
-            <div
-              style={{
-                display: 'grid',
-                gap: '1.2rem',
-                gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))',
-                marginTop: '1.25rem',
-              }}
-            >
-              <div className="fleet-compliance-list-card">
+            <div className="dispatch-dashboard-grid" style={{ marginTop: '1.25rem' }}>
+              <div className="fleet-compliance-list-card dispatch-active-requests-card">
                 <h3>Active Requests</h3>
                 <div className="fleet-compliance-table-wrap">
                   <table className="fleet-compliance-table">
@@ -467,15 +485,41 @@ export default function DispatchDashboardPage() {
 
               <div style={{ display: 'grid', gap: '1rem' }}>
                 <div className="fleet-compliance-list-card">
+                  <h3>Live Dispatch Map</h3>
+                  <div className="fleet-compliance-table-note" style={{ marginTop: '0.45rem' }}>
+                    Focused on the highest-priority active request.
+                  </div>
+                  <div
+                    style={{
+                      marginTop: '0.7rem',
+                      border: '1px solid var(--border)',
+                      borderRadius: '8px',
+                      overflow: 'hidden',
+                      height: '240px',
+                      background: '#e2e8f0',
+                    }}
+                  >
+                    <iframe
+                      title="Dispatch map"
+                      src={`https://www.google.com/maps?q=${encodeURIComponent(mapQuery)}&output=embed`}
+                      style={{ width: '100%', height: '100%', border: 0 }}
+                      loading="lazy"
+                      referrerPolicy="no-referrer-when-downgrade"
+                    />
+                  </div>
+                </div>
+
+                <div className="fleet-compliance-list-card">
                   <h3>Driver Availability</h3>
-                  <div style={{ display: 'grid', gap: '0.6rem' }}>
+                  <div style={{ display: 'grid', gap: '0.6rem', maxHeight: '320px', overflowY: 'auto', paddingRight: '0.15rem' }}>
                     {drivers.map((driver) => (
                       <div
                         key={driver.id}
+                        className="dispatch-driver-card"
                         style={{
                           border: '1px solid var(--border)',
                           borderRadius: '8px',
-                          padding: '0.65rem',
+                          padding: '0.52rem',
                           background: '#f8fafc',
                         }}
                       >
@@ -501,13 +545,13 @@ export default function DispatchDashboardPage() {
                             {driver.status.replace('_', ' ')}
                           </span>
                         </div>
-                        <div className="fleet-compliance-table-note" style={{ marginTop: '0.35rem' }}>
+                        <div className="fleet-compliance-table-note" style={{ marginTop: '0.2rem' }}>
                           Jobs: {driver.jobsToday}/{driver.maxJobsPerDay}
                         </div>
                         <button
                           className="btn-secondary"
                           type="button"
-                          style={{ marginTop: '0.45rem' }}
+                          style={{ marginTop: '0.3rem', padding: '0.5rem 0.8rem' }}
                           onClick={() => void handleToggleDriverStatus(driver)}
                           disabled={workingDriverId === driver.id || driver.status === 'en_route' || driver.status === 'on_site'}
                         >

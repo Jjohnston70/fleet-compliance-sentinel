@@ -18,9 +18,14 @@ class DispatchService {
     /**
      * Create a new dispatch request.
      */
-    async createDispatchRequest(request) {
-        // Calculate SLA deadline based on priority
-        const slaDeadline = (0, sla_thresholds_1.calculateSLADeadline)(request.priority, request.created_at);
+    async createDispatchRequest(request, slaHoursOverride) {
+        const normalizedSlaHours = typeof slaHoursOverride === 'number' && Number.isFinite(slaHoursOverride)
+            ? Math.trunc(slaHoursOverride)
+            : null;
+        // Calculate SLA deadline based on priority unless an explicit 24-72 hour override is provided.
+        const slaDeadline = normalizedSlaHours !== null
+            ? new Date(request.created_at.getTime() + normalizedSlaHours * 60 * 60 * 1000)
+            : (0, sla_thresholds_1.calculateSLADeadline)(request.priority, request.created_at);
         const requestWithSLA = { ...request, sla_deadline: slaDeadline };
         const created = await this.repository.createDispatchRequest(requestWithSLA);
         // Log creation

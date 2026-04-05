@@ -12,7 +12,9 @@ export declare class DispatchAPIHandlers {
     private truckService;
     private slaService;
     constructor(repository: InMemoryRepository);
-    createDispatchRequest(data: Partial<DispatchRequest>): Promise<DispatchRequest>;
+    createDispatchRequest(data: Partial<DispatchRequest> & {
+        sla_hours_override?: number;
+    }): Promise<DispatchRequest>;
     getDispatchRequest(id: string): Promise<DispatchRequest | null>;
     listDispatchRequests(): Promise<DispatchRequest[]>;
     updateDispatchRequest(id: string, updates: Partial<DispatchRequest>): Promise<DispatchRequest | null>;

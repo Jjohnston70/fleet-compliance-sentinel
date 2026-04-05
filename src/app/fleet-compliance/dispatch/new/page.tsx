@@ -16,7 +16,13 @@ const PRIORITY_OPTIONS: Array<{ value: DispatchPriority; label: string }> = [
   { value: 'emergency', label: 'Emergency (30 min SLA)' },
   { value: 'urgent', label: 'Urgent (2 hr SLA)' },
   { value: 'standard', label: 'Standard (4 hr SLA)' },
-  { value: 'scheduled', label: 'Scheduled (24 hr SLA)' },
+  { value: 'scheduled', label: 'Scheduled (24-72 hr SLA)' },
+];
+
+const SLA_WINDOW_OPTIONS: Array<{ value: 24 | 48 | 72; label: string }> = [
+  { value: 24, label: '24 hours' },
+  { value: 48, label: '48 hours' },
+  { value: 72, label: '72 hours' },
 ];
 
 const ISSUE_OPTIONS: Array<{ value: DispatchIssueType; label: string }> = [
@@ -43,6 +49,7 @@ export default function NewDispatchRequestPage() {
     zip: '',
     zoneId: '',
     priority: 'emergency' as DispatchPriority,
+    slaHours: 24 as 24 | 48 | 72,
     issueType: 'no_heat' as DispatchIssueType,
     description: '',
   });
@@ -221,6 +228,25 @@ export default function NewDispatchRequestPage() {
                     required
                   >
                     {PRIORITY_OPTIONS.map((option) => (
+                      <option key={option.value} value={option.value}>
+                        {option.label}
+                      </option>
+                    ))}
+                  </select>
+                </label>
+                <label className="fleet-compliance-field-stack">
+                  <span>SLA Window *</span>
+                  <select
+                    value={String(form.slaHours)}
+                    onChange={(event) =>
+                      setForm((current) => ({
+                        ...current,
+                        slaHours: Number(event.target.value) as 24 | 48 | 72,
+                      }))
+                    }
+                    required
+                  >
+                    {SLA_WINDOW_OPTIONS.map((option) => (
                       <option key={option.value} value={option.value}>
                         {option.label}
                       </option>

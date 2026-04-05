@@ -80,6 +80,9 @@ export async function POST(req: NextRequest) {
   const description = String(body.description ?? '').trim();
   const priority = normalizeDispatchPriority(body.priority);
   const issueType = normalizeDispatchIssueType(body.issueType);
+  const rawSlaHours = Number(body.slaHours);
+  const hasSlaOverride = Number.isFinite(rawSlaHours);
+  const slaHours = hasSlaOverride ? Math.trunc(rawSlaHours) : null;
 
   if (!clientName || !clientPhone || !address || !city || !state || !zip || !zoneId || !description) {
     return NextResponse.json(
@@ -105,6 +108,13 @@ export async function POST(req: NextRequest) {
     );
   }
 
+  if (hasSlaOverride && (slaHours === null || ![24, 48, 72].includes(slaHours))) {
+    return NextResponse.json(
+      { ok: false, error: 'slaHours must be one of: 24, 48, 72' },
+      { status: 422 },
+    );
+  }
+
   try {
     const runtimeRef = await getDispatchRuntime(orgId);
     const created = await runtimeRef.apiHandlers.createDispatchRequest({
@@ -116,6 +126,7 @@ export async function POST(req: NextRequest) {
       zip,
       zone_id: zoneId,
       priority,
+      ...(slaHours ? { sla_hours_override: slaHours } : {}),
       issue_type: issueType,
       description,
     });

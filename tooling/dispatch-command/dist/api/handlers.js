@@ -20,6 +20,8 @@ class DispatchAPIHandlers {
     }
     // Dispatch Request Handlers
     async createDispatchRequest(data) {
+        const slaHoursOverride = Number(data.sla_hours_override);
+        const slaOverrideIsValid = Number.isFinite(slaHoursOverride) && slaHoursOverride >= 24 && slaHoursOverride <= 72;
         const request = {
             id: crypto.randomUUID(),
             client_name: data.client_name || '',
@@ -37,7 +39,7 @@ class DispatchAPIHandlers {
             created_at: new Date(),
             updated_at: new Date(),
         };
-        return this.dispatchService.createDispatchRequest(request);
+        return this.dispatchService.createDispatchRequest(request, slaOverrideIsValid ? Math.trunc(slaHoursOverride) : undefined);
     }
     async getDispatchRequest(id) {
         return this.dispatchService.getDispatchRequest(id);

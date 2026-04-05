@@ -2458,6 +2458,27 @@ a.penny-source-pill:hover {
   margin-top: 1rem;
 }
 
+.dispatch-dashboard-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 2.1fr) minmax(280px, 0.9fr);
+  gap: 1.2rem;
+  align-items: start;
+}
+
+.dispatch-active-requests-card .fleet-compliance-table th,
+.dispatch-active-requests-card .fleet-compliance-table td {
+  white-space: nowrap;
+}
+
+.dispatch-active-requests-card .fleet-compliance-table td:first-child {
+  white-space: normal;
+  min-width: 240px;
+}
+
+.dispatch-driver-card .btn-secondary {
+  font-size: 0.82rem;
+}
+
 .fleet-compliance-module-card {
   text-decoration: none;
   color: inherit;
@@ -2988,6 +3009,10 @@ a.penny-source-pill:hover {
   .fleet-compliance-module-grid,
   .fleet-compliance-list-grid {
     grid-template-columns: 1fr 1fr;
+  }
+
+  .dispatch-dashboard-grid {
+    grid-template-columns: 1fr;
   }
 }
 

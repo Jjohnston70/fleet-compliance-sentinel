@@ -19,7 +19,7 @@ export declare class DispatchService {
     /**
      * Create a new dispatch request.
      */
-    createDispatchRequest(request: DispatchRequest): Promise<DispatchRequest>;
+    createDispatchRequest(request: DispatchRequest, slaHoursOverride?: number): Promise<DispatchRequest>;
     /**
      * Get dispatch request by ID.
      */
