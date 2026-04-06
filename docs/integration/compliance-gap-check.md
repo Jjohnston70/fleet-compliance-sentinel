@@ -1,0 +1,235 @@
+# Compliance Gap Check
+
+**Trigger:** Weekly (Monday 9:00 AM MT) or on-demand
+**Duration:** ~10 minutes
+**Output:** Compliance gap report to Slack #ops-daily or file
+
+---
+
+## Objective
+
+Systematic review of Fleet-Compliance Sentinel data to identify:
+- Expiring driver credentials (CDL, medical card, TWIC, TSA)
+- Overdue vehicle inspections and maintenance
+- Missing compliance documents (DQ files, drug test records)
+- Permit expirations within 120-day window
+- Open suspense items past due date
+
+---
+
+## Step 1: Check Expiring Driver Credentials
+
+**Tool:** FCS API
+**Action:** Query fleet_compliance_records where collection = 'employees'
+
+**Analysis:**
+- CDL expiry within 60 days: Flag as WARNING
+- CDL expiry within 30 days: Flag as CRITICAL
+- Medical card expiry within 60 days: Flag as WARNING
+- Medical card expiry within 30 days: Flag as CRITICAL
+- MVR record older than 12 months: Flag as REVIEW
+
+**Output Format:**
+```
+**Driver Credentials:**
+- Expiring within 30 days (CRITICAL): [count]
+- Expiring within 60 days (WARNING): [count]
+- MVR overdue: [count]
+
+[If critical:]
+CRITICAL - Immediate action required:
+- [Driver Name] - [Credential Type] expires [Date]
+```
+
+---
+
+## Step 2: Check Vehicle Compliance
+
+**Tool:** FCS API
+**Action:** Query fleet_compliance_records where collection = 'assets'
+
+**Analysis:**
+- Last inspection older than 12 months: Flag as CRITICAL
+- Last inspection older than 10 months: Flag as WARNING
+- Maintenance hold vehicles with no scheduled return: Flag as REVIEW
+- Registration/plate expiry within 60 days: Flag as WARNING
+
+**Output Format:**
+```
+**Vehicle Compliance:**
+- Inspection overdue (CRITICAL): [count]
+- Inspection due soon (WARNING): [count]
+- Maintenance holds without return date: [count]
+
+[If critical:]
+CRITICAL - Vehicles out of compliance:
+- [Unit #] - [Issue] - Last inspection [Date]
+```
+
+---
+
+## Step 3: Check Permit Expirations
+
+**Tool:** FCS API
+**Action:** Query fleet_compliance_records where collection = 'permits'
+
+**Analysis:**
+- Permit expiry within 30 days: Flag as CRITICAL
+- Permit expiry within 120 days: Flag as WARNING
+- Missing renewal documentation: Flag as REVIEW
+
+**Output Format:**
+```
+**Permits:**
+- Expiring within 30 days (CRITICAL): [count]
+- Expiring within 120 days (WARNING): [count]
+- Missing renewal docs: [count]
+```
+
+---
+
+## Step 4: Check Suspense Items
+
+**Tool:** FCS API
+**Action:** Query fleet_compliance_records where collection = 'suspense'
+
+**Analysis:**
+- Open items past due date: Flag as CRITICAL
+- Open items due within 7 days: Flag as WARNING
+- High-severity items still open: Flag as CRITICAL
+
+**Output Format:**
+```
+**Suspense Items:**
+- Past due (CRITICAL): [count]
+- Due within 7 days (WARNING): [count]
+- High severity open: [count]
+```
+
+---
+
+## Step 5: Check Sentry for Application Errors
+
+**Tool:** Sentry MCP
+**Action:** `Sentry:search_issues`
+
+**Parameters:**
+```json
+{
+  "query": "is:unresolved level:error",
+  "project": "pipeline-punks-nextjs",
+  "statsPeriod": "7d",
+  "sort": "freq",
+  "limit": 5
+}
+```
+
+**Analysis:**
+- Count compliance-related errors (routes containing /compliance, /dq, /suspense, /alerts)
+- Flag any data integrity errors
+
+**Output Format:**
+```
+**Platform Health:**
+- Compliance-related errors (7d): [count]
+- Data integrity issues: [count or "None detected"]
+```
+
+---
+
+## Step 6: Generate Compliance Score
+
+**Scoring Matrix:**
+
+| Category | Weight | Score Logic |
+|----------|--------|-------------|
+| Driver Credentials | 30% | 100 = no expiries within 60d, 50 = warnings only, 0 = criticals |
+| Vehicle Compliance | 25% | 100 = all current, 50 = warnings, 0 = overdue inspections |
+| Permits | 20% | 100 = all current, 50 = within 120d, 0 = within 30d |
+| Suspense Items | 15% | 100 = none past due, 50 = due within 7d, 0 = past due |
+| Platform Health | 10% | 100 = no errors, 50 = warnings, 0 = compliance errors |
+
+**Composite Score:** Weighted average (0-100)
+
+| Score Range | Rating | Action |
+|-------------|--------|--------|
+| 90-100 | GREEN | Maintain current posture |
+| 70-89 | YELLOW | Address warnings this week |
+| 50-69 | ORANGE | Immediate remediation plan needed |
+| 0-49 | RED | Stop and fix before operations continue |
+
+---
+
+## Step 7: Generate Report
+
+```markdown
+# FCS Compliance Gap Report
+**Generated:** [Timestamp]
+**Period:** Weekly review
+**Org:** [Organization Name]
+
+---
+
+## Compliance Score: [Score]/100 - [GREEN/YELLOW/ORANGE/RED]
+
+---
+
+## Driver Credentials
+[Results from Step 1]
+
+## Vehicle Compliance
+[Results from Step 2]
+
+## Permits
+[Results from Step 3]
+
+## Suspense Items
+[Results from Step 4]
+
+## Platform Health
+[Results from Step 5]
+
+---
+
+## Action Items (Priority Order)
+
+**Immediate (Today):**
+1. [Critical items]
+
+**This Week:**
+1. [Warning items]
+
+**Scheduled:**
+1. [Review items]
+
+---
+
+Generated by Pipeline Penny via Fleet-Compliance Sentinel
+```
+
+---
+
+## Step 8: Post Results
+
+**If Score < 70:**
+- Post full report to Slack #ops-daily
+- Tag admin users
+- Create suspense items for each critical finding
+
+**If Score >= 70:**
+- Post summary to Slack #ops-daily
+- "Weekly compliance check complete - Score: [X]/100 [RATING]"
+
+**Always:**
+- Save report to org's compliance evidence folder
+- Log execution in audit trail
+
+---
+
+## Notes
+
+**First Run:** Establish baseline score. Review thresholds and adjust for your fleet size and regulatory environment.
+
+**Customization:** Adjust expiry windows, scoring weights, and severity thresholds based on your DOT region and carrier type.
+
+**SOC 2 Evidence:** Each execution generates an evidence artifact for the SOC 2 observation window. Store reports in `soc2-evidence/` or equivalent.

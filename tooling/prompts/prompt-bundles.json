@@ -1,0 +1,23 @@
+{
+  "SMB_Operator_Pack": [
+    "executive_assistant_v1",
+    "operations_manager_v1",
+    "business_analyst_v1",
+    "product_manager_v1"
+  ],
+  "Revenue_Command_Pack": [
+    "business_development_manager_v1",
+    "sales_strategist_v1",
+    "marketing_strategist_v1",
+    "pricing_strategist_v1",
+    "copywriter_v1",
+    "bid_strategist_v1"
+  ],
+  "Gov_Compliance_Pack": [
+    "compliance_gov_v1",
+    "data_privacy_coach_v1",
+    "risk_manager_v1",
+    "financial_analyst_v1",
+    "chief_financial_officer_v1"
+  ]
+}

@@ -231,6 +231,7 @@ Set `PENNY_API_URL=http://localhost:8000` in `.env.local` to connect.
 │       ├── govcon.json
 │       └── realty.json
 ├── tooling/skills/               # 15 client-facing skill wrappers
+├── tooling/prompts/              # Prompt governance control plane
 ├── skills-registry.json          # Unified 38-skill registry
 └── archive/                      # Historical snapshots
 ```
@@ -1548,6 +1549,30 @@ Skill packs define which skills activate per module domain. Located at `.claude/
 
 **realty.json** — 8 operator skills + 4 client-facing (realty-command, financial-analyst, proposal-generator, data-privacy-coach)
 
+### Prompt Governance Control Plane
+
+The prompt governance control plane at `tooling/prompts/` defines the execution rules for all LLM-powered skills. Migrated from the TNDS PROMPTS-PACKS-TYPES library and adapted for FCS.
+
+| File | Purpose |
+|------|---------|
+| `tooling/prompts/prompt.schema.json` | JSON Schema validation for prompt definitions |
+| `tooling/prompts/prompt-router.json` | Direction (reasoning) vs Command (execution) model routing |
+| `tooling/prompts/runtime-policy.json` | Token limits and cost ceilings per tier (free/low-cost/battle-tested) |
+| `tooling/prompts/prompt-bundles.json` | Role bundles: SMB Operator, Revenue Command, Gov Compliance |
+| `tooling/prompts/prompt-registry.v1.0.0.json` | Immutable v1.0.0 registry (21 prompts, frozen 2026-02-07) |
+| `tooling/prompts/prompt-registry-map.json` | Maps FCS skill dirs to registry entries and gateway modules (15 mappings) |
+| `tooling/prompts/prompt-validator.ts` | TypeScript build-time validation function |
+
+### Operational Playbooks
+
+Structured multi-step workflows at `docs/integration/` for scheduled or on-demand execution via Cowork sessions or Pipeline Penny.
+
+| Playbook | Trigger | Purpose |
+|----------|---------|---------|
+| `compliance-gap-check.md` | Weekly / on-demand | Driver credentials, vehicle inspections, permits, suspense items. Weighted compliance score (0-100). |
+| `sentry-error-triage.md` | Every 6h / on-demand | Top Sentry issues, severity scoring, root cause categorization, fix recommendations. |
+| `daily-ops-standup.md` | Daily 8 AM MT | Sentry + HubSpot pipeline + calendar + action items -> Slack #ops-daily. |
+
 ### Module Toggle Integration
 
 Skills are toggled per-org through the Module Toggle Console (`/fleet-compliance/dev/modules`). The toggle system uses two mechanisms:
@@ -1556,18 +1581,18 @@ Skills are toggled per-org through the Module Toggle Console (`/fleet-compliance
 
 2. **Gateway ACL** (`module_gateway_acl` table): Fine-grained per-action access control managed through `src/lib/modules-gateway/persistence.ts`. Gateway modules can be toggled independently from app modules.
 
-When an installer enables/disables a skill-command module for an org, all skills mapped to that command module become available or hidden for that org's users.
-
 ### Adding a New Skill
 
 1. Create the skill directory under `.claude/skills/<skill-name>/`
 2. Build the ATLAS 5-file pattern (SKILL.md, contract.json, registry.json, triggers.json)
-3. Run through the intake pipeline at `.claude/skills/00_skill-intake/`
-4. Update `skills-registry.json` at project root
-5. If client-facing: create a gateway wrapper in `tooling/skills/<skill-name>/`
-6. If client-facing: register the action in the Module Gateway contract
-7. Add to the relevant skill-pack manifest in `.claude/skill-packs/`
-8. If Penny-enabled: update Penny's tool catalog
+3. Write a `system.prompt` following the governance template (11 rules + role identity + depth modes + output contract)
+4. Run through the intake pipeline at `.claude/skills/00_skill-intake/`
+5. Update `skills-registry.json` at project root
+6. Add a mapping in `tooling/prompt-governance/prompt-registry-map.json`
+7. If client-facing: create a gateway wrapper in `tooling/skills/<skill-name>/`
+8. If client-facing: register the action in the Module Gateway contract
+9. Add to the relevant skill-pack manifest in `.claude/skill-packs/`
+10. If Penny-enabled: update Penny's tool catalog
 
 ### Key Files
 
@@ -1578,6 +1603,9 @@ When an installer enables/disables a skill-command module for an org, all skills
 | `.claude/skills/SKILLS-README.md` | Audience classification matrix |
 | `.claude/skill-packs/*.json` | Module-scoped skill bundle manifests |
 | `tooling/skills/README.md` | Client-facing skill activation path and gateway mappings |
+| `tooling/IMPLEMENTATION.md` | Full migration guide: what was migrated, how to use, how to extend |
+| `tooling/prompts/README.md` | Control plane documentation and integration points |
+| `docs/integration/PLAYBOOKS_README.md` | Playbook documentation and creation guide |
 | `FCS-Agent-Deployment-Recommendations.docx` | Agent selection rationale |
 | `FCS-Skills-Activation-Strategy.docx` | Skill activation architecture (3-layer design) |
 | `FCS-Unified-Skills-Registry.docx` | Registry reconciliation documentation |

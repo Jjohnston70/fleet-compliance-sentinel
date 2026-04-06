@@ -1,0 +1,20 @@
+{
+  "tiers": {
+    "free": {
+      "max_tokens": 800,
+      "monthly_cost_ceiling_usd": 10
+    },
+    "low-cost": {
+      "max_tokens": 2000,
+      "monthly_cost_ceiling_usd": 50
+    },
+    "battle-tested": {
+      "max_tokens": 6000,
+      "monthly_cost_ceiling_usd": 250
+    }
+  },
+  "protocol_routing": {
+    "direction": "strategy-models",
+    "command": "execution-models"
+  }
+}
