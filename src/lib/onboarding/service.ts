@@ -1,4 +1,7 @@
 import { randomUUID } from 'node:crypto';
+import { assignHazmatTrainingIfRequired, type TrainingAssignmentResult } from '@/lib/onboarding/adapters/training-adapter';
+import { seedSuspenseFromTraining, type SuspenseSeedResult } from '@/lib/onboarding/adapters/suspense-seed-adapter';
+import { evaluateOnboardingRules } from '@/lib/onboarding/rules-engine';
 import type {
   OnboardingEmployeeInput,
   OnboardingEmployeeProfile,
@@ -7,6 +10,7 @@ import type {
   OnboardingRunCreateInput,
   OnboardingRunDetail,
   OnboardingRunRecord,
+  OnboardingStepStatus,
   OnboardingStepRecord,
   OnboardingTaskRecord,
 } from '@/lib/onboarding/types';
@@ -19,7 +23,7 @@ import {
   listRunSteps,
   markRunCompleted,
   updateEmployeeProfile,
-  upsertCompletedStep,
+  upsertStep,
   upsertFallbackTask,
 } from '@/lib/onboarding/repository';
 
@@ -48,10 +52,12 @@ export interface OnboardingStore {
   listRuns(orgId: string, limit?: number): Promise<OnboardingRunRecord[]>;
   getRunDetail(input: { orgId: string; runId: string }): Promise<OnboardingRunDetail | null>;
   listRunSteps(runId: string): Promise<OnboardingStepRecord[]>;
-  upsertCompletedStep(input: {
+  upsertStep(input: {
     runId: string;
     stepKey: string;
+    status: OnboardingStepStatus;
     output: Record<string, unknown>;
+    errorMessage?: string | null;
   }): Promise<OnboardingStepRecord>;
   markRunCompleted(input: {
     orgId: string;
@@ -70,7 +76,19 @@ export interface OnboardingStore {
   insertOnboardingEvent(event: OnboardingEventEnvelope): Promise<void>;
 }
 
-const DEFAULT_STEP_KEYS = ['profile.persist', 'event.audit'] as const;
+export interface OnboardingAdapters {
+  assignHazmatTrainingIfRequired(input: {
+    orgId: string;
+    initiatedBy: string;
+    employee: OnboardingEmployeeProfile;
+    deadlineDate: string;
+  }): Promise<TrainingAssignmentResult>;
+  seedSuspenseFromTraining(input: {
+    orgId: string;
+    employee: OnboardingEmployeeProfile;
+  }): Promise<SuspenseSeedResult>;
+}
+
 const DEFAULT_FALLBACK_TASK_KEY = 'verify-profile-data';
 
 function ensureRequiredFields(employee: OnboardingEmployeeInput): void {
@@ -103,16 +121,38 @@ function deriveIdempotencyKey(base: string | null | undefined): string | null {
   return null;
 }
 
+const DEFAULT_ADAPTERS: OnboardingAdapters = {
+  assignHazmatTrainingIfRequired,
+  seedSuspenseFromTraining,
+};
+
 export class OnboardingService {
-  constructor(private readonly store: OnboardingStore) {}
+  constructor(
+    private readonly store: OnboardingStore,
+    private readonly adapters: OnboardingAdapters = DEFAULT_ADAPTERS,
+  ) {}
 
-  private async runBaselineFlow(input: {
+  private async persistStep(input: {
+    runId: string;
+    stepKey: string;
+    status: OnboardingStepStatus;
+    output: Record<string, unknown>;
+    errorMessage?: string | null;
+  }): Promise<OnboardingStepRecord> {
+    return this.store.upsertStep({
+      runId: input.runId,
+      stepKey: input.stepKey,
+      status: input.status,
+      output: input.output,
+      errorMessage: input.errorMessage ?? null,
+    });
+  }
+
+  private async runDeterministicFlow(input: {
     run: OnboardingRunRecord;
+    employeeProfile: OnboardingEmployeeProfile;
     actorUserId: string;
-    stepKeys?: readonly string[];
   }): Promise<OnboardingRunDetail> {
-    const stepKeys = input.stepKeys ?? DEFAULT_STEP_KEYS;
-
     await this.store.insertOnboardingEvent(
       createEvent({
         eventType: 'employee.onboarding.started',
@@ -123,32 +163,181 @@ export class OnboardingService {
       }),
     );
 
-    for (const stepKey of stepKeys) {
+    await this.store.insertOnboardingEvent(
+      createEvent({
+        eventType: 'employee.onboarding.step.requested',
+        orgId: input.run.orgId,
+        runId: input.run.id,
+        actorUserId: input.actorUserId,
+        payload: { stepKey: 'profile.persist' },
+      }),
+    );
+    await this.persistStep({
+      runId: input.run.id,
+      stepKey: 'profile.persist',
+      status: 'completed',
+      output: {
+        completedBy: input.actorUserId,
+        completedAt: new Date().toISOString(),
+        deterministic: true,
+      },
+    });
+
+    const decisions = evaluateOnboardingRules(input.employeeProfile);
+    await this.store.insertOnboardingEvent(
+      createEvent({
+        eventType: 'employee.onboarding.step.requested',
+        orgId: input.run.orgId,
+        runId: input.run.id,
+        actorUserId: input.actorUserId,
+        payload: { stepKey: 'rules.evaluate' },
+      }),
+    );
+    await this.persistStep({
+      runId: input.run.id,
+      stepKey: 'rules.evaluate',
+      status: 'completed',
+      output: {
+        completedBy: input.actorUserId,
+        deterministic: true,
+        decisions,
+      },
+    });
+
+    let trainingResult: TrainingAssignmentResult = {
+      status: 'skipped',
+      reason: 'not_required',
+      message: 'training rule not executed',
+    };
+
+    if (decisions.training.shouldAssignTraining && decisions.training.deadlineDate) {
+      trainingResult = await this.adapters.assignHazmatTrainingIfRequired({
+        orgId: input.run.orgId,
+        initiatedBy: input.actorUserId,
+        employee: input.employeeProfile,
+        deadlineDate: decisions.training.deadlineDate,
+      });
+
+      if (trainingResult.status === 'completed') {
+        await this.store.insertOnboardingEvent(
+          createEvent({
+            eventType: 'employee.training.assignment.completed',
+            orgId: input.run.orgId,
+            runId: input.run.id,
+            actorUserId: input.actorUserId,
+            payload: { ...trainingResult },
+          }),
+        );
+      } else {
+        await this.store.insertOnboardingEvent(
+          createEvent({
+            eventType: 'employee.training.assignment.requested',
+            orgId: input.run.orgId,
+            runId: input.run.id,
+            actorUserId: input.actorUserId,
+            payload: { ...trainingResult },
+          }),
+        );
+      }
+    }
+
+    await this.store.insertOnboardingEvent(
+      createEvent({
+        eventType: 'employee.onboarding.step.requested',
+        orgId: input.run.orgId,
+        runId: input.run.id,
+        actorUserId: input.actorUserId,
+        payload: { stepKey: 'training.assign' },
+      }),
+    );
+
+    await this.persistStep({
+      runId: input.run.id,
+      stepKey: 'training.assign',
+      status:
+        trainingResult.status === 'completed'
+          ? 'completed'
+          : trainingResult.status === 'failed'
+            ? 'failed'
+            : 'skipped',
+      output: {
+        completedBy: input.actorUserId,
+        deterministic: true,
+        result: trainingResult,
+      },
+      errorMessage: trainingResult.status === 'failed' ? trainingResult.message || 'training assignment failed' : null,
+    });
+
+    const suspenseResult: SuspenseSeedResult = decisions.suspense.shouldSeed
+      ? await this.adapters.seedSuspenseFromTraining({
+        orgId: input.run.orgId,
+        employee: input.employeeProfile,
+      })
+      : { status: 'skipped', reason: 'training_not_assigned' };
+
+    if (suspenseResult.status === 'completed') {
       await this.store.insertOnboardingEvent(
         createEvent({
-          eventType: 'employee.onboarding.step.requested',
+          eventType: 'employee.suspense.seeded',
           orgId: input.run.orgId,
           runId: input.run.id,
           actorUserId: input.actorUserId,
-          payload: { stepKey },
+          payload: { ...suspenseResult },
         }),
       );
-      await this.store.upsertCompletedStep({
-        runId: input.run.id,
-        stepKey,
-        output: {
-          completedBy: input.actorUserId,
-          completedAt: new Date().toISOString(),
-          deterministic: true,
-        },
-      });
     }
+
+    await this.store.insertOnboardingEvent(
+      createEvent({
+        eventType: 'employee.onboarding.step.requested',
+        orgId: input.run.orgId,
+        runId: input.run.id,
+        actorUserId: input.actorUserId,
+        payload: { stepKey: 'suspense.seed' },
+      }),
+    );
+    await this.persistStep({
+      runId: input.run.id,
+      stepKey: 'suspense.seed',
+      status:
+        suspenseResult.status === 'completed'
+          ? 'completed'
+          : suspenseResult.status === 'failed'
+            ? 'failed'
+            : 'skipped',
+      output: {
+        completedBy: input.actorUserId,
+        deterministic: true,
+        result: suspenseResult,
+      },
+      errorMessage: suspenseResult.status === 'failed' ? suspenseResult.message || 'suspense seeding failed' : null,
+    });
+
+    await this.store.insertOnboardingEvent(
+      createEvent({
+        eventType: 'employee.onboarding.step.requested',
+        orgId: input.run.orgId,
+        runId: input.run.id,
+        actorUserId: input.actorUserId,
+        payload: { stepKey: 'event.audit' },
+      }),
+    );
+    await this.persistStep({
+      runId: input.run.id,
+      stepKey: 'event.audit',
+      status: 'completed',
+      output: {
+        completedBy: input.actorUserId,
+        deterministic: true,
+      },
+    });
 
     const finalized = await this.store.markRunCompleted({
       orgId: input.run.orgId,
       runId: input.run.id,
       metadata: {
         completedBy: input.actorUserId,
+        rules: decisions,
       },
     });
 
@@ -230,8 +419,9 @@ export class OnboardingService {
       },
     });
 
-    return this.runBaselineFlow({
+    return this.runDeterministicFlow({
       run,
+      employeeProfile: profile,
       actorUserId: input.context.userId,
     });
   }
@@ -277,8 +467,9 @@ export class OnboardingService {
       },
     });
 
-    return this.runBaselineFlow({
+    return this.runDeterministicFlow({
       run,
+      employeeProfile: profile,
       actorUserId: input.context.userId,
     });
   }
@@ -314,9 +505,7 @@ export class OnboardingService {
       throw new OnboardingServiceError(404, 'Onboarding run not found');
     }
 
-    const requestedStepSet = new Set(
-      (input.stepKeys || []).map((step) => step.trim()).filter(Boolean),
-    );
+    const requestedStepSet = new Set((input.stepKeys || []).map((step) => step.trim()).filter(Boolean));
     const retryTargets = detail.steps
       .filter((step) => {
         if (step.status === 'completed') return false;
@@ -331,10 +520,10 @@ export class OnboardingService {
       return detail;
     }
 
-    return this.runBaselineFlow({
+    return this.runDeterministicFlow({
       run: detail.run,
+      employeeProfile: detail.employeeProfile,
       actorUserId: input.context.userId,
-      stepKeys: retryTargets,
     });
   }
 }
@@ -372,12 +561,14 @@ class PostgresOnboardingStore implements OnboardingStore {
     return listRunSteps(runId);
   }
 
-  async upsertCompletedStep(input: {
+  async upsertStep(input: {
     runId: string;
     stepKey: string;
+    status: OnboardingStepStatus;
     output: Record<string, unknown>;
+    errorMessage?: string | null;
   }): Promise<OnboardingStepRecord> {
-    return upsertCompletedStep(input);
+    return upsertStep(input);
   }
 
   async markRunCompleted(input: {
@@ -405,6 +596,9 @@ class PostgresOnboardingStore implements OnboardingStore {
   }
 }
 
-export function createOnboardingService(store?: OnboardingStore): OnboardingService {
-  return new OnboardingService(store ?? new PostgresOnboardingStore());
+export function createOnboardingService(
+  store?: OnboardingStore,
+  adapters?: OnboardingAdapters,
+): OnboardingService {
+  return new OnboardingService(store ?? new PostgresOnboardingStore(), adapters ?? DEFAULT_ADAPTERS);
 }

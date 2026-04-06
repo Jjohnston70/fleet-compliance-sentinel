@@ -1,3 +1,5 @@
+import path from 'node:path';
+import { pathToFileURL } from 'node:url';
 import {
   loadModuleRuntimeState,
   saveModuleRuntimeState,
@@ -71,6 +73,13 @@ export type SetAsideType =
 
 let govConModulePromise: Promise<GovConCommandModule> | null = null;
 const runtimeByOrg = new Map<string, GovConRuntime>();
+const GOVCON_COMMAND_MODULE_PATH = path.join(
+  process.cwd(),
+  'tooling',
+  'govcon-compliance-command',
+  'dist',
+  'index.js',
+);
 
 const GOVCON_MUTATING_REPOSITORY_METHODS = new Set([
   'createOpportunity',
@@ -300,7 +309,8 @@ export function getGovConModuleSetupError(error: unknown): string | null {
 
 async function loadGovConCommandModule(): Promise<GovConCommandModule> {
   if (!govConModulePromise) {
-    govConModulePromise = import('../../tooling/govcon-compliance-command/dist/index.js') as Promise<GovConCommandModule>;
+    const moduleUrl = pathToFileURL(GOVCON_COMMAND_MODULE_PATH).href;
+    govConModulePromise = import(/* webpackIgnore: true */ moduleUrl) as Promise<GovConCommandModule>;
   }
   return govConModulePromise;
 }

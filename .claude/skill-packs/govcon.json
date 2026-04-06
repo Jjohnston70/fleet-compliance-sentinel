@@ -3,7 +3,7 @@
   "description": "Skill pack for the GovCon module. Federal contracting, grant funding, and procurement operations.",
   "version": "1.0.0",
   "created": "2026-04-05",
-  "module_domain": "govcon-module",
+  "module_domain": "govcon",
   "skills": {
     "operator": [
       "direction-protocol",

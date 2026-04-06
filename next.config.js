@@ -24,6 +24,7 @@ const nextConfig = {
   experimental: {
     optimizeCss: false,
   },
+  serverExternalPackages: ['handlebars'],
   compress: true,
   poweredByHeader: false,
   webpack: (config) => {

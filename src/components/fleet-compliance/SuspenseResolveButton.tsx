@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import {
   readSuspenseResolution,
   writeSuspenseResolution,
@@ -17,6 +17,7 @@ export default function SuspenseResolveButton({ suspenseItemId, initialStatus }:
   const [showNoteInput, setShowNoteInput] = useState(false);
   const [draft, setDraft] = useState('');
   const [mounted, setMounted] = useState(false);
+  const draftInputRef = useRef<HTMLInputElement | null>(null);
 
   useEffect(() => {
     setMounted(true);
@@ -26,6 +27,11 @@ export default function SuspenseResolveButton({ suspenseItemId, initialStatus }:
       setNote(stored.note);
     }
   }, [suspenseItemId]);
+
+  useEffect(() => {
+    if (!showNoteInput) return;
+    draftInputRef.current?.focus();
+  }, [showNoteInput]);
 
   function persist(nextResolved: boolean, nextNote: string) {
     writeSuspenseResolution(suspenseItemId, {
@@ -75,11 +81,11 @@ export default function SuspenseResolveButton({ suspenseItemId, initialStatus }:
         <label className="fleet-compliance-field-stack" style={{ flex: 1 }}>
           <span>Resolution note (optional)</span>
           <input
+            ref={draftInputRef}
             type="text"
             value={draft}
             onChange={(e) => setDraft(e.target.value)}
             placeholder="e.g. Renewed and filed 2026-03-18"
-            autoFocus
             onKeyDown={(e) => e.key === 'Enter' && handleConfirmResolve()}
           />
         </label>

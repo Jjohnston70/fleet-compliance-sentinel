@@ -1,3 +1,6 @@
+import path from 'node:path';
+import { pathToFileURL } from 'node:url';
+
 interface ProposalCommandModule {
   InMemoryRepository: new () => any;
   ProposalService: new (repository: any) => any;
@@ -36,6 +39,14 @@ interface ProposalRuntime {
 
 let proposalModulePromise: Promise<ProposalCommandModule> | null = null;
 const runtimeByOrg = new Map<string, ProposalRuntime>();
+const PROPOSAL_COMMAND_MODULE_PATH = path.join(
+  process.cwd(),
+  'tooling',
+  'proposal-command',
+  'dist',
+  'src',
+  'index.js',
+);
 
 function normalizeDate(value: unknown): Date | null {
   if (value instanceof Date && !Number.isNaN(value.getTime())) return value;
@@ -81,7 +92,8 @@ export function normalizeProposalStatus(value: unknown): ProposalStatus | null {
 
 async function loadProposalCommandModule(): Promise<ProposalCommandModule> {
   if (!proposalModulePromise) {
-    proposalModulePromise = import('../../tooling/proposal-command/dist/src/index.js') as Promise<ProposalCommandModule>;
+    const moduleUrl = pathToFileURL(PROPOSAL_COMMAND_MODULE_PATH).href;
+    proposalModulePromise = import(/* webpackIgnore: true */ moduleUrl) as Promise<ProposalCommandModule>;
   }
   return proposalModulePromise;
 }

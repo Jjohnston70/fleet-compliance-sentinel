@@ -3,7 +3,7 @@
   "description": "Skill pack for the Realty module. Colorado and U.S. real estate regulation, transaction compliance, and property operations.",
   "version": "1.0.0",
   "created": "2026-04-05",
-  "module_domain": "realty-module",
+  "module_domain": "realty",
   "skills": {
     "operator": [
       "direction-protocol",

@@ -611,13 +611,16 @@ export default function UserManualModal() {
       {open && (
         <div
           className="manual-overlay"
-          onClick={(e) => {
-            if (e.target === e.currentTarget) setOpen(false);
-          }}
           role="dialog"
           aria-modal="true"
           aria-label="User Manual"
         >
+          <button
+            type="button"
+            className="manual-overlay-dismiss"
+            aria-label="Close manual"
+            onClick={() => setOpen(false)}
+          />
           <div className="manual-modal manual-modal--wide">
             {/* Header */}
             <div className="manual-header">
@@ -676,6 +679,16 @@ export default function UserManualModal() {
 
           {/* Scoped styles */}
           <style>{`
+            .manual-overlay {
+              position: fixed;
+            }
+            .manual-overlay-dismiss {
+              position: absolute;
+              inset: 0;
+              border: none;
+              background: transparent;
+              cursor: default;
+            }
             .manual-modal--wide {
               max-width: 960px;
               width: 95vw;

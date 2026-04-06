@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { clearInlineNote, readInlineNote, writeInlineNote } from '@/lib/fleet-compliance-ui-state';
 
 interface Props {
@@ -15,6 +15,7 @@ export default function InlineNoteEditor({ storageKey, initialNote, label = 'Not
   const [draft, setDraft] = useState(initialNote);
   const [savedThisSession, setSavedThisSession] = useState(false);
   const [mounted, setMounted] = useState(false);
+  const draftTextareaRef = useRef<HTMLTextAreaElement | null>(null);
 
   useEffect(() => {
     setMounted(true);
@@ -24,6 +25,11 @@ export default function InlineNoteEditor({ storageKey, initialNote, label = 'Not
       setSavedThisSession(true);
     }
   }, [storageKey]);
+
+  useEffect(() => {
+    if (!editing) return;
+    draftTextareaRef.current?.focus();
+  }, [editing]);
 
   function handleEdit() {
     setDraft(note);
@@ -82,11 +88,11 @@ export default function InlineNoteEditor({ storageKey, initialNote, label = 'Not
       {editing ? (
         <div className="fleet-compliance-note-edit">
           <textarea
+            ref={draftTextareaRef}
             className="fleet-compliance-textarea"
             value={draft}
             onChange={(e) => setDraft(e.target.value)}
             rows={3}
-            autoFocus
           />
           <div className="fleet-compliance-action-row" style={{ marginTop: '0.5rem' }}>
             <button className="btn-primary" onClick={handleSave} type="button">

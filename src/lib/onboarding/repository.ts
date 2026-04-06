@@ -6,6 +6,7 @@ import type {
   OnboardingRunCreateInput,
   OnboardingRunDetail,
   OnboardingRunRecord,
+  OnboardingStepStatus,
   OnboardingStepRecord,
   OnboardingTaskRecord,
 } from '@/lib/onboarding/types';
@@ -476,10 +477,12 @@ export async function listRunSteps(runId: string): Promise<OnboardingStepRecord[
   return rows.map((row) => mapStepRow(row as Record<string, unknown>));
 }
 
-export async function upsertCompletedStep(input: {
+export async function upsertStep(input: {
   runId: string;
   stepKey: string;
+  status: OnboardingStepStatus;
   output: Record<string, unknown>;
+  errorMessage?: string | null;
 }): Promise<OnboardingStepRecord> {
   await ensureOnboardingTables();
   const sql = getSQL();
@@ -491,14 +494,20 @@ export async function upsertCompletedStep(input: {
       attempt_count,
       started_at,
       completed_at,
+      error_message,
       output
     ) VALUES (
       ${input.runId}::uuid,
       ${input.stepKey},
-      'completed',
+      ${input.status},
       1,
       NOW(),
-      NOW(),
+      CASE
+        WHEN ${input.status} IN ('completed', 'failed', 'skipped')
+          THEN NOW()
+        ELSE NULL
+      END,
+      ${input.errorMessage ?? null},
       ${JSON.stringify(input.output)}::jsonb
     )
     ON CONFLICT (run_id, step_key)
@@ -506,7 +515,7 @@ export async function upsertCompletedStep(input: {
       status = CASE
         WHEN employee_onboarding_steps.status = 'completed'
           THEN employee_onboarding_steps.status
-        ELSE 'completed'
+        ELSE EXCLUDED.status
       END,
       attempt_count = CASE
         WHEN employee_onboarding_steps.status = 'completed'
@@ -521,12 +530,14 @@ export async function upsertCompletedStep(input: {
       completed_at = CASE
         WHEN employee_onboarding_steps.status = 'completed'
           THEN employee_onboarding_steps.completed_at
-        ELSE NOW()
+        WHEN EXCLUDED.status IN ('completed', 'failed', 'skipped')
+          THEN NOW()
+        ELSE NULL
       END,
       error_message = CASE
         WHEN employee_onboarding_steps.status = 'completed'
           THEN employee_onboarding_steps.error_message
-        ELSE NULL
+        ELSE EXCLUDED.error_message
       END,
       output = CASE
         WHEN employee_onboarding_steps.status = 'completed'
@@ -537,6 +548,20 @@ export async function upsertCompletedStep(input: {
     RETURNING *
   `;
   return mapStepRow(rows[0] as Record<string, unknown>);
+}
+
+export async function upsertCompletedStep(input: {
+  runId: string;
+  stepKey: string;
+  output: Record<string, unknown>;
+}): Promise<OnboardingStepRecord> {
+  return upsertStep({
+    runId: input.runId,
+    stepKey: input.stepKey,
+    status: 'completed',
+    output: input.output,
+    errorMessage: null,
+  });
 }
 
 export async function markRunCompleted(input: {

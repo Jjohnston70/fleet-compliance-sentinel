@@ -8,10 +8,16 @@ import type {
   OnboardingRunCreateInput,
   OnboardingRunDetail,
   OnboardingRunRecord,
+  OnboardingStepStatus,
   OnboardingStepRecord,
   OnboardingTaskRecord,
 } from '@/lib/onboarding/types';
-import { createOnboardingService, OnboardingServiceError, type OnboardingStore } from '@/lib/onboarding/service';
+import {
+  createOnboardingService,
+  OnboardingServiceError,
+  type OnboardingAdapters,
+  type OnboardingStore,
+} from '@/lib/onboarding/service';
 
 function nowIso(): string {
   return new Date().toISOString();
@@ -169,10 +175,12 @@ class InMemoryOnboardingStore implements OnboardingStore {
     return [...stepMap.values()];
   }
 
-  async upsertCompletedStep(input: {
+  async upsertStep(input: {
     runId: string;
     stepKey: string;
+    status: OnboardingStepStatus;
     output: Record<string, unknown>;
+    errorMessage?: string | null;
   }): Promise<OnboardingStepRecord> {
     const runSteps = this.stepsByRun.get(input.runId) || new Map<string, OnboardingStepRecord>();
     this.stepsByRun.set(input.runId, runSteps);
@@ -186,11 +194,11 @@ class InMemoryOnboardingStore implements OnboardingStore {
       id: existing?.id || randomUUID(),
       runId: input.runId,
       stepKey: input.stepKey,
-      status: 'completed',
+      status: input.status,
       attemptCount: existing ? existing.attemptCount + 1 : 1,
       startedAt: existing?.startedAt || timestamp,
-      completedAt: timestamp,
-      errorMessage: null,
+      completedAt: input.status === 'queued' || input.status === 'running' ? null : timestamp,
+      errorMessage: input.errorMessage || null,
       output: existing?.status === 'completed' ? existing.output : input.output,
       createdAt: existing?.createdAt || timestamp,
       updatedAt: timestamp,
@@ -271,9 +279,33 @@ function sampleEmployeeInput(overrides: Partial<OnboardingEmployeeInput> = {}): 
   };
 }
 
+function defaultAdapters(): OnboardingAdapters {
+  return {
+    async assignHazmatTrainingIfRequired(input) {
+      return {
+        status: 'completed',
+        reason: 'assigned',
+        assignmentId: `asg-${input.employee.id}`,
+        planId: 'plan-hazmat',
+        planName: 'PHMSA Hazmat Required Training',
+        moduleCount: 12,
+        employeeIdentifier: input.employee.id,
+        deadlineDate: input.deadlineDate,
+      };
+    },
+    async seedSuspenseFromTraining() {
+      return {
+        status: 'completed',
+        reason: 'seeded',
+        linkedAssignmentCount: 1,
+      };
+    },
+  };
+}
+
 test('create/update starts onboarding runs and writes deterministic steps', async () => {
   const store = new InMemoryOnboardingStore();
-  const service = createOnboardingService(store);
+  const service = createOnboardingService(store, defaultAdapters());
   const context = { orgId: 'org_a', userId: 'user_admin' };
 
   const created = await service.createEmployeeAndStartRun({
@@ -283,8 +315,10 @@ test('create/update starts onboarding runs and writes deterministic steps', asyn
   });
 
   assert.equal(created.run.status, 'completed');
-  assert.ok(created.steps.length >= 2);
-  assert.ok(created.steps.every((step) => step.status === 'completed'));
+  assert.ok(created.steps.length >= 5);
+  assert.ok(created.steps.some((step) => step.stepKey === 'rules.evaluate'));
+  assert.ok(created.steps.some((step) => step.stepKey === 'training.assign' && step.status === 'completed'));
+  assert.ok(created.steps.some((step) => step.stepKey === 'suspense.seed' && step.status === 'completed'));
 
   const updated = await service.updateEmployeeAndStartRun({
     context,
@@ -295,12 +329,12 @@ test('create/update starts onboarding runs and writes deterministic steps', asyn
 
   assert.equal(updated.run.status, 'completed');
   assert.equal(updated.employeeProfile.jobTitle, 'Lead Driver');
-  assert.ok(updated.steps.length >= 2);
+  assert.ok(updated.steps.length >= 5);
 });
 
 test('cross-org access is rejected by org-scoped service calls', async () => {
   const store = new InMemoryOnboardingStore();
-  const service = createOnboardingService(store);
+  const service = createOnboardingService(store, defaultAdapters());
 
   const created = await service.createEmployeeAndStartRun({
     context: { orgId: 'org_a', userId: 'user_admin' },
@@ -326,7 +360,7 @@ test('cross-org access is rejected by org-scoped service calls', async () => {
 
 test('retry does not duplicate successful steps and run creation is idempotent by key', async () => {
   const store = new InMemoryOnboardingStore();
-  const service = createOnboardingService(store);
+  const service = createOnboardingService(store, defaultAdapters());
   const context = { orgId: 'org_a', userId: 'user_admin' };
 
   const created = await service.createEmployeeAndStartRun({
@@ -367,4 +401,99 @@ test('retry does not duplicate successful steps and run creation is idempotent b
     beforeRetry.steps.map((step) => [step.stepKey, step.attemptCount]),
   );
   assert.ok(store.getEvents().some((event) => event.eventType === 'employee.onboarding.completed'));
+});
+
+test('driver + hazmat profile gets 90-day deadline assignment request', async () => {
+  const store = new InMemoryOnboardingStore();
+  let capturedDeadline = '';
+  const service = createOnboardingService(store, {
+    ...defaultAdapters(),
+    async assignHazmatTrainingIfRequired(input) {
+      capturedDeadline = input.deadlineDate;
+      return {
+        status: 'completed',
+        reason: 'assigned',
+        assignmentId: 'asg-1',
+        planId: 'plan-hazmat',
+        planName: 'PHMSA Hazmat Required Training',
+        moduleCount: 12,
+        employeeIdentifier: input.employee.id,
+        deadlineDate: input.deadlineDate,
+      };
+    },
+  });
+
+  const created = await service.createEmployeeAndStartRun({
+    context: { orgId: 'org_a', userId: 'user_admin' },
+    employee: sampleEmployeeInput({ hireDate: '2026-04-01' }),
+  });
+
+  assert.equal(capturedDeadline, '2026-06-30');
+  assert.ok(created.steps.some((step) => step.stepKey === 'training.assign' && step.status === 'completed'));
+});
+
+test('non-driver skips training assignment step deterministically', async () => {
+  const store = new InMemoryOnboardingStore();
+  let adapterCalled = false;
+  const service = createOnboardingService(store, {
+    ...defaultAdapters(),
+    async assignHazmatTrainingIfRequired() {
+      adapterCalled = true;
+      return {
+        status: 'completed',
+        reason: 'assigned',
+      };
+    },
+  });
+
+  const created = await service.createEmployeeAndStartRun({
+    context: { orgId: 'org_a', userId: 'user_admin' },
+    employee: sampleEmployeeInput({ isDriver: false }),
+  });
+
+  assert.equal(adapterCalled, false);
+  assert.ok(created.steps.some((step) => step.stepKey === 'training.assign' && step.status === 'skipped'));
+});
+
+test('training-disabled path records graceful skip and audit event', async () => {
+  const store = new InMemoryOnboardingStore();
+  const service = createOnboardingService(store, {
+    ...defaultAdapters(),
+    async assignHazmatTrainingIfRequired() {
+      return {
+        status: 'skipped',
+        reason: 'module_disabled',
+        message: "Module 'training' disabled",
+      };
+    },
+  });
+
+  const created = await service.createEmployeeAndStartRun({
+    context: { orgId: 'org_a', userId: 'user_admin' },
+    employee: sampleEmployeeInput(),
+  });
+
+  assert.ok(created.steps.some((step) => step.stepKey === 'training.assign' && step.status === 'skipped'));
+  assert.ok(store.getEvents().some((event) => event.eventType === 'employee.training.assignment.requested'));
+});
+
+test('suspense seeding emits seeded event when training deadline source exists', async () => {
+  const store = new InMemoryOnboardingStore();
+  const service = createOnboardingService(store, {
+    ...defaultAdapters(),
+    async seedSuspenseFromTraining() {
+      return {
+        status: 'completed',
+        reason: 'seeded',
+        linkedAssignmentCount: 2,
+      };
+    },
+  });
+
+  await service.createEmployeeAndStartRun({
+    context: { orgId: 'org_a', userId: 'user_admin' },
+    employee: sampleEmployeeInput(),
+  });
+
+  assert.ok(store.getEvents().some((event) => event.eventType === 'employee.suspense.seeded'));
 });
