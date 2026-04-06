@@ -297,6 +297,347 @@ docs/integration/
 
 ---
 
+## Phase 8: SOPS Migration + Onboarding Orchestration
+
+**Status:** Planning (not yet executed)
+**Date:** 2026-04-05
+**Source:** Desktop/SOPS/ (30+ files, 6 subfolders) + docs/integration/ONBOARDING_ORCHESTRATION_IMPLEMENTATION_SPEC.md
+**Spec Reference:** ONBOARDING_ORCHESTRATION_IMPLEMENTATION_SPEC.md (440 lines, 15 sections, 5-phase rollout)
+
+---
+
+### What This Phase Accomplishes
+
+1. Migrate high-value SOPS content into FCS as operational reference material, onboarding task templates, and notification templates.
+2. Implement the Onboarding Orchestration system (event-driven state machine for employee/driver onboarding with training, task, notification, and suspense adapters).
+3. Establish a clear boundary between **internal workflows** (operator/admin) and **external client-facing workflows** (client portal, intake forms).
+4. Gate every workflow behind the module toggle system so orgs only see what their plan and admin have enabled.
+
+---
+
+### 4.1 Workflow Classification
+
+Every workflow in this phase is classified as **internal** or **external**. The module toggle page (`/fleet-compliance/dev/modules`) controls visibility for both. Internal workflows are admin-only. External workflows are client-facing and accessed via token-authenticated or org-member routes.
+
+#### Internal Workflows (Admin/Operator Only)
+
+| Workflow | Description | Module Toggle ID | Min Plan | Sidebar Section | Route |
+|----------|-------------|-----------------|----------|-----------------|-------|
+| Onboarding Admin Queue | View/manage all employee onboarding runs, retry failed steps, override statuses | `onboarding` | pro | Operations | `/fleet-compliance/onboarding` |
+| Employee Profile Create | Admin-initiated employee creation that triggers onboarding orchestrator | `onboarding` | pro | Operations | `/fleet-compliance/employees/new` |
+| Training Assignment Admin | View/manage training plans, assignments, and compliance deadlines | `training` | pro | Training | `/fleet-compliance/training/manage` |
+| Compliance Gap Check | Scheduled/on-demand compliance audit (playbook) | `compliance-docs` | pro | Compliance | Playbook (no dedicated route) |
+| Notification Template Mgmt | Manage onboarding email templates (welcome, reminders, escalations) | `email-analytics` | pro | Admin | `/fleet-compliance/settings/notifications` |
+| Onboarding Task Templates | Define task seed templates for new employee onboarding | `tasks` | starter | Operations | `/fleet-compliance/settings/onboarding-tasks` |
+| Compliance Reference Library | Browse migrated TNDS compliance governance packages | `compliance-docs` | pro | Compliance | `/fleet-compliance/compliance/reference` |
+| Diagnostic Assessment | 28-question operational diagnostic (from SOPS Diagnostic Cheat Sheet) | `readiness` | starter | Intelligence | `/fleet-compliance/readiness/diagnostic` |
+| SOP Workflow Library | Internal SOPs for Direction Protocol, Command Protocol, Battle Rhythm | `fleet-compliance` (core) | trial | Admin | `/fleet-compliance/command-center/sops` |
+
+#### External Workflows (Client-Facing)
+
+| Workflow | Description | Module Toggle ID | Min Plan | Auth Method | Route |
+|----------|-------------|-----------------|----------|-------------|-------|
+| Client Intake Portal | Self-service employee/driver intake form (token-authenticated) | `onboarding` | pro | Signed intake token | `/fleet-compliance/onboarding/intake/[token]` |
+| Employee Self-Service Training | Employee views their assigned training, progress, and deadlines | `training` | pro | Clerk org member | `/fleet-compliance/training/my` |
+| Onboarding Status Check | Employee/manager views onboarding run progress | `onboarding` | pro | Clerk org member | `/fleet-compliance/onboarding/status/[runId]` |
+| Document Upload Portal | Client uploads CDL, medical cert, hazmat endorsement docs | `dq-files` | starter | Clerk org member | `/fleet-compliance/dq/upload` |
+| Compliance Dashboard (Client) | Client org view of their compliance posture and alert summary | `fleet-compliance` (core) | trial | Clerk org member | `/fleet-compliance` |
+
+#### Module Toggle Enforcement
+
+All workflows check `isModuleEnabled(orgId, moduleId)` before rendering routes or executing adapters. The enforcement points are:
+
+1. **Sidebar visibility:** `getVisibleSections()` in `sidebar-config.ts` hides links when module is disabled.
+2. **Route guard:** Page-level `isModuleEnabled()` check redirects to upgrade prompt if module not enabled.
+3. **API guard:** Every `/api/fleet-compliance/onboarding/*` endpoint checks module toggle before processing.
+4. **Adapter guard:** Onboarding orchestrator checks module toggles before invoking adapters (e.g., skip TaskAdapter if `tasks` module is disabled for org; skip training assignment if `training` module is disabled).
+
+---
+
+### 4.2 SOPS Content Migration Plan
+
+#### Tier 1: Migrate to FCS (high value)
+
+| Source | Destination | Purpose | Integration Point |
+|--------|-------------|---------|-------------------|
+| `ENTIRE TNDS COMPLIANCE GOV/` (7 packages, 65+ docs) | `docs/compliance-reference/` | Compliance reference library backing compliance-gap-check, data-privacy-coach, and risk-manager skills | Compliance Reference Library workflow; compliance-gap-check playbook reads from these |
+| `New-Client-Checklist.md` (12 phases) | `tooling/onboarding/task-templates/default-onboarding.json` | Default task seed template for TaskAdapter (Rule B in onboarding spec) | TaskAdapter reads template to create onboarding tasks per employee |
+| `EMAIL-TEMPLATES/` (11 templates) | `tooling/onboarding/notification-templates/` | Transactional email templates for NotificationAdapter (Rule C in onboarding spec) | NotificationAdapter selects template by event type (welcome, check-in, go-live, etc.) |
+| `Internal Docs/Diagnostic Cheat Sheet` (28 questions) | `.claude/skills/aro-assessment/diagnostic-framework.json` | Structured assessment questionnaire for ARO Assessment skill upgrade | aro-assessment skill loads framework as interview structure |
+| `Internal Docs/Direction Protocol SOP` | `docs/integration/direction-protocol-sop.md` | Operator reference for sales qualification process | SOP Workflow Library; training-assistant agent reference |
+| `Internal Docs/Command Protocol SOP` | `docs/integration/command-protocol-sop.md` | Operator reference for delivery execution process | SOP Workflow Library; training-assistant agent reference |
+| `Internal Docs/Service Architecture Mapping` | `docs/integration/service-architecture-mapping.md` | Architecture reference for how Command modules map to delivery | Developer Manual supplement |
+
+#### Tier 2: Extract and Adapt (medium value)
+
+| Source | What to Extract | Destination | When |
+|--------|----------------|-------------|------|
+| `Discovery-Call-Script.md` | Qualification criteria + note-taking template | `.claude/skills/bid-strategist/qualification-framework.json` | After Phase 8 core |
+| `Sales System/` service docs | Scope definitions for 3 Command Protocol tiers | `tooling/prompts/service-tier-definitions.json` | After Phase 8 core |
+| `Client-Services-Agreement.md` | Agreement structure/sections | `.claude/skills/docgen-command/templates/service-agreement.json` | After Phase 8 core |
+| `Tech-Support-Outsourcing.md` | SLA severity definitions + response times | `tooling/onboarding/sla-definitions.json` | After Phase 8 core |
+
+#### Tier 3: Do Not Migrate
+
+| Source | Reason |
+|--------|--------|
+| 7 Real Estate SOPs (01-07) | Vertical-specific. Belongs in realty-command reference if needed later. |
+| `Model-A-Setup.md` | Pre-FCS Google Workspace infrastructure. Not relevant. |
+| Pricing guides, sales proposals, printable docs | Sales collateral, not platform infrastructure. |
+| `Google Stuff/` | Chrome extension dev, separate product track. |
+| `Github-Enterprise.md` | Portfolio reference. Already reflected in FCS architecture. |
+| Stubs (Client_Upgrade_Email.md, Compliance_Report_Template.md, consent_flow_explainer.txt) | Empty or single-line files. |
+
+---
+
+### 4.3 Onboarding Orchestration Implementation Plan
+
+Full spec: `docs/integration/ONBOARDING_ORCHESTRATION_IMPLEMENTATION_SPEC.md`
+
+#### Open Decision Resolutions (Section 14 of spec)
+
+These must be resolved before build. Recommended answers:
+
+| Decision | Recommendation | Rationale |
+|----------|---------------|-----------|
+| Task system source of truth | Local persisted tasks with later sync to task-command | Onboarding must be deterministic. Cannot depend on command-center availability. Reconcile async. |
+| User invitation flow | Delayed invite after intake completion | Don't burn a Clerk seat until employee has submitted intake. Saves cost, avoids orphaned invites. |
+| Employee identity strategy | Strict 1:1 (external_employee_id -> clerk_user_id) | Multi-identity adds complexity for zero current use case. Extend later if needed. |
+| Notification ownership | Onboarding owns direct transactional sends via Resend. Copy to email-command for analytics. | Critical onboarding path must not depend on email-command module being enabled. |
+
+#### Phase 1: Data and Baseline APIs
+
+**New tables (4):**
+- `employee_profiles` -- Canonical employee/driver identity table
+- `employee_onboarding_runs` -- State machine run records (queued, running, completed, partial, failed, canceled)
+- `employee_onboarding_steps` -- Step-level records (invite_user, assign_training, create_tasks, send_notifications, seed_suspense)
+- `onboarding_outbox_events` -- Event-driven outbox for adapter dispatch
+
+**New API routes (6):**
+- `POST /api/fleet-compliance/onboarding/employees` -- Create profile + start run
+- `PATCH /api/fleet-compliance/onboarding/employees/{id}` -- Update profile + rerun rules
+- `POST /api/fleet-compliance/onboarding/employees/{id}/invite` -- Invite to Clerk org
+- `GET /api/fleet-compliance/onboarding/runs` -- List runs for org
+- `GET /api/fleet-compliance/onboarding/runs/{runId}` -- Run detail with steps
+- `POST /api/fleet-compliance/onboarding/runs/{runId}/retry` -- Retry failed run
+
+**Module toggle gate:** All routes check `isModuleEnabled(orgId, 'onboarding')`.
+
+**Migration file:** `src/lib/migrations/008-onboarding-orchestration.sql`
+
+#### Phase 2: Rule Engine + Training Integration
+
+**Rule A: Driver + Hazmat Auto-Assignment**
+- Trigger: `employee_profiles.is_driver = true AND hazmat_required = true`
+- Action: Resolve org training plan -> assign via training API -> deadline = `hire_date + 90d`
+- Module gate: Checks `isModuleEnabled(orgId, 'training')`. If training disabled, step is skipped and logged.
+
+**Rule B: Task Seeding**
+- Source template: `tooling/onboarding/task-templates/default-onboarding.json` (migrated from New-Client-Checklist.md)
+- Creates: CDL verify (day 7), medical cert verify (day 14), hazmat verify (day 30), training check (day 60), completion check (day 90)
+- Module gate: Checks `isModuleEnabled(orgId, 'tasks')`. If disabled, persists tasks in local `onboarding_tasks` table (fallback path per open decision).
+
+**Rule C: Notifications**
+- Source templates: `tooling/onboarding/notification-templates/` (migrated from EMAIL-TEMPLATES/)
+- Day 0: Onboarding kickoff (employee + manager + org contact)
+- Day 60: Reminder if incomplete
+- Day 80: Escalation if incomplete
+- Day 90: Due-day notice
+- Delivery: Resend transactional API (direct). Copy to email-command analytics if `email-analytics` module enabled.
+
+**Rule D: Suspense/Alerts**
+- Seeds training assignment rows so existing suspense generation picks them up automatically.
+- No new suspense table needed -- relies on existing `sourceType=training_assignment` and `sourceType=hazmat_training` patterns.
+
+#### Phase 3: Task + Notification Adapters
+
+**TrainingAdapter** (required)
+- Resolves org training plan (prefer org-scoped, fallback to default PHMSA plan)
+- Creates training_assignment + training_progress rows via existing service
+- Stores assignment ID in onboarding step output JSONB
+- Module gate: `training`
+
+**TaskAdapter** (required)
+- Primary: Invoke task-command module gateway when available
+- Fallback: Persist to local onboarding_tasks table
+- Reconcile: Background job syncs local tasks to task-command when module comes online
+- Module gate: `tasks`
+
+**NotificationAdapter** (required)
+- Sends via Resend transactional API
+- Template resolution from `tooling/onboarding/notification-templates/`
+- Delivery outcome stored in step output JSONB
+- Analytics copy to email-command if `email-analytics` module enabled
+
+**SuspenseSeedAdapter** (required)
+- Seeds training deadline rows into existing tables
+- Alert engine auto-generates reminders from these rows
+- No module gate (suspense is part of core `fleet-compliance` module)
+
+#### Phase 4: Client Intake Portal (External Workflow)
+
+**Token system:**
+- `POST /api/fleet-compliance/onboarding/intake-tokens` -- Admin generates signed, time-limited, single-use token
+- `GET /api/fleet-compliance/onboarding/intake/[token]` -- Public form (no Clerk auth required)
+- `POST /api/fleet-compliance/onboarding/intake/[token]` -- Submit intake, create/update employee_profiles, optionally start onboarding run
+
+**Intake form fields:**
+1. Identity and contact (name, email, phone)
+2. Driver/CDL flags (is_driver, cdl_class, cdl_expiration)
+3. Hazmat requirement flags (hazmat_required, hazmat_endorsement)
+4. Hire/start date
+5. Required documents checklist (CDL copy, medical cert, hazmat endorsement)
+
+**Module gate:** `onboarding` module must be enabled for the org that issued the token.
+
+**Security:**
+- Token signed with org_id baked in -- cannot be used cross-org
+- Single-use enforcement (token marked consumed after successful submit)
+- Expiry enforcement (configurable, default 72 hours)
+- PII minimization in logs (no names or contact info in structured logs)
+
+#### Phase 5: Hardening
+
+**Acceptance tests (5 scenarios from spec):**
+1. New org + first non-driver employee -- run completes without training assignment
+2. Driver + hazmat onboarding -- training assigned with 90-day deadline, suspense item created
+3. Partial adapter failure + retry -- idempotent behavior, eventual completion
+4. Intake token flow -- token issuance, submission, profile creation, run start, expiry enforcement
+5. Multi-tenant isolation -- no cross-org visibility in runs, tasks, training, or alerts
+
+**Observability:**
+- Structured logs: `org_id`, `run_id`, `step_key`, `attempt`
+- Metrics: runs started/completed/failed, step duration, adapter success rates, retry counts
+- Alerts: run failure spike, adapter timeout spike, zero training assignments for driver+hazmat runs
+
+**Documentation updates:**
+- DEVELOPER_MANUAL.md Section 23 -- add onboarding orchestrator architecture
+- UserManualModal.tsx -- add onboarding workflow sections
+- New playbook: `docs/integration/onboarding-health-check.md`
+
+---
+
+### 4.4 New Module Toggle Entries
+
+No new MODULE_SEEDS entries are required. The onboarding orchestration uses existing module IDs:
+
+| Existing Module ID | Used By | Already In MODULE_SEEDS |
+|-------------------|---------|------------------------|
+| `onboarding` | Onboarding Admin Queue, Employee Profile Create, Client Intake Portal, Onboarding Status Check | Yes (pro tier) |
+| `training` | TrainingAdapter, Training Assignment Admin, Employee Self-Service Training | Yes (pro tier) |
+| `tasks` | TaskAdapter, Onboarding Task Templates | Yes (starter tier) |
+| `email-analytics` | NotificationAdapter analytics copy, Notification Template Mgmt | Yes (pro tier) |
+| `compliance-docs` | Compliance Reference Library, Compliance Gap Check | Yes (pro tier) |
+| `readiness` | Diagnostic Assessment (upgraded ARO skill) | Yes (starter tier) |
+| `dq-files` | Document Upload Portal | Yes (starter tier) |
+| `fleet-compliance` | Core dashboard, SOP Workflow Library, Suspense Seed | Yes (core, trial tier) |
+
+The module toggle page at `/fleet-compliance/dev/modules` already controls all of these. Admins toggle modules on/off per org, and the onboarding orchestrator respects those toggles at every adapter invocation.
+
+---
+
+### 4.5 New Sidebar Items
+
+| Section | New Item | href | moduleId | Internal/External |
+|---------|----------|------|----------|-------------------|
+| Compliance | Compliance Reference | `/fleet-compliance/compliance/reference` | `compliance-docs` | Internal |
+| Intelligence | Diagnostic Assessment | `/fleet-compliance/readiness/diagnostic` | `readiness` | Internal |
+| Admin | Notification Templates | `/fleet-compliance/settings/notifications` | `email-analytics` | Internal |
+| Admin | Onboarding Task Config | `/fleet-compliance/settings/onboarding-tasks` | `tasks` | Internal |
+| Admin | SOP Library | `/fleet-compliance/command-center/sops` | (none -- core) | Internal |
+
+No new sidebar items needed for external workflows (they are accessed via token URLs or standard org-member routes already linked).
+
+---
+
+### 4.6 New Files Created by This Phase
+
+```
+tooling/
+  onboarding/
+    task-templates/
+      default-onboarding.json          # Migrated from New-Client-Checklist.md (12 phases -> structured JSON)
+    notification-templates/
+      welcome-kickoff.html              # Day 0 onboarding kickoff email
+      two-week-checkin.html             # Day 14 check-in
+      sixty-day-reminder.html           # Day 60 incomplete warning
+      eighty-day-escalation.html        # Day 80 escalation
+      ninety-day-due.html               # Day 90 completion due
+      go-live-confirmation.html         # Onboarding complete confirmation
+      offboarding.html                  # Employee offboarding (future)
+    sla-definitions.json                # Extracted from Tech-Support-Outsourcing.md
+
+docs/
+  compliance-reference/
+    README.md                           # Index of compliance governance packages
+    package-1-internal-compliance/      # Migrated from SOPS/ENTIRE TNDS COMPLIANCE GOV/
+    package-2-security-handbook/
+    package-3-data-handling-privacy/
+    package-4-government-contracting/
+    package-5-google-partner/
+    package-6-business-operations/
+    package-7-advanced-compliance/
+  integration/
+    direction-protocol-sop.md           # Migrated from SOPS/Internal Docs/
+    command-protocol-sop.md             # Migrated from SOPS/Internal Docs/
+    service-architecture-mapping.md     # Migrated from SOPS/Internal Docs/
+    onboarding-health-check.md          # New playbook for onboarding run monitoring
+
+src/
+  lib/
+    migrations/
+      008-onboarding-orchestration.sql  # 4 new tables + indexes
+    onboarding/
+      orchestrator.ts                   # State machine: run lifecycle management
+      rules-engine.ts                   # Rule A-D evaluation
+      adapters/
+        training-adapter.ts             # Training plan resolution + assignment
+        task-adapter.ts                 # Task seeding (primary + fallback paths)
+        notification-adapter.ts         # Resend transactional + email-command copy
+        suspense-seed-adapter.ts        # Suspense/alert row seeding
+  app/
+    api/fleet-compliance/onboarding/
+      employees/route.ts                # POST create, PATCH update
+      employees/[id]/invite/route.ts    # POST invite
+      runs/route.ts                     # GET list
+      runs/[runId]/route.ts             # GET detail
+      runs/[runId]/retry/route.ts       # POST retry
+      intake-tokens/route.ts            # POST generate token
+      intake/[token]/route.ts           # GET form, POST submit
+
+.claude/skills/
+  aro-assessment/
+    diagnostic-framework.json           # 28-question framework from Diagnostic Cheat Sheet
+```
+
+---
+
+### 4.7 Execution Order
+
+| Step | What | Dependencies | Estimated Effort |
+|------|------|-------------|-----------------|
+| 1 | Migrate compliance reference library to `docs/compliance-reference/` | None | Low (file copy + README) |
+| 2 | Convert New-Client-Checklist.md to `default-onboarding.json` task template | None | Medium (restructure 12 phases to JSON) |
+| 3 | Convert EMAIL-TEMPLATES/ to notification templates in `tooling/onboarding/notification-templates/` | None | Medium (11 templates to HTML) |
+| 4 | Extract diagnostic framework from Diagnostic Cheat Sheet to `aro-assessment/diagnostic-framework.json` | None | Low (structured extraction) |
+| 5 | Migrate Direction/Command Protocol SOPs to `docs/integration/` | None | Low (file copy + path normalization) |
+| 6 | Create migration SQL (4 tables) and run | Steps 1-5 complete | Medium |
+| 7 | Build orchestrator state machine + rules engine | Step 6 | High |
+| 8 | Build TrainingAdapter | Step 7 + existing training service | Medium |
+| 9 | Build TaskAdapter (primary + fallback) | Step 7 + step 2 (templates) | Medium |
+| 10 | Build NotificationAdapter | Step 7 + step 3 (templates) | Medium |
+| 11 | Build SuspenseSeedAdapter | Step 7 + existing suspense tables | Low |
+| 12 | Build admin API routes (6 endpoints) | Step 7 | Medium |
+| 13 | Build client intake portal (token + form + submit) | Step 12 | Medium |
+| 14 | Add sidebar items + route guards | Steps 12-13 | Low |
+| 15 | Update DEVELOPER_MANUAL.md + UserManualModal.tsx | Steps 12-13 | Low |
+| 16 | Acceptance tests (5 scenarios) | All above | High |
+| 17 | Observability + alerts + onboarding-health-check playbook | Step 16 | Medium |
+
+Steps 1-5 can run in parallel. Steps 8-11 can run in parallel. Step 16 depends on everything before it.
+
+---
+
 ## Contact
 
 Jacob Johnston | 555-555-5555 | jacob@truenorthstrategyops.com
