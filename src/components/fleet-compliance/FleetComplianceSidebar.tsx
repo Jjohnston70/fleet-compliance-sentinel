@@ -7,7 +7,6 @@ import UserManualModal from '@/components/fleet-compliance/UserManualModal';
 import {
   SIDEBAR_SECTIONS,
   getVisibleSections,
-  type SidebarSection,
 } from '@/lib/sidebar-config';
 
 const STORAGE_KEY = 'fc-sidebar-sections';
@@ -63,7 +62,15 @@ function ChevronIcon({ expanded }: { expanded: boolean }) {
   );
 }
 
-export default function FleetComplianceSidebar() {
+export default function FleetComplianceSidebar({
+  enabledModules,
+  role,
+  isPlatformAdmin,
+}: {
+  enabledModules: string[];
+  role: 'admin' | 'member';
+  isPlatformAdmin: boolean;
+}) {
   const pathname = usePathname();
   const [mobileOpen, setMobileOpen] = useState(false);
 
@@ -78,23 +85,10 @@ export default function FleetComplianceSidebar() {
     return defaults;
   });
 
-  // For now, show all modules (no org-scoped filtering in the sidebar itself).
-  // The sidebar-config's getVisibleSections will be wired to org context in a
-  // follow-up when the sidebar receives enabled module IDs from a provider.
-  // For this initial deploy, we show all sections/items with role='admin' to
-  // avoid breaking the existing navigation. A follow-up task will add the
-  // OrgModulesProvider context.
+  // Sidebar visibility is module- and role-aware from server-provided org context.
   const visibleSections = useMemo(() => {
-    // Build a set of all module IDs from SIDEBAR_SECTIONS so everything is
-    // visible by default until the org-modules provider is wired.
-    const allModuleIds = new Set<string>();
-    for (const section of SIDEBAR_SECTIONS) {
-      for (const item of section.items) {
-        if (item.moduleId) allModuleIds.add(item.moduleId);
-      }
-    }
-    return getVisibleSections(allModuleIds, 'admin');
-  }, []);
+    return getVisibleSections(new Set(enabledModules), role, isPlatformAdmin);
+  }, [enabledModules, role, isPlatformAdmin]);
 
   useEffect(() => {
     setMobileOpen(false);

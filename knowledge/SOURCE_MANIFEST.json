@@ -1,0 +1,79 @@
+{
+  "version": "1.0",
+  "lastChecked": "2026-04-06",
+  "description": "Tracks knowledge base sources for freshness checking. Run npm run knowledge:check-freshness to verify.",
+  "sources": [
+    {
+      "id": "erg-2024",
+      "name": "Emergency Response Guidebook (ERG) 2024",
+      "category": "hazmat",
+      "sourceUrl": "https://www.phmsa.dot.gov/hazmat/erg/emergency-response-guidebook-erg",
+      "sourceAgency": "PHMSA / DOT",
+      "localPath": "knowledge/training-content/hazmat/",
+      "lastUpdated": "2024-01-01",
+      "lastChecked": "2026-04-06",
+      "refreshCycle": "4 years (next: 2028)",
+      "notes": "ERG is updated every 4 years. Current edition is 2024."
+    },
+    {
+      "id": "cfr-49-100-185",
+      "name": "49 CFR Parts 100-185 (Hazardous Materials Regulations)",
+      "category": "cfr",
+      "sourceUrl": "https://www.ecfr.gov/current/title-49",
+      "sourceAgency": "PHMSA / DOT",
+      "localPath": "knowledge/cfr-index/",
+      "lastUpdated": "2026-03-20",
+      "lastChecked": "2026-04-06",
+      "refreshCycle": "Annual (check quarterly)",
+      "notes": "CFR is updated annually with interim amendments. Check eCFR for latest."
+    },
+    {
+      "id": "fmcsa-regulations",
+      "name": "FMCSA Safety Regulations",
+      "category": "dot-compliance",
+      "sourceUrl": "https://www.fmcsa.dot.gov/regulations",
+      "sourceAgency": "FMCSA / DOT",
+      "localPath": "knowledge/domains/dot-compliance/",
+      "lastUpdated": "2026-03-01",
+      "lastChecked": "2026-04-06",
+      "refreshCycle": "Quarterly check recommended",
+      "notes": "FMCSA publishes rulemaking updates and safety advisories periodically."
+    },
+    {
+      "id": "phmsa-training-otis",
+      "name": "PHMSA Training Requirements (OTIS)",
+      "category": "training",
+      "sourceUrl": "https://www.phmsa.dot.gov/training/hazmat",
+      "sourceAgency": "PHMSA / DOT",
+      "localPath": "knowledge/training-content/hazmat/",
+      "lastUpdated": "2026-01-01",
+      "lastChecked": "2026-04-06",
+      "refreshCycle": "Annual",
+      "notes": "49 CFR 172.704 training requirements. Check for new OTIS guidance annually."
+    },
+    {
+      "id": "fmcsa-clearinghouse",
+      "name": "FMCSA Drug & Alcohol Clearinghouse",
+      "category": "dot-compliance",
+      "sourceUrl": "https://clearinghouse.fmcsa.dot.gov",
+      "sourceAgency": "FMCSA / DOT",
+      "localPath": "knowledge/domains/clearinghouse.md",
+      "lastUpdated": "2026-02-01",
+      "lastChecked": "2026-04-06",
+      "refreshCycle": "Quarterly check recommended",
+      "notes": "Clearinghouse rules and employer requirements."
+    },
+    {
+      "id": "domains-audit-procedures",
+      "name": "Fleet Audit & Procedures Manuals",
+      "category": "operations",
+      "sourceUrl": null,
+      "sourceAgency": "Internal / TNDS",
+      "localPath": "knowledge/domains/",
+      "lastUpdated": "2026-04-03",
+      "lastChecked": "2026-04-06",
+      "refreshCycle": "Update as client procedures evolve",
+      "notes": "Internal audit manual, procedures manual, IFTA reference. No external source."
+    }
+  ]
+}

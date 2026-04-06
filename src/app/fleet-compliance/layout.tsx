@@ -3,7 +3,10 @@ import { redirect } from 'next/navigation';
 import type { Metadata } from 'next';
 import { isClerkEnabled } from '@/lib/clerk';
 import { ensureOrgProvisioned } from '@/lib/org-provisioner';
+import { getOrgModules } from '@/lib/modules';
 import { getOrgPlan } from '@/lib/plan-gate';
+import { resolveFleetComplianceRole } from '@/lib/fleet-compliance-auth';
+import { isPlatformAdminUser } from '@/lib/platform-admin';
 import FleetComplianceTrialBanner from '@/components/fleet-compliance/FleetComplianceTrialBanner';
 import FleetComplianceExpiredGate from '@/components/fleet-compliance/FleetComplianceExpiredGate';
 import FleetComplianceOnboardingRedirect from '@/components/fleet-compliance/FleetComplianceOnboardingRedirect';
@@ -33,6 +36,9 @@ export default async function FleetComplianceLayout({ children }: { children: Re
   const organization = await ensureOrgProvisioned(orgId, fallbackOrgName, {
     adminUserId: userId,
   });
+  const role = resolveFleetComplianceRole(sessionClaims);
+  const isPlatformAdmin = isPlatformAdminUser(userId);
+  const enabledModules = await getOrgModules(orgId);
   const plan = await getOrgPlan(orgId);
 
   if (!plan.isActive) {
@@ -49,7 +55,9 @@ export default async function FleetComplianceLayout({ children }: { children: Re
     <>
       {plan.plan === 'trial' && <FleetComplianceTrialBanner trialEndsAt={plan.trialEndsAt} />}
       <FleetComplianceOnboardingRedirect onboardingComplete={organization.onboardingComplete}>
-        <FleetComplianceShell>{children}</FleetComplianceShell>
+        <FleetComplianceShell enabledModules={enabledModules} role={role} isPlatformAdmin={isPlatformAdmin}>
+          {children}
+        </FleetComplianceShell>
       </FleetComplianceOnboardingRedirect>
     </>
   );

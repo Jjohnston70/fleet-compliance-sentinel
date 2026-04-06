@@ -21,6 +21,7 @@ import {
   maybePersistModuleRunInsights,
 } from '@/lib/modules-gateway/persistence';
 import type { ModuleRunRecord, ModuleRunRequest } from '@/lib/modules-gateway/types';
+import { isPlatformAdminUser } from '@/lib/platform-admin';
 import { readFile } from 'node:fs/promises';
 
 export const runtime = 'nodejs';
@@ -105,6 +106,18 @@ export async function POST(request: Request) {
     if (authContext.role !== 'admin') {
       return Response.json(
         { ok: false, error: { code: 'PERMISSION_DENIED', message: 'Forbidden' } },
+        { status: 403 },
+      );
+    }
+    if (!isPlatformAdminUser(authContext.userId)) {
+      return Response.json(
+        {
+          ok: false,
+          error: {
+            code: 'PERMISSION_DENIED',
+            message: 'Module gateway execution is restricted to platform admins',
+          },
+        },
         { status: 403 },
       );
     }

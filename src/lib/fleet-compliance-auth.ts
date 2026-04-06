@@ -67,6 +67,10 @@ function resolveOrgRole(sessionClaims: any): FleetComplianceRole {
   return 'member';
 }
 
+export function resolveFleetComplianceRole(sessionClaims: any): FleetComplianceRole {
+  return resolveOrgRole(sessionClaims);
+}
+
 export async function requireFleetComplianceOrg(
   request: Request,
   options: { allowCanceled?: boolean } = {},

@@ -3,1621 +3,1031 @@
 **Organization:** True North Data Strategies LLC
 **Product:** Fleet-Compliance Sentinel + Pipeline Penny
 **Production URL:** https://www.pipelinepunks.com
-**Last Updated:** 2026-04-03
+**Current Date:** April 6, 2026
+**Last Updated:** 2026-04-06
 
 ---
 
 ## Table of Contents
 
-1. [Architecture Overview](#1-architecture-overview)
-2. [Local Development Setup](#2-local-development-setup)
-3. [Project Structure](#3-project-structure)
-4. [Technology Stack](#4-technology-stack)
-5. [Database Schema & Migrations](#5-database-schema--migrations)
-6. [Authentication & Authorization](#6-authentication--authorization)
-7. [API Routes Reference](#7-api-routes-reference)
-8. [Module Gateway System](#8-module-gateway-system)
-9. [Pipeline Penny (AI Engine)](#9-pipeline-penny-ai-engine)
-10. [Railway Backend (FastAPI)](#10-railway-backend-fastapi)
-11. [Knowledge Base Management](#11-knowledge-base-management)
-12. [Training Module (LMS)](#12-training-module-lms)
-13. [Sidebar & Module Toggle System](#13-sidebar--module-toggle-system)
-14. [Billing & Subscription Lifecycle](#14-billing--subscription-lifecycle)
-15. [Monitoring & Observability](#15-monitoring--observability)
-16. [Deployment & CI/CD](#16-deployment--cicd)
-17. [Environment Variables](#17-environment-variables)
-18. [Scripts Reference](#18-scripts-reference)
-19. [SOC 2 Compliance](#19-soc-2-compliance)
-20. [Troubleshooting Guide](#20-troubleshooting-guide)
-21. [Common Errors & Solutions](#21-common-errors--solutions)
-22. [Key Files Quick Reference](#22-key-files-quick-reference)
-23. [Agent & Skill Library](#23-agent--skill-library)
+- [Mission](#mission)
+- [Current Status](#current-status)
+- [Architecture Overview](#architecture-overview)
+- [End-to-End Request Flow](#end-to-end-request-flow)
+- [End-to-End Onboarding Flow](#end-to-end-onboarding-flow)
+- [Module System Architecture](#module-system-architecture)
+- [Sidebar and Navigation Architecture](#sidebar-and-navigation-architecture)
+- [Database Schema and Migrations](#database-schema-and-migrations)
+- [Authentication and Authorization](#authentication-and-authorization)
+- [API Routes Reference](#api-routes-reference)
+- [Onboarding Orchestration Architecture](#onboarding-orchestration-architecture)
+- [Training Module System](#training-module-system)
+- [Pipeline Penny AI Integration](#pipeline-penny-ai-integration)
+- [Railway Backend Architecture](#railway-backend-architecture)
+- [Knowledge Base Management](#knowledge-base-management)
+- [Billing and Subscription Lifecycle](#billing-and-subscription-lifecycle)
+- [Monitoring and Observability](#monitoring-and-observability)
+- [Deployment](#deployment)
+- [Environment Variables](#environment-variables)
+- [Scripts Reference](#scripts-reference)
+- [Security](#security)
+- [Build and Test Gates](#build-and-test-gates)
+- [Known Limitations](#known-limitations)
+- [Troubleshooting](#troubleshooting)
+- [Key Files Quick Reference](#key-files-quick-reference)
 
 ---
 
-## 1. Architecture Overview
+## Mission
 
-Fleet-Compliance Sentinel is a **multi-tenant B2B SaaS platform** built on Next.js (App Router) with a FastAPI backend for AI operations. The system uses a monorepo structure with npm workspaces.
+Fleet-Compliance Sentinel is a multi-tenant B2B SaaS platform for fleet and DOT compliance management. It serves logistics companies, transportation fleets, and government contractors with:
 
-### High-Level Architecture
+- Compliance tracking and alert automation
+- Employee onboarding with intake tokens and orchestration
+- Hazmat and training module delivery
+- Document quality (DQ) file management
+- GovCon intelligence and federal contracting support
+- Telematics and vehicle tracking integration
+- AI-powered analysis via Pipeline Penny
 
-```
-User Browser
-    │
-    ▼
-Clerk (Auth + MFA) ─── JWT ───▶ Vercel (Next.js 15)
-                                  │
-                    ┌─────────────┼─────────────────┐
-                    │             │                  │
-              Fleet-Comp    Penny API          Stripe Routes
-              API Routes    Routes (3)         (3 endpoints)
-              (18 endpts)       │
-                    │           ▼
-                    │     Railway (FastAPI)
-                    │       │
-                    ▼       ▼
-              Neon Postgres    LLM Providers
-              (Multi-tenant)   (Claude/OpenAI/Gemini/Ollama)
-```
-
-### Request Flow
-
-1. **Browser** → Clerk session verification via middleware
-2. **Middleware** (`src/middleware.ts`) → Route protection, public route allowlist
-3. **API Route** → `requireFleetComplianceOrg()` extracts userId/orgId from Clerk JWT
-4. **Data Layer** → `fleet-compliance-data.ts` queries Neon with org_id isolation
-5. **Audit Logger** → Every API call logged with PII redaction to stdout → Datadog
-
-### Multi-Tenant Isolation
-
-Every data query includes `org_id` filtering. There is no global data access path from the frontend. The isolation chain:
-
-- **Auth layer:** Clerk org-scoped sessions
-- **Query layer:** `org_id` parameter in every SQL query
-- **Database layer:** Index on `(org_id, collection)` for performance
-- **Audit layer:** org_id attached to every audit event
+The platform combines Next.js 15 (App Router) on Vercel with a Python FastAPI backend on Railway for AI operations.
 
 ---
 
-## 2. Local Development Setup
+## Current Status
 
-### Prerequisites
-
-- Node.js 18+ (LTS recommended)
-- npm 9+
-- PostgreSQL connection (Neon provides free tier)
-- Clerk account (free tier for dev)
-
-### Quick Start
-
-```bash
-# Clone the repository
-git clone <repo-url>
-cd 00-FLEET-COMPLIANCE-SENTINEL
-
-# Install dependencies (includes workspace packages)
-npm install
-
-# Validate environment variables
-npx tsx scripts/check-env.ts
-
-# Start development server
-npm run dev
-```
-
-### Environment Setup
-
-1. Copy `.env.example` to `.env.local`
-2. Fill in required variables (see [Section 17](#17-environment-variables))
-3. At minimum you need:
-   - `NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY` + `CLERK_SECRET_KEY`
-   - `DATABASE_URL` (Neon connection string)
-   - `SITE_URL` (usually `http://localhost:3000` for dev)
-
-### Build & Verify
-
-```bash
-# Full production build (builds CFR + demo indexes first)
-npm run build
-
-# Lint check
-npm run lint
-
-# Compliance checks
-npm run compliance:legal-check    # Privacy/terms page validation
-npm run compliance:ops-check      # Operational gap detection
-```
-
-### Railway Backend (Optional for Penny)
-
-```bash
-cd railway-backend
-pip install -r requirements.txt
-uvicorn app.main:app --reload --port 8000
-```
-
-Set `PENNY_API_URL=http://localhost:8000` in `.env.local` to connect.
+- **Framework:** Next.js 15.5.14
+- **Node:** ^18.0.0
+- **Database:** Neon PostgreSQL (multi-tenant)
+- **Auth:** Clerk with org scoping
+- **Monitoring:** Sentry + Datadog
+- **AI Backend:** FastAPI on Railway
+- **Total API Routes:** 96
+- **Database Migrations:** 19 active
+- **Module Count:** 20+ available modules
 
 ---
 
-## 3. Project Structure
+## Architecture Overview
+
+### High-Level System Diagram
 
 ```
-00-FLEET-COMPLIANCE-SENTINEL/
-├── src/                          # Next.js application
-│   ├── app/                      # App Router (pages + API routes)
-│   │   ├── page.tsx              # Homepage
-│   │   ├── layout.tsx            # Root layout (Clerk, Sentry, CSS)
-│   │   ├── fleet-compliance/     # Main dashboard module
-│   │   │   ├── page.tsx          # Dashboard
-│   │   │   ├── telematics/       # Telematics risk dashboard
-│   │   │   ├── training/         # Training LMS pages
-│   │   │   └── tools/            # Module Tools operator UI
-│   │   ├── penny/                # AI assistant chat
-│   │   └── api/                  # API routes
-│   │       ├── fleet-compliance/ # 18 endpoints
-│   │       ├── modules/          # Module gateway API
-│   │       ├── penny/            # Penny API proxy
-│   │       ├── stripe/           # Billing webhooks
-│   │       └── v1/               # Training API (new)
-│   ├── components/               # React components
-│   │   ├── fleet-compliance/     # 26 fleet components
-│   │   │   ├── UserManualModal   # In-app user manual
-│   │   │   ├── forms/            # Input forms (6)
-│   │   │   └── ...
-│   │   └── training/             # Training components
-│   └── lib/                      # Shared libraries
-│       ├── fleet-compliance-data.ts    # MAIN data layer (~60K lines)
-│       ├── fleet-compliance-auth.ts    # Auth middleware
-│       ├── fleet-compliance-db.ts      # DB connection pool
-│       ├── fleet-compliance-alert-engine.ts  # Alert scoring
-│       ├── audit-logger.ts             # Audit logging w/ PII redaction
-│       ├── modules.ts                  # Module gateway orchestration
-│       ├── modules-gateway/            # Gateway internals
-│       │   ├── types.ts                # Call envelope + error taxonomy
-│       │   ├── registry.ts             # Tool registry
-│       │   ├── runner.ts               # Execution orchestration
-│       │   ├── command-center-bridge.ts
-│       │   ├── remote.ts               # Remote execution
-│       │   └── persistence.ts          # Audit log storage
-│       ├── penny-context.ts            # RAG context builder
-│       ├── penny-ingest.ts             # Document ingestion
-│       ├── penny-catalog.ts            # Knowledge index
-│       ├── penny-access.ts             # Access control
-│       ├── penny-rate-limit.ts         # Rate limiting
-│       ├── sidebar-config.ts           # Sidebar navigation config
-│       ├── plan-gate.ts                # Subscription gates
-│       ├── org-provisioner.ts          # Org setup
-│       ├── offboarding-lifecycle.ts    # Data deletion
-│       ├── stripe.ts                   # Stripe wrapper
-│       └── training-*.ts               # Training module libs
-│
-├── railway-backend/              # FastAPI backend (Python)
-│   ├── app/
-│   │   ├── main.py               # FastAPI app + Penny RAG
-│   │   ├── telematics_router.py  # Verizon Reveal routes
-│   │   └── modules_router.py     # Module execution routes
-│   └── integrations/
-│       └── verizon_reveal/       # Reveal adapter
-│
-├── packages/                     # Monorepo workspace packages
-│   ├── tnds-types/               # Shared TypeScript types
-│   ├── tnds-ingest-core/         # Document ingestion primitives
-│   ├── tnds-retrieval-core/      # Chunked retrieval for Penny
-│   └── tnds-memory-core/         # Memory/timeline (future)
-│
-├── knowledge/                    # Knowledge base for Penny
-│   ├── cfr-docs/                 # 13 CFR parts in Markdown
-│   ├── cfr-index/chunks.json     # Vectorized CFR index
-│   ├── demo-index/chunks.json    # Demo knowledge index
-│   ├── data/original_content/    # Source documents (ERG, etc.)
-│   └── training-content/         # Training materials
-│
-├── migrations/                   # SQL migrations (16 files)
-├── soc2-evidence/                # SOC 2 evidence (73 files)
-├── docs/                         # Operational runbooks
-│   └── integration/              # Integration contracts
-├── tooling/                      # ML modules + command-center
-├── scripts/                      # Build & utility scripts
-├── public/                       # Static assets
-├── .claude/                      # Claude Code configs
-│   ├── agents/                   # 13 operator agent personas
-│   ├── skills/                   # 36 skill directories (ATLAS pattern)
-│   │   ├── MANIFEST.md           # Skill library governance
-│   │   ├── SKILLS-README.md      # Audience classification
-│   │   └── 00_skill-intake/      # New skill onboarding pipeline
-│   └── skill-packs/              # Module skill-pack manifests
-│       ├── fleet-compliance.json
-│       ├── govcon.json
-│       └── realty.json
-├── tooling/skills/               # 15 client-facing skill wrappers
-├── tooling/prompts/              # Prompt governance control plane
-├── skills-registry.json          # Unified 38-skill registry
-└── archive/                      # Historical snapshots
+┌─────────────────────────────────────────────────────────────┐
+│                        User Browser                          │
+└──────────────────────────┬──────────────────────────────────┘
+                           │
+                    ┌──────▼──────┐
+                    │ Clerk Auth  │
+                    │ (Sessions)  │
+                    └──────┬──────┘
+                           │ JWT
+        ┌──────────────────▼──────────────────┐
+        │   Vercel (Next.js 15 App Router)    │
+        │  src/app + src/lib + middleware.ts  │
+        │                                     │
+        ├─────────────────────────────────────┤
+        │  • Fleet-Compliance routes (96)    │
+        │  • Pipeline Penny proxy routes      │
+        │  • Stripe billing endpoints         │
+        │  • Module gateway endpoints         │
+        └─────────────┬───────────────────────┘
+                      │
+        ┌─────────────┴──────────────────────────┐
+        │                                        │
+   ┌────▼──────────┐                    ┌───────▼──────┐
+   │ Neon          │                    │ Railway       │
+   │ PostgreSQL    │                    │ (FastAPI)     │
+   │ (Multi-       │                    │               │
+   │  tenant)      │                    │ • Query       │
+   │               │                    │ • Modules     │
+   │ • Fleet data  │                    │ • GovCon      │
+   │ • Onboarding  │                    │ • Telematics  │
+   │ • Training    │                    │ • Federal     │
+   └────────────────┘                    │   Intel       │
+                                         │               │
+                                         └───────┬───────┘
+                                                 │
+                                      ┌──────────▼─────────┐
+                                      │ LLM Providers      │
+                                      │ (Claude, OpenAI,   │
+                                      │  Gemini, Ollama)   │
+                                      └────────────────────┘
 ```
 
-### Claude Code Agents (`.claude/agents/`)
+### Multi-Tenant Isolation Strategy
 
-The `.claude/agents/` directory contains specialized instruction files for Claude Code sessions. These are **developer/operator tools only** — they are not client-facing, do not run in production, and are never shipped as part of the Fleet-Compliance Sentinel product. Each agent file defines a persona with specific domain knowledge, constraints, and verification protocols that Claude Code adopts during a session.
+Every data query includes `org_id` filtering. Isolation is enforced at three layers:
 
-The canonical agent library lives at `AGENTS-TNDS/` on the development workstation (outside this repo). The agent recommendation matrix is documented in `FCS-Agent-Deployment-Recommendations.docx` at the project root.
+| Layer | Control |
+|-------|---------|
+| **Auth Layer** | Clerk org-scoped sessions + JWT token |
+| **Query Layer** | `org_id` parameter in every SQL query |
+| **Index Layer** | Composite index on `(org_id, collection)` |
+| **Audit Layer** | `org_id` attached to every audit event |
 
-**All 13 agents are deployed:**
-
-| Agent | Tier | Purpose |
-|-------|------|---------|
-| `pipeline-x-integrator` | 1 | @tnds/* workspace package integration (12-task checklist) |
-| `code-security-auditor` | 1 | OWASP/CWE vulnerability scanning, dependency audit |
-| `typescript-developer` | 1 | TypeScript + Next.js feature development |
-| `database-designer` | 1 | Schema design, migration authoring, query optimization |
-| `code-reviewer` | 2 | PR-style code review with severity scoring |
-| `backend-developer` | 2 | FastAPI + Node.js backend services |
-| `frontend-developer` | 2 | React/Tailwind UI implementation |
-| `auditor` | 2 | SOC 2 evidence collection and compliance audit |
-| `python-developer` | 3 | Python tooling, ML modules, data pipelines |
-| `code-documenter` | 3 | JSDoc, README, inline documentation generation |
-| `code-debugger` | 3 | Root-cause analysis and targeted bug fixes |
-| `curriculum-designer` | 3 | Training content and LMS course structure |
-| `builder` | 3 | General-purpose scaffolding and project setup |
-
-See [Section 23](#23-agent--skill-library) for full agent and skill documentation.
+No global data access path exists from the frontend. Breach of org_id isolation is a critical security failure.
 
 ---
 
-## 4. Technology Stack
+## End-to-End Request Flow
 
-### Frontend
-| Package | Version | Purpose |
-|---------|---------|---------|
-| Next.js | ^15.5.14 | App Router, server components, API routes |
-| React | ^18.3.1 | UI library |
-| TypeScript | ^5.3.3 | Type safety |
-| Tailwind CSS | ^3.4.19 | Utility-first CSS |
-| Recharts | ^2.15.4 | Charting (Spend Dashboard, trends) |
-| react-markdown | ^10.1.0 | Penny response rendering |
-| ExcelJS | ^4.4.0 | XLSX parsing for bulk imports |
+1. **Browser** initiates request with Clerk JWT
+2. **Middleware** (`src/middleware.ts`) verifies public/protected routes
+3. **API Route** calls `requireFleetComplianceOrg()` to extract userId/orgId from JWT
+4. **Data Layer** executes SQL with `org_id` filter via `fleet-compliance-data.ts`
+5. **Audit Logger** records request with PII redaction to stdout
+6. **Datadog/Sentry** ingests audit logs and error reports
+7. **Response** is returned with security headers from vercel.json
 
-### Backend (Railway)
-| Package | Version | Purpose |
-|---------|---------|---------|
-| Python | 3.11 | Runtime |
-| FastAPI | 0.116.1 | Web framework |
-| Uvicorn | 0.35.0 | ASGI server |
-| httpx | 0.28.1 | LLM API calls |
+### Failure Modes
 
-### Data & Auth
-| Service | Purpose |
-|---------|---------|
-| Neon PostgreSQL | Serverless DB (SOC 2 Type II) |
-| Clerk | Org-scoped auth + RBAC |
-| Upstash Redis | Rate limiting |
-| Stripe | Subscription billing |
-| Resend | Email delivery |
-
-### Monitoring
-| Service | Purpose |
-|---------|---------|
-| Sentry | Errors, replay, logs, source maps |
-| Datadog | Log aggregation + audit analysis |
-| UptimeRobot | External uptime monitoring |
-
-### Workspace Packages
-| Package | Import | Purpose |
-|---------|--------|---------|
-| `@tnds/types` | `import { ... } from '@tnds/types'` | Shared TypeScript types |
-| `@tnds/ingest-core` | `import { ... } from '@tnds/ingest-core'` | PDF/DOCX/CSV/HTML ingestion |
-| `@tnds/retrieval-core` | `import { ... } from '@tnds/retrieval-core'` | Chunked retrieval for RAG |
-| `@tnds/memory-core` | `import { ... } from '@tnds/memory-core'` | Timeline store (future) |
+- **401 Unauthorized:** JWT missing or invalid → Middleware redirects to `/sign-in`
+- **403 Forbidden:** User not in org → `requireFleetComplianceOrg()` throws error
+- **500 Internal Error:** Database query fails → Sentry captures, response sanitized
 
 ---
 
-## 5. Database Schema & Migrations
+## End-to-End Onboarding Flow
 
-### Connection
+Onboarding orchestration spans organization setup and employee enrollment.
 
-Database connections use `@neondatabase/serverless` with WebSocket pooling:
+### Phase 1: Organization Onboarding (On signup)
+
+```
+1. User creates org via Clerk
+   │
+   ▼
+2. org-provisioner.ts runs:
+   ├─ Creates organization_config row
+   ├─ Seeds module_enablement for org
+   ├─ Creates org_contact_info row
+   └─ Initializes onboarding run state
+   │
+   ▼
+3. Org ready for employee enrollment
+```
+
+### Phase 2: Employee Onboarding (Per-employee)
+
+```
+1. Admin issues intake token
+   │
+   ├─ OnboardingIntakeTokenRepository.issue()
+   ├─ Hash token + store in onboarding_intake_tokens
+   ├─ Return token hash to admin
+   │
+   ▼
+2. Employee or admin submits intake form
+   │
+   ├─ POST /api/fleet-compliance/onboarding/intake/[token]
+   ├─ Validate token (not revoked, not expired)
+   ├─ Parse form data → OnboardingEmployeeInput
+   ├─ OnboardingService.createOrUpdateEmployeeProfile()
+   ├─ Create OnboardingEmployeeProfile row
+   │
+   ▼
+3. Onboarding run enqueued
+   │
+   ├─ OnboardingService.createRun()
+   ├─ Create OnboardingRunRecord (status: 'queued')
+   ├─ Create initial OnboardingStepRecords
+   ├─ Publish outbox event (enum: 'run_created')
+   │
+   ▼
+4. Outbox worker processes (outbox-worker.ts)
+   │
+   ├─ Every 30 seconds, query outbox table (status: 'pending')
+   ├─ For each event, dispatch to adapter
+   ├─ If adapter succeeds, mark outbox event 'processed'
+   ├─ If adapter fails, increment attemptCount, schedule retry
+   │
+   ▼
+5. Adapter layer executes steps
+   │
+   ├─ adapters/hazmat-adapter.ts
+   ├─ adapters/suspense-seed-adapter.ts
+   ├─ adapters/alert-binding-adapter.ts
+   ├─ adapters/contract-drift-adapter.ts
+   │
+   ▼
+6. Run transitions to 'completed' or 'partial'
+   │
+   └─ All steps either completed, skipped, or failed
+```
+
+### Intake Tokens
+
+- Issued by admin for each employee
+- Hash stored in `onboarding_intake_tokens` table
+- Expire after 30 days (configurable)
+- One token per employee
+- Can be revoked by admin
+- After intake consumption, triggers employee profile creation and run enqueue
+
+### Outbox Pattern
+
+The outbox table provides at-least-once delivery for onboarding events:
+
+| Column | Purpose |
+|--------|---------|
+| `id` | Event UUID |
+| `eventType` | `run_created`, `run_failed`, etc. |
+| `payload` | Event data (runId, employeeProfileId, etc.) |
+| `status` | `pending` → `retrying` → `processed` or `failed` |
+| `attemptCount` | Retry counter |
+| `dedupeKey` | Idempotency key |
+
+---
+
+## Module System Architecture
+
+### Module Catalog
+
+Modules are business features that can be selectively enabled/disabled per organization based on subscription tier. There are 20+ available modules.
+
+### Module Definition (modules.ts)
 
 ```typescript
-// src/lib/fleet-compliance-db.ts
-import { Pool } from '@neondatabase/serverless';
-const pool = new Pool({ connectionString: process.env.DATABASE_URL });
-```
-
-All queries use parameterized SQL — no string interpolation. This is a hard security requirement.
-
-### Core Tables
-
-| Table | Purpose | Key Columns |
-|-------|---------|-------------|
-| `fleet_compliance_records` | All fleet data (JSONB) | `id`, `collection`, `org_id`, `data`, `import_batch_id`, `deleted_at` |
-| `organizations` | Org profiles | `id` (Clerk org ID), `name`, `plan`, `trial_ends_at`, `onboarding_complete` |
-| `subscriptions` | Stripe subscription state | `org_id`, `stripe_customer_id`, `plan`, `status` |
-| `org_audit_events` | Audit trail | `org_id`, `event_type`, `actor_user_id`, `actor_type`, `metadata` |
-| `organization_contacts` | Alert email config | `org_id`, `primary_contact` |
-| `cron_log` | Cron execution records | `job_name`, `status`, `executed_at`, `records_processed` |
-| `error_events` | Client-side errors | `org_id`, `page`, `message`, `stack`, `user_id` |
-| `invoices` | Invoice records | `org_id`, `vendor`, `invoice_date`, `grand_total`, `unit_number` |
-| `invoice_line_items` | Invoice line items | `invoice_id`, `description`, `amount` |
-| `invoice_work_descriptions` | Work descriptions | `invoice_id`, `description` |
-
-### Logical Collections (JSONB)
-
-The `fleet_compliance_records` table stores different entity types via the `collection` column:
-
-| Collection | Contents |
-|------------|----------|
-| `people` | Employee/driver master records |
-| `employee_compliance` | CDL, medical card, MVR, hazmat, TSA expirations |
-| `assets` | Vehicles, equipment, storage tanks |
-| `vehicle_assets` | VIN, plate, inspection dates, mileage |
-| `tank_assets` | Capacity, permits, leak testing |
-| `permit_license_records` | DOT/state permits, renewal cadences |
-| `suspense_items` | Compliance action items with severity + due dates |
-| `maintenance_events` | Service records |
-| `maintenance_plans` | Scheduled maintenance |
-| `activity_logs` | Operational events |
-| `fmcsa_snapshots` | FMCSA carrier lookup history |
-| `attachments` | File references |
-
-### Migrations
-
-Migrations are in `migrations/` and are applied manually. They are numbered sequentially:
-
-| # | File | Purpose |
-|---|------|---------|
-| 001 | `001_cron_log.sql` | Cron execution logging |
-| 002 | `002_soft_delete.sql` | `deleted_at` column for soft delete |
-| 003 | `003_import_batch.sql` | UUID-based import batch tracking |
-| 004 | `004_org_scoping.sql` | Multi-tenant `org_id` column + indexes |
-| 005 | `005_org_lifecycle_controls.sql` | Organizations, subscriptions, audit tables |
-| 006 | `006_rename_chief.sql` | Rename from legacy "Chief" branding |
-| 007 | `007_offboarding.sql` | Data deletion scheduling |
-| 008 | `008_telematics_adapter.sql` | Telematics persistence schema |
-| 009 | `009_risk_scores.sql` | Risk scoring tables |
-| 010 | `010_telematics_location_pii_comments.sql` | PII annotation |
-| 011 | `011_module_system.sql` | Module execution tracking |
-| 012 | `012_training_tables.sql` | Training core tables |
-| 013 | `013_hazmat_training_compliance.sql` | Hazmat compliance tables |
-| 014 | `014_training_certificate_storage.sql` | Certificate storage |
-| 015 | `015_hazmat_training_module_catalog.sql` | Training module catalog |
-| 016 | `016_organization_contact_address.sql` | Org contact metadata |
-
-#### Running Migrations
-
-Migrations are run directly against Neon. Connect to the Neon SQL editor (or `psql`) and execute each `.sql` file in order:
-
-```bash
-# Example using psql
-psql $DATABASE_URL -f migrations/016_organization_contact_address.sql
-```
-
-#### Creating New Migrations
-
-1. Create `migrations/NNN_description.sql` (next sequential number)
-2. Write idempotent SQL (use `IF NOT EXISTS`, `CREATE OR REPLACE` where possible)
-3. Test on a branch database first
-4. Apply to production via Neon SQL editor
-5. Update this manual and `PLATFORM_OVERVIEW.md` with the new migration
-
----
-
-## 6. Authentication & Authorization
-
-### Clerk Integration
-
-Auth is handled by `@clerk/nextjs`. The middleware protects all `/fleet-compliance/*`, `/penny/*`, and `/api/*` routes.
-
-**Key files:**
-- `src/lib/clerk.ts` — Clerk client initialization
-- `src/lib/fleet-compliance-auth.ts` — Auth middleware functions
-- `src/middleware.ts` — Route protection configuration
-
-### Auth Middleware Functions
-
-```typescript
-// Validates session, returns { userId, orgId }
-const { userId, orgId } = await requireFleetComplianceOrg();
-
-// Same + role enforcement (admin-only routes)
-const { userId, orgId } = await requireFleetComplianceOrgWithRole('admin');
-
-// Penny-specific role resolution
-const role = await resolvePennyRole(); // 'admin' | 'client'
-const canAccess = canAccessPenny(role, email);
-```
-
-### Roles
-
-| Role | Fleet-Compliance | Penny | Module Tools |
-|------|-----------------|-------|-------------|
-| `admin` | Full CRUD, import/rollback, alerts, cron | Full access | Full access |
-| `member` | Read access, create suspense items | Org-scoped queries | No access |
-
-### Route Protection
-
-| Route Pattern | Auth |
-|---------------|------|
-| `/`, `/sign-in`, `/sign-up`, `/privacy`, `/terms` | Public |
-| `/fleet-compliance/*` | Clerk session required |
-| `/penny/*` | Clerk session + Penny role |
-| `/api/fleet-compliance/*` | Clerk session (+ admin for writes) |
-| `/api/fleet-compliance/alerts/run` | Cron bearer token (timing-safe) |
-| `/api/stripe/webhook` | Stripe HMAC-SHA256 signature |
-| `/api/penny/health` | Public |
-
-### Adding New Protected Routes
-
-1. The route is automatically protected by Clerk middleware if it matches `/fleet-compliance/*` or `/api/fleet-compliance/*`
-2. In the API route handler, call `requireFleetComplianceOrg()` to get the authenticated context
-3. For admin-only routes, use `requireFleetComplianceOrgWithRole('admin')`
-4. Always pass `orgId` to data layer functions for tenant isolation
-
----
-
-## 7. API Routes Reference
-
-### Fleet-Compliance Endpoints (18)
-
-| Route | Method | Auth | Purpose |
-|-------|--------|------|---------|
-| `/api/fleet-compliance/assets` | GET | Clerk | List org fleet assets |
-| `/api/fleet-compliance/bulk-template` | GET | Clerk | Download XLSX import template |
-| `/api/fleet-compliance/alerts/preview` | GET | Clerk | Dry-run alert preview |
-| `/api/fleet-compliance/alerts/trigger` | POST | Admin | Manual alert trigger |
-| `/api/fleet-compliance/alerts/run` | POST | Cron | Daily alert sweep (all orgs) |
-| `/api/fleet-compliance/cron-health` | GET | Clerk | Cron last-run status |
-| `/api/fleet-compliance/fmcsa/lookup` | GET | Clerk | FMCSA carrier data lookup |
-| `/api/fleet-compliance/import/setup` | POST | Admin | Init database tables |
-| `/api/fleet-compliance/import/parse` | POST | Admin | Parse + validate XLSX |
-| `/api/fleet-compliance/import/save` | POST | Admin | Persist parsed records |
-| `/api/fleet-compliance/import/rollback` | POST | Admin | Undo import batch |
-| `/api/fleet-compliance/invoices/parse-pdf` | POST | Admin | Parse invoice PDF |
-| `/api/fleet-compliance/onboarding` | POST | Clerk | Complete onboarding |
-| `/api/fleet-compliance/errors/client` | POST | Clerk | Client error capture |
-| `/api/fleet-compliance/spend` | GET | Clerk | Spend analytics |
-| `/api/fleet-compliance/telematics-sync` | GET | Cron | Pull Verizon data |
-| `/api/fleet-compliance/telematics-risk` | GET | Clerk | Risk scores |
-| `/api/fleet-compliance/[collection]/[id]/restore` | POST | Admin | Restore soft-deleted |
-
-### Penny Endpoints (3)
-
-| Route | Method | Auth | Purpose |
-|-------|--------|------|---------|
-| `/api/penny/health` | GET | Public | Backend health check |
-| `/api/penny/query` | POST | Clerk + role | Chat query with RAG |
-| `/api/penny/catalog` | GET | Clerk + role | Knowledge catalog |
-
-### Module Gateway Endpoints
-
-| Route | Method | Auth | Purpose |
-|-------|--------|------|---------|
-| `/api/modules/run` | POST | Admin | Execute module action |
-| `/api/modules/catalog` | GET | Admin | List available modules |
-| `/api/modules/status/[id]` | GET | Admin | Poll execution status |
-| `/api/modules/artifact` | GET | Admin | Fetch generated artifacts |
-| `/api/modules/command-center/tools` | GET | Admin | Command-center bridge |
-| `/api/modules/dashboard/ml-eia` | GET | Admin | ML-EIA dashboard data |
-
-### Stripe Endpoints (3)
-
-| Route | Method | Auth | Purpose |
-|-------|--------|------|---------|
-| `/api/stripe/webhook` | POST | Stripe HMAC | Subscription events |
-| `/api/stripe/checkout` | POST | Clerk | Create checkout session |
-| `/api/stripe/portal` | POST | Clerk | Customer portal session |
-
-### Training API (v1)
-
-| Route | Method | Auth | Purpose |
-|-------|--------|------|---------|
-| `/api/v1/training/*` | Various | Clerk | Training CRUD operations |
-| `/api/v1/hazmat-training/*` | Various | Clerk | Hazmat training management |
-
-### Adding New API Routes
-
-1. Create `src/app/api/fleet-compliance/<route>/route.ts`
-2. Import and call `requireFleetComplianceOrg()` or `requireFleetComplianceOrgWithRole('admin')`
-3. Use the data layer functions from `src/lib/fleet-compliance-data.ts`
-4. Add audit logging via `auditLog()` from `src/lib/audit-logger.ts`
-5. Return JSON responses with appropriate status codes
-
-```typescript
-// Example: src/app/api/fleet-compliance/example/route.ts
-import { NextResponse } from 'next/server';
-import { requireFleetComplianceOrg } from '@/lib/fleet-compliance-auth';
-import { auditLog } from '@/lib/audit-logger';
-
-export async function GET() {
-  const { userId, orgId } = await requireFleetComplianceOrg();
-
-  // Your logic here (always filter by orgId)
-
-  auditLog({
-    action: 'data.read',
-    userId,
-    orgId,
-    resourceType: 'example',
-    severity: 'info',
-  });
-
-  return NextResponse.json({ data: [] });
+interface ModuleSeed {
+  id: string;                    // 'fleet-compliance', 'telematics', etc.
+  name: string;                  // Display name
+  description: string;           // Feature summary
+  category: string;              // 'fleet', 'petroleum', 'business', etc.
+  icon: string;                  // Lucide icon name
+  routePrefix: string;           // '/fleet-compliance', '/telematics', etc.
+  isCore: boolean;               // Core vs. premium
+  requiresPlan: PlanTier;        // 'trial', 'starter', 'pro', 'enterprise'
+  metadata: Record<...>;         // Extra config
 }
 ```
 
----
+### Module Enablement Flow
 
-## 8. Module Gateway System
+1. **Signup:** `org-provisioner.ts` seeds module_enablement rows based on plan tier
+2. **Plan upgrade:** Admin changes subscription → `plan-gate.ts` updates module_enablement
+3. **Route check:** Middleware calls `getEnabledModules(orgId)` on every request
+4. **Sidebar:** `getVisibleSections()` filters sidebar based on enabled modules
 
-### Overview
+### Plan Tiers and Module Availability
 
-The Module Gateway is a unified orchestration layer for running backend tooling modules from the Next.js frontend. It connects four registered modules:
-
-| Module | Actions | Runtime | Location |
-|--------|---------|---------|----------|
-| ML-EIA-PETROLEUM-INTEL | 9 | Python | `tooling/ML-EIA-PETROLEUM-INTEL/` |
-| ML-SIGNAL-STACK-TNCC | 8 | Python | `tooling/ML-SIGNAL-STACK-TNCC/` |
-| MOD-PAPERSTACK-PP | 13 | Python + Node | `tooling/MOD-PAPERSTACK-PP/` |
-| command-center | 13 | Node (in-process) | `tooling/command-center/` |
-
-### Key Files
-
-| File | Purpose |
-|------|---------|
-| `src/lib/modules.ts` | Main module gateway orchestration |
-| `src/lib/modules-gateway/types.ts` | Call envelope + error taxonomy |
-| `src/lib/modules-gateway/registry.ts` | Tool registry (capped exposure) |
-| `src/lib/modules-gateway/runner.ts` | Execution orchestration |
-| `src/lib/modules-gateway/command-center-bridge.ts` | In-process CC integration |
-| `src/lib/modules-gateway/remote.ts` | Remote execution via Railway |
-| `src/lib/modules-gateway/persistence.ts` | Run audit log storage |
-| `docs/integration/MODULE_GATEWAY_CONTRACT.md` | Frozen API contract |
-| `docs/integration/OPERATIONS_RUNBOOK.md` | Operations guide |
-
-### Execution Flow
-
-1. Frontend calls `POST /api/modules/run` with module ID, action, and arguments
-2. Gateway validates against the action allowlist
-3. For in-process modules (command-center): executes directly
-4. For external modules (ML-EIA, ML-SIGNAL, PaperStack): subprocess or remote execution
-5. Status polling via `GET /api/modules/status/:correlationId`
-6. Results include stdout/stderr, result payload, and artifact metadata
-
-### Enterprise Hardening (7 Layers — In Progress)
-
-| Layer | Control | File |
-|-------|---------|------|
-| 1 | Context-aware tool registry | `modules-gateway/registry.ts` |
-| 2 | Bidirectional schema validation | `modules-gateway/types.ts` |
-| 3 | Execution sandbox | `modules-gateway/runner.ts` |
-| 4 | Retry manager (cap=3) | `modules-gateway/runner.ts` |
-| 5 | Token/cost attribution | TBD |
-| 6 | Durable audit logging | `modules-gateway/persistence.ts` |
-| 7 | Tenant tool isolation | `modules-gateway/registry.ts` |
-
-### Command Center
-
-The command center (`tooling/command-center/`) provides tool discovery and routing:
-
-| File | Purpose |
-|------|---------|
-| `src/config/module-manifest.ts` | Static module registry (14 entries) |
-| `src/services/discovery-service.ts` | Module + tool discovery |
-| `src/services/search-service.ts` | Tool search |
-| `src/services/router-service.ts` | Tool routing |
-| `src/api/handlers.ts` | Route handling |
-
-**Current State:** Discovery works (returns stub tools per module). Routing validates and logs but does not execute downstream handlers yet. Full handler wiring is the next integration step.
-
-### Adding a New Module to the Gateway
-
-1. Create the module directory under `tooling/<module-name>/`
-2. Define tools in `src/tools.ts` with JSON schema parameters
-3. Register the module in `tooling/command-center/src/config/module-manifest.ts`
-4. Add the action allowlist in `src/lib/modules-gateway/registry.ts`
-5. Add environment variables to `docs/integration/MODULE_ENV_MATRIX.md`
-6. Test through the Module Tools UI at `/fleet-compliance/tools`
+| Module | Trial | Starter | Pro | Enterprise |
+|--------|-------|---------|-----|------------|
+| fleet-compliance | ✓ | ✓ | ✓ | ✓ |
+| penny-ai | ✓ | ✓ | ✓ | ✓ |
+| telematics | ✗ | ✓ | ✓ | ✓ |
+| dispatch | ✗ | ✗ | ✓ | ✓ |
+| petroleum-intel | ✗ | ✗ | ✓ | ✓ |
+| financial | ✗ | ✓ | ✓ | ✓ |
+| govcon | ✗ | ✗ | ✓ | ✓ |
+| training | ✓ | ✓ | ✓ | ✓ |
 
 ---
 
-## 9. Pipeline Penny (AI Engine)
+## Sidebar and Navigation Architecture
+
+### Sidebar Sections (sidebar-config.ts)
+
+The sidebar is organized into 6 collapsible sections, each with navigation items that map to modules.
+
+| Section | Key | Default Expanded | Items |
+|---------|-----|------------------|-------|
+| Operations | ops | true | Dashboard, Assets, Employees, Dispatch, Tasks, Onboarding |
+| Compliance | compliance | true | Compliance, DQ Files, Alerts, Suspense, FMCSA |
+| Training | training | true | Training Hub, My Training, Admin, Hazmat Reports, Courses |
+| Finance | finance | false | Financial, Sales, Proposals, Contracts, Invoices, Realty |
+| Intelligence | intel | false | Email Analytics, Readiness, GovCon, Telematics |
+| Skills & Tools | skills | false | Readiness, Compliance, Financial, GovCon, Realty, Proposal, Asset |
+| Admin | admin | false | Settings, Spend, Import, Feature Modules, Penny AI (+ platform-only: Command Center, Module Tools, Developer Module Console) |
+
+### Visibility Rules
+
+- **adminOnly:** Link hidden for non-admin users
+- **platformOnly:** Link hidden for org admins who are not platform admins
+- **moduleId:** Link hidden if module disabled for org
+- **Section-level adminOnly:** Entire section hidden for non-admins
+
+### Module Management Surfaces
+
+Two module-management pages now exist intentionally:
+
+- **Client-facing settings**: `/fleet-compliance/settings/modules`
+  - Audience: organization admins (all tenants)
+  - Scope: app feature modules only (for example telematics, tasks, DQ files, skills)
+  - Excludes: module gateway/ML execution controls
+- **Developer console**: `/fleet-compliance/dev/modules`
+  - Audience: platform admins
+  - Scope: multi-tenant org selection, app module toggles, and module gateway ACL controls
+  - Used for platform/operator debugging and gateway governance
+
+### Navigation Implementation
+
+```typescript
+// In page components:
+import { getVisibleSections } from '@/lib/sidebar-config';
+
+const sections = getVisibleSections(enabledModuleIds, userRole);
+// Render only visible sections and items
+```
+
+---
+
+## Database Schema and Migrations
+
+### Migration History (19 active migrations)
+
+| # | File | Purpose |
+|---|------|---------|
+| 1 | `001_cron_log.sql` | Cron job execution logging |
+| 2 | `002_soft_delete.sql` | Soft delete support (deleted_at column) |
+| 3 | `003_import_batch.sql` | Batch import tracking |
+| 4 | `004_org_scoping.sql` | Multi-tenant org scoping |
+| 5 | `005_org_lifecycle_controls.sql` | Org provisioning, suspension, archival |
+| 6 | `006_rename_chief.sql` | Rename CHIEF identifier |
+| 7 | `007_offboarding.sql` | Employee offboarding workflow |
+| 8 | `008_telematics_adapter.sql` | Verizon Reveal integration tables |
+| 9 | `009_risk_scores.sql` | Risk scoring for alerts |
+| 10 | `010_telematics_location_pii_comments.sql` | PII masking for telematics |
+| 11 | `011_module_system.sql` | Module catalog + enablement |
+| 12 | `012_training_tables.sql` | Training LMS core |
+| 13 | `013_hazmat_training_compliance.sql` | HazMat certification tracking |
+| 14 | `014_training_certificate_storage.sql` | Certificate persistence backends |
+| 15 | `015_hazmat_training_module_catalog.sql` | HazMat course catalog |
+| 16 | `016_organization_contact_address.sql` | Org contact info + address |
+| 17 | `017_onboarding_orchestration.sql` | Onboarding runs, steps, tasks |
+| 18 | `018_onboarding_phase3_adapters.sql` | Adapter state + suspense seeding |
+| 19 | `019_onboarding_intake_tokens.sql` | Intake tokens + outbox pattern |
+
+### Core Tables
+
+| Table | Purpose |
+|-------|---------|
+| `organizations` | Org records with lifecycle state |
+| `organization_config` | Settings per org |
+| `organization_contact_info` | Address, phone, name |
+| `users` | User references (Clerk integration) |
+| `module_catalog` | Available modules (readonly seed) |
+| `module_enablement` | Which modules enabled for each org |
+| `assets` | Fleet vehicles |
+| `employees` | Employee records |
+| `alerts` | Compliance alerts |
+| `cron_log` | Cron execution history |
+| `training_modules` | Course definitions |
+| `training_assignments` | Employee → Course enrollment |
+| `training_progress` | Module completion tracking |
+| `hazmat_training_records` | Certification tracking |
+| `onboarding_employee_profiles` | Employee intake data |
+| `onboarding_runs` | Orchestration run records |
+| `onboarding_steps` | Run step execution |
+| `onboarding_tasks` | Action items (CRM sync) |
+| `onboarding_intake_tokens` | Invite tokens (hashed) |
+| `onboarding_outbox_events` | At-least-once event delivery |
+| `telematics_locations` | GPS tracking data |
+| `verizon_reveal_sync_log` | Telematics sync history |
+
+---
+
+## Authentication and Authorization
+
+### Clerk Integration
+
+Clerk handles user signup, signin, org management, and JWT issuance.
+
+**Clerk Middleware** (`src/middleware.ts`):
+- Protects all routes matching `/penny(.*)`, `/fleet-compliance(.*)`, `/api/fleet-compliance(.*)`
+- Public routes: `/`, `/sign-in`, `/sign-up`, `/privacy`, `/terms`, `/api/penny/health`
+- Self-authed routes (bypass Clerk): `/api/fleet-compliance/alerts/run`, `/api/fleet-compliance/telematics-sync`
+
+### Organization Scoping
+
+Users belong to organizations in Clerk. Each org has one or more users:
+
+```typescript
+// In API route:
+const { userId, orgId } = await requireFleetComplianceOrg(req);
+// orgId extracted from Clerk session, verified against JWT
+```
+
+### Role-Based Access Control
+
+Two roles per org:
+
+| Role | Capabilities |
+|------|-------------|
+| **admin** | View all module toggles, settings, training admin, import data, command center |
+| **member** | View assigned modules only, no admin controls |
+
+Enforced via:
+1. Sidebar config filtering (`adminOnly: true`)
+2. API route checks in request handlers
+3. UI-level visibility rules
+
+### Multi-Factor Authentication
+
+Clerk supports MFA via TOTP, SMS, or backup codes. Configured per org or per user.
+
+---
+
+## API Routes Reference
+
+The platform has 96 API routes. Key endpoints are organized by domain.
+
+### Fleet-Compliance Core (18 routes)
+
+| Method | Route | Purpose |
+|--------|-------|---------|
+| GET | `/api/fleet-compliance` | Dashboard summary |
+| POST | `/api/fleet-compliance/assets` | Create/list assets |
+| GET | `/api/fleet-compliance/employees` | List employees |
+| POST | `/api/fleet-compliance/alerts/trigger` | Manually trigger alert |
+| GET | `/api/fleet-compliance/alerts/preview` | Preview alert payload |
+| POST | `/api/fleet-compliance/alerts/run` | Cron job (8am daily) |
+| POST | `/api/fleet-compliance/cron-health` | Health check endpoint |
+| GET | `/api/fleet-compliance/spend` | Billing dashboard |
+| GET | `/api/fleet-compliance/fmcsa/lookup` | FMCSA safety ratings |
+
+### Onboarding (12 routes)
+
+| Method | Route | Purpose |
+|--------|-------|---------|
+| POST | `/api/fleet-compliance/onboarding` | Create org onboarding |
+| GET | `/api/fleet-compliance/onboarding` | Get org onboarding state |
+| GET | `/api/fleet-compliance/onboarding/employees` | List employee profiles |
+| POST | `/api/fleet-compliance/onboarding/employees` | Create employee profile |
+| GET | `/api/fleet-compliance/onboarding/employees/[id]` | Get profile |
+| POST | `/api/fleet-compliance/onboarding/employees/[id]/invite` | Issue intake token |
+| POST | `/api/fleet-compliance/onboarding/intake/[token]` | Submit intake form |
+| GET | `/api/fleet-compliance/onboarding/intake-tokens` | List tokens |
+| POST | `/api/fleet-compliance/onboarding/outbox/process` | Process outbox events |
+| GET | `/api/fleet-compliance/onboarding/runs` | List runs |
+| GET | `/api/fleet-compliance/onboarding/runs/[id]` | Get run detail |
+| POST | `/api/fleet-compliance/onboarding/runs/[id]/retry` | Retry failed run |
+
+### Document Quality (DQ) Files (7 routes)
+
+| Method | Route | Purpose |
+|--------|-------|---------|
+| GET | `/api/fleet-compliance/dq/files` | List DQ files |
+| POST | `/api/fleet-compliance/dq/files` | Upload DQ file |
+| GET | `/api/fleet-compliance/dq/files/[id]` | Get file detail |
+| GET | `/api/fleet-compliance/dq/files/[id]/checklist` | Get checklist |
+| POST | `/api/fleet-compliance/dq/documents` | List documents |
+| POST | `/api/fleet-compliance/dq/documents/generate` | Generate document |
+| GET | `/api/fleet-compliance/dq/gaps` | Gap analysis |
+
+### GovCon Compliance (12 routes)
+
+| Method | Route | Purpose |
+|--------|-------|---------|
+| GET | `/api/fleet-compliance/govcon` | GovCon dashboard |
+| POST | `/api/fleet-compliance/govcon` | Create govcon record |
+| GET | `/api/fleet-compliance/govcon/[id]` | Get record detail |
+| GET | `/api/fleet-compliance/govcon/company` | Company profile |
+| GET | `/api/fleet-compliance/govcon/compliance` | Compliance posture |
+| GET | `/api/fleet-compliance/govcon/contacts` | Team contacts |
+| GET | `/api/fleet-compliance/govcon/deadlines` | Opportunity deadlines |
+| POST | `/api/fleet-compliance/govcon/intake` | Intake questionnaire |
+| GET | `/api/fleet-compliance/govcon/intel` | Federal intelligence |
+| POST | `/api/fleet-compliance/govcon/federal-intel/run-all` | Refresh intel |
+| GET | `/api/fleet-compliance/govcon/maturity` | Readiness assessment |
+| GET | `/api/fleet-compliance/govcon/bid-documents` | Bid documents |
+
+### Training (10 routes)
+
+| Method | Route | Purpose |
+|--------|-------|---------|
+| GET | `/api/v1/training/health` | Training system health |
+| GET | `/api/v1/training/[code]/deck` | Get module content |
+| POST | `/api/v1/training/[code]/deck/complete` | Mark complete |
+| POST | `/api/v1/training/[code]/assessment/submit` | Submit quiz |
+| GET | `/api/v1/training/[code]/assessment/attempts` | View attempts |
+| POST | `/api/v1/training/assignments` | Create assignment |
+| GET | `/api/v1/training/progress` | Employee progress |
+| GET | `/api/v1/training/certificates` | Certificate list |
+| POST | `/api/v1/hazmat-training/[id]` | Enroll in HazMat |
+| GET | `/api/v1/hazmat-training/org/[id]/summary` | HazMat summary |
+
+### Pipeline Penny (3 routes)
+
+| Method | Route | Purpose |
+|--------|-------|---------|
+| GET | `/api/penny/health` | Backend health check |
+| POST | `/api/penny/query` | Query AI (no auth) |
+| GET | `/api/penny/catalog` | Available skills/templates |
+
+### Modules (5 routes)
+
+| Method | Route | Purpose |
+|--------|-------|---------|
+| GET | `/api/modules/catalog` | Module catalog |
+| GET | `/api/modules/status/[id]` | Module status |
+| POST | `/api/modules/run` | Execute module |
+| GET | `/api/modules/artifact` | Fetch artifact |
+| POST | `/api/modules/command-center/tools` | Command center tools |
+
+### Stripe Billing (3 routes)
+
+| Method | Route | Purpose |
+|--------|-------|---------|
+| POST | `/api/stripe/checkout` | Create checkout session |
+| POST | `/api/stripe/portal` | Customer portal URL |
+| POST | `/api/stripe/webhook` | Webhook handler |
+
+### Import & Data (4 routes)
+
+| Method | Route | Purpose |
+|--------|-------|---------|
+| POST | `/api/fleet-compliance/import/setup` | Initialize import |
+| POST | `/api/fleet-compliance/import/parse` | Parse CSV |
+| POST | `/api/fleet-compliance/import/save` | Persist data |
+| POST | `/api/fleet-compliance/import/rollback` | Undo import |
+
+---
+
+## Onboarding Orchestration Architecture
+
+The onboarding system is built on a service + repository + adapter pattern with outbox-based event delivery.
+
+### Components
+
+**OnboardingService** (`src/lib/onboarding/service.ts`):
+- High-level business logic
+- `createEmployeeProfile()` - Register employee
+- `createRun()` - Start orchestration
+- `retryRun()` - Resume failed runs
+- Publishes outbox events on transitions
+
+**OnboardingRepository** (`src/lib/onboarding/repository.ts`):
+- Data layer for all onboarding tables
+- CRUD for profiles, runs, steps, tasks
+- `insertOutboxEvent()` - Queue event
+
+**OnboardingIntakeService** (`src/lib/onboarding/intake-service.ts`):
+- Handles intake token validation
+- Parses intake form submission
+- Idempotency checks
+- Error handling and retries
+
+**Adapters** (`src/lib/onboarding/adapters/`):
+- Transform run events into actions
+- `hazmat-adapter.ts` - Enroll in HazMat
+- `suspense-seed-adapter.ts` - Add suspense records
+- `alert-binding-adapter.ts` - Bind employee to alerts
+- `contract-drift-adapter.ts` - Check contract compliance
+
+**OutboxWorker** (`src/lib/onboarding/outbox-worker.ts`):
+- Runs every 30 seconds
+- Polls pending outbox events
+- Dispatches to appropriate adapter
+- Retries on failure (max 5 attempts)
+- Marks processed on success
+
+---
+
+## Training Module System
+
+The training system (LMS) supports multi-module courses with assessments and certificates.
+
+### Core Components
+
+**Training Module Catalog** (`src/lib/training-module-metadata.ts`):
+- Defines available courses
+- Module code, title, description
+- Deck markdown + assessment questions
+- Certificate requirements
+
+**Training Assignment**:
+- Assign course to employee
+- Tracks due date, completion deadline
+- Required for employment (e.g., HazMat)
+
+**Progress Tracking**:
+- Employee → Module → Status
+- Quiz attempts + scores
+- Certificate issued on passing
+
+**Certificate Storage** (`src/lib/training-certificate.ts`):
+- Backend configurable: `database` or `local_files`
+- Supports PDF + metadata
+
+**HazMat Compliance** (`src/lib/hazmat-training.ts`):
+- Mandatory endorsement tracking
+- Certificate expiration date
+- Annual recertification requirement
+- Reports: expiring, expired, missing
+
+---
+
+## Pipeline Penny AI Integration
 
 ### Architecture
 
+Pipeline Penny is a FastAPI backend running on Railway that provides AI-powered analysis, queries, and task orchestration.
+
+### API Endpoints
+
+**Health Check**
 ```
-Browser → /api/penny/query (Next.js)
-  ├── Clerk auth
-  ├── Rate limiting (20 req/60s via Upstash Redis)
-  ├── Org context building (fleet data → 8KB max)
-  └── Proxy to Railway → /query (FastAPI)
-      ├── Knowledge retrieval (1,100+ CFR chunks)
-      ├── CFR citation detection + related term injection
-      ├── Security rules (6 rules prepended)
-      └── LLM provider routing → Response with sources
+GET /api/penny/health
+Returns: { status: 'ok', version: '0.1.0' }
 ```
 
-### Key Files (Next.js Side)
+**Query**
+```
+POST /api/penny/query
+Body: { query: string, mode?: 'auto'|'rag'|'skill' }
+Returns: { response: string, mode: string, citations: [...] }
+```
 
-| File | Purpose |
-|------|---------|
-| `src/app/api/penny/query/route.ts` | Query proxy endpoint |
-| `src/app/api/penny/catalog/route.ts` | Knowledge catalog endpoint |
-| `src/app/api/penny/health/route.ts` | Health check proxy |
-| `src/lib/penny-context.ts` | Builds operator fleet context (8KB cap) |
-| `src/lib/penny-ingest.ts` | Document ingestion pipeline |
-| `src/lib/penny-catalog.ts` | Knowledge index management |
-| `src/lib/penny-access.ts` | Penny-specific access control |
-| `src/lib/penny-rate-limit.ts` | Upstash Redis rate limiting |
-| `src/app/penny/PennyChat.tsx` | Chat UI component |
+**Catalog**
+```
+GET /api/penny/catalog
+Returns: { skills: [...], templates: [...] }
+```
 
-### Key Files (Railway Side)
+### Rate Limiting
 
-| File | Purpose |
-|------|---------|
-| `railway-backend/app/main.py` | FastAPI app with /query, /health, /catalog |
-
-### LLM Provider Configuration
-
-| Provider | Env Vars | Model |
-|----------|----------|-------|
-| Anthropic (primary) | `ANTHROPIC_API_KEY`, `ANTHROPIC_MODEL` | claude-sonnet-4-6 |
-| OpenAI | `OPENAI_API_KEY`, `OPENAI_MODEL` | gpt-4o-mini |
-| Gemini | `GEMINI_API_KEY`, `GEMINI_MODEL` | gemini-2.5-flash |
-| Ollama (local) | `OLLAMA_BASE_URL`, `OLLAMA_MODEL` | llama3.1 |
-
-### Security Controls
-
-- 6 system-level security rules prepended to every LLM call
-- Keyword filter for fast-reject of injection attempts
-- `react-markdown` output sanitization (`skipHtml` + `html: () => null`)
-- Driver anonymization (IDs only, no PII in LLM context)
-- Context cap at 8,000 characters
-- General fallback limited to 3 per session
-- OWASP LLM Top 10 assessed (LLM01, LLM02, LLM05, LLM06, LLM09)
-
-### Adding Knowledge Documents
-
-1. Place source files in `knowledge/data/original_content/<category>/`
-2. Run `npm run build:cfr-index` (for CFR docs) or update demo index build
-3. Rebuild indexes: `npm run build` (runs both index builders as part of build)
-4. Sync to Railway: `npm run sync:knowledge`
+Rate limiting via `penny-rate-limit.ts`:
+- Redis-backed (Upstash)
+- Per-user, per-org limits
+- Fallback mode for over-limit requests
 
 ---
 
-## 10. Railway Backend (FastAPI)
+## Railway Backend Architecture
 
-### Location
+The FastAPI backend on Railway handles heavy AI operations, federal intel gathering, and telematics integration.
 
-All backend code is in `railway-backend/`.
-
-### Structure
+### Service Structure
 
 ```
 railway-backend/
 ├── app/
-│   ├── main.py                  # FastAPI app (1,146 lines)
-│   │   ├── /health              # Service health + doc count
-│   │   ├── /query               # RAG query endpoint
-│   │   └── /catalog             # Knowledge catalog
-│   ├── telematics_router.py     # Verizon Reveal routes
-│   ├── modules_router.py        # Module execution routes
-│   └── federal_intel_router.py  # Federal intel search endpoints (10 routes)
-├── integrations/
-│   ├── verizon_reveal/          # Verizon Reveal adapter
-│   │   ├── adapter.py           # Main adapter logic
-│   │   ├── auth.py              # Reveal authentication
-│   │   ├── normalizer.py        # Data normalization
-│   │   ├── rest_client.py       # REST API client
-│   │   └── webhook_receiver.py  # Webhook handler
-│   └── federal_intel/           # Federal data source clients
-│       ├── sam.py               # SAM.gov opportunities (per-NAICS, dedupe)
-│       ├── usaspending.py       # USAspending contract awards
-│       ├── grants.py            # Grants.gov opportunity search
-│       ├── sbir.py              # SBIR/STTR awards (rate-limit retry)
-│       ├── subawards.py         # Contract + Assistance subawards
-│       ├── psc.py               # PSC code lookup
-│       ├── regulations.py       # Regulations.gov document search
-│       ├── labor_rates.py       # GSA CALC+ ceiling rates
-│       └── orchestrator.py      # "Run all" coordinated ingest
-├── models/
-│   ├── telematics_event.py      # Telematics data models
-│   └── federal_intel.py         # Federal intel normalized models (9 Pydantic models)
-├── scripts/
-│   └── reveal_sync_neon.py      # Sync utility
-└── data/                        # Knowledge store volume
+│   ├── main.py                    # FastAPI app setup
+│   ├── federal_intel_router.py    # GovCon endpoints
+│   ├── modules_router.py          # Module execution
+│   ├── telematics_router.py       # Verizon Reveal
+│   │
+│   └── integrations/
+│       ├── base_adapter.py        # Base class
+│       ├── federal_intel/         # Federal contracting data
+│       │   ├── sam.py             # SAM.gov integrations
+│       │   ├── grants.py          # Federal grants DB
+│       │   ├── sbir.py            # SBIR/STTR programs
+│       │   ├── psc.py             # Product Service Code
+│       │   ├── regulations.py     # FAR/DFARS compliance
+│       │   └── ...
+│       └── verizon_reveal/        # Telematics adapter
+│           ├── auth.py
+│           ├── rest_client.py
+│           ├── normalizer.py
+│           └── webhook_receiver.py
 ```
 
-### Deployment
+### GovCon Federal Intel
 
-- **Host:** Railway (Hobby plan)
-- **Build:** Docker (`python:3.11-slim`)
-- **Start:** `uvicorn app.main:app --host 0.0.0.0 --port ${PORT:-8000}`
-- **Volume:** 5GB at `/app/data` (knowledge store)
-- **Domain:** `pipeline-punks-v2-production.up.railway.app`
-- **Auto-deploy:** On push to `railway-backend/` directory
+The federal intelligence system integrates multiple federal data sources:
 
-### Local Development
+| Adapter | Data Source |
+|---------|-------------|
+| `sam.py` | SAM.gov contractor registration |
+| `grants.py` | Federal grants database |
+| `sbir.py` | SBIR/STTR program data |
+| `psc.py` | Product Service Code scoring |
+| `regulations.py` | FAR/DFARS rule matching |
+| `labor_rates.py` | Davis-Bacon wage rates |
+| `subawards.py` | Sub-award analysis |
+| `usaspending.py` | USASpending.gov awards |
 
-```bash
-cd railway-backend
-pip install -r requirements.txt
+### Telematics Integration
 
-# Set required env vars
-export PENNY_API_KEY=your-shared-secret
-export LLM_PROVIDER=anthropic
-export ANTHROPIC_API_KEY=your-key
-export KNOWLEDGE_STORE_PATH=./data/knowledge.json
-
-uvicorn app.main:app --reload --port 8000
-```
-
-### Authentication
-
-Railway backend authenticates incoming requests using the `X-Penny-Api-Key` header. The Next.js proxy adds this header automatically using `PENNY_API_KEY`.
-
-### Federal Intelligence Integration
-
-The `integrations/federal_intel/` package provides async Python clients for 8 federal data sources, ported from the APPSCRIPT GOV.txt Google Apps Script. All clients return normalized Pydantic models defined in `models/federal_intel.py`.
-
-**Data Sources:**
-
-| Client | API | Auth | Key Behavior |
-|--------|-----|------|-------------|
-| `SAMClient` | SAM.gov Opportunities v2 | `SAM_API_KEY` | Per-NAICS loop + dedupe by noticeId |
-| `USAspendingClient` | USAspending Spending by Award | None | POST API, contract/grant/IDV type codes |
-| `GrantsGovClient` | Grants.gov Search v1 | None | oppHits response parsing |
-| `SBIRClient` | SBIR.gov Public Awards | None | Progressive backoff on 429 (2s/4s/6s) |
-| `SubawardsClient` | SAM.gov Subawards | `SAM_API_KEY` | Contract + Assistance (two endpoints) |
-| `PSCClient` | SAM.gov PSC Details | `SAM_API_KEY` | Product/Service Code lookup |
-| `RegulationsClient` | Regulations.gov v4 | `REGULATIONS_API_KEY` | X-Api-Key header auth |
-| `LaborRatesClient` | GSA CALC+ v3 | None | Returns results + wage_stats |
-
-**Orchestrator:** `FederalIntelOrchestrator.run_all()` coordinates SAM, USAspending, Grants.gov, SBIR, and Subaward searches with 1-second pauses between sources. Default NAICS codes: 541512, 541519, 541511, 518210, 541611.
-
-**Router:** `app/federal_intel_router.py` exposes 10 POST endpoints under `/api/federal-intel/`. See `railway-backend/README.md` for the full endpoint table.
-
-**Tests:** `tests/test_federal_intel.py` — 20 tests covering model validation, client construction, and orchestrator logic. Run with `python -m pytest tests/test_federal_intel.py -v`.
+Verizon Reveal provides vehicle GPS and driver behavior data.
 
 ---
 
-## 11. Knowledge Base Management
+## Knowledge Base Management
 
-### Structure
+Pipeline Penny operates on a knowledge base indexed for RAG retrieval.
+
+### Knowledge Structure
 
 ```
-knowledge/
-├── cfr-docs/              # Source CFR Markdown (13 parts)
-├── cfr-index/chunks.json  # Built CFR index (~3.9 MB)
-├── demo-index/chunks.json # Built demo index (~15 MB)
-├── data/original_content/ # Source documents
-│   ├── 01_realty-command/  # 127 files
-│   ├── erg-hazmat/         # ERG 2024 (2 files)
-│   └── hubspot/            # HubSpot API docs
-├── domains/               # Domain configurations
-├── training-content/      # Training materials
-│   ├── assessments/
-│   ├── decks/
-│   └── hazmat/
-└── 05_Railway/            # Railway docs reference
+railway-backend/
+├── data/
+│   ├── vector_store_ollama/
+│   │   └── index.faiss          # FAISS vector index
+│   └── original_content/
+│       ├── 01_realty-command/
+│       ├── 02_compliance/
+│       ├── ...
+│       └── _index/
+│           ├── manifest.json    # Phase 1 index
+│           ├── manifest-phase2.json
+│           └── manifest-phase3.json
 ```
 
-### Index Build Pipeline
+### Ingest Pipeline
 
+**Command:**
 ```bash
-# Build CFR index from knowledge/cfr-docs/ → knowledge/cfr-index/chunks.json
-npm run build:cfr-index
-
-# Build demo index from knowledge/data/original_content/ → knowledge/demo-index/chunks.json
-# (runs as part of npm run build)
-tsx scripts/build-demo-index.mjs
-
-# Sync indexes to Railway volume
 npm run sync:knowledge
+node scripts/sync-local-knowledge.mjs
 ```
 
-### CFR Parts Indexed
+---
 
-Parts 040, 360, 365, 367, 382, 383, 384, 387, 391, 395, 396, 397 (13 total)
+## Billing and Subscription Lifecycle
 
-### Adding New Knowledge Sources
+### Stripe Integration
 
-1. Create a directory under `knowledge/data/original_content/<name>/`
-2. Add source files (PDF, DOCX, CSV, HTML, or Markdown)
-3. Update `scripts/build-demo-index.mjs` if needed for custom parsing
-4. Rebuild: `npm run build`
-5. Sync to Railway: `npm run sync:knowledge`
-6. Verify via `GET /api/penny/catalog` — new documents should appear
+Stripe manages subscription plans and billing.
+
+### Subscription Plans
+
+| Plan | Price | Modules | Seats |
+|------|-------|---------|-------|
+| Trial | Free | Core only | 3 |
+| Starter | $99/mo | +Telematics, Financial | 10 |
+| Pro | $299/mo | +Dispatch, Petroleum, GovCon | 25 |
+| Enterprise | Custom | All | Unlimited |
+
+### Webhook Handling
+
+Stripe POSTs events to `/api/stripe/webhook`:
+- `customer.subscription.created` → Provision org
+- `customer.subscription.updated` → Update modules
+- `customer.subscription.deleted` → Suspend org
 
 ---
 
-## 12. Training Module (LMS)
+## Monitoring and Observability
 
-### Overview
+### Sentry Error Tracking
 
-Self-contained compliance training LMS inside Fleet-Compliance Sentinel. Currently focused on hazmat training, expandable to any compliance topic.
+Sentry captures errors, performance metrics, and releases across Next.js and Railway.
 
-### Key Files
+### Datadog Monitoring
 
-| File | Purpose |
-|------|---------|
-| `src/lib/hazmat-training.ts` | Hazmat compliance tracking |
-| `src/lib/training-module-metadata.ts` | Module catalog (31 modules) |
-| `src/lib/training-assessment.ts` | Assessment logic |
-| `src/lib/training-certificate.ts` | Certificate generation |
-| `src/lib/training-schema.ts` | Schema validation |
-| `src/lib/training-report-export.ts` | Report export |
-| `src/app/fleet-compliance/training/` | Training UI pages |
-| `src/app/api/v1/training/` | Training API routes |
-| `src/app/api/v1/hazmat-training/` | Hazmat training API |
-| `src/components/training/` | Training components |
+Datadog ingests audit logs from stdout.
 
-### Database Tables
+### CSP Reporting
 
-- `hazmat_training_records` — Completion records per employee
-- `hazmat_training_modules` — Module catalog (31 entries)
-- Training certificates stored per `TRAINING_CERT_STORAGE_BACKEND`
-
-### Training Content
-
-- **12 PHMSA required modules** (DOT hazmat training requirements)
-- **6 NFPA Awareness modules**
-- **12 NFPA Operations modules**
-- **1 supplemental module**
-- Content authored from ERG 2024, CFR Parts, PHMSA training requirements
-
-### Sidebar Configuration
-
-Training has its own sidebar group with 5 items:
-- Training Hub (all users)
-- My Training (all users)
-- Training Admin (admin only)
-- Hazmat Reports (admin only)
-- Courses & Workshops (module-toggled)
+Content Security Policy violations reported to `/api/csp-report` endpoint.
 
 ---
 
-## 13. Sidebar & Module Toggle System
+## Deployment
 
-### How the Sidebar Works
-
-The sidebar is configured in `src/lib/sidebar-config.ts`. It defines 7 groups:
-
-| Group | Key | Default Expanded | Admin Only |
-|-------|-----|-----------------|------------|
-| Operations | `ops` | Yes | No |
-| Compliance | `compliance` | Yes | No |
-| Training | `training` | Yes | No |
-| Finance | `finance` | No | No |
-| Intelligence | `intel` | No | No |
-| Skills & Tools | `skills` | No | No |
-| Admin | `admin` | No | Yes |
-
-### Module Toggles
-
-Items with a `moduleId` property are conditionally shown based on the org's enabled modules. The `getVisibleSections()` function filters sections based on:
-
-1. **Role check:** Admin-only sections/items hidden from members
-2. **Module check:** Items with `moduleId` hidden if that module is disabled
-
-### Adding a New Sidebar Item
-
-1. Add the item to the appropriate section in `src/lib/sidebar-config.ts`
-2. If it should be toggleable, set `moduleId` to match a module catalog ID
-3. If admin-only, set `adminOnly: true`
-4. Create the corresponding page route under `src/app/fleet-compliance/<path>/`
-5. Update the user manual in `UserManualModal.tsx`
-
----
-
-## 14. Billing & Subscription Lifecycle
-
-### Plan States
+### Vercel (Next.js Frontend)
 
 ```
-Trial (30 days) → Active → Past Due → Canceled → Offboarding → Deletion
+vercel.json
+├── framework: nextjs
+├── headers: [CSP, HSTS, X-Frame-Options, etc.]
+└── crons:
+    ├── /api/fleet-compliance/alerts/run (0 8 * * *)
+    └── /api/fleet-compliance/telematics-sync (0 2 * * *)
 ```
 
-| State | Access | Data Retention |
-|-------|--------|---------------|
-| `trial` | Full | Retained |
-| `active` | Full | Retained |
-| `past_due` | Full (grace) | Retained |
-| `canceled` | Blocked | Soft-deleted after 30 days |
-| `offboarded` | N/A | Hard-deleted after 60 days |
+### Railway (FastAPI Backend)
 
-### Key Files
-
-| File | Purpose |
-|------|---------|
-| `src/lib/stripe.ts` | Stripe client wrapper |
-| `src/lib/plan-gate.ts` | Subscription state checks |
-| `src/lib/org-provisioner.ts` | Org creation |
-| `src/lib/offboarding-lifecycle.ts` | Data deletion automation |
-| `src/lib/org-audit.ts` | Org lifecycle audit events |
-| `src/app/api/stripe/webhook/route.ts` | Stripe event handler |
-| `src/app/api/stripe/checkout/route.ts` | Checkout session creation |
-| `src/app/api/stripe/portal/route.ts` | Customer portal session |
-
-### Stripe Events Handled
-
-- `customer.subscription.created` → Record subscription
-- `customer.subscription.updated` → Update plan/status
-- `customer.subscription.deleted` → Trigger offboarding
-
-### Adding New Plan Features
-
-1. Create the price in Stripe Dashboard
-2. Add price ID to environment variables (`STRIPE_*_PRICE_ID`)
-3. Update `plan-gate.ts` if new access rules are needed
-4. Add plan-specific UI gating in components
-
----
-
-## 15. Monitoring & Observability
-
-### Sentry
-
-| Feature | Config |
-|---------|--------|
-| SDK | `@sentry/nextjs ^10.46.0` |
-| Configs | `sentry.client.config.ts`, `sentry.server.config.ts`, `sentry.edge.config.ts` |
-| Trace rate | 10% of transactions |
-| Replay | 10% normal, 100% error sessions |
-| Tunnel | `/monitoring` (ad-blocker bypass) |
-| PII | `sendDefaultPii: false` + IP storage prevention |
-| Source maps | Upload enabled |
-| Context | `setSentryRequestContext()` sets userId/orgId per request |
-
-### Audit Logging
-
-```typescript
-import { auditLog } from '@/lib/audit-logger';
-
-auditLog({
-  action: 'data.write',          // Action type
-  userId: 'user_xxx',            // Clerk user ID
-  orgId: 'org_xxx',              // Clerk org ID
-  resourceType: 'assets',        // What was affected
-  resourceId: '123',             // Specific record (optional)
-  metadata: { count: 5 },        // Extra context (optional)
-  severity: 'info',              // info | warning | error
-});
+```
+railway-backend/
+├── Dockerfile
+├── requirements.txt
+├── Procfile (uvicorn on :8000)
+└── .env (Railway environment variables)
 ```
 
-**Action types:** `data.read`, `data.write`, `data.delete`, `import.*`, `auth.*`, `cron.*`, `penny.query`, `admin.action`, `rate_limit.exceeded`
-
-**PII redaction:** 8-key deny-list (name, email, SSN, DOB, address, phone, license, medical) automatically scrubs audit metadata.
-
-### Datadog
-
-- Vercel log drain → Datadog
-- Two-index strategy: `audit-logs-soc2` (365-day retention) + `vercel-general-7d` (7-day)
-- 9 pipeline processors parse audit JSON into queryable facets
-
-### UptimeRobot
-
-- 3 monitors at 1-minute intervals:
-  - `https://www.pipelinepunks.com`
-  - `https://www.pipelinepunks.com/api/penny/health`
-  - `https://pipeline-punks-v2-production.up.railway.app/health`
-- Public status page: `https://status.pipelinepunks.com`
-
-### Cron Health
-
-- `GET /api/fleet-compliance/cron-health` — checks `cron_log` for last execution
-- 24-hour stale threshold (dead-man switch)
-- Returns status, hours since last run, last execution details
-
 ---
 
-## 16. Deployment & CI/CD
+## Environment Variables
 
-### Vercel (Frontend + API)
-
-| Setting | Value |
-|---------|-------|
-| Trigger | Git push to `main` |
-| Framework | Next.js 15 (auto-detected) |
-| Build | `next build` (preceded by index builds) |
-| Domain | `www.pipelinepunks.com` |
-| Cron | `/api/fleet-compliance/alerts/run` at `0 8 * * *` |
-| Cron | `/api/fleet-compliance/telematics-sync` at `0 2 * * *` |
-| Headers | 8 security headers via `vercel.json` |
-
-### Railway (Backend)
-
-| Setting | Value |
-|---------|-------|
-| Trigger | Push to `railway-backend/` |
-| Build | Dockerfile (`python:3.11-slim`) |
-| Command | `uvicorn app.main:app --host 0.0.0.0 --port ${PORT:-8000}` |
-| Domain | `pipeline-punks-v2-production.up.railway.app` |
-| Volume | 5GB at `/app/data` |
-
-### Git Workflow
-
-- **Branch protection** on `main` — PR-only merges
-- **CODEOWNERS** — Security-sensitive files require Security Officer review
-- All changes through pull requests (documented in `docs/GIT_WORKFLOW.md`)
-- Commit convention: `hardening(taskN)` or `training(phaseN)` for sprint work
-- 14 PRs merged under branch protection (#1 through #14)
-
-### Deployment Checklist
-
-1. Ensure `npm run build` succeeds locally
-2. Run `npm run compliance:legal-check` and `npm run compliance:ops-check`
-3. Create PR to `main`
-4. PR review (CODEOWNERS enforced for sensitive files)
-5. Merge → auto-deploy to Vercel
-6. Verify deployment via status page and Sentry
-
----
-
-## 17. Environment Variables
-
-All variables are documented in `.env.example`. The `scripts/check-env.ts` validation script enforces required variables at startup.
-
-### Critical (App Fails Without These)
+### Core Web App (Next.js / Vercel)
 
 | Variable | Purpose |
 |----------|---------|
-| `NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY` | Clerk frontend auth |
-| `CLERK_SECRET_KEY` | Clerk backend auth |
-| `DATABASE_URL` | Neon PostgreSQL connection |
-| `SITE_URL` | Production URL |
+| `NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY` | Clerk public key |
+| `CLERK_SECRET_KEY` | Clerk secret |
+| `DATABASE_URL` | Neon PostgreSQL |
+| `SITE_URL` | Base URL |
 
-### Pipeline Penny
-
-| Variable | Purpose |
-|----------|---------|
-| `PENNY_API_URL` | Railway backend URL |
-| `PENNY_API_KEY` | Shared secret for Railway auth |
-| `PENNY_GENERAL_FALLBACK_SESSION_LIMIT` | Max fallback queries per session |
-| `PENNY_ALLOW_NO_ORG` | Allow queries without org context |
-| `UPSTASH_REDIS_REST_URL` | Rate limiting backend |
-| `UPSTASH_REDIS_REST_TOKEN` | Rate limiting auth |
-
-### Stripe
+### Penny AI Proxy
 
 | Variable | Purpose |
 |----------|---------|
-| `STRIPE_SECRET_KEY` | Stripe API |
-| `NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY` | Stripe frontend |
-| `STRIPE_WEBHOOK_SECRET` | Webhook signature verification |
-| `STRIPE_STARTER_PRICE_ID` | Starter plan price |
-| `STRIPE_PRO_PRICE_ID` | Pro plan price |
+| `PENNY_API_URL` | Railway FastAPI URL |
+| `PENNY_API_KEY` | Shared secret |
+| `PENNY_GENERAL_FALLBACK_SESSION_LIMIT` | Limit for general mode |
+| `PENNY_ENABLE_GENERAL_FALLBACK` | Enable fallback |
+| `MODULE_GATEWAY_USE_REMOTE` | Use remote module gateway |
 
-### Alerts & Cron
+### Stripe Billing
 
 | Variable | Purpose |
 |----------|---------|
-| `RESEND_API_KEY` | Email delivery |
-| `FLEET_COMPLIANCE_ALERT_FROM_EMAIL` | From address |
-| `FLEET_COMPLIANCE_ALERT_EMAIL` | Manager email |
-| `FLEET_COMPLIANCE_CRON_SECRET` | Cron endpoint auth |
-| `FLEET_COMPLIANCE_ORG_NAME` | Org name in emails |
+| `STRIPE_SECRET_KEY` | Stripe secret key |
+| `NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY` | Stripe public key |
+| `STRIPE_WEBHOOK_SECRET` | Webhook signing secret |
+| `STRIPE_STARTER_PRICE_ID` | Starter plan price ID |
+| `STRIPE_PRO_PRICE_ID` | Pro plan price ID |
 
 ### Monitoring
 
 | Variable | Purpose |
 |----------|---------|
-| `SENTRY_DSN` / `NEXT_PUBLIC_SENTRY_DSN` | Sentry error tracking |
-| `SENTRY_ORG` | Sentry organization |
-| `SENTRY_PROJECT` | Sentry project name |
-| `SENTRY_AUTH_TOKEN` | Source map upload |
-| `DATADOG_API_KEY` | Log drain auth |
+| `SENTRY_DSN` | Server-side Sentry |
+| `NEXT_PUBLIC_SENTRY_DSN` | Client-side Sentry |
+| `SENTRY_ORG` | Sentry org |
+| `SENTRY_PROJECT` | Sentry project |
+| `SENTRY_AUTH_TOKEN` | Sentry auth |
 
-### Telematics
-
-| Variable | Purpose |
-|----------|---------|
-| `TELEMATICS_CRON_SECRET` | Sync endpoint auth |
-| `TELEMATICS_DEMO_MODE` | `true` for demo data |
-| `REVEAL_USERNAME` / `REVEAL_PASSWORD` | Verizon Reveal creds |
-| `APP_ENCRYPTION_KEY` | pgcrypto encryption key |
-
-### Module Gateway
+### Telematics (Verizon Reveal)
 
 | Variable | Purpose |
 |----------|---------|
-| `MODULE_GATEWAY_USE_REMOTE` | Enable remote execution |
-| `MODULE_GATEWAY_REMOTE_URL` | Railway execution URL |
-| `MODULE_GATEWAY_REMOTE_API_KEY` | Remote auth key |
+| `TELEMATICS_CRON_SECRET` | Sync job auth |
+| `RAILWAY_SYNC_URL` | Railway webhook URL |
+| `TELEMATICS_DEMO_MODE` | Use demo data |
+| `REVEAL_ORG_ID` | Verizon org ID |
+| `REVEAL_USERNAME` | Verizon login |
+| `REVEAL_PASSWORD` | Verizon password |
 
-### Railway Backend (separate .env)
+### Railway FastAPI Backend
 
 | Variable | Purpose |
 |----------|---------|
-| `LLM_PROVIDER` | Default LLM (anthropic/openai/gemini/ollama) |
+| `PENNY_API_VERSION` | 0.1.0 |
+| `LLM_PROVIDER` | anthropic, openai, gemini, ollama |
 | `ANTHROPIC_API_KEY` | Claude API key |
-| `OPENAI_API_KEY` | OpenAI API key |
-| `GEMINI_API_KEY` | Gemini API key |
-| `KNOWLEDGE_STORE_PATH` | Knowledge JSON path |
-| `CORS_ORIGINS` | Allowed CORS origins |
+| `ANTHROPIC_MODEL` | claude-sonnet-4-6 |
+| `OPENAI_API_KEY` | OpenAI key |
+| `GEMINI_API_KEY` | Google Gemini key |
+| `OLLAMA_BASE_URL` | Local Ollama |
+| `CORS_ORIGINS` | Allowed origins |
 
 ---
 
-## 18. Scripts Reference
+## Scripts Reference
 
-| Command | Script | Purpose |
-|---------|--------|---------|
-| `npm run dev` | `next dev` | Development server |
-| `npm run build` | Builds CFR + demo indexes, then `next build` | Production build |
-| `npm run lint` | `next lint` | ESLint check |
-| `npm run compliance:legal-check` | `scripts/check-legal-pages.mjs` | Validate privacy/terms pages |
-| `npm run compliance:ops-check` | `scripts/ops-check.mjs` | Detect operational gaps |
-| `npm run build:cfr-index` | `scripts/build-cfr-index.mjs` | Build CFR chunk index |
-| `npm run eval:penny` | `scripts/run-penny-evals.mjs` | Run Penny evaluation suite |
-| `npm run sync:knowledge` | `scripts/sync-local-knowledge.mjs` | Sync knowledge to Railway |
-| `npm run docs:vendors` | `scripts/download-vendor-docs.mjs` | Download vendor docs |
-| `npm run db:check-training-schema` | `scripts/check-training-schema.mjs` | Validate training schema |
-| `npx tsx scripts/check-env.ts` | `scripts/check-env.ts` | Validate 53 env vars |
-
-### One-Off Scripts
+### Development
 
 | Script | Purpose |
 |--------|---------|
-| `scripts/reveal_sync_neon.py` | Manual Verizon Reveal → Neon sync |
-| `scripts/build-demo-index.mjs` | Build demo knowledge index |
-| `scripts/prepare-vendor-docs-package.mjs` | Package vendor docs into zip |
+| `npm run dev` | Start Next.js dev server |
+| `npm run build` | Production build |
+| `npm run start` | Start production server |
+| `npm run lint` | ESLint check |
+
+### Preflight & Validation
+
+| Script | Purpose |
+|--------|---------|
+| `npm run preflight:skill-packs` | Validate skill pack integrity |
+| `npm run compliance:legal-check` | Validate privacy/terms pages |
+| `npm run compliance:ops-check` | Check operational gaps |
+| `npm run db:check-training-schema` | Validate training schema |
+
+### Knowledge & Training
+
+| Script | Purpose |
+|--------|---------|
+| `npm run sync:knowledge` | Sync knowledge base to local |
+| `npm run build:cfr-index` | Build CFR regulatory index |
+| `npm run docs:vendors` | Download vendor docs |
+| `npm run eval:penny` | Run Pipeline Penny evals |
+
+### Testing
+
+| Script | Purpose |
+|--------|---------|
+| `npm run test:onboarding-phase1` | Test onboarding core logic |
+| `npm run test:onboarding-drift` | Test contract drift detection |
+| `npm run test:onboarding-alerts` | Test alert binding |
+| `npm run test:onboarding-phase6` | Test phase 6 release gate |
 
 ---
 
-## 19. SOC 2 Compliance
+## Security
 
-### Program Status
+### Local Development Hardening
 
-- **Observation window:** 2026-03-24 to 2026-06-22 (90 days)
-- **Type I eligible:** 2026-06-22
-- **Type II eligible:** 2027-03-24
-- **Evidence artifacts:** 73 files in `soc2-evidence/`
-- **Audit phases completed:** 9 (all scored 8-9/10)
+1. **Environment Isolation:** Use `.env.local` (never commit)
+2. **Database Access:** Rotate `DATABASE_URL` credentials quarterly
+3. **Clerk Configuration:** Dev keys only in `.env.local`
+4. **AI Provider Credentials:** API keys never in code
 
-### Evidence Directory
+### Production Security Posture
 
-| Directory | Files | Contents |
-|-----------|-------|----------|
-| `soc2-evidence/access-control/` | 19 | Auth evidence, isolation tests, secret rotation |
-| `soc2-evidence/audit-findings/` | 13 | Phase findings + remediation |
-| `soc2-evidence/change-management/` | 2 | Branch protection, CODEOWNERS |
-| `soc2-evidence/compliance-milestones/` | 1 | Observation window dates |
-| `soc2-evidence/incident-response/` | 4 | IRP, runbook, status page |
-| `soc2-evidence/monitoring/` | 10 | Sentry, UptimeRobot, cron health |
-| `soc2-evidence/penetration-testing/` | 5 | OWASP ZAP reports |
-| `soc2-evidence/policies/` | 14 | 8 SOC 2 policies + analyses |
-| `soc2-evidence/system-description/` | 4 | Architecture, env matrix |
-| `soc2-evidence/vendor-management/` | 1 | 13-vendor subprocessor registry |
+1. **Network Security:** HTTPS enforced, CSP headers, X-Frame-Options
+2. **Data Protection:** Encryption at rest/in transit, PII redaction in logs
+3. **Authentication:** Clerk JWT validation, org scoping enforced
+4. **Audit Trail:** Every API call logged, Sentry captures errors
 
-### 8 SOC 2 Policies
+### SOC 2 Compliance
 
-1. Information Security Policy
-2. Access Control Policy
-3. Data Classification Policy
-4. Change Management Policy
-5. Business Continuity Policy
-6. Vendor Management Policy
-7. Incident Response Policy
-8. Acceptable Use Policy
+FCS is designed to support SOC 2 Type II certification with access controls, monitoring, and audit trails.
 
-### Automated Compliance Checks
+---
+
+## Build and Test Gates
+
+### Pre-Commit Checks
 
 ```bash
-npm run compliance:legal-check   # Privacy/terms page validation (7 checks)
-npm run compliance:ops-check     # Operational gap detection
-npx tsx scripts/check-env.ts     # Environment variable validation (53 vars)
+npm run lint
+npm run preflight:skill-packs
+npm run compliance:legal-check
 ```
 
-### SOC 2 Impact of Code Changes
+### Pre-Deploy Checks
 
-When modifying code, consider SOC 2 evidence impact:
-
-- **New API route?** → Ensure auth middleware is applied (CC5.1, CC6.1)
-- **New env var?** → Add to `.env.example` and `check-env.ts` (CC5.1)
-- **New vendor?** → Update subprocessor registry (CC9.1)
-- **Auth change?** → Update access control evidence (CC6.1, CC6.2)
-- **Data deletion change?** → Update retention documentation (P4.3)
-- **New cron job?** → Add monitoring (CC7.2)
-
----
-
-## 20. Troubleshooting Guide
-
-### Build Failures
-
-**Symptom:** `npm run build` fails with module not found errors
-```
-Solution:
-1. Run `npm install` to ensure all workspace packages are linked
-2. Check that packages/ directories have valid package.json files
-3. Verify @tnds/* imports point to correct workspace packages
-```
-
-**Symptom:** Build fails during CFR/demo index generation
-```
-Solution:
-1. Check that knowledge/cfr-docs/ contains .md files
-2. Check that knowledge/data/original_content/ exists
-3. Run index builders separately to isolate the issue:
-   npm run build:cfr-index
-   tsx scripts/build-demo-index.mjs
-```
-
-### Database Connection Issues
-
-**Symptom:** `Error: connect ECONNREFUSED` or pool timeout
-```
-Solution:
-1. Verify DATABASE_URL in .env.local
-2. Check Neon console for branch status (may be suspended)
-3. Verify SSL mode: ?sslmode=require in connection string
-4. Check Vercel env vars match local if testing deployed version
-```
-
-**Symptom:** `relation "fleet_compliance_records" does not exist`
-```
-Solution:
-1. Run migrations in order: psql $DATABASE_URL -f migrations/001_cron_log.sql
-2. Or use the setup endpoint: POST /api/fleet-compliance/import/setup
-```
-
-### Auth Issues
-
-**Symptom:** 401 on all API routes
-```
-Solution:
-1. Verify NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY and CLERK_SECRET_KEY
-2. Check Clerk dashboard for correct instance
-3. Ensure middleware.ts is not blocking the route
-4. For local dev: CLERK_SECRET_KEY must be a test key (sk_test_*)
-```
-
-**Symptom:** `orgId is null` in auth context
-```
-Solution:
-1. User must be a member of a Clerk organization
-2. Check Clerk dashboard → Organizations → verify user membership
-3. Verify org creation through onboarding flow
-```
-
-### Penny AI Not Responding
-
-**Symptom:** Penny health check fails or queries timeout
-```
-Solution:
-1. Check Railway service status (may be sleeping or crashed)
-2. Verify PENNY_API_URL and PENNY_API_KEY match Railway config
-3. Check Railway logs for Python errors
-4. Verify LLM API keys are valid (ANTHROPIC_API_KEY, etc.)
-5. Check rate limiting: user may have hit 20 req/60s limit
-```
-
-**Symptom:** Penny returns empty or irrelevant answers
-```
-Solution:
-1. Check knowledge store: GET /api/penny/catalog should show docs
-2. Rebuild indexes: npm run build:cfr-index
-3. Sync to Railway: npm run sync:knowledge
-4. Check Railway volume is mounted at /app/data
-```
-
-### Cron Jobs Not Running
-
-**Symptom:** Alerts not sending, telematics not syncing
-```
-Solution:
-1. Check cron health: GET /api/fleet-compliance/cron-health
-2. Verify FLEET_COMPLIANCE_CRON_SECRET matches Vercel cron config
-3. Check Vercel dashboard → Cron Jobs for execution logs
-4. Check cron_log table for error entries
-5. Verify Resend API key for alert delivery
-```
-
-### Module Gateway Errors
-
-**Symptom:** Module execution fails with "action not allowed"
-```
-Solution:
-1. Verify the action is in the allowlist (modules-gateway/registry.ts)
-2. Check user has admin role
-3. Verify module environment variables (docs/integration/MODULE_ENV_MATRIX.md)
-```
-
-**Symptom:** Module execution hangs or times out
-```
-Solution:
-1. Check MODULE_GATEWAY_USE_REMOTE setting
-2. For local: ensure Python tooling has dependencies installed
-3. For remote: verify MODULE_GATEWAY_REMOTE_URL and API key
-4. Check timeout setting (default varies by module)
-```
-
-### Import Failures
-
-**Symptom:** XLSX import fails with validation errors
-```
-Solution:
-1. Download the canonical template: GET /api/fleet-compliance/bulk-template
-2. Compare your file against the template column headers
-3. Check date formats: YYYY-MM-DD required
-4. Check status enums: Active/Inactive/Terminated (case-sensitive)
-5. Check for duplicate primary keys in your data
-```
-
-**Symptom:** Import succeeds but data not visible
-```
-Solution:
-1. Verify org_id: import data is scoped to the authenticated org
-2. Check the collection filter on the list page
-3. Look for soft-deleted records (deleted_at is not null)
-```
-
-### Stripe/Billing Issues
-
-**Symptom:** Webhook events not processing
-```
-Solution:
-1. Verify STRIPE_WEBHOOK_SECRET matches the Stripe dashboard
-2. Check Stripe dashboard → Webhooks for delivery logs
-3. Verify the webhook URL is correct and accessible
-4. Check Vercel function logs for signature errors
-```
-
-### Telematics Issues
-
-**Symptom:** Telematics shows no data
-```
-Solution:
-1. Check TELEMATICS_DEMO_MODE — set to "true" for demo data
-2. For live data: verify REVEAL_USERNAME/PASSWORD/APP_ID
-3. Check Railway telematics router logs
-4. Verify telematics-sync cron is running (02:00 UTC)
+```bash
+npm run build
+npm run test:onboarding-*
+npm run compliance:ops-check
+npm run db:check-training-schema
 ```
 
 ---
 
-## 21. Common Errors & Solutions
+## Known Limitations
 
-| Error | Cause | Fix |
-|-------|-------|-----|
-| `CRITICAL: Missing env var: DATABASE_URL` | Missing env var | Add to `.env.local` |
-| `ClerkExpiredSessionError` | Token expired | User needs to re-sign-in |
-| `neon: connection refused` | Neon branch suspended | Wake branch in Neon console |
-| `429 Too Many Requests` | Penny rate limit | Wait 60 seconds |
-| `Module action not in allowlist` | Unregistered action | Add to registry.ts allowlist |
-| `import batch rollback failed` | Invalid batch UUID | Check import_batch_id exists |
-| `FMCSA lookup failed` | Bad USDOT number or API down | Verify DOT number format |
-| `Stripe signature verification failed` | Wrong webhook secret | Regenerate in Stripe dashboard |
-| `Knowledge store empty` | Missing index build | Run `npm run build:cfr-index` |
-| `TypeError: Cannot read orgId` | User not in an org | Complete onboarding flow |
-| `ERR_MODULE_NOT_FOUND: @tnds/*` | Workspace not linked | Run `npm install` |
-| `next build: Type error` | TypeScript strict mode | Fix type errors before build |
-| `CORS error on Railway` | Origin not allowed | Add origin to `CORS_ORIGINS` env var |
+1. **Hard Delete:** No support for permanent record deletion; use soft delete
+2. **Intake Token Expiration:** 30-day fixed; not configurable per org
+3. **Training Module Sequencing:** No prerequisite enforcement
+4. **Telematics Demo Mode:** Demo data only; cannot mix with live Verizon data
+5. **Module Gateway:** Remote module execution not yet fully implemented
+6. **Offline Mode:** No offline-first support
+7. **Batch Size:** Import batch limit 10K rows
+8. **Certificate Storage:** Limited to database or local files
 
 ---
 
-## 22. Key Files Quick Reference
+## Troubleshooting
 
-### Data Layer
-| File | Lines | What It Does |
-|------|-------|-------------|
-| `src/lib/fleet-compliance-data.ts` | ~60K | All fleet CRUD operations |
-| `src/lib/fleet-compliance-db.ts` | ~50 | DB pool management |
-| `src/lib/fleet-compliance-auth.ts` | ~120 | Auth middleware |
-| `src/lib/fleet-compliance-alert-engine.ts` | ~16K | Alert scoring + email |
-| `src/lib/fleet-compliance-validators.ts` | ~500 | Field validators |
-| `src/lib/fleet-compliance-import-schemas.ts` | ~400 | Import collection schemas |
+### Common Issues
 
-### AI & Knowledge
-| File | What It Does |
-|------|-------------|
-| `src/lib/penny-context.ts` | Builds fleet context for LLM (8KB cap) |
-| `src/lib/penny-ingest.ts` | Document ingestion pipeline |
-| `src/lib/penny-catalog.ts` | Knowledge index management |
-| `src/lib/penny-rate-limit.ts` | Upstash rate limiting |
-| `railway-backend/app/main.py` | FastAPI backend (RAG + LLM routing) |
+**Clerk JWT Not Validating**
+- Check `CLERK_SECRET_KEY` matches Clerk dashboard
+- Clear browser cookies and retry login
 
-### Module Gateway
-| File | What It Does |
-|------|-------------|
-| `src/lib/modules.ts` | Main orchestration |
-| `src/lib/modules-gateway/registry.ts` | Tool allowlist + registry |
-| `src/lib/modules-gateway/runner.ts` | Execution engine |
-| `src/lib/modules-gateway/types.ts` | Call envelope types |
+**Database Connection Timeout**
+- Verify `DATABASE_URL` is correct (Neon console)
+- Check firewall rules allow connection from Vercel IP
 
-### UI & Navigation
-| File | What It Does |
-|------|-------------|
-| `src/lib/sidebar-config.ts` | Sidebar sections + module toggles |
-| `src/components/fleet-compliance/FleetComplianceSidebar.tsx` | Sidebar component |
-| `src/components/fleet-compliance/FleetComplianceShell.tsx` | Layout shell |
-| `src/components/fleet-compliance/UserManualModal.tsx` | In-app user manual |
+**Penny API Not Responding**
+- Check Railway backend is running: `GET /api/penny/health`
+- Verify `PENNY_API_URL` points to Railway, not localhost
 
-### Config & Infrastructure
-| File | What It Does |
-|------|-------------|
-| `next.config.js` | Next.js + Sentry configuration |
-| `vercel.json` | Security headers + cron jobs |
+**Onboarding Stuck in "running"**
+- Check outbox_worker logs
+- Verify adapter code doesn't throw uncaught errors
+- Call `POST /api/fleet-compliance/onboarding/runs/[runId]/retry`
+
+**Module Not Showing in Sidebar**
+- Verify `module_enablement.enabled = true` for org
+- Check plan tier allows module
+- Clear localStorage sidebar state
+
+**Sentry Not Capturing Errors**
+- Check `SENTRY_DSN` matches Sentry project
+- Verify `SENTRY_AUTH_TOKEN` is valid
+
+---
+
+## Key Files Quick Reference
+
+| File | Purpose |
+|------|---------|
+| `src/middleware.ts` | Route protection, public allowlist |
+| `src/lib/modules.ts` | Module catalog and seeds |
+| `src/lib/sidebar-config.ts` | Navigation section configuration |
+| `src/lib/org-provisioner.ts` | Org setup on signup |
+| `src/lib/plan-gate.ts` | Plan tier → module mapping |
+| `src/lib/fleet-compliance-db.ts` | Core SQL queries, org scoping |
+| `src/lib/fleet-compliance-data.ts` | Domain-specific data access |
+| `src/lib/fleet-compliance-auth.ts` | Role + org verification |
+| `src/lib/audit-logger.ts` | Structured logging |
+| `src/lib/onboarding/service.ts` | Onboarding orchestration |
+| `src/lib/onboarding/repository.ts` | Onboarding data layer |
+| `src/lib/onboarding/intake-service.ts` | Token validation + form parsing |
+| `src/lib/onboarding/outbox-worker.ts` | Event processing worker |
+| `src/lib/onboarding/adapters/*.ts` | Step execution |
+| `src/lib/training-module-metadata.ts` | Course catalog |
+| `src/lib/training-certificate.ts` | Certificate generation + storage |
+| `src/lib/hazmat-training.ts` | HazMat compliance tracking |
+| `src/lib/penny-context.ts` | Penny API client |
+| `next.config.js` | Next.js config + Sentry integration |
+| `vercel.json` | Vercel deployment + headers + crons |
+| `.env.example` | Environment variable template |
+| `migrations/*.sql` | Database schema (19 files) |
+| `railway-backend/app/main.py` | FastAPI entry point |
 | `package.json` | Dependencies + scripts |
-| `.env.example` | All env vars documented |
-| `scripts/check-env.ts` | Env validation (53 vars) |
-
-### Documentation
-| File | What It Does |
-|------|-------------|
-| `README.md` | Product summary |
-| `PLATFORM_OVERVIEW.md` | Full 20-section platform doc |
-| `INDEX.md` | Repository map |
-| `DEVELOPER_MANUAL.md` | This file |
-| `docs/STATUS.md` | Execution status log |
-| `docs/ROTATION_RUNBOOK.md` | Secret rotation procedures |
-| `docs/GIT_WORKFLOW.md` | PR workflow |
-| `docs/integration/MODULE_GATEWAY_CONTRACT.md` | Gateway API contract |
-| `docs/integration/OPERATIONS_RUNBOOK.md` | Gateway operations |
+| `tsconfig.json` | TypeScript config |
 
 ---
 
-## 23. Agent & Skill Library
+**End of Developer Manual**
 
-### Overview
-
-The platform ships two distinct tooling layers: **agents** (operator-only Claude Code personas) and **skills** (reusable methodology modules, some client-facing). Both live under `.claude/` in the repo. A unified registry at `skills-registry.json` tracks all 38 skills with status, audience, surface, and gateway mapping metadata.
-
-### Architecture: Three-Layer Skill System
-
-```
-Layer 1: Canonical Library (.claude/skills/)
-    36 skill directories, each following the ATLAS 5-file pattern.
-    Governance: MANIFEST.md, SKILLS-README.md, 00_skill-intake/ pipeline.
-
-Layer 2: Module Skill Packs (.claude/skill-packs/)
-    JSON manifests bundling operator + client-facing skills per module domain.
-    Current packs: fleet-compliance, govcon, realty.
-
-Layer 3: Gateway Integration (tooling/skills/)
-    15 client-facing skill wrappers with gateway module mappings.
-    Activation path: Skill -> Gateway wrapper -> Module Gateway registry -> Client surface.
-```
-
-### ATLAS 5-File Skill Pattern
-
-Every skill follows this standard structure:
-
-| File | Purpose | Required |
-|------|---------|----------|
-| `SKILL.md` | Entry point — methodology, steps, decision trees | Yes |
-| `contract.json` | Output enforcement — required sections, forbidden phrases, fail-closed | Yes |
-| `registry.json` | Discovery metadata — ID, version, tags, token budget | Yes |
-| `triggers.json` | Activation rules — trigger phrases, confidence thresholds | Yes |
-| `system.prompt` | Governance identity and behavioral constraints | Optional |
-
-### Skill Audience Classification
-
-Skills are classified by who uses them:
-
-| Audience | Where They Run | Examples |
-|----------|---------------|---------|
-| **Operator** | Claude Code sessions, dev tooling | direction-protocol, command-protocol, armed-bandits, cyber-security |
-| **Client-Facing** | Pipeline Penny, Module Gateway, Tools UI | data-privacy-coach, risk-manager, financial-analyst, bid-strategist |
-| **Dual** | Both operator and client contexts | aro-assessment, world-model-mapper |
-
-### Client-Facing Skills — Gateway Module Mappings
-
-Client-facing skills route through the Module Gateway via command modules. Each skill maps to exactly one gateway module:
-
-| Skill | Gateway Module | Penny Enabled | What It Does |
-|-------|---------------|---------------|-------------|
-| `aro-assessment` | readiness-command | Yes | AI/automation readiness scoring (6-dimension matrix) |
-| `risk-manager` | readiness-command | Yes | Risk identification, scoring, and mitigation planning |
-| `data-privacy-coach` | compliance-command | Yes | HIPAA/SOC2/GDPR/CCPA compliance guidance |
-| `financial-analyst` | financial-command | Yes | Financial data analysis, trend detection, KPI tracking |
-| `bid-strategist` | govcon-command | Yes | Federal opportunity evaluation and bid/no-bid decisions |
-| `grant-proposal-writer` | govcon-command | Yes | End-to-end grant proposal drafting (SAMHSA, VA, DOL, etc.) |
-| `grant-proposal-evaluation` | govcon-command | Yes | Proposal scoring, compliance checking, gap analysis |
-| `realty-command` | realty-command | Yes | Colorado real estate regulation and transaction compliance |
-| `world-model-mapper` | (standalone) | Yes | Process mapping against world-model principles |
-| `invoice-organizer` | financial-command | No | Invoice parsing, categorization, and reconciliation |
-| `file-organizer` | asset-command | No | File taxonomy, naming convention enforcement |
-| `proposal-generator` | proposal-command | No | Proposal content generation from templates |
-| `docgen-command` | proposal-command | No | Document generation from structured data |
-| `copywriter` | email-command | No | Marketing and outreach copy generation |
-| `marketing-strategist` | sales-command | No | Marketing strategy and campaign planning |
-
-### Operator-Only Skills Reference
-
-| Skill | Purpose |
-|-------|---------|
-| `direction-protocol` | TNDS 5-stage sales methodology (Identify, Assess, Map, Chart, Launch) |
-| `command-protocol` | TNDS 3-service delivery framework (Command Center, Battle Rhythm, Command Partner) |
-| `armed-bandits` | Multi-armed bandit prompt testing methodology |
-| `cyber-security` | Security assessment and hardening guidance |
-| `cloud-engineer` | GCP/Firebase/Vercel infrastructure patterns |
-| `database-admin` | Database design, optimization, migration authoring |
-| `python-programmer` | Python development patterns and best practices |
-| `webapp-testing` | Web application test strategy and execution |
-| `context-ingest` | Document ingestion pipeline configuration |
-| `penny-chunking` | Knowledge base chunk validation for Penny vector store |
-| `competitive-ads-extractor` | Competitive ad intelligence extraction |
-| `bearing-check` | 8-checkpoint decision validation framework |
-| `documentation` | TNDS branded documentation standards |
-
-### Skill Pack Manifests
-
-Skill packs define which skills activate per module domain. Located at `.claude/skill-packs/`:
-
-**fleet-compliance.json** — 15 operator skills + 6 client-facing (data-privacy-coach, risk-manager, aro-assessment, file-organizer, invoice-organizer, financial-analyst)
-
-**govcon.json** — 9 operator skills + 5 client-facing (grant-proposal-writer, grant-proposal-evaluation, bid-strategist, data-privacy-coach, risk-manager)
-
-**realty.json** — 8 operator skills + 4 client-facing (realty-command, financial-analyst, proposal-generator, data-privacy-coach)
-
-### Prompt Governance Control Plane
-
-The prompt governance control plane at `tooling/prompts/` defines the execution rules for all LLM-powered skills. Migrated from the TNDS PROMPTS-PACKS-TYPES library and adapted for FCS.
-
-| File | Purpose |
-|------|---------|
-| `tooling/prompts/prompt.schema.json` | JSON Schema validation for prompt definitions |
-| `tooling/prompts/prompt-router.json` | Direction (reasoning) vs Command (execution) model routing |
-| `tooling/prompts/runtime-policy.json` | Token limits and cost ceilings per tier (free/low-cost/battle-tested) |
-| `tooling/prompts/prompt-bundles.json` | Role bundles: SMB Operator, Revenue Command, Gov Compliance |
-| `tooling/prompts/prompt-registry.v1.0.0.json` | Immutable v1.0.0 registry (21 prompts, frozen 2026-02-07) |
-| `tooling/prompts/prompt-registry-map.json` | Maps FCS skill dirs to registry entries and gateway modules (15 mappings) |
-| `tooling/prompts/prompt-validator.ts` | TypeScript build-time validation function |
-
-### Operational Playbooks
-
-Structured multi-step workflows at `docs/integration/` for scheduled or on-demand execution via Cowork sessions or Pipeline Penny.
-
-| Playbook | Trigger | Purpose |
-|----------|---------|---------|
-| `compliance-gap-check.md` | Weekly / on-demand | Driver credentials, vehicle inspections, permits, suspense items. Weighted compliance score (0-100). |
-| `sentry-error-triage.md` | Every 6h / on-demand | Top Sentry issues, severity scoring, root cause categorization, fix recommendations. |
-| `daily-ops-standup.md` | Daily 8 AM MT | Sentry + HubSpot pipeline + calendar + action items -> Slack #ops-daily. |
-
-### Module Toggle Integration
-
-Skills are toggled per-org through the Module Toggle Console (`/fleet-compliance/dev/modules`). The toggle system uses two mechanisms:
-
-1. **App Modules** (`modules` + `org_modules` tables): Platform-level modules registered in `MODULE_SEEDS` in `src/lib/modules.ts`. Each skill-command module (readiness-command, compliance-command, govcon-command, financial-command, realty-command, asset-command, proposal-command) is registered as a toggleable module.
-
-2. **Gateway ACL** (`module_gateway_acl` table): Fine-grained per-action access control managed through `src/lib/modules-gateway/persistence.ts`. Gateway modules can be toggled independently from app modules.
-
-### Adding a New Skill
-
-1. Create the skill directory under `.claude/skills/<skill-name>/`
-2. Build the ATLAS 5-file pattern (SKILL.md, contract.json, registry.json, triggers.json)
-3. Write a `system.prompt` following the governance template (11 rules + role identity + depth modes + output contract)
-4. Run through the intake pipeline at `.claude/skills/00_skill-intake/`
-5. Update `skills-registry.json` at project root
-6. Add a mapping in `tooling/prompt-governance/prompt-registry-map.json`
-7. If client-facing: create a gateway wrapper in `tooling/skills/<skill-name>/`
-8. If client-facing: register the action in the Module Gateway contract
-9. Add to the relevant skill-pack manifest in `.claude/skill-packs/`
-10. If Penny-enabled: update Penny's tool catalog
-
-### Key Files
-
-| File | Purpose |
-|------|---------|
-| `skills-registry.json` | Unified registry (38 skills, status, audience, surface, gateway mapping) |
-| `.claude/skills/MANIFEST.md` | Skill library governance and naming conventions |
-| `.claude/skills/SKILLS-README.md` | Audience classification matrix |
-| `.claude/skill-packs/*.json` | Module-scoped skill bundle manifests |
-| `tooling/skills/README.md` | Client-facing skill activation path and gateway mappings |
-| `tooling/IMPLEMENTATION.md` | Full migration guide: what was migrated, how to use, how to extend |
-| `tooling/prompts/README.md` | Control plane documentation and integration points |
-| `docs/integration/PLAYBOOKS_README.md` | Playbook documentation and creation guide |
-| `FCS-Agent-Deployment-Recommendations.docx` | Agent selection rationale |
-| `FCS-Skills-Activation-Strategy.docx` | Skill activation architecture (3-layer design) |
-| `FCS-Unified-Skills-Registry.docx` | Registry reconciliation documentation |
-
----
-
-## Contact
-
-**Organization:** True North Data Strategies LLC
-**Security Officer:** Jacob Johnston
-**Phone:** 555-555-5555
-**Email:** jacob@truenorthstrategyops.com
-**GitHub Org:** Pipeline-Punks
-**Production:** https://www.pipelinepunks.com
-**Corporate:** https://truenorthstrategyops.com
+For questions or updates, contact the True North Data Strategies development team.

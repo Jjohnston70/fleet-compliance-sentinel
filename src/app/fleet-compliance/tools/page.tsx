@@ -6,6 +6,7 @@ import { isClerkEnabled } from '@/lib/clerk';
 import FleetComplianceErrorBoundary from '@/components/fleet-compliance/FleetComplianceErrorBoundary';
 import ModuleGatewayPanel from '@/components/fleet-compliance/ModuleGatewayPanel';
 import { getModuleCatalog, getOrgModules, type ModuleCatalogItem } from '@/lib/modules';
+import { isPlatformAdminUser } from '@/lib/platform-admin';
 
 export const dynamic = 'force-dynamic';
 export const metadata: Metadata = {
@@ -101,6 +102,7 @@ export default async function FleetComplianceToolsPage({ searchParams }: { searc
 
   const role = resolveOrgRole(sessionClaims);
   const isAdmin = role === 'admin';
+  const isPlatformAdmin = isPlatformAdminUser(userId);
 
   const resolved = await searchParams;
   const requestedSkill = firstParam(resolved.skill).trim().toLowerCase();
@@ -167,7 +169,7 @@ export default async function FleetComplianceToolsPage({ searchParams }: { searc
               <h3>No enabled skill modules</h3>
               <p>
                 Your organization currently has no skill modules enabled for this filter. Ask an admin to enable skill
-                modules in Module Toggles.
+                modules in Feature Modules.
               </p>
             </div>
           ) : (
@@ -207,8 +209,18 @@ export default async function FleetComplianceToolsPage({ searchParams }: { searc
           )}
         </section>
 
-        {isAdmin ? (
+        {isAdmin && isPlatformAdmin ? (
           <ModuleGatewayPanel />
+        ) : isAdmin ? (
+          <section className="fleet-compliance-section">
+            <div className="fleet-compliance-empty-state" style={{ marginTop: 0 }}>
+              <h3>Platform-admin module gateway only</h3>
+              <p>
+                Direct module gateway execution (including ML tooling) is restricted to platform admins. Use Penny and
+                enabled skill workflows for client operations.
+              </p>
+            </div>
+          </section>
         ) : (
           <section className="fleet-compliance-section">
             <div className="fleet-compliance-empty-state" style={{ marginTop: 0 }}>

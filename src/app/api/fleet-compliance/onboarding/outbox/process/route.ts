@@ -26,6 +26,7 @@ export async function POST(request: Request) {
       limit: 100,
     });
     const processed = await processOnboardingOutboxBatch({
+      orgId: context.orgId,
       limit: 100,
     });
 
@@ -39,6 +40,7 @@ export async function POST(request: Request) {
         outboxProcessed: processed.processed,
         outboxRetried: processed.retried,
         outboxFailed: processed.failed,
+        outboxAlertSignalCount: processed.alertSignals.length,
       },
     });
 
@@ -50,7 +52,12 @@ export async function POST(request: Request) {
       metadata: {
         action: 'onboarding.outbox.process',
         reconciledTaskCount: reconciled.queued,
-        outboxSummary: { ...processed },
+        outboxPolled: processed.polled,
+        outboxProcessed: processed.processed,
+        outboxRetried: processed.retried,
+        outboxFailed: processed.failed,
+        outboxSkipped: processed.skipped,
+        outboxAlertSignalCount: processed.alertSignals.length,
       },
     });
 

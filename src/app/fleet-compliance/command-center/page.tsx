@@ -5,6 +5,7 @@ import type { Metadata } from 'next';
 import { isClerkEnabled } from '@/lib/clerk';
 import FleetComplianceErrorBoundary from '@/components/fleet-compliance/FleetComplianceErrorBoundary';
 import { listCommandCenterCatalog } from '@/lib/modules-gateway/persistence';
+import { isPlatformAdminUser } from '@/lib/platform-admin';
 
 export const dynamic = 'force-dynamic';
 export const metadata: Metadata = {
@@ -65,7 +66,8 @@ export default async function FleetComplianceCommandCenterCatalogPage({
 
   const role = resolveOrgRole(sessionClaims);
   const isAdmin = role === 'admin';
-  const rows = isAdmin ? await listCommandCenterCatalog(orgId) : [];
+  const isPlatformAdmin = isPlatformAdminUser(userId);
+  const rows = isAdmin && isPlatformAdmin ? await listCommandCenterCatalog(orgId) : [];
   const moduleOptions = Array.from(new Set(rows.map((row) => row.moduleId))).sort((a, b) => a.localeCompare(b));
   const lastDiscoveredAt = rows.length > 0 ? rows[0].discoveredAt : null;
 
@@ -107,6 +109,11 @@ export default async function FleetComplianceCommandCenterCatalogPage({
             <div className="fleet-compliance-empty-state" style={{ marginTop: '1rem' }}>
               <h3>Admin role required</h3>
               <p>Command-center catalog visibility is restricted to organization admins.</p>
+            </div>
+          ) : !isPlatformAdmin ? (
+            <div className="fleet-compliance-empty-state" style={{ marginTop: '1rem' }}>
+              <h3>Platform-admin access required</h3>
+              <p>Command Center is reserved for platform-level gateway operations.</p>
             </div>
           ) : rows.length === 0 ? (
             <div className="fleet-compliance-empty-state" style={{ marginTop: '1rem' }}>

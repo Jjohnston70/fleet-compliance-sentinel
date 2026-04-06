@@ -1,0 +1,89 @@
+# STACK.md — {{PROJECT_NAME}}
+
+**Last Updated:** {{DATE}}
+**Rule:** If it's not listed here, ask before adding it.
+
+---
+
+## Runtime Versions
+
+| Technology | Version | Notes |
+|-----------|---------|-------|
+{{RUNTIME_VERSIONS}}
+
+---
+
+## Package Manager
+
+**{{PACKAGE_MANAGER}}** — use this everywhere. Do not switch managers mid-project.
+
+---
+
+## Frontend
+
+| Package | Purpose |
+|---------|---------|
+{{FRONTEND_PACKAGES}}
+
+**Conventions:**
+{{FRONTEND_CONVENTIONS}}
+
+---
+
+## Backend
+
+| Package | Purpose |
+|---------|---------|
+{{BACKEND_PACKAGES}}
+
+**Conventions:**
+{{BACKEND_CONVENTIONS}}
+
+---
+
+## Database
+
+**ORM/Driver:** {{DATABASE_ORM}}
+
+**Hard rules:**
+- Every query scoped to `{{TENANT_ISOLATION_FIELD}}`. No exceptions.
+- Schema changes via migration files — never raw DDL in production.
+- No raw SQL strings in application code. Use the query builder.
+- {{DATABASE_ADDITIONAL_RULES}}
+
+**Schema location:** {{SCHEMA_LOCATION}}
+**Migrations:** {{MIGRATIONS_LOCATION}}
+
+---
+
+## Infrastructure
+
+| Service | Purpose | Config Location |
+|---------|---------|----------------|
+{{INFRASTRUCTURE_ROWS}}
+
+---
+
+## Environment Variables
+
+| Variable | Where It Lives | Used By |
+|---------|--------------|---------|
+{{ENV_VAR_ROWS}}
+
+---
+
+## Code Conventions
+
+**{{PRIMARY_LANGUAGE}}:**
+{{PRIMARY_LANGUAGE_CONVENTIONS}}
+
+**{{SECONDARY_LANGUAGE}}:**
+{{SECONDARY_LANGUAGE_CONVENTIONS}}
+
+**Naming:**
+{{NAMING_CONVENTIONS}}
+
+**Comments:**
+- Explain why, not what.
+- Compliance-critical logic gets a comment citing the control it serves.
+- Example: `{{COMPLIANCE_COMMENT_EXAMPLE}}`

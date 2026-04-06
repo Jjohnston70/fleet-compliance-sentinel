@@ -13,6 +13,7 @@
     "lint": "next lint",
     "preflight:skill-packs": "tsx scripts/preflight-skill-packs.ts",
     "test:onboarding-phase1": "tsx --test src/lib/onboarding/*.test.ts",
+    "test:onboarding-drift": "tsx --test src/lib/onboarding/contract-drift.test.ts",
     "docs:vendors": "node scripts/download-vendor-docs.mjs",
     "docs:vendors:prepare": "node scripts/prepare-vendor-docs-package.mjs",
     "docs:vendors:package": "npm run docs:vendors && npm run docs:vendors:prepare",
@@ -21,7 +22,9 @@
     "db:check-training-schema": "node scripts/check-training-schema.mjs",
     "sync:knowledge": "node scripts/sync-local-knowledge.mjs",
     "build:cfr-index": "tsx scripts/build-cfr-index.mjs",
-    "eval:penny": "node scripts/run-penny-evals.mjs"
+    "eval:penny": "node scripts/run-penny-evals.mjs",
+    "test:onboarding-alerts": "tsx --test src/lib/onboarding/alert-binding.test.ts",
+    "test:onboarding-phase6": "tsx --test src/lib/onboarding/phase6-release-gate.test.ts"
   },
   "dependencies": {
     "@clerk/nextjs": "^7.0.8",
@@ -63,5 +66,8 @@
     "tailwindcss": "^3.4.19",
     "tsx": "^4.19.0",
     "typescript": "^5.3.3"
+  },
+  "optionalDependencies": {
+    "@esbuild/linux-x64": "^0.28.0"
   }
 }

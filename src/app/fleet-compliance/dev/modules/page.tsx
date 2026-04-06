@@ -1,5 +1,6 @@
 'use client';
 
+import Link from 'next/link';
 import { useCallback, useEffect, useState } from 'react';
 
 interface OrgOption {
@@ -190,6 +191,24 @@ export default function DevModulesPage() {
     );
   }
 
+  if (accessScope === 'org_admin') {
+    return (
+      <main className="fleet-compliance-shell">
+        <section className="fleet-compliance-hero">
+          <h1>Developer Console Restricted</h1>
+          <p className="fleet-compliance-subcopy">
+            Use the client-facing Feature Modules page for your organization settings.
+          </p>
+          <div className="fleet-compliance-action-row" style={{ marginTop: '0.75rem' }}>
+            <Link className="btn-primary" href="/fleet-compliance/settings/modules">
+              Open Feature Modules
+            </Link>
+          </div>
+        </section>
+      </main>
+    );
+  }
+
   const enabledSet = new Set(enabledModules);
   const planDefaultSet = new Set(planDefaults);
   const selectedOrg = orgs.find((o) => o.id === selectedOrgId);
@@ -212,11 +231,6 @@ export default function DevModulesPage() {
         <p className="fleet-compliance-subcopy">
           Enable or disable modules per organization. Changes take effect immediately.
         </p>
-        {accessScope === 'org_admin' && (
-          <p className="fleet-compliance-subcopy" style={{ marginTop: '0.5rem', color: '#94a3b8' }}>
-            Organization admin mode: scoped to your current organization.
-          </p>
-        )}
       </section>
 
       {error && (

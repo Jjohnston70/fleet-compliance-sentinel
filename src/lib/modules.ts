@@ -201,7 +201,7 @@ const MODULE_SEEDS: readonly ModuleSeed[] = [
     icon: 'UserPlus',
     routePrefix: '/onboarding',
     isCore: false,
-    requiresPlan: 'pro',
+    requiresPlan: 'trial',
     metadata: {},
   },
   {
@@ -329,10 +329,11 @@ const MODULE_SEEDS: readonly ModuleSeed[] = [
 ];
 
 const PLAN_DEFAULTS: Readonly<Record<PlanTier, readonly string[]>> = {
-  trial: ['fleet-compliance', 'penny-ai'],
+  trial: ['fleet-compliance', 'penny-ai', 'onboarding'],
   starter: [
     'fleet-compliance',
     'penny-ai',
+    'onboarding',
     'telematics',
     'financial',
     'sales',

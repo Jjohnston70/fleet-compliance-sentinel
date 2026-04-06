@@ -4,6 +4,7 @@ import { seedSuspenseFromTraining, type SuspenseSeedResult } from '@/lib/onboard
 import { queueOnboardingNotification, type NotificationQueueResult } from '@/lib/onboarding/adapters/notification-adapter';
 import { seedOnboardingTask, type TaskSeedResult } from '@/lib/onboarding/adapters/task-adapter';
 import { evaluateOnboardingRules } from '@/lib/onboarding/rules-engine';
+import { emitOnboardingMetric } from '@/lib/onboarding/observability';
 import type {
   OnboardingEmployeeInput,
   OnboardingEmployeeProfile,
@@ -158,13 +159,23 @@ export class OnboardingService {
     output: Record<string, unknown>;
     errorMessage?: string | null;
   }): Promise<OnboardingStepRecord> {
-    return this.store.upsertStep({
+    const step = await this.store.upsertStep({
       runId: input.runId,
       stepKey: input.stepKey,
       status: input.status,
       output: input.output,
       errorMessage: input.errorMessage ?? null,
     });
+    emitOnboardingMetric({
+      name: 'onboarding.step.status',
+      value: 1,
+      runId: input.runId,
+      stepKey: input.stepKey,
+      tags: {
+        status: input.status,
+      },
+    });
+    return step;
   }
 
   private async runDeterministicFlow(input: {
@@ -486,6 +497,15 @@ export class OnboardingService {
         },
       }),
     );
+    emitOnboardingMetric({
+      name: 'onboarding.run.completed',
+      value: 1,
+      orgId: detail.run.orgId,
+      runId: detail.run.id,
+      tags: {
+        source: detail.run.source,
+      },
+    });
 
     return detail;
   }
@@ -527,12 +547,46 @@ export class OnboardingService {
         trigger: 'employee.create',
       },
     });
-
-    return this.runDeterministicFlow({
-      run,
-      employeeProfile: profile,
-      actorUserId: input.context.userId,
+    emitOnboardingMetric({
+      name: 'onboarding.run.started',
+      value: 1,
+      orgId: run.orgId,
+      runId: run.id,
+      tags: {
+        source: run.source,
+      },
     });
+
+    try {
+      return await this.runDeterministicFlow({
+        run,
+        employeeProfile: profile,
+        actorUserId: input.context.userId,
+      });
+    } catch (error: unknown) {
+      await this.store.insertOnboardingEvent(
+        createEvent({
+          eventType: 'employee.onboarding.failed',
+          orgId: run.orgId,
+          runId: run.id,
+          actorUserId: input.context.userId,
+          payload: {
+            source: run.source,
+            message: error instanceof Error ? error.message : String(error),
+          },
+        }),
+      );
+      emitOnboardingMetric({
+        name: 'onboarding.run.failed',
+        value: 1,
+        orgId: run.orgId,
+        runId: run.id,
+        tags: {
+          source: run.source,
+        },
+      });
+      throw error;
+    }
   }
 
   async updateEmployeeAndStartRun(input: {
@@ -575,12 +629,46 @@ export class OnboardingService {
         trigger: 'employee.update',
       },
     });
-
-    return this.runDeterministicFlow({
-      run,
-      employeeProfile: profile,
-      actorUserId: input.context.userId,
+    emitOnboardingMetric({
+      name: 'onboarding.run.started',
+      value: 1,
+      orgId: run.orgId,
+      runId: run.id,
+      tags: {
+        source: run.source,
+      },
     });
+
+    try {
+      return await this.runDeterministicFlow({
+        run,
+        employeeProfile: profile,
+        actorUserId: input.context.userId,
+      });
+    } catch (error: unknown) {
+      await this.store.insertOnboardingEvent(
+        createEvent({
+          eventType: 'employee.onboarding.failed',
+          orgId: run.orgId,
+          runId: run.id,
+          actorUserId: input.context.userId,
+          payload: {
+            source: run.source,
+            message: error instanceof Error ? error.message : String(error),
+          },
+        }),
+      );
+      emitOnboardingMetric({
+        name: 'onboarding.run.failed',
+        value: 1,
+        orgId: run.orgId,
+        runId: run.id,
+        tags: {
+          source: run.source,
+        },
+      });
+      throw error;
+    }
   }
 
   async listRuns(input: {
@@ -628,6 +716,16 @@ export class OnboardingService {
     if (retryTargets.length === 0) {
       return detail;
     }
+    emitOnboardingMetric({
+      name: 'onboarding.run.retry',
+      value: 1,
+      orgId: detail.run.orgId,
+      runId: detail.run.id,
+      tags: {
+        requestedStepCount: requestedStepSet.size,
+        retryTargetCount: retryTargets.length,
+      },
+    });
 
     return this.runDeterministicFlow({
       run: detail.run,

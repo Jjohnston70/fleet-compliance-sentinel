@@ -10,6 +10,7 @@
  *   2. If the link corresponds to a module, set `moduleId` to match the module
  *      catalog ID from modules.ts. Links without a `moduleId` are always shown.
  *   3. Set `adminOnly: true` if the link should only appear for org admins.
+ *   4. Set `platformOnly: true` if the link should only appear for platform admins.
  */
 
 export interface SidebarItem {
@@ -23,6 +24,8 @@ export interface SidebarItem {
   moduleId?: string;
   /** When true, only org admins see this link. */
   adminOnly?: boolean;
+  /** When true, only platform admins see this link. */
+  platformOnly?: boolean;
 }
 
 export interface SidebarSection {
@@ -34,6 +37,8 @@ export interface SidebarSection {
   defaultExpanded: boolean;
   /** When true, the entire section only shows for org admins. */
   adminOnly?: boolean;
+  /** When true, the entire section only shows for platform admins. */
+  platformOnly?: boolean;
   /** Navigation items within this section. */
   items: SidebarItem[];
 }
@@ -98,7 +103,6 @@ export const SIDEBAR_SECTIONS: readonly SidebarSection[] = [
       { label: 'Readiness', href: '/fleet-compliance/readiness', icon: 'Gauge', moduleId: 'readiness' },
       { label: 'GovCon & Compliance', href: '/fleet-compliance/govcon', icon: 'Landmark', moduleId: 'govcon' },
       { label: 'Telematics', href: '/fleet-compliance/telematics', icon: 'MapPinned', moduleId: 'telematics' },
-      { label: 'Forecasting', href: '/fleet-compliance/forecasting', icon: 'LineChart', moduleId: 'ml-signals' },
     ],
   },
   {
@@ -124,10 +128,11 @@ export const SIDEBAR_SECTIONS: readonly SidebarSection[] = [
       { label: 'Settings', href: '/fleet-compliance/settings/alerts', icon: 'Settings' },
       { label: 'Spend Dashboard', href: '/fleet-compliance/spend', icon: 'DollarSign' },
       { label: 'Import Data', href: '/fleet-compliance/import', icon: 'Upload' },
-      { label: 'Command Center', href: '/fleet-compliance/command-center', icon: 'Terminal' },
-      { label: 'Module Tools', href: '/fleet-compliance/tools', icon: 'Wrench' },
+      { label: 'Feature Modules', href: '/fleet-compliance/settings/modules', icon: 'ToggleRight' },
+      { label: 'Command Center', href: '/fleet-compliance/command-center', icon: 'Terminal', platformOnly: true },
+      { label: 'Module Tools', href: '/fleet-compliance/tools', icon: 'Wrench', platformOnly: true },
       { label: 'Penny AI', href: '/penny', icon: 'Bot' },
-      { label: 'Module Toggles', href: '/fleet-compliance/dev/modules', icon: 'ToggleRight', adminOnly: true },
+      { label: 'Developer Module Console', href: '/fleet-compliance/dev/modules', icon: 'TerminalSquare', platformOnly: true },
     ],
   },
 ];
@@ -139,12 +144,15 @@ export const SIDEBAR_SECTIONS: readonly SidebarSection[] = [
 export function getVisibleSections(
   enabledModuleIds: Set<string>,
   role: 'admin' | 'member',
+  isPlatformAdmin = false,
 ): SidebarSection[] {
   return SIDEBAR_SECTIONS.map((section) => {
     if (section.adminOnly && role !== 'admin') return null;
+    if (section.platformOnly && !isPlatformAdmin) return null;
 
     const visibleItems = section.items.filter((item) => {
       if (item.adminOnly && role !== 'admin') return false;
+      if (item.platformOnly && !isPlatformAdmin) return false;
       if (item.moduleId && !enabledModuleIds.has(item.moduleId)) return false;
       return true;
     });

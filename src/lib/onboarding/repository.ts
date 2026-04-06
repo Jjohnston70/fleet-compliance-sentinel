@@ -862,6 +862,7 @@ export async function enqueueOutboxEvent(input: {
 }
 
 export async function listDueOutboxEvents(input?: {
+  orgId?: string;
   eventTypes?: string[];
   limit?: number;
 }): Promise<OnboardingOutboxEventRecord[]> {
@@ -871,6 +872,21 @@ export async function listDueOutboxEvents(input?: {
   const eventTypes = Array.isArray(input?.eventTypes)
     ? input!.eventTypes.filter((entry) => typeof entry === 'string' && entry.trim().length > 0)
     : [];
+  const orgId = typeof input?.orgId === 'string' ? input.orgId.trim() : '';
+
+  if (eventTypes.length > 0 && orgId) {
+    const rows = await sql`
+      SELECT *
+      FROM onboarding_outbox_events
+      WHERE org_id = ${orgId}
+        AND status IN ('pending', 'retrying')
+        AND next_attempt_at <= NOW()
+        AND event_type = ANY(${eventTypes}::text[])
+      ORDER BY next_attempt_at ASC, created_at ASC
+      LIMIT ${limit}
+    `;
+    return rows.map((row) => mapOutboxRow(row as Record<string, unknown>));
+  }
 
   if (eventTypes.length > 0) {
     const rows = await sql`
@@ -879,6 +895,19 @@ export async function listDueOutboxEvents(input?: {
       WHERE status IN ('pending', 'retrying')
         AND next_attempt_at <= NOW()
         AND event_type = ANY(${eventTypes}::text[])
+      ORDER BY next_attempt_at ASC, created_at ASC
+      LIMIT ${limit}
+    `;
+    return rows.map((row) => mapOutboxRow(row as Record<string, unknown>));
+  }
+
+  if (orgId) {
+    const rows = await sql`
+      SELECT *
+      FROM onboarding_outbox_events
+      WHERE org_id = ${orgId}
+        AND status IN ('pending', 'retrying')
+        AND next_attempt_at <= NOW()
       ORDER BY next_attempt_at ASC, created_at ASC
       LIMIT ${limit}
     `;

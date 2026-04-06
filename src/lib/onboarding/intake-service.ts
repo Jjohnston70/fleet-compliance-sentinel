@@ -3,6 +3,7 @@ import { recordOrgAuditEvent } from '@/lib/org-audit';
 import { getOrgModules } from '@/lib/modules';
 import { sendOnboardingInvite, type OnboardingInviteResult } from '@/lib/onboarding/adapters/invite-adapter';
 import { createOnboardingService, OnboardingServiceError } from '@/lib/onboarding/service';
+import { emitOnboardingMetric } from '@/lib/onboarding/observability';
 import {
   claimOnboardingIntakeToken,
   consumeOnboardingIntakeToken,
@@ -217,6 +218,15 @@ export class OnboardingIntakeService {
         tokenId,
       },
     });
+    emitOnboardingMetric({
+      name: 'onboarding.intake.token.issued',
+      value: 1,
+      orgId: input.orgId,
+      tags: {
+        inviteAfterIntake: input.inviteAfterIntake ?? true,
+        inviteOverrideAllowed: input.inviteOverrideAllowed ?? true,
+      },
+    });
 
     await this.deps.recordOrgAuditEvent({
       orgId: input.orgId,
@@ -393,6 +403,15 @@ export class OnboardingIntakeService {
           },
         });
       }
+      emitOnboardingMetric({
+        name: 'onboarding.intake.submitted',
+        value: 1,
+        orgId: claimed.orgId,
+        runId: detail.run.id,
+        tags: {
+          invited: inviteResult?.status === 'completed',
+        },
+      });
 
       return {
         detail,

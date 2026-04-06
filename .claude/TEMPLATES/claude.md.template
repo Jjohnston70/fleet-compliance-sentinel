@@ -1,9 +1,9 @@
-# CLAUDE.md — Fleet-Compliance Sentinel
+# CLAUDE.md — {{PROJECT_NAME}}
 
-**Project:** Fleet-Compliance Sentinel (FCS)
-**Owner:** Jacob Johnston, True North Data Strategies
-**System:** Multi-tenant B2B SaaS for DOT/FMCSA fleet compliance, training LMS, employee onboarding, and operational visibility
-**Last Updated:** 2026-04-06
+**Project:** {{PROJECT_FULL_NAME}}
+**Owner:** {{OWNER_NAME}}, {{COMPANY_NAME}}
+**System:** {{SYSTEM_DESCRIPTION}}
+**Last Updated:** {{DATE}}
 
 ---
 
@@ -58,9 +58,9 @@ Do not silently guess.
 
 Turn requests into clear success criteria:
 
-- "Fix the bug" -> reproduce, fix, verify
-- "Add validation" -> add checks, verify behavior
-- "Refactor" -> preserve behavior, confirm no regressions
+- "Fix the bug" → reproduce, fix, verify
+- "Add validation" → add checks, verify behavior
+- "Refactor" → preserve behavior, confirm no regressions
 
 For multi-step tasks, make a short plan with verification points before executing.
 
@@ -89,7 +89,7 @@ For multi-step tasks, make a short plan with verification points before executin
 See `.claude/SECURITY.md` for the full rule set. Short version:
 
 - No PII in logs, prompts, or error trackers — ever.
-- Every database query must include `org_id`.
+- Every database query must include `{{TENANT_ISOLATION_FIELD}}`.
 - No auth bypass, no direct DB access without tenant isolation.
 - No credentials in code, comments, or test files.
 - Flag any compliance risk immediately — do not proceed.
@@ -103,7 +103,7 @@ Pause and ask if:
 - The request is ambiguous in a way that affects implementation.
 - The correct behavior is unclear.
 - The task requires an architectural or product decision.
-- You are choosing between tradeoffs Jacob should approve.
+- You are choosing between tradeoffs {{OWNER_FIRST_NAME}} should approve.
 
 Do not fabricate certainty to stay moving.
 
@@ -124,24 +124,13 @@ Confirm before calling done:
 
 ## Project Context
 
-**What this is:** Fleet-Compliance Sentinel — a multi-tenant B2B SaaS platform that gives small fleet operators (5-20 vehicles) real-time visibility into DOT/FMCSA compliance, employee credentials, training, dispatch, and financial operations. Built on Next.js 15 App Router with Clerk org-scoped auth, Neon PostgreSQL, Stripe billing, and a modular command architecture. Pipeline Penny AI provides LLM-powered regulatory guidance via Railway FastAPI backend.
+**What this is:** {{PROJECT_DESCRIPTION}}
 
-**Status:** Production (SOC 2 observation window active since March 24, 2026; Type I eligible June 22, 2026). All 8 SOC 2 phases complete. Module integration sprint complete. Training LMS (B1-B9) complete. Enterprise hardening (A0-A8) complete. Onboarding orchestration live. 6 critical training findings pending resolution before first paying client.
+**Status:** {{PROJECT_STATUS}}
 
 **Critical Active Work:**
-- Fix 6 critical training findings (C-1 through C-6) before first paying client
-- Complete onboarding Phase 6 release gate (P6-T2 through P6-T4)
-- Establish compliance evidence collection cadence
-- Prepare for first client onboarding end-to-end
+{{ACTIVE_WORK_ITEMS}}
 
-**Architecture summary:** Next.js 15 App Router on Vercel -> Clerk auth -> Neon PostgreSQL (org_id scoped) -> Module gateway (7 hardening layers) -> Railway FastAPI (Penny AI). Stripe billing with 4 tiers. 15+ command modules. Resend for email. Sentry/Datadog/UptimeRobot for monitoring. Upstash Redis for rate limiting.
-
-**Data Source Policy (Effective 2026-04-06):**
-- NO demo data, seed data, or synthetic data in production databases.
-- The ONLY external data entering the system is via the bulk import functions (`/api/fleet-compliance/import`) or direct user input through the UI.
-- Do NOT create test/demo records in database tables. Do NOT seed fake employees, assets, or training data.
-- Knowledge base documents (`knowledge/`) are regulatory/reference content and are the exception -- they are not client data.
-- Jacob's sandbox org is the permanent testing environment. Do NOT delete it.
-- All test data must be clearable via the admin data management API.
+**Architecture summary:** {{ARCHITECTURE_SUMMARY}}
 
 **Read:** `.claude/ARCHITECTURE.md`, `.claude/SECURITY.md`, `.claude/STACK.md`, `.claude/COMMANDS.md`

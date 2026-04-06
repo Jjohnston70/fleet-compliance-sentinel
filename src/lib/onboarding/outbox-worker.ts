@@ -6,6 +6,12 @@ import {
 import { processNotificationEvent } from '@/lib/onboarding/adapters/notification-adapter';
 import { processTaskSyncEvent } from '@/lib/onboarding/adapters/task-adapter';
 import type { OnboardingOutboxEventRecord } from '@/lib/onboarding/types';
+import {
+  emitOnboardingMetric,
+  emitOutboxAlertSignals,
+  evaluateOutboxAlertSignals,
+  type OnboardingAlertSignal,
+} from '@/lib/onboarding/observability';
 
 const MAX_RETRY_ATTEMPTS = 5;
 
@@ -51,10 +57,12 @@ export interface OnboardingOutboxProcessSummary {
   retried: number;
   failed: number;
   skipped: number;
+  alertSignals: OnboardingAlertSignal[];
 }
 
 export interface OutboxWorkerDependencies {
   listDueOutboxEvents(input?: {
+    orgId?: string;
     eventTypes?: string[];
     limit?: number;
   }): Promise<OnboardingOutboxEventRecord[]>;
@@ -91,12 +99,14 @@ const DEFAULT_DEPS: OutboxWorkerDependencies = {
 };
 
 export async function processOnboardingOutboxBatch(input?: {
+  orgId?: string;
   limit?: number;
   deps?: OutboxWorkerDependencies;
 }): Promise<OnboardingOutboxProcessSummary> {
   const deps = input?.deps ?? DEFAULT_DEPS;
   const limit = Math.max(1, Math.min(input?.limit ?? 50, 500));
   const events = await deps.listDueOutboxEvents({
+    orgId: input?.orgId,
     eventTypes: ['onboarding.task.sync', 'onboarding.notification.send'],
     limit,
   });
@@ -107,6 +117,7 @@ export async function processOnboardingOutboxBatch(input?: {
     retried: 0,
     failed: 0,
     skipped: 0,
+    alertSignals: [],
   };
 
   for (const event of events) {
@@ -182,6 +193,36 @@ export async function processOnboardingOutboxBatch(input?: {
       else summary.retried += 1;
     }
   }
+
+  emitOnboardingMetric({
+    name: 'onboarding.outbox.batch.polled',
+    value: summary.polled,
+    orgId: input?.orgId,
+  });
+  emitOnboardingMetric({
+    name: 'onboarding.outbox.batch.processed',
+    value: summary.processed,
+    orgId: input?.orgId,
+  });
+  emitOnboardingMetric({
+    name: 'onboarding.outbox.batch.retried',
+    value: summary.retried,
+    orgId: input?.orgId,
+  });
+  emitOnboardingMetric({
+    name: 'onboarding.outbox.batch.failed',
+    value: summary.failed,
+    orgId: input?.orgId,
+  });
+
+  summary.alertSignals = evaluateOutboxAlertSignals({
+    orgId: input?.orgId,
+    polled: summary.polled,
+    processed: summary.processed,
+    retried: summary.retried,
+    failed: summary.failed,
+  });
+  emitOutboxAlertSignals(summary.alertSignals);
 
   return summary;
 }

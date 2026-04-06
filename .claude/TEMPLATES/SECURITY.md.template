@@ -1,0 +1,191 @@
+# SECURITY.md — {{PROJECT_NAME}}
+
+**Classification:** Internal — Non-Negotiable Rules
+**Owner:** {{OWNER_NAME}}, {{COMPANY_NAME}}
+**Compliance Target:** {{COMPLIANCE_TARGET}}
+**Last Updated:** {{DATE}}
+
+---
+
+## Core Principle
+
+> Documentation does not equal compliance.
+> Evidence + System Behavior = Compliance.
+
+This system converts: Policies → Controls → Systems → Evidence.
+
+{{COMPLIANCE_MANDATE}}
+
+---
+
+## Data Classification
+
+| Level | Definition | Allowed Systems |
+|-------|-----------|-----------------|
+| Public | Marketing, docs, help content | Anywhere |
+| Internal | Ops data, metrics, logs | {{INTERNAL_SYSTEMS}} |
+| Sensitive | User data, org data, {{SENSITIVE_DATA_TYPES}} | {{SENSITIVE_SYSTEMS}} ONLY |
+| Restricted | {{RESTRICTED_DATA_DEFINITION}} | Separate stack ONLY — do not mix |
+
+---
+
+## Hard Rules — Never Violate
+
+### Logging
+1. **No PII in logs.** {{PII_TYPES}} — none of it goes into {{ERROR_TRACKER}}, {{LOG_SINK}}, console.log, or any log sink. Log IDs only.
+2. **No sensitive data in {{EMAIL_SERVICE}} emails.** Notifications and alerts only. No full records, no exports.
+3. **No raw database dumps in tickets, PRs, or chat logs.**
+
+### Authentication & Authorization
+4. **No auth bypass.** Auth middleware is required on every API route. No exceptions, no "temp" bypasses.
+5. **No direct database access without `{{TENANT_ISOLATION_FIELD}}`.** Every query must be scoped to a tenant.
+6. **Admin routes are restricted.** Admin functionality is not exposed to standard user roles.
+
+### Secrets & Credentials
+7. **No credentials in code.** No API keys, tokens, or connection strings in source files, comments, or test fixtures.
+8. **No `.env` files committed.** Use `.env.example` with placeholder values only.
+9. **All secrets via environment variables.** {{SECRETS_MANAGEMENT_APPROACH}}
+
+{{AI_COMPLIANCE_RULES}}
+
+---
+
+## Tenant Isolation
+
+This is a critical control. Every data access path must enforce tenant boundaries.
+
+```{{PRIMARY_LANGUAGE}}
+// REQUIRED pattern — every query
+{{TENANT_ISOLATION_EXAMPLE_GOOD}}
+
+// VIOLATION — no tenant scope
+{{TENANT_ISOLATION_EXAMPLE_BAD}}
+```
+
+If you find a query missing `{{TENANT_ISOLATION_FIELD}}`, flag it immediately.
+
+---
+
+## Audit Logging Standard
+
+Every API route must emit a structured audit log.
+
+```{{PRIMARY_LANGUAGE}}
+// Required on every API action
+{{AUDIT_LOG_EXAMPLE}}
+```
+
+**Action categories:**
+{{AUDIT_ACTION_CATEGORIES}}
+
+---
+
+## API Security Checklist
+
+Verify on every PR that touches API routes:
+
+- [ ] Auth middleware present and active
+- [ ] Admin routes restricted by role
+- [ ] Rate limiting active on public endpoints
+- [ ] {{CRON_PROTECTION_RULE}}
+- [ ] {{WEBHOOK_VALIDATION_RULE}}
+- [ ] No environment variables exposed to client bundle
+- [ ] Input validation on all user-supplied parameters
+
+---
+
+## Change Management
+
+All changes follow this path — no exceptions:
+
+```
+Code Change
+    |
+GitHub Pull Request (branch → main)
+    |
+Review (CODEOWNERS enforcement)
+    |
+Merge to main
+    |
+Auto Deploy ({{DEPLOY_PLATFORM}})
+    |
+Audit Log Evidence captured
+```
+
+---
+
+## Evidence Collection Schedule
+
+### Daily (Automated)
+- Pull {{LOG_SINK}} audit logs
+- Review {{ERROR_TRACKER}} error dashboard
+- Check {{UPTIME_MONITOR}} status
+- Screenshot each for evidence archive
+
+### Weekly (Manual)
+- {{AUTH_PROVIDER}}: Export user list, verify membership, remove unused users
+- {{LOG_SINK}}: Review data access events filtered by `{{TENANT_ISOLATION_FIELD}}`
+- {{ERROR_TRACKER}}: Review new and repeated errors — confirm no PII in stack traces
+- Database: Verify all queries include `{{TENANT_ISOLATION_FIELD}}`
+- API Security Checklist above — run it
+
+### Monthly (Audit Package)
+Collect and store in `/compliance/monthly/YYYY-MM/`:
+
+| System | Evidence |
+|--------|---------|
+| GitHub | PR approval history |
+| {{DEPLOY_PLATFORM}} | Deployment logs |
+| {{LOG_SINK}} | Audit log export |
+| {{AUTH_PROVIDER}} | Access log screenshots |
+| {{BILLING_PROVIDER}} | Billing event log |
+
+---
+
+## Incident Response
+
+**Triggers:** Error spike, downtime, security alert, unauthorized access pattern
+
+**Steps:**
+1. Identify — {{ERROR_TRACKER}} / {{LOG_SINK}}
+2. Contain — disable affected route or service
+3. Fix — deploy patch via standard PR process
+4. Log — record incident in `/compliance/incidents/YYYY-MM-DD-incident.md`
+5. Document — capture evidence: error logs, fix commit, resolution confirmation
+
+---
+
+## Evidence Storage Structure
+
+```
+/compliance/
+  /monthly/
+    /YYYY-MM/
+  /weekly/
+    /YYYY-WXX/
+  /incidents/
+  /access-control/
+  /logging/
+```
+
+---
+
+## Auditor Readiness — Answer These Cold
+
+1. Who has access to the system?
+2. How is access controlled and revoked?
+3. Show me logs of data access activity.
+4. Show me your change history and approval process.
+5. How do you handle incidents?
+6. How do you protect user data?
+
+This document plus the evidence archive answers all six.
+
+---
+
+## Final Command
+
+> You are not "preparing for {{COMPLIANCE_TARGET}}."
+> You are running the company as if it is already under audit.
+
+{{OWNER_NAME}} | {{COMPANY_NAME}} | {{OWNER_EMAIL}}

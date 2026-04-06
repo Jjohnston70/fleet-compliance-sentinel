@@ -18,6 +18,24 @@ Days Until Type I Eligible: 80
 | README update | Complete — Updated to reflect current state (2026-04-03): Clerk ^7.0.8, 16 migrations, 37-section user manual, Workstream A/B complete status, production readiness audit triage, expanded module table, contact info, DEVELOPER_MANUAL.md reference |
 | STATUS.md update | Complete — This entry; header metadata refreshed with current date and completion status |
 
+## 2026-04-06 Onboarding Phase 5 Hardening (P5-T1 to P5-T3)
+
+| Deliverable | Result |
+|-------------|--------|
+| Module gate consistency audit | Complete — UI/API/route/adapter cross-check enforced by `src/lib/onboarding/module-gates-audit.test.ts`; sidebar now org-module + role aware; employees-new page now enforces admin + onboarding module |
+| Route/API hardening | Complete — outbox processing is now org-scoped (`org_id` filtered through repository + worker + API route) to preserve tenant isolation during retry/reconcile operations |
+| Observability scaffolding | Complete — onboarding metrics/alert signal framework added in `src/lib/onboarding/observability.ts`, wired into onboarding run lifecycle, intake flow, and outbox worker |
+| Alert threshold tests | Complete — `src/lib/onboarding/observability.test.ts` validates failure/retry spike detection and min-sample suppression behavior |
+| Operator runbook updates | Complete — `docs/integration/ONBOARDING_OPERATOR_RUNBOOK.md` added for intake/invite operations, module gates, outbox triage, metric names, and alert threshold envs |
+
+## 2026-04-06 Onboarding Phase 6 Kickoff (Release Gate)
+
+| Deliverable | Result |
+|-------------|--------|
+| Phase 6 TODO breakdown | Complete — added `docs/integration/ONBOARDING_PHASE6_RELEASE_GATE_PLAN.md` with `P6-T1` through `P6-T4` mapped to spec sections 15-17 |
+| Acceptance matrix automation slice (`P6-T1`) | In progress — added executable matrix suite `src/lib/onboarding/phase6-release-gate.test.ts` covering spec acceptance scenarios 1-5 across two-org contexts |
+| Dedicated test entrypoint | Complete — added `npm run test:onboarding-phase6` for focused release-gate validation |
+
 ## 2026-04-02 Training + Module Gateway Production Readiness Audit
 
 Full report: `docs/integration/TRAINING_GATEWAY_AUDIT_2026-04.md`

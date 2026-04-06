@@ -12,19 +12,12 @@ import {
   upsertModuleGatewayAclRules,
 } from '@/lib/modules-gateway/persistence';
 import { listModuleCatalog } from '@/lib/modules-gateway/runner';
+import { isPlatformAdminUser } from '@/lib/platform-admin';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
 
 const ORG_WIDE_ACL_USER_ID = '*';
-
-/**
- * Platform admins can manage module toggles for any org.
- */
-const PLATFORM_ADMIN_IDS = new Set<string>([
-  // Jacob Johnston
-  'user_2stXa9LWIFKFCMlkBsfVGoZLhgK',
-]);
 
 type AccessScope = 'platform' | 'org_admin';
 
@@ -74,7 +67,7 @@ async function resolveToggleAccess(): Promise<ToggleAccessContext> {
     throw new Error('UNAUTHORIZED');
   }
 
-  if (PLATFORM_ADMIN_IDS.has(userId)) {
+  if (isPlatformAdminUser(userId)) {
     return {
       scope: 'platform',
       userId,
@@ -243,7 +236,9 @@ export async function GET(request: Request) {
       enabledModules = await getOrgModules(effectiveOrgId);
       const orgRow = orgs.find((o) => o.id === effectiveOrgId);
       planDefaults = getModulesByPlan(orgRow?.plan ?? 'trial');
-      moduleGatewayModules = await listGatewayModuleToggles(effectiveOrgId);
+      moduleGatewayModules = access.scope === 'platform'
+        ? await listGatewayModuleToggles(effectiveOrgId)
+        : [];
     }
 
     let recentToggles: Array<Record<string, unknown>> = [];
@@ -305,13 +300,13 @@ export async function POST(request: Request) {
   try {
     const body = await request.json();
     const requestedOrgId = typeof body.orgId === 'string' ? body.orgId.trim() : '';
-    if (!requestedOrgId) {
-      return Response.json({ ok: false, error: 'orgId is required' }, { status: 400 });
+    if (access.scope === 'platform' && !requestedOrgId) {
+      return Response.json({ ok: false, error: 'orgId is required for platform requests' }, { status: 400 });
     }
 
     let orgId = '';
     try {
-      orgId = resolveEffectiveOrgId(access, requestedOrgId);
+      orgId = resolveEffectiveOrgId(access, requestedOrgId || null);
     } catch (error) {
       return errorResponse(error);
     }
@@ -321,6 +316,10 @@ export async function POST(request: Request) {
     }
 
     if (body.kind === 'module-gateway') {
+      if (access.scope !== 'platform') {
+        return Response.json({ ok: false, error: 'Forbidden' }, { status: 403 });
+      }
+
       const moduleId = typeof body.moduleId === 'string' ? body.moduleId.trim() : '';
       const enabled = body.enabled === true;
       if (!moduleId) {
