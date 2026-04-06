@@ -681,3 +681,18 @@ export function getModulesByPlan(plan: string): string[] {
   const tier = normalizePlanTier(plan);
   return [...PLAN_DEFAULTS[tier]];
 }
+
+export function getKnownModuleIds(): string[] {
+  return MODULE_SEEDS.map((item) => item.id);
+}
+
+export function getKnownGatewayModuleIds(): string[] {
+  const gateways = new Set<string>();
+  for (const moduleSeed of MODULE_SEEDS) {
+    const gatewayModule = moduleSeed.metadata?.gatewayModule;
+    if (typeof gatewayModule === 'string' && gatewayModule.trim()) {
+      gateways.add(gatewayModule.trim());
+    }
+  }
+  return [...gateways].sort((a, b) => a.localeCompare(b));
+}

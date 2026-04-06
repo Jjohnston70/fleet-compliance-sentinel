@@ -18,7 +18,18 @@ export type OrgAuditEventType =
   | 'org.offboarding.scheduled'
   | 'org.offboarding.soft_deleted'
   | 'org.offboarding.hard_deleted'
-  | 'invoice.pdf_parsed';
+  | 'invoice.pdf_parsed'
+  | 'employee.profile.created'
+  | 'employee.profile.updated'
+  | 'employee.onboarding.started'
+  | 'employee.onboarding.step.requested'
+  | 'employee.training.assignment.requested'
+  | 'employee.training.assignment.completed'
+  | 'employee.tasks.seeded'
+  | 'employee.notifications.queued'
+  | 'employee.suspense.seeded'
+  | 'employee.onboarding.completed'
+  | 'employee.onboarding.failed';
 
 export async function recordOrgAuditEvent(input: {
   orgId: string;

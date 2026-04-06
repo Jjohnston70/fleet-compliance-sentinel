@@ -8,9 +8,11 @@
   ],
   "scripts": {
     "dev": "next dev",
-    "build": "tsx scripts/build-cfr-index.mjs && tsx scripts/build-demo-index.mjs && next build",
+    "build": "npm run preflight:skill-packs && tsx scripts/build-cfr-index.mjs && tsx scripts/build-demo-index.mjs && next build",
     "start": "next start",
     "lint": "next lint",
+    "preflight:skill-packs": "tsx scripts/preflight-skill-packs.ts",
+    "test:onboarding-phase1": "tsx --test src/lib/onboarding/*.test.ts",
     "docs:vendors": "node scripts/download-vendor-docs.mjs",
     "docs:vendors:prepare": "node scripts/prepare-vendor-docs-package.mjs",
     "docs:vendors:package": "npm run docs:vendors && npm run docs:vendors:prepare",
