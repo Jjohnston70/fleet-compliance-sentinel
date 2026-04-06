@@ -300,6 +300,21 @@ function defaultAdapters(): OnboardingAdapters {
         linkedAssignmentCount: 1,
       };
     },
+    async seedOnboardingTask() {
+      return {
+        status: 'completed',
+        reason: 'primary_created',
+        taskId: 'task-1',
+        externalTaskId: 'ext-task-1',
+      };
+    },
+    async queueOnboardingNotification() {
+      return {
+        status: 'completed',
+        reason: 'queued',
+        queuedCount: 1,
+      };
+    },
   };
 }
 

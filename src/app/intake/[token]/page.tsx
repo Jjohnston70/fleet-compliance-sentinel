@@ -25,6 +25,41 @@ interface IntakeData {
   driver_name?: string;
 }
 
+interface OnboardingLookupData {
+  employeeProfile?: {
+    firstName?: string;
+    lastName?: string;
+    workEmail?: string;
+    department?: string;
+    jobTitle?: string;
+    hireDate?: string;
+    isDriver?: boolean;
+    hazmatRequired?: boolean;
+  };
+}
+
+interface OnboardingIntakePayload {
+  firstName: string;
+  lastName: string;
+  workEmail: string;
+  department: string;
+  jobTitle: string;
+  hireDate: string;
+  isDriver: boolean;
+  hazmatRequired: boolean;
+}
+
+const ONBOARDING_INITIAL: OnboardingIntakePayload = {
+  firstName: '',
+  lastName: '',
+  workEmail: '',
+  department: '',
+  jobTitle: '',
+  hireDate: '',
+  isDriver: false,
+  hazmatRequired: false,
+};
+
 const SECTION_CONFIGS: Record<string, Section> = {
   personal: {
     id: 'personal',
@@ -96,10 +131,13 @@ export default function IntakePage() {
   const params = useParams();
   const token = params.token as string;
 
+  const [flowType, setFlowType] = useState<'dq' | 'onboarding'>('dq');
   const [sections, setSections] = useState<Section[]>([]);
   const [driverName, setDriverName] = useState('');
   const [currentSectionIdx, setCurrentSectionIdx] = useState(0);
   const [responses, setResponses] = useState<Record<string, Record<string, string | boolean>>>({});
+  const [onboardingForm, setOnboardingForm] = useState<OnboardingIntakePayload>(ONBOARDING_INITIAL);
+  const [onboardingRunId, setOnboardingRunId] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [submitting, setSubmitting] = useState(false);
@@ -108,6 +146,26 @@ export default function IntakePage() {
   useEffect(() => {
     async function loadIntake() {
       try {
+        const onboardingRes = await fetch(`/api/fleet-compliance/onboarding/intake/${token}`);
+        if (onboardingRes.ok) {
+          const onboardingData: OnboardingLookupData = await onboardingRes.json();
+          const profile = onboardingData.employeeProfile || {};
+          setFlowType('onboarding');
+          setOnboardingForm({
+            firstName: profile.firstName || '',
+            lastName: profile.lastName || '',
+            workEmail: profile.workEmail || '',
+            department: profile.department || '',
+            jobTitle: profile.jobTitle || '',
+            hireDate: profile.hireDate || '',
+            isDriver: Boolean(profile.isDriver),
+            hazmatRequired: Boolean(profile.hazmatRequired),
+          });
+          setDriverName([profile.firstName, profile.lastName].filter(Boolean).join(' '));
+          setLoading(false);
+          return;
+        }
+
         const res = await fetch(`/api/fleet-compliance/dq/intake/${token}`);
         if (!res.ok) {
           if (res.status === 404) {
@@ -199,6 +257,28 @@ export default function IntakePage() {
     }
   };
 
+  const handleOnboardingSubmit = async () => {
+    setSubmitting(true);
+    try {
+      const res = await fetch(`/api/fleet-compliance/onboarding/intake/${token}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(onboardingForm),
+      });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) {
+        throw new Error(typeof data.error === 'string' ? data.error : 'Failed to submit intake');
+      }
+      const runId = typeof data?.run?.id === 'string' ? data.run.id : 'submitted';
+      setOnboardingRunId(runId);
+      setCompleted(true);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Unknown error');
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
   if (completed) {
     return (
       <div
@@ -244,7 +324,9 @@ export default function IntakePage() {
               marginBottom: '2rem',
             }}
           >
-            Your intake form has been submitted successfully. Your fleet manager will contact you with next steps.
+            {flowType === 'onboarding'
+              ? `Your onboarding intake was submitted successfully.${onboardingRunId ? ` Run ID: ${onboardingRunId}.` : ''}`
+              : 'Your intake form has been submitted successfully. Your fleet manager will contact you with next steps.'}
           </p>
         </div>
       </div>
@@ -286,6 +368,150 @@ export default function IntakePage() {
           <p style={{ color: '#4a4a4a', marginBottom: '1.5rem' }}>
             {error}
           </p>
+        </div>
+      </div>
+    );
+  }
+
+  if (flowType === 'onboarding') {
+    return (
+      <div
+        style={{
+          minHeight: '100vh',
+          background: '#ffffff',
+          padding: '2rem 1rem',
+        }}
+      >
+        <div style={{ maxWidth: '640px', margin: '0 auto' }}>
+          <div style={{ marginBottom: '1.5rem' }}>
+            <p
+              style={{
+                fontSize: '0.8rem',
+                color: '#3d8eb9',
+                fontWeight: 700,
+                letterSpacing: '0.08em',
+                textTransform: 'uppercase',
+                marginBottom: '0.5rem',
+              }}
+            >
+              Employee Onboarding Intake
+            </p>
+            <h1
+              style={{
+                color: '#1a3a5c',
+                fontSize: '1.8rem',
+                fontWeight: 700,
+                letterSpacing: '-0.02em',
+                marginBottom: '0.5rem',
+              }}
+            >
+              Complete your profile
+            </h1>
+            <p style={{ color: '#4a4a4a', fontSize: '1rem' }}>
+              Fill out this form once to start your onboarding workflow.
+            </p>
+          </div>
+
+          <form
+            onSubmit={(event) => {
+              event.preventDefault();
+              handleOnboardingSubmit();
+            }}
+          >
+            <div style={{ display: 'grid', gap: '1rem' }}>
+              <label>
+                <span style={{ display: 'block', marginBottom: '0.35rem', fontWeight: 600 }}>First Name *</span>
+                <input
+                  type="text"
+                  required
+                  value={onboardingForm.firstName}
+                  onChange={(event) => setOnboardingForm((prev) => ({ ...prev, firstName: event.target.value }))}
+                  style={{ width: '100%', padding: '0.75rem 0.85rem', border: '1px solid #d1d5db', borderRadius: '8px' }}
+                />
+              </label>
+              <label>
+                <span style={{ display: 'block', marginBottom: '0.35rem', fontWeight: 600 }}>Last Name *</span>
+                <input
+                  type="text"
+                  required
+                  value={onboardingForm.lastName}
+                  onChange={(event) => setOnboardingForm((prev) => ({ ...prev, lastName: event.target.value }))}
+                  style={{ width: '100%', padding: '0.75rem 0.85rem', border: '1px solid #d1d5db', borderRadius: '8px' }}
+                />
+              </label>
+              <label>
+                <span style={{ display: 'block', marginBottom: '0.35rem', fontWeight: 600 }}>Work Email</span>
+                <input
+                  type="email"
+                  value={onboardingForm.workEmail}
+                  onChange={(event) => setOnboardingForm((prev) => ({ ...prev, workEmail: event.target.value }))}
+                  style={{ width: '100%', padding: '0.75rem 0.85rem', border: '1px solid #d1d5db', borderRadius: '8px' }}
+                />
+              </label>
+              <label>
+                <span style={{ display: 'block', marginBottom: '0.35rem', fontWeight: 600 }}>Department</span>
+                <input
+                  type="text"
+                  value={onboardingForm.department}
+                  onChange={(event) => setOnboardingForm((prev) => ({ ...prev, department: event.target.value }))}
+                  style={{ width: '100%', padding: '0.75rem 0.85rem', border: '1px solid #d1d5db', borderRadius: '8px' }}
+                />
+              </label>
+              <label>
+                <span style={{ display: 'block', marginBottom: '0.35rem', fontWeight: 600 }}>Job Title</span>
+                <input
+                  type="text"
+                  value={onboardingForm.jobTitle}
+                  onChange={(event) => setOnboardingForm((prev) => ({ ...prev, jobTitle: event.target.value }))}
+                  style={{ width: '100%', padding: '0.75rem 0.85rem', border: '1px solid #d1d5db', borderRadius: '8px' }}
+                />
+              </label>
+              <label>
+                <span style={{ display: 'block', marginBottom: '0.35rem', fontWeight: 600 }}>Hire Date</span>
+                <input
+                  type="date"
+                  value={onboardingForm.hireDate}
+                  onChange={(event) => setOnboardingForm((prev) => ({ ...prev, hireDate: event.target.value }))}
+                  style={{ width: '100%', padding: '0.75rem 0.85rem', border: '1px solid #d1d5db', borderRadius: '8px' }}
+                />
+              </label>
+              <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                <input
+                  type="checkbox"
+                  checked={onboardingForm.isDriver}
+                  onChange={(event) => setOnboardingForm((prev) => ({ ...prev, isDriver: event.target.checked }))}
+                />
+                Driver role
+              </label>
+              <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                <input
+                  type="checkbox"
+                  checked={onboardingForm.hazmatRequired}
+                  onChange={(event) => setOnboardingForm((prev) => ({ ...prev, hazmatRequired: event.target.checked }))}
+                />
+                Hazmat required
+              </label>
+            </div>
+
+            <div style={{ marginTop: '1.5rem' }}>
+              <button
+                type="submit"
+                disabled={submitting}
+                style={{
+                  padding: '0.75rem 1.5rem',
+                  background: '#3d8eb9',
+                  color: '#ffffff',
+                  border: 'none',
+                  borderRadius: '8px',
+                  cursor: submitting ? 'default' : 'pointer',
+                  fontWeight: 600,
+                  opacity: submitting ? 0.6 : 1,
+                }}
+              >
+                {submitting ? 'Submitting…' : 'Submit intake'}
+              </button>
+            </div>
+          </form>
         </div>
       </div>
     );

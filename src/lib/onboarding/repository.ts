@@ -3,6 +3,9 @@ import type {
   OnboardingEmployeeInput,
   OnboardingEmployeeProfile,
   OnboardingEventEnvelope,
+  OnboardingIntakeTokenRecord,
+  OnboardingOutboxEventRecord,
+  OnboardingOutboxStatus,
   OnboardingRunCreateInput,
   OnboardingRunDetail,
   OnboardingRunRecord,
@@ -116,6 +119,44 @@ function mapTaskRow(row: Record<string, unknown>): OnboardingTaskRecord {
     dueDate: normalizeIsoDate(row.due_date),
     status: String(row.status ?? 'pending'),
     externalTaskId: normalizeOptionalText(row.external_task_id),
+    syncAttemptCount: Number(row.sync_attempt_count ?? 0),
+    syncLastError: normalizeOptionalText(row.sync_last_error, 2_000),
+    metadata: parseObject(row.metadata),
+    createdAt: String(row.created_at ?? ''),
+    updatedAt: String(row.updated_at ?? ''),
+  };
+}
+
+function mapOutboxRow(row: Record<string, unknown>): OnboardingOutboxEventRecord {
+  return {
+    id: String(row.id ?? ''),
+    orgId: String(row.org_id ?? ''),
+    runId: row.run_id ? String(row.run_id) : null,
+    eventType: String(row.event_type ?? ''),
+    payload: parseObject(row.payload),
+    status: String(row.status ?? 'pending') as OnboardingOutboxStatus,
+    attemptCount: Number(row.attempt_count ?? 0),
+    nextAttemptAt: String(row.next_attempt_at ?? ''),
+    lastError: normalizeOptionalText(row.last_error, 2_000),
+    dedupeKey: normalizeOptionalText(row.dedupe_key),
+    createdAt: String(row.created_at ?? ''),
+    processedAt: row.processed_at ? String(row.processed_at) : null,
+  };
+}
+
+function mapIntakeTokenRow(row: Record<string, unknown>): OnboardingIntakeTokenRecord {
+  return {
+    id: String(row.id ?? ''),
+    orgId: String(row.org_id ?? ''),
+    employeeProfileId: row.employee_profile_id ? String(row.employee_profile_id) : null,
+    tokenHash: String(row.token_hash ?? ''),
+    status: String(row.status ?? 'issued') as OnboardingIntakeTokenRecord['status'],
+    expiresAt: String(row.expires_at ?? ''),
+    issuedBy: String(row.issued_by ?? ''),
+    consumedAt: row.consumed_at ? String(row.consumed_at) : null,
+    inviteAfterIntake: parseBool(row.invite_after_intake),
+    inviteOverrideAllowed: parseBool(row.invite_override_allowed),
+    intakeEmail: normalizeOptionalText(row.intake_email, 320),
     metadata: parseObject(row.metadata),
     createdAt: String(row.created_at ?? ''),
     updatedAt: String(row.updated_at ?? ''),
@@ -219,9 +260,14 @@ export async function ensureOnboardingTables(): Promise<void> {
       attempt_count INT NOT NULL DEFAULT 0,
       next_attempt_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
       last_error TEXT,
+      dedupe_key TEXT,
       created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
       processed_at TIMESTAMPTZ
     )
+  `;
+  await sql`
+    ALTER TABLE onboarding_outbox_events
+    ADD COLUMN IF NOT EXISTS dedupe_key TEXT
   `;
   await sql`
     CREATE INDEX IF NOT EXISTS idx_onboarding_outbox_pending
@@ -230,6 +276,11 @@ export async function ensureOnboardingTables(): Promise<void> {
   await sql`
     CREATE INDEX IF NOT EXISTS idx_onboarding_outbox_org
     ON onboarding_outbox_events(org_id, created_at DESC)
+  `;
+  await sql`
+    CREATE UNIQUE INDEX IF NOT EXISTS idx_onboarding_outbox_dedupe_active
+    ON onboarding_outbox_events(dedupe_key)
+    WHERE dedupe_key IS NOT NULL AND status IN ('pending', 'retrying')
   `;
 
   await sql`
@@ -243,6 +294,8 @@ export async function ensureOnboardingTables(): Promise<void> {
       due_date DATE,
       status TEXT NOT NULL DEFAULT 'pending',
       external_task_id TEXT,
+      sync_attempt_count INT NOT NULL DEFAULT 0,
+      sync_last_error TEXT,
       metadata JSONB NOT NULL DEFAULT '{}'::jsonb,
       created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
       updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
@@ -250,8 +303,43 @@ export async function ensureOnboardingTables(): Promise<void> {
     )
   `;
   await sql`
+    ALTER TABLE onboarding_tasks
+    ADD COLUMN IF NOT EXISTS sync_attempt_count INT NOT NULL DEFAULT 0
+  `;
+  await sql`
+    ALTER TABLE onboarding_tasks
+    ADD COLUMN IF NOT EXISTS sync_last_error TEXT
+  `;
+  await sql`
     CREATE INDEX IF NOT EXISTS idx_onboarding_tasks_org
     ON onboarding_tasks(org_id, created_at DESC)
+  `;
+
+  await sql`
+    CREATE TABLE IF NOT EXISTS onboarding_intake_tokens (
+      id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+      org_id TEXT NOT NULL REFERENCES organizations(id) ON DELETE CASCADE,
+      employee_profile_id UUID REFERENCES employee_profiles(id) ON DELETE SET NULL,
+      token_hash TEXT NOT NULL UNIQUE,
+      status TEXT NOT NULL DEFAULT 'issued',
+      expires_at TIMESTAMPTZ NOT NULL,
+      issued_by TEXT NOT NULL,
+      consumed_at TIMESTAMPTZ,
+      invite_after_intake BOOLEAN NOT NULL DEFAULT TRUE,
+      invite_override_allowed BOOLEAN NOT NULL DEFAULT TRUE,
+      intake_email TEXT,
+      metadata JSONB NOT NULL DEFAULT '{}'::jsonb,
+      created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+      updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+    )
+  `;
+  await sql`
+    CREATE INDEX IF NOT EXISTS idx_onboarding_intake_tokens_org
+    ON onboarding_intake_tokens(org_id, created_at DESC)
+  `;
+  await sql`
+    CREATE INDEX IF NOT EXISTS idx_onboarding_intake_tokens_status
+    ON onboarding_intake_tokens(status, expires_at)
   `;
 }
 
@@ -660,4 +748,312 @@ export async function upsertFallbackTask(input: {
     RETURNING *
   `;
   return mapTaskRow(rows[0] as Record<string, unknown>);
+}
+
+export async function updateOnboardingTaskExternalId(input: {
+  orgId: string;
+  taskId: string;
+  externalTaskId: string;
+}): Promise<OnboardingTaskRecord | null> {
+  await ensureOnboardingTables();
+  const sql = getSQL();
+  const rows = await sql`
+    UPDATE onboarding_tasks
+    SET
+      external_task_id = ${input.externalTaskId},
+      sync_last_error = NULL,
+      updated_at = NOW()
+    WHERE org_id = ${input.orgId}
+      AND id = ${input.taskId}::uuid
+    RETURNING *
+  `;
+  if (rows.length === 0) return null;
+  return mapTaskRow(rows[0] as Record<string, unknown>);
+}
+
+export async function markOnboardingTaskSyncFailure(input: {
+  orgId: string;
+  taskId: string;
+  errorMessage: string;
+}): Promise<OnboardingTaskRecord | null> {
+  await ensureOnboardingTables();
+  const sql = getSQL();
+  const rows = await sql`
+    UPDATE onboarding_tasks
+    SET
+      sync_attempt_count = sync_attempt_count + 1,
+      sync_last_error = ${input.errorMessage.slice(0, 2000)},
+      updated_at = NOW()
+    WHERE org_id = ${input.orgId}
+      AND id = ${input.taskId}::uuid
+    RETURNING *
+  `;
+  if (rows.length === 0) return null;
+  return mapTaskRow(rows[0] as Record<string, unknown>);
+}
+
+export async function listUnsyncedOnboardingTasks(input: {
+  orgId?: string;
+  limit?: number;
+}): Promise<OnboardingTaskRecord[]> {
+  await ensureOnboardingTables();
+  const sql = getSQL();
+  const limit = Math.max(1, Math.min(input.limit ?? 100, 500));
+
+  if (input.orgId) {
+    const rows = await sql`
+      SELECT *
+      FROM onboarding_tasks
+      WHERE org_id = ${input.orgId}
+        AND external_task_id IS NULL
+      ORDER BY created_at ASC
+      LIMIT ${limit}
+    `;
+    return rows.map((row) => mapTaskRow(row as Record<string, unknown>));
+  }
+
+  const rows = await sql`
+    SELECT *
+    FROM onboarding_tasks
+    WHERE external_task_id IS NULL
+    ORDER BY created_at ASC
+    LIMIT ${limit}
+  `;
+  return rows.map((row) => mapTaskRow(row as Record<string, unknown>));
+}
+
+export async function enqueueOutboxEvent(input: {
+  orgId: string;
+  runId?: string | null;
+  eventType: string;
+  payload: Record<string, unknown>;
+  dedupeKey?: string | null;
+}): Promise<OnboardingOutboxEventRecord> {
+  await ensureOnboardingTables();
+  const sql = getSQL();
+  const rows = await sql`
+    INSERT INTO onboarding_outbox_events (
+      org_id,
+      run_id,
+      event_type,
+      payload,
+      status,
+      attempt_count,
+      next_attempt_at,
+      dedupe_key
+    ) VALUES (
+      ${input.orgId},
+      ${input.runId ?? null},
+      ${input.eventType},
+      ${JSON.stringify(input.payload)}::jsonb,
+      'pending',
+      0,
+      NOW(),
+      ${input.dedupeKey ?? null}
+    )
+    ON CONFLICT (dedupe_key)
+    WHERE dedupe_key IS NOT NULL
+    DO UPDATE SET
+      payload = EXCLUDED.payload,
+      run_id = EXCLUDED.run_id
+    RETURNING *
+  `;
+  return mapOutboxRow(rows[0] as Record<string, unknown>);
+}
+
+export async function listDueOutboxEvents(input?: {
+  eventTypes?: string[];
+  limit?: number;
+}): Promise<OnboardingOutboxEventRecord[]> {
+  await ensureOnboardingTables();
+  const sql = getSQL();
+  const limit = Math.max(1, Math.min(input?.limit ?? 100, 500));
+  const eventTypes = Array.isArray(input?.eventTypes)
+    ? input!.eventTypes.filter((entry) => typeof entry === 'string' && entry.trim().length > 0)
+    : [];
+
+  if (eventTypes.length > 0) {
+    const rows = await sql`
+      SELECT *
+      FROM onboarding_outbox_events
+      WHERE status IN ('pending', 'retrying')
+        AND next_attempt_at <= NOW()
+        AND event_type = ANY(${eventTypes}::text[])
+      ORDER BY next_attempt_at ASC, created_at ASC
+      LIMIT ${limit}
+    `;
+    return rows.map((row) => mapOutboxRow(row as Record<string, unknown>));
+  }
+
+  const rows = await sql`
+    SELECT *
+    FROM onboarding_outbox_events
+    WHERE status IN ('pending', 'retrying')
+      AND next_attempt_at <= NOW()
+    ORDER BY next_attempt_at ASC, created_at ASC
+    LIMIT ${limit}
+  `;
+  return rows.map((row) => mapOutboxRow(row as Record<string, unknown>));
+}
+
+export async function markOutboxEventProcessed(input: {
+  eventId: string;
+}): Promise<OnboardingOutboxEventRecord | null> {
+  await ensureOnboardingTables();
+  const sql = getSQL();
+  const rows = await sql`
+    UPDATE onboarding_outbox_events
+    SET
+      status = 'processed',
+      processed_at = NOW()
+    WHERE id = ${input.eventId}::uuid
+    RETURNING *
+  `;
+  if (rows.length === 0) return null;
+  return mapOutboxRow(rows[0] as Record<string, unknown>);
+}
+
+export async function markOutboxEventRetry(input: {
+  eventId: string;
+  nextAttemptAt: Date;
+  terminal: boolean;
+  errorMessage: string;
+}): Promise<OnboardingOutboxEventRecord | null> {
+  await ensureOnboardingTables();
+  const sql = getSQL();
+  const rows = await sql`
+    UPDATE onboarding_outbox_events
+    SET
+      status = CASE WHEN ${input.terminal} THEN 'failed' ELSE 'retrying' END,
+      attempt_count = attempt_count + 1,
+      next_attempt_at = ${input.nextAttemptAt.toISOString()},
+      last_error = ${input.errorMessage.slice(0, 2000)},
+      processed_at = CASE WHEN ${input.terminal} THEN NOW() ELSE NULL END
+    WHERE id = ${input.eventId}::uuid
+    RETURNING *
+  `;
+  if (rows.length === 0) return null;
+  return mapOutboxRow(rows[0] as Record<string, unknown>);
+}
+
+export async function createOnboardingIntakeToken(input: {
+  orgId: string;
+  employeeProfileId?: string | null;
+  tokenHash: string;
+  expiresAt: string;
+  issuedBy: string;
+  inviteAfterIntake: boolean;
+  inviteOverrideAllowed: boolean;
+  intakeEmail?: string | null;
+  metadata?: Record<string, unknown>;
+}): Promise<OnboardingIntakeTokenRecord> {
+  await ensureOnboardingTables();
+  const sql = getSQL();
+  const rows = await sql`
+    INSERT INTO onboarding_intake_tokens (
+      org_id,
+      employee_profile_id,
+      token_hash,
+      status,
+      expires_at,
+      issued_by,
+      invite_after_intake,
+      invite_override_allowed,
+      intake_email,
+      metadata
+    ) VALUES (
+      ${input.orgId},
+      ${input.employeeProfileId ?? null},
+      ${input.tokenHash},
+      'issued',
+      ${input.expiresAt},
+      ${input.issuedBy},
+      ${input.inviteAfterIntake},
+      ${input.inviteOverrideAllowed},
+      ${normalizeOptionalText(input.intakeEmail, 320)},
+      ${JSON.stringify(input.metadata ?? {})}::jsonb
+    )
+    RETURNING *
+  `;
+  return mapIntakeTokenRow(rows[0] as Record<string, unknown>);
+}
+
+export async function getOnboardingIntakeTokenByHash(input: {
+  tokenHash: string;
+}): Promise<OnboardingIntakeTokenRecord | null> {
+  await ensureOnboardingTables();
+  const sql = getSQL();
+  const rows = await sql`
+    SELECT *
+    FROM onboarding_intake_tokens
+    WHERE token_hash = ${input.tokenHash}
+    LIMIT 1
+  `;
+  if (rows.length === 0) return null;
+  return mapIntakeTokenRow(rows[0] as Record<string, unknown>);
+}
+
+export async function claimOnboardingIntakeToken(input: {
+  tokenHash: string;
+}): Promise<OnboardingIntakeTokenRecord | null> {
+  await ensureOnboardingTables();
+  const sql = getSQL();
+  const rows = await sql`
+    UPDATE onboarding_intake_tokens
+    SET
+      status = 'processing',
+      updated_at = NOW()
+    WHERE token_hash = ${input.tokenHash}
+      AND status = 'issued'
+      AND expires_at > NOW()
+    RETURNING *
+  `;
+  if (rows.length === 0) return null;
+  return mapIntakeTokenRow(rows[0] as Record<string, unknown>);
+}
+
+export async function releaseOnboardingIntakeToken(input: {
+  tokenHash: string;
+  errorMessage?: string;
+}): Promise<OnboardingIntakeTokenRecord | null> {
+  await ensureOnboardingTables();
+  const sql = getSQL();
+  const rows = await sql`
+    UPDATE onboarding_intake_tokens
+    SET
+      status = 'issued',
+      metadata = (COALESCE(metadata, '{}'::jsonb) || ${JSON.stringify({
+        lastError: normalizeOptionalText(input.errorMessage, 1000),
+        releasedAt: new Date().toISOString(),
+      })}::jsonb),
+      updated_at = NOW()
+    WHERE token_hash = ${input.tokenHash}
+      AND status = 'processing'
+      AND expires_at > NOW()
+    RETURNING *
+  `;
+  if (rows.length === 0) return null;
+  return mapIntakeTokenRow(rows[0] as Record<string, unknown>);
+}
+
+export async function consumeOnboardingIntakeToken(input: {
+  tokenHash: string;
+  metadata?: Record<string, unknown>;
+}): Promise<OnboardingIntakeTokenRecord | null> {
+  await ensureOnboardingTables();
+  const sql = getSQL();
+  const rows = await sql`
+    UPDATE onboarding_intake_tokens
+    SET
+      status = 'consumed',
+      consumed_at = NOW(),
+      metadata = (COALESCE(metadata, '{}'::jsonb) || ${JSON.stringify(input.metadata ?? {})}::jsonb),
+      updated_at = NOW()
+    WHERE token_hash = ${input.tokenHash}
+      AND status = 'processing'
+      AND expires_at > NOW()
+    RETURNING *
+  `;
+  if (rows.length === 0) return null;
+  return mapIntakeTokenRow(rows[0] as Record<string, unknown>);
 }

@@ -28,6 +28,9 @@ export type OrgAuditEventType =
   | 'employee.tasks.seeded'
   | 'employee.notifications.queued'
   | 'employee.suspense.seeded'
+  | 'employee.intake.token.issued'
+  | 'employee.intake.submitted'
+  | 'employee.profile.invited'
   | 'employee.onboarding.completed'
   | 'employee.onboarding.failed';
 

@@ -1,0 +1,5 @@
+{
+  "templateKey": "employee-onboarding-completed",
+  "subject": "Onboarding completed for {{employeeFullName}}",
+  "html": "<p>Hello {{recipientName}},</p><p>Onboarding is complete for <strong>{{employeeFullName}}</strong>.</p><p>Run ID: {{runId}}</p><p>Regards,<br/>Fleet Compliance Sentinel</p>"
+}

@@ -1,6 +1,8 @@
 import { randomUUID } from 'node:crypto';
 import { assignHazmatTrainingIfRequired, type TrainingAssignmentResult } from '@/lib/onboarding/adapters/training-adapter';
 import { seedSuspenseFromTraining, type SuspenseSeedResult } from '@/lib/onboarding/adapters/suspense-seed-adapter';
+import { queueOnboardingNotification, type NotificationQueueResult } from '@/lib/onboarding/adapters/notification-adapter';
+import { seedOnboardingTask, type TaskSeedResult } from '@/lib/onboarding/adapters/task-adapter';
 import { evaluateOnboardingRules } from '@/lib/onboarding/rules-engine';
 import type {
   OnboardingEmployeeInput,
@@ -87,6 +89,21 @@ export interface OnboardingAdapters {
     orgId: string;
     employee: OnboardingEmployeeProfile;
   }): Promise<SuspenseSeedResult>;
+  seedOnboardingTask(input: {
+    orgId: string;
+    runId: string;
+    employee: OnboardingEmployeeProfile;
+    taskKey: string;
+    title: string;
+    dueDate?: string | null;
+    metadata?: Record<string, unknown>;
+  }): Promise<TaskSeedResult>;
+  queueOnboardingNotification(input: {
+    orgId: string;
+    runId: string;
+    employee: OnboardingEmployeeProfile;
+    templateKey: 'employee-onboarding-completed' | 'employee-onboarding-started';
+  }): Promise<NotificationQueueResult>;
 }
 
 const DEFAULT_FALLBACK_TASK_KEY = 'verify-profile-data';
@@ -124,6 +141,8 @@ function deriveIdempotencyKey(base: string | null | undefined): string | null {
 const DEFAULT_ADAPTERS: OnboardingAdapters = {
   assignHazmatTrainingIfRequired,
   seedSuspenseFromTraining,
+  seedOnboardingTask,
+  queueOnboardingNotification,
 };
 
 export class OnboardingService {
@@ -332,12 +351,115 @@ export class OnboardingService {
       },
     });
 
+    await this.store.insertOnboardingEvent(
+      createEvent({
+        eventType: 'employee.onboarding.step.requested',
+        orgId: input.run.orgId,
+        runId: input.run.id,
+        actorUserId: input.actorUserId,
+        payload: { stepKey: 'tasks.seed' },
+      }),
+    );
+    const taskSeedResult = await this.adapters.seedOnboardingTask({
+      orgId: input.run.orgId,
+      runId: input.run.id,
+      employee: input.employeeProfile,
+      taskKey: DEFAULT_FALLBACK_TASK_KEY,
+      title: 'Verify onboarding profile data',
+      dueDate: input.employeeProfile.hireDate,
+      metadata: {
+        source: input.run.source,
+        generatedBy: 'onboarding-baseline',
+      },
+    });
+    await this.persistStep({
+      runId: input.run.id,
+      stepKey: 'tasks.seed',
+      status:
+        taskSeedResult.status === 'failed'
+          ? 'failed'
+          : taskSeedResult.status === 'skipped'
+            ? 'skipped'
+            : 'completed',
+      output: {
+        completedBy: input.actorUserId,
+        deterministic: true,
+        result: taskSeedResult,
+      },
+      errorMessage: taskSeedResult.status === 'failed'
+        ? taskSeedResult.message || 'task seeding failed'
+        : null,
+    });
+    await this.store.insertOnboardingEvent(
+      createEvent({
+        eventType: 'employee.tasks.seeded',
+        orgId: input.run.orgId,
+        runId: input.run.id,
+        actorUserId: input.actorUserId,
+        payload: {
+          status: taskSeedResult.status,
+          reason: taskSeedResult.reason,
+          queuedForRetry: Boolean(taskSeedResult.queuedForRetry),
+          hasExternalTaskId: Boolean(taskSeedResult.externalTaskId),
+        },
+      }),
+    );
+
+    await this.store.insertOnboardingEvent(
+      createEvent({
+        eventType: 'employee.onboarding.step.requested',
+        orgId: input.run.orgId,
+        runId: input.run.id,
+        actorUserId: input.actorUserId,
+        payload: { stepKey: 'notifications.queue' },
+      }),
+    );
+    const notificationResult = await this.adapters.queueOnboardingNotification({
+      orgId: input.run.orgId,
+      runId: input.run.id,
+      employee: input.employeeProfile,
+      templateKey: 'employee-onboarding-completed',
+    });
+    await this.persistStep({
+      runId: input.run.id,
+      stepKey: 'notifications.queue',
+      status:
+        notificationResult.status === 'failed'
+          ? 'failed'
+          : notificationResult.status === 'skipped'
+            ? 'skipped'
+            : 'completed',
+      output: {
+        completedBy: input.actorUserId,
+        deterministic: true,
+        result: notificationResult,
+      },
+      errorMessage: notificationResult.status === 'failed'
+        ? notificationResult.message || 'notification queueing failed'
+        : null,
+    });
+    await this.store.insertOnboardingEvent(
+      createEvent({
+        eventType: 'employee.notifications.queued',
+        orgId: input.run.orgId,
+        runId: input.run.id,
+        actorUserId: input.actorUserId,
+        payload: {
+          status: notificationResult.status,
+          reason: notificationResult.reason,
+          queuedCount: notificationResult.queuedCount ?? 0,
+        },
+      }),
+    );
+
     const finalized = await this.store.markRunCompleted({
       orgId: input.run.orgId,
       runId: input.run.id,
       metadata: {
         completedBy: input.actorUserId,
         rules: decisions,
+        taskSeedResult,
+        notificationResult,
       },
     });
 
@@ -352,19 +474,6 @@ export class OnboardingService {
     if (!detail) {
       throw new OnboardingServiceError(500, 'Run detail unavailable after completion');
     }
-
-    await this.store.upsertFallbackTask({
-      orgId: detail.run.orgId,
-      runId: detail.run.id,
-      employeeProfileId: detail.employeeProfile.id,
-      taskKey: DEFAULT_FALLBACK_TASK_KEY,
-      title: 'Verify onboarding profile data',
-      dueDate: detail.employeeProfile.hireDate,
-      metadata: {
-        source: detail.run.source,
-        generatedBy: 'onboarding-baseline',
-      },
-    });
 
     await this.store.insertOnboardingEvent(
       createEvent({

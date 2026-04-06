@@ -102,6 +102,55 @@ export interface OnboardingTaskRecord {
   dueDate: string | null;
   status: string;
   externalTaskId: string | null;
+  syncAttemptCount?: number;
+  syncLastError?: string | null;
+  metadata: Record<string, unknown>;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export const ONBOARDING_OUTBOX_STATUSES = [
+  'pending',
+  'retrying',
+  'processed',
+  'failed',
+] as const;
+
+export type OnboardingOutboxStatus = (typeof ONBOARDING_OUTBOX_STATUSES)[number];
+
+export interface OnboardingOutboxEventRecord {
+  id: string;
+  orgId: string;
+  runId: string | null;
+  eventType: string;
+  payload: Record<string, unknown>;
+  status: OnboardingOutboxStatus;
+  attemptCount: number;
+  nextAttemptAt: string;
+  lastError: string | null;
+  dedupeKey: string | null;
+  createdAt: string;
+  processedAt: string | null;
+}
+
+export type OnboardingIntakeTokenStatus =
+  | 'issued'
+  | 'processing'
+  | 'consumed'
+  | 'revoked';
+
+export interface OnboardingIntakeTokenRecord {
+  id: string;
+  orgId: string;
+  employeeProfileId: string | null;
+  tokenHash: string;
+  status: OnboardingIntakeTokenStatus;
+  expiresAt: string;
+  issuedBy: string;
+  consumedAt: string | null;
+  inviteAfterIntake: boolean;
+  inviteOverrideAllowed: boolean;
+  intakeEmail: string | null;
   metadata: Record<string, unknown>;
   createdAt: string;
   updatedAt: string;
