@@ -320,6 +320,12 @@ Two module-management pages now exist intentionally:
   - Scope: multi-tenant org selection, app module toggles, and module gateway ACL controls
   - Used for platform/operator debugging and gateway governance
 
+### Platform Module Execution Access
+
+- `/fleet-compliance/tools` (Module Tools) is visible only to platform admins.
+- `/api/modules/catalog`, `/api/modules/command-center/tools`, and `/api/modules/run` are platform-admin-only endpoints.
+- Org admins use `/fleet-compliance/settings/modules` as a view/manage surface for plan-governed app modules (no gateway execution controls).
+
 ### Navigation Implementation
 
 ```typescript
@@ -512,8 +518,9 @@ The platform has 96 API routes. Key endpoints are organized by domain.
 | Method | Route | Purpose |
 |--------|-------|---------|
 | GET | `/api/penny/health` | Backend health check |
-| POST | `/api/penny/query` | Query AI (no auth) |
-| GET | `/api/penny/catalog` | Available skills/templates |
+| POST | `/api/penny/query` | Query AI (Clerk-protected proxy to Railway) |
+| GET | `/api/penny/catalog` | Knowledge catalog (merged local + backend) |
+| GET | `/api/penny/skills` | Org-enabled Penny workflow/skill modes |
 
 ### Modules (5 routes)
 
@@ -523,7 +530,7 @@ The platform has 96 API routes. Key endpoints are organized by domain.
 | GET | `/api/modules/status/[id]` | Module status |
 | POST | `/api/modules/run` | Execute module |
 | GET | `/api/modules/artifact` | Fetch artifact |
-| POST | `/api/modules/command-center/tools` | Command center tools |
+| GET | `/api/modules/command-center/tools` | Command center tools |
 
 ### Stripe Billing (3 routes)
 
@@ -811,6 +818,9 @@ railway-backend/
 | `CLERK_SECRET_KEY` | Clerk secret |
 | `DATABASE_URL` | Neon PostgreSQL |
 | `SITE_URL` | Base URL |
+| `FLEET_PLATFORM_ADMIN_USER_IDS` | Comma-separated Clerk user IDs allowed to use platform-only module tooling |
+| `NEXT_PUBLIC_CLERK_SIGN_IN_FALLBACK_REDIRECT_URL` | Default post-login redirect (`/fleet-compliance`) |
+| `NEXT_PUBLIC_CLERK_SIGN_UP_FALLBACK_REDIRECT_URL` | Default post-signup redirect (`/fleet-compliance`) |
 
 ### Penny AI Proxy
 

@@ -1,4 +1,4 @@
-const DEFAULT_AUTH_REDIRECT_URL = '/penny';
+const DEFAULT_AUTH_REDIRECT_URL = '/fleet-compliance';
 
 export type ClerkRedirectConfig = {
   signInFallbackRedirectUrl: string;

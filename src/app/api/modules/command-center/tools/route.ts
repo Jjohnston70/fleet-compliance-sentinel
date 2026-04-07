@@ -3,10 +3,13 @@ import {
   requireFleetComplianceOrgContext,
 } from '@/lib/fleet-compliance-auth';
 import {
+  buildCommandCenterAclPayload,
   evaluateCommandCenterToolAcl,
   listCommandCenterCatalog,
   type CommandCenterCatalogRow,
 } from '@/lib/modules-gateway/persistence';
+import { executeCommandCenterAction } from '@/lib/modules-gateway/command-center-bridge';
+import { isPlatformAdminUser } from '@/lib/platform-admin';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -38,6 +41,53 @@ function scoreToolMatch(row: CommandCenterCatalogRow, query: string): number {
   return score;
 }
 
+function asObject(value: unknown): Record<string, unknown> | null {
+  if (!value || typeof value !== 'object' || Array.isArray(value)) return null;
+  return value as Record<string, unknown>;
+}
+
+function normalizeDiscoveredToolRows(raw: unknown): CommandCenterCatalogRow[] {
+  const payload = Array.isArray(raw)
+    ? raw
+    : (Array.isArray(asObject(raw)?.tools) ? (asObject(raw)?.tools as unknown[]) : []);
+
+  const discoveredAt = new Date().toISOString();
+  return payload
+    .map((entry) => asObject(entry))
+    .filter((entry): entry is Record<string, unknown> => Boolean(entry))
+    .map((entry) => ({
+      qualifiedName: typeof entry.qualifiedName === 'string' ? entry.qualifiedName.trim() : '',
+      moduleId: typeof entry.moduleId === 'string' ? entry.moduleId.trim() : '',
+      toolName: typeof entry.name === 'string' ? entry.name.trim() : '',
+      description: typeof entry.description === 'string' ? entry.description : null,
+      parameters: asObject(entry.parameters) || {},
+      discoveredRunId: null,
+      discoveredAt,
+      updatedAt: discoveredAt,
+    }))
+    .filter((entry) => entry.qualifiedName && entry.moduleId && entry.toolName);
+}
+
+async function discoverLiveTools(orgId: string, userId: string): Promise<CommandCenterCatalogRow[]> {
+  try {
+    const acl = await buildCommandCenterAclPayload({
+      orgId,
+      userId,
+      permission: 'view',
+    });
+    const result = await executeCommandCenterAction('discover.tools', {
+      acl: {
+        allowedModuleIds: acl.allowedModuleIds,
+        allowedQualifiedNames: acl.allowedQualifiedNames,
+      },
+    });
+    if (!result.ok) return [];
+    return normalizeDiscoveredToolRows(result.data);
+  } catch {
+    return [];
+  }
+}
+
 export async function GET(request: Request) {
   let orgId = '';
   let userId = '';
@@ -46,6 +96,12 @@ export async function GET(request: Request) {
     if (authContext.role !== 'admin') {
       return Response.json(
         { ok: false, error: { code: 'PERMISSION_DENIED', message: 'Forbidden' } },
+        { status: 403 },
+      );
+    }
+    if (!isPlatformAdminUser(authContext.userId)) {
+      return Response.json(
+        { ok: false, error: { code: 'PERMISSION_DENIED', message: 'Command-center tools are restricted to platform admins' } },
         { status: 403 },
       );
     }
@@ -62,7 +118,13 @@ export async function GET(request: Request) {
   const query = (url.searchParams.get('query') || '').trim();
   const limit = clampLimit(url.searchParams.get('limit'));
 
-  const rows = await listCommandCenterCatalog(orgId);
+  let rows = await listCommandCenterCatalog(orgId);
+  if (rows.length === 0) {
+    const liveRows = await discoverLiveTools(orgId, userId);
+    if (liveRows.length > 0) {
+      rows = liveRows;
+    }
+  }
   const aclRows: CommandCenterCatalogRow[] = [];
   for (const row of rows) {
     const decision = await evaluateCommandCenterToolAcl({

@@ -401,16 +401,21 @@ function invalidateAclCache(orgId: string): void {
 async function ensureOrgAclSeed(orgId: string): Promise<void> {
   await ensureModuleGatewayPersistenceTables();
   const sql = getSQL();
+  const catalog = getCatalog();
+  const expectedModuleCount = catalog.length;
+  const expectedActionCount = catalog.reduce((sum, moduleEntry) => sum + moduleEntry.actions.length, 0);
 
-  const existingRows = await sql`
-    SELECT COUNT(*)::int AS count
+  const coverageRows = await sql`
+    SELECT
+      SUM(CASE WHEN user_id = ${ORG_WIDE_ACL_USER_ID} AND scope_type = 'module' THEN 1 ELSE 0 END)::int AS module_count,
+      SUM(CASE WHEN user_id = ${ORG_WIDE_ACL_USER_ID} AND scope_type = 'action' THEN 1 ELSE 0 END)::int AS action_count
     FROM module_gateway_acl_rules
     WHERE org_id = ${orgId}
   `;
-  const existingCount = Number(existingRows[0]?.count || 0);
-  if (existingCount > 0) return;
+  const moduleCount = Number(coverageRows[0]?.module_count || 0);
+  const actionCount = Number(coverageRows[0]?.action_count || 0);
+  if (moduleCount >= expectedModuleCount && actionCount >= expectedActionCount) return;
 
-  const catalog = getCatalog();
   for (const moduleEntry of catalog) {
     await sql`
       INSERT INTO module_gateway_acl_rules (

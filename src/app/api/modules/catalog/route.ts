@@ -6,6 +6,7 @@ import { fetchRemoteModuleCatalog, shouldUseRemoteModuleGateway } from '@/lib/mo
 import { listModuleCatalog } from '@/lib/modules-gateway/runner';
 import { filterModuleCatalogByAcl } from '@/lib/modules-gateway/persistence';
 import type { ModuleCatalogEntry } from '@/lib/modules-gateway/types';
+import { isPlatformAdminUser } from '@/lib/platform-admin';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -61,6 +62,12 @@ export async function GET(request: Request) {
     if (authContext.role !== 'admin') {
       return Response.json(
         { ok: false, error: { code: 'PERMISSION_DENIED', message: 'Forbidden' } },
+        { status: 403 },
+      );
+    }
+    if (!isPlatformAdminUser(authContext.userId)) {
+      return Response.json(
+        { ok: false, error: { code: 'PERMISSION_DENIED', message: 'Module catalog is restricted to platform admins' } },
         { status: 403 },
       );
     }

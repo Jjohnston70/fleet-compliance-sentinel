@@ -70,6 +70,12 @@ function skillMetadataList(moduleItem: ModuleCatalogItem): string[] {
     .map((entry) => entry.trim());
 }
 
+function pennyHrefForSkillModule(moduleItem: ModuleCatalogItem): string {
+  const firstSkill = skillMetadataList(moduleItem)[0];
+  if (!firstSkill) return '/penny';
+  return `/penny?skill_mode=${encodeURIComponent(firstSkill)}`;
+}
+
 function normalizeRole(value: unknown): 'admin' | 'member' {
   if (typeof value !== 'string') return 'member';
   const trimmed = value.trim().toLowerCase();
@@ -200,7 +206,7 @@ export default async function FleetComplianceToolsPage({ searchParams }: { searc
                       </div>
                     ) : null}
                     <div className="fleet-compliance-action-row" style={{ marginTop: '0.8rem' }}>
-                      <Link href="/penny" className="btn-secondary">Open in Penny</Link>
+                      <Link href={pennyHrefForSkillModule(moduleItem)} className="btn-secondary">Open in Penny</Link>
                     </div>
                   </article>
                 );
@@ -218,6 +224,9 @@ export default async function FleetComplianceToolsPage({ searchParams }: { searc
               <p>
                 Direct module gateway execution (including ML tooling) is restricted to platform admins. Use Penny and
                 enabled skill workflows for client operations.
+              </p>
+              <p className="fleet-compliance-table-note" style={{ marginTop: '0.5rem' }}>
+                Set <code>FLEET_PLATFORM_ADMIN_USER_IDS</code> to include your Clerk user ID. Current user: <code>{userId}</code>
               </p>
             </div>
           </section>

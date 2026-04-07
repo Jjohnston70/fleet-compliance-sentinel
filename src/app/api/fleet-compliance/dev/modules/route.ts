@@ -284,6 +284,9 @@ export async function GET(request: Request) {
 /**
  * POST /api/fleet-compliance/dev/modules
  *
+ * Access:
+ * - Platform admin only (all write operations)
+ *
  * Body:
  * - { orgId, moduleId, enabled }                  -> toggle app module
  * - { orgId, action: 'reset' }                    -> reset app modules to plan defaults
@@ -297,10 +300,17 @@ export async function POST(request: Request) {
     return errorResponse(error);
   }
 
+  if (access.scope !== 'platform') {
+    return Response.json(
+      { ok: false, error: 'Feature module changes are restricted to platform admins' },
+      { status: 403 },
+    );
+  }
+
   try {
     const body = await request.json();
     const requestedOrgId = typeof body.orgId === 'string' ? body.orgId.trim() : '';
-    if (access.scope === 'platform' && !requestedOrgId) {
+    if (!requestedOrgId) {
       return Response.json({ ok: false, error: 'orgId is required for platform requests' }, { status: 400 });
     }
 
@@ -316,10 +326,6 @@ export async function POST(request: Request) {
     }
 
     if (body.kind === 'module-gateway') {
-      if (access.scope !== 'platform') {
-        return Response.json({ ok: false, error: 'Forbidden' }, { status: 403 });
-      }
-
       const moduleId = typeof body.moduleId === 'string' ? body.moduleId.trim() : '';
       const enabled = body.enabled === true;
       if (!moduleId) {

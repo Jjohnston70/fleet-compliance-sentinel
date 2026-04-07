@@ -1,5 +1,8 @@
 import Link from 'next/link';
 import Image from 'next/image';
+import { auth } from '@clerk/nextjs/server';
+import { redirect } from 'next/navigation';
+import { isClerkEnabled } from '@/lib/clerk';
 
 const featureIcons: Record<string, React.ReactNode> = {
   'driver': (
@@ -166,7 +169,14 @@ const pricingTiers = [
   },
 ];
 
-export default function HomePage() {
+export default async function HomePage() {
+  if (isClerkEnabled()) {
+    const { userId, orgId } = await auth();
+    if (userId && orgId) {
+      redirect('/fleet-compliance');
+    }
+  }
+
   return (
     <main className="landing-main">
       <section className="hero">

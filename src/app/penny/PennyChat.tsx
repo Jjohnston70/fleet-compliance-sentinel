@@ -6,6 +6,7 @@
 
 import { useState, useRef, useEffect } from 'react';
 import Link from 'next/link';
+import { useSearchParams } from 'next/navigation';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 
@@ -33,9 +34,16 @@ interface CatalogDocument {
   category?: string;
 }
 
+interface PennySkillModeOption {
+  id: string;
+  label: string;
+  moduleId: string | null;
+  moduleName: string | null;
+}
+
 type LlmProvider = 'anthropic' | 'openai' | 'gemini' | 'ollama' | 'none';
 
-const SETTINGS_STORAGE_KEY = 'penny-llm-settings-v1';
+const SETTINGS_STORAGE_KEY = 'penny-llm-settings-v2';
 
 const PROVIDER_LABELS: Record<LlmProvider, string> = {
   anthropic: 'Anthropic',
@@ -73,6 +81,7 @@ function getSourceUrl(source: string): string | null {
 }
 
 export default function PennyChat({ userName, userRole }: PennyChatProps) {
+  const searchParams = useSearchParams();
   const [messages, setMessages] = useState<Message[]>([
     {
       id: 'welcome',
@@ -88,6 +97,9 @@ export default function PennyChat({ userName, userRole }: PennyChatProps) {
   const [knowledgeDocs, setKnowledgeDocs] = useState<CatalogDocument[]>([]);
   const [knowledgeCategories, setKnowledgeCategories] = useState<CatalogCategory[]>([]);
   const [knowledgeDocCount, setKnowledgeDocCount] = useState(0);
+  const [skillModes, setSkillModes] = useState<PennySkillModeOption[]>([]);
+  const [skillModesLoading, setSkillModesLoading] = useState(false);
+  const [selectedSkillMode, setSelectedSkillMode] = useState('');
   const [llmProvider, setLlmProvider] = useState<LlmProvider>('anthropic');
   const [llmModel, setLlmModel] = useState<string>(defaultModelFor('anthropic'));
   const messagesEndRef = useRef<HTMLDivElement>(null);
@@ -95,13 +107,24 @@ export default function PennyChat({ userName, userRole }: PennyChatProps) {
 
   // Check backend health on mount
   useEffect(() => {
+    const urlSkillMode = searchParams.get('skill_mode')?.trim();
+    if (urlSkillMode) {
+      setSelectedSkillMode(urlSkillMode);
+    }
+  }, [searchParams]);
+
+  useEffect(() => {
+    const hasUrlSkillMode = Boolean(new URLSearchParams(window.location.search).get('skill_mode'));
     try {
       const raw = window.sessionStorage.getItem(SETTINGS_STORAGE_KEY);
       if (raw) {
-        const parsed = JSON.parse(raw) as { llmProvider?: LlmProvider; llmModel?: string };
+        const parsed = JSON.parse(raw) as { llmProvider?: LlmProvider; llmModel?: string; skillMode?: string };
         if (parsed.llmProvider && PROVIDER_MODEL_OPTIONS[parsed.llmProvider]) {
           setLlmProvider(parsed.llmProvider);
           setLlmModel(parsed.llmModel?.trim() || defaultModelFor(parsed.llmProvider));
+        }
+        if (!hasUrlSkillMode && typeof parsed.skillMode === 'string') {
+          setSelectedSkillMode(parsed.skillMode);
         }
       }
     } catch {
@@ -110,14 +133,15 @@ export default function PennyChat({ userName, userRole }: PennyChatProps) {
 
     checkHealth();
     loadCatalog();
+    loadSkillModes();
   }, []);
 
   useEffect(() => {
     window.sessionStorage.setItem(
       SETTINGS_STORAGE_KEY,
-      JSON.stringify({ llmProvider, llmModel })
+      JSON.stringify({ llmProvider, llmModel, skillMode: selectedSkillMode })
     );
-  }, [llmProvider, llmModel]);
+  }, [llmProvider, llmModel, selectedSkillMode]);
 
   // Auto-scroll to bottom on new messages
   useEffect(() => {
@@ -158,6 +182,42 @@ export default function PennyChat({ userName, userRole }: PennyChatProps) {
     }
   }
 
+  async function loadSkillModes() {
+    setSkillModesLoading(true);
+    try {
+      const res = await fetch('/api/penny/skills');
+      if (!res.ok) {
+        setSkillModes([{ id: '', label: 'General Assistant', moduleId: null, moduleName: null }]);
+        return;
+      }
+      const data = await res.json();
+      const modes: PennySkillModeOption[] = Array.isArray(data?.modes)
+        ? data.modes.filter((mode: unknown): mode is PennySkillModeOption => {
+            return Boolean(
+              mode
+              && typeof mode === 'object'
+              && typeof (mode as PennySkillModeOption).id === 'string'
+              && typeof (mode as PennySkillModeOption).label === 'string'
+            );
+          })
+        : [];
+      if (modes.length === 0) {
+        setSkillModes([{ id: '', label: 'General Assistant', moduleId: null, moduleName: null }]);
+        return;
+      }
+      setSkillModes(modes);
+    } finally {
+      setSkillModesLoading(false);
+    }
+  }
+
+  useEffect(() => {
+    if (skillModes.length === 0) return;
+    if (!skillModes.some((mode) => mode.id === selectedSkillMode)) {
+      setSelectedSkillMode('');
+    }
+  }, [skillModes, selectedSkillMode]);
+
   async function sendMessage(overrideQuery?: string) {
     const query = (overrideQuery ?? input).trim();
     if (!query || loading) return;
@@ -180,6 +240,7 @@ export default function PennyChat({ userName, userRole }: PennyChatProps) {
         body: JSON.stringify({
           query,
           role: userRole,
+          ...(selectedSkillMode ? { skill_mode: selectedSkillMode } : {}),
           llm_provider: llmProvider,
           llm_model: llmModel,
         }),
@@ -364,9 +425,29 @@ export default function PennyChat({ userName, userRole }: PennyChatProps) {
             <p className="penny-side-eyebrow">Settings</p>
             <h2>Model Routing</h2>
             <p className="penny-side-note">
-              Choose provider and model for Penny responses.
+              Choose a workflow mode, provider, and model for Penny responses.
             </p>
             <div className="penny-side-list" style={{ gap: '0.5rem' }}>
+              <label htmlFor="penny-skill-mode" className="penny-side-note">
+                Workflow
+              </label>
+              <select
+                id="penny-skill-mode"
+                className="penny-input"
+                value={selectedSkillMode}
+                onChange={(e) => setSelectedSkillMode(e.target.value)}
+                disabled={skillModesLoading}
+              >
+                {(skillModes.length > 0
+                  ? skillModes
+                  : [{ id: '', label: 'General Assistant', moduleId: null, moduleName: null }]
+                ).map((mode) => (
+                  <option key={mode.id || 'general'} value={mode.id}>
+                    {mode.moduleName ? `${mode.label} (${mode.moduleName})` : mode.label}
+                  </option>
+                ))}
+              </select>
+
               <label htmlFor="penny-provider" className="penny-side-note">
                 Provider
               </label>

@@ -68,6 +68,7 @@ export default function ModuleSettingsPage() {
   const [enabledModules, setEnabledModules] = useState<string[]>([]);
   const [planDefaults, setPlanDefaults] = useState<string[]>([]);
   const [selectedOrgId, setSelectedOrgId] = useState('');
+  const [accessScope, setAccessScope] = useState<'platform' | 'org_admin' | null>(null);
   const [orgPlan, setOrgPlan] = useState('');
   const [orgName, setOrgName] = useState('');
   const [recentToggles, setRecentToggles] = useState<ToggleLogEntry[]>([]);
@@ -95,6 +96,9 @@ export default function ModuleSettingsPage() {
       setPlanDefaults(data.planDefaults ?? []);
       setRecentToggles((data.recentToggles ?? []).slice(0, 10));
       setSelectedOrgId(typeof data.selectedOrgId === 'string' ? data.selectedOrgId : '');
+      if (data.accessScope === 'platform' || data.accessScope === 'org_admin') {
+        setAccessScope(data.accessScope);
+      }
       // Resolve org info from the org list
       const orgs = data.orgs ?? [];
       const selectedId = data.selectedOrgId;
@@ -115,7 +119,7 @@ export default function ModuleSettingsPage() {
   }, [fetchData]);
 
   const handleToggle = async (moduleId: string, currentlyEnabled: boolean) => {
-    if (!selectedOrgId) return;
+    if (!selectedOrgId || accessScope !== 'platform') return;
     setToggling(moduleId);
     try {
       const res = await fetch('/api/fleet-compliance/dev/modules', {
@@ -137,7 +141,7 @@ export default function ModuleSettingsPage() {
   };
 
   const handleReset = async () => {
-    if (!selectedOrgId) return;
+    if (!selectedOrgId || accessScope !== 'platform') return;
     if (!confirm('Reset all module settings to your plan defaults?')) return;
     setToggling('__reset__');
     try {
@@ -176,6 +180,7 @@ export default function ModuleSettingsPage() {
   const clientCatalog = catalog.filter((mod) => !DEV_ONLY_MODULES.has(mod.id));
   const enabledSet = new Set(enabledModules);
   const planDefaultSet = new Set(planDefaults);
+  const readOnly = accessScope !== 'platform';
 
   // Group by category in display order
   const categorized = clientCatalog.reduce<Record<string, CatalogItem[]>>((acc, item) => {
@@ -199,8 +204,9 @@ export default function ModuleSettingsPage() {
         </p>
         <h1>Feature Modules</h1>
         <p className="fleet-compliance-subcopy">
-          Control which features are active for your organization. Core modules are always
-          enabled. Optional modules can be turned on or off based on your needs.
+          {readOnly
+            ? 'View which features are active for your organization. Core modules are always enabled. Optional modules require platform activation.'
+            : 'Control which features are active for your organization. Core modules are always enabled. Optional modules can be turned on or off based on your needs.'}
         </p>
       </section>
 
@@ -225,6 +231,22 @@ export default function ModuleSettingsPage() {
             <strong style={{ color: '#3d8eb9', textTransform: 'capitalize' }}>
               {orgPlan}
             </strong>
+            {readOnly && (
+              <span
+                style={{
+                  fontSize: '0.65rem',
+                  background: 'rgba(148,163,184,0.15)',
+                  color: '#cbd5e1',
+                  padding: '1px 6px',
+                  borderRadius: '4px',
+                  textTransform: 'uppercase',
+                  letterSpacing: '0.05em',
+                  marginLeft: '0.75rem',
+                }}
+              >
+                View Only
+              </span>
+            )}
             {orgName && (
               <span style={{ color: '#64748b', fontSize: '0.8rem', marginLeft: '1rem' }}>
                 {orgName}
@@ -234,19 +256,35 @@ export default function ModuleSettingsPage() {
           <button
             type="button"
             onClick={handleReset}
-            disabled={toggling !== null}
+            disabled={readOnly || toggling !== null}
             style={{
               padding: '0.4rem 0.75rem',
               borderRadius: '6px',
               border: '1px solid rgba(255,255,255,0.1)',
               background: 'rgba(255,255,255,0.05)',
               color: '#94a3b8',
-              cursor: toggling ? 'not-allowed' : 'pointer',
+              cursor: readOnly || toggling ? 'not-allowed' : 'pointer',
               fontSize: '0.8rem',
             }}
           >
-            {toggling === '__reset__' ? 'Resetting...' : 'Reset to Plan Defaults'}
+            {readOnly ? 'Platform Managed' : toggling === '__reset__' ? 'Resetting...' : 'Reset to Plan Defaults'}
           </button>
+        </div>
+      )}
+
+      {readOnly && (
+        <div
+          style={{
+            background: 'rgba(148, 163, 184, 0.08)',
+            border: '1px solid rgba(148, 163, 184, 0.2)',
+            borderRadius: '8px',
+            padding: '0.75rem 1rem',
+            color: '#cbd5e1',
+            marginBottom: '1rem',
+            fontSize: '0.85rem',
+          }}
+        >
+          Module activation is managed by the platform team. Your organization can view active modules here.
         </div>
       )}
 
@@ -382,10 +420,12 @@ export default function ModuleSettingsPage() {
                         <button
                           type="button"
                           onClick={() => handleToggle(mod.id, isEnabled)}
-                          disabled={!selectedOrgId || mod.isCore || isBeingToggled || toggling !== null}
+                          disabled={readOnly || !selectedOrgId || mod.isCore || isBeingToggled || toggling !== null}
                           title={
                             mod.isCore
                               ? 'This feature is always enabled'
+                              : readOnly
+                                ? 'Platform-managed module setting'
                               : isEnabled
                                 ? 'Click to turn off'
                                 : 'Click to turn on'
@@ -397,7 +437,7 @@ export default function ModuleSettingsPage() {
                             borderRadius: '12px',
                             border: 'none',
                             background: isEnabled ? '#3d8eb9' : '#374151',
-                            cursor: mod.isCore || toggling !== null ? 'not-allowed' : 'pointer',
+                            cursor: readOnly || mod.isCore || toggling !== null ? 'not-allowed' : 'pointer',
                             flexShrink: 0,
                             transition: 'background 0.2s',
                           }}
