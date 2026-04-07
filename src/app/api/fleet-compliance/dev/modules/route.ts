@@ -38,8 +38,29 @@ interface TelematicsProviderStatus {
   consentRecordedAt: string | null;
 }
 
-// Tables that hold org-scoped client data, in deletion order
+// Tables that hold org-scoped client data, in deletion order (children first).
 const ORG_DATA_TABLES = [
+  // Core business data
+  'fleet_compliance_records',
+  'suspense_items',
+  'invoices',
+  'employees',
+  'employee_profiles',
+  'assets',
+  'drivers',
+  'permits',
+  // Hazmat / training
+  'hazmat_training_records',
+  'training_progress',
+  'training_assignments',
+  // Onboarding
+  'onboarding_intake_tokens',
+  'onboarding_outbox_events',
+  'onboarding_tasks',
+  'onboarding_steps',
+  'onboarding_runs',
+  'onboarding_employee_profiles',
+  // Telematics
   'telematics_gps_events',
   'telematics_dvir_records',
   'telematics_alerts',
@@ -47,14 +68,16 @@ const ORG_DATA_TABLES = [
   'telematics_drivers',
   'telematics_vehicles',
   'telematics_credentials',
-  'training_progress',
-  'training_assignments',
+  // Module gateway / AI usage
   'module_gateway_invocation_audit',
   'module_gateway_sandbox_events',
   'module_gateway_retry_escalations',
   'module_gateway_acl_rules',
   'ai_usage_budget_alerts',
   'ai_usage_cost_events',
+  // Module runtime state (dispatch, govcon, dq, proposal snapshots)
+  'fleet_module_runtime_state',
+  // Org config (last — so modules are cleaned after data)
   'org_modules',
 ] as const;
 
@@ -220,45 +243,37 @@ async function exportOrgDataToCsv(orgId: string): Promise<Record<string, Record<
   const sql = getSQL();
   const result: Record<string, Record<string, unknown>[]> = {};
 
+  // Helper: safe query that returns [] if table doesn't exist
+  async function safeQuery(label: string, query: Promise<Record<string, unknown>[]>): Promise<void> {
+    try { result[label] = (await query).map((r) => ({ ...r })); } catch { result[label] = []; }
+  }
+
   // Organization info
-  const orgRows = await sql`SELECT id, name, plan, created_at, onboarding_complete, metadata FROM organizations WHERE id = ${orgId}`;
-  result['organizations'] = orgRows.map((r) => ({ ...r }));
+  await safeQuery('organizations', sql`SELECT id, name, plan, created_at, onboarding_complete, metadata FROM organizations WHERE id = ${orgId}`);
+
+  // Core business data
+  await safeQuery('fleet_compliance_records', sql`SELECT id, collection, data, imported_at FROM fleet_compliance_records WHERE org_id = ${orgId} AND deleted_at IS NULL ORDER BY imported_at`);
+  await safeQuery('suspense_items', sql`SELECT * FROM suspense_items WHERE org_id = ${orgId}`);
+  await safeQuery('assets', sql`SELECT * FROM assets WHERE org_id = ${orgId}`);
+  await safeQuery('drivers', sql`SELECT * FROM drivers WHERE org_id = ${orgId}`);
+  await safeQuery('permits', sql`SELECT * FROM permits WHERE org_id = ${orgId}`);
+  await safeQuery('employees', sql`SELECT * FROM employees WHERE org_id = ${orgId}`);
+  await safeQuery('invoices', sql`SELECT * FROM invoices WHERE org_id = ${orgId}`);
+  await safeQuery('employee_profiles', sql`SELECT id, first_name, last_name, email, role, status, hired_at FROM employee_profiles WHERE org_id = ${orgId}`);
 
   // Modules
-  const modRows = await sql`SELECT module_id, enabled, enabled_at, enabled_by FROM org_modules WHERE org_id = ${orgId}`;
-  result['org_modules'] = modRows.map((r) => ({ ...r }));
+  await safeQuery('org_modules', sql`SELECT module_id, enabled, enabled_at, enabled_by FROM org_modules WHERE org_id = ${orgId}`);
 
-  // Telematics vehicles
-  const vRows = await sql`SELECT provider_vehicle_id, vehicle_number, make, model, year, vin, last_seen_at FROM telematics_vehicles WHERE org_id = ${orgId}`;
-  result['telematics_vehicles'] = vRows.map((r) => ({ ...r }));
+  // Telematics
+  await safeQuery('telematics_vehicles', sql`SELECT provider_vehicle_id, vehicle_number, make, model, year, vin, last_seen_at FROM telematics_vehicles WHERE org_id = ${orgId}`);
+  await safeQuery('telematics_drivers', sql`SELECT provider_driver_id, driver_name, license_number, license_state, current_hos_status FROM telematics_drivers WHERE org_id = ${orgId}`);
 
-  // Telematics drivers
-  const dRows = await sql`SELECT provider_driver_id, driver_name, license_number, license_state, current_hos_status FROM telematics_drivers WHERE org_id = ${orgId}`;
-  result['telematics_drivers'] = dRows.map((r) => ({ ...r }));
-
-  // Training assignments
-  const taRows = await sql`SELECT id, employee_id, plan_id, status, assigned_at, completed_at FROM training_assignments WHERE org_id = ${orgId}`;
-  result['training_assignments'] = taRows.map((r) => ({ ...r }));
-
-  // Training progress
-  const tpRows = await sql`SELECT id, assignment_id, module_code, status, score, attempts, completed_at FROM training_progress WHERE org_id = ${orgId}`;
-  result['training_progress'] = tpRows.map((r) => ({ ...r }));
-
-  // Employee profiles
-  try {
-    const epRows = await sql`SELECT id, first_name, last_name, email, role, status, hired_at FROM employee_profiles WHERE org_id = ${orgId}`;
-    result['employee_profiles'] = epRows.map((r) => ({ ...r }));
-  } catch {
-    // Table may not exist in all deployments
-  }
+  // Training
+  await safeQuery('training_assignments', sql`SELECT id, employee_id, plan_id, status, assigned_at, completed_at FROM training_assignments WHERE org_id = ${orgId}`);
+  await safeQuery('training_progress', sql`SELECT id, assignment_id, module_code, status, score, attempts, completed_at FROM training_progress WHERE org_id = ${orgId}`);
 
   // Audit events (last 500)
-  try {
-    const aeRows = await sql`SELECT action, user_id, resource_type, severity, created_at FROM org_audit_events WHERE org_id = ${orgId} ORDER BY created_at DESC LIMIT 500`;
-    result['audit_events'] = aeRows.map((r) => ({ ...r }));
-  } catch {
-    // Table may not exist
-  }
+  await safeQuery('audit_events', sql`SELECT action, user_id, resource_type, severity, created_at FROM org_audit_events WHERE org_id = ${orgId} ORDER BY created_at DESC LIMIT 500`);
 
   return result;
 }
@@ -267,6 +282,27 @@ async function deleteFromTable(tableName: string, orgId: string): Promise<number
   const sql = getSQL();
   // Each table handled explicitly to avoid dynamic table name interpolation issues.
   switch (tableName) {
+    // Core business data
+    case 'fleet_compliance_records': { const r = await sql`DELETE FROM fleet_compliance_records WHERE org_id = ${orgId}`; return (r as any).count ?? r.length; }
+    case 'suspense_items': { const r = await sql`DELETE FROM suspense_items WHERE org_id = ${orgId}`; return (r as any).count ?? r.length; }
+    case 'invoices': { const r = await sql`DELETE FROM invoices WHERE org_id = ${orgId}`; return (r as any).count ?? r.length; }
+    case 'employees': { const r = await sql`DELETE FROM employees WHERE org_id = ${orgId}`; return (r as any).count ?? r.length; }
+    case 'employee_profiles': { const r = await sql`DELETE FROM employee_profiles WHERE org_id = ${orgId}`; return (r as any).count ?? r.length; }
+    case 'assets': { const r = await sql`DELETE FROM assets WHERE org_id = ${orgId}`; return (r as any).count ?? r.length; }
+    case 'drivers': { const r = await sql`DELETE FROM drivers WHERE org_id = ${orgId}`; return (r as any).count ?? r.length; }
+    case 'permits': { const r = await sql`DELETE FROM permits WHERE org_id = ${orgId}`; return (r as any).count ?? r.length; }
+    // Hazmat / training
+    case 'hazmat_training_records': { const r = await sql`DELETE FROM hazmat_training_records WHERE org_id = ${orgId}`; return (r as any).count ?? r.length; }
+    case 'training_progress': { const r = await sql`DELETE FROM training_progress WHERE org_id = ${orgId}`; return (r as any).count ?? r.length; }
+    case 'training_assignments': { const r = await sql`DELETE FROM training_assignments WHERE org_id = ${orgId}`; return (r as any).count ?? r.length; }
+    // Onboarding
+    case 'onboarding_intake_tokens': { const r = await sql`DELETE FROM onboarding_intake_tokens WHERE org_id = ${orgId}`; return (r as any).count ?? r.length; }
+    case 'onboarding_outbox_events': { const r = await sql`DELETE FROM onboarding_outbox_events WHERE org_id = ${orgId}`; return (r as any).count ?? r.length; }
+    case 'onboarding_tasks': { const r = await sql`DELETE FROM onboarding_tasks WHERE org_id = ${orgId}`; return (r as any).count ?? r.length; }
+    case 'onboarding_steps': { const r = await sql`DELETE FROM onboarding_steps WHERE org_id = ${orgId}`; return (r as any).count ?? r.length; }
+    case 'onboarding_runs': { const r = await sql`DELETE FROM onboarding_runs WHERE org_id = ${orgId}`; return (r as any).count ?? r.length; }
+    case 'onboarding_employee_profiles': { const r = await sql`DELETE FROM onboarding_employee_profiles WHERE org_id = ${orgId}`; return (r as any).count ?? r.length; }
+    // Telematics
     case 'telematics_gps_events': { const r = await sql`DELETE FROM telematics_gps_events WHERE org_id = ${orgId}`; return (r as any).count ?? r.length; }
     case 'telematics_dvir_records': { const r = await sql`DELETE FROM telematics_dvir_records WHERE org_id = ${orgId}`; return (r as any).count ?? r.length; }
     case 'telematics_alerts': { const r = await sql`DELETE FROM telematics_alerts WHERE org_id = ${orgId}`; return (r as any).count ?? r.length; }
@@ -274,14 +310,15 @@ async function deleteFromTable(tableName: string, orgId: string): Promise<number
     case 'telematics_drivers': { const r = await sql`DELETE FROM telematics_drivers WHERE org_id = ${orgId}`; return (r as any).count ?? r.length; }
     case 'telematics_vehicles': { const r = await sql`DELETE FROM telematics_vehicles WHERE org_id = ${orgId}`; return (r as any).count ?? r.length; }
     case 'telematics_credentials': { const r = await sql`DELETE FROM telematics_credentials WHERE org_id = ${orgId}`; return (r as any).count ?? r.length; }
-    case 'training_progress': { const r = await sql`DELETE FROM training_progress WHERE org_id = ${orgId}`; return (r as any).count ?? r.length; }
-    case 'training_assignments': { const r = await sql`DELETE FROM training_assignments WHERE org_id = ${orgId}`; return (r as any).count ?? r.length; }
+    // Module gateway / AI
     case 'module_gateway_invocation_audit': { const r = await sql`DELETE FROM module_gateway_invocation_audit WHERE org_id = ${orgId}`; return (r as any).count ?? r.length; }
     case 'module_gateway_sandbox_events': { const r = await sql`DELETE FROM module_gateway_sandbox_events WHERE org_id = ${orgId}`; return (r as any).count ?? r.length; }
     case 'module_gateway_retry_escalations': { const r = await sql`DELETE FROM module_gateway_retry_escalations WHERE org_id = ${orgId}`; return (r as any).count ?? r.length; }
     case 'module_gateway_acl_rules': { const r = await sql`DELETE FROM module_gateway_acl_rules WHERE org_id = ${orgId}`; return (r as any).count ?? r.length; }
     case 'ai_usage_budget_alerts': { const r = await sql`DELETE FROM ai_usage_budget_alerts WHERE org_id = ${orgId}`; return (r as any).count ?? r.length; }
     case 'ai_usage_cost_events': { const r = await sql`DELETE FROM ai_usage_cost_events WHERE org_id = ${orgId}`; return (r as any).count ?? r.length; }
+    // Runtime state + org config
+    case 'fleet_module_runtime_state': { const r = await sql`DELETE FROM fleet_module_runtime_state WHERE org_id = ${orgId}`; return (r as any).count ?? r.length; }
     case 'org_modules': { const r = await sql`DELETE FROM org_modules WHERE org_id = ${orgId}`; return (r as any).count ?? r.length; }
     default: return 0;
   }
