@@ -362,13 +362,6 @@ export async function getDispatchRuntime(orgId: string): Promise<DispatchRuntime
 
   if (snapshot) {
     hydrateDispatchRepository(rawRepository, reviveDispatchSnapshot(snapshot));
-  } else {
-    await moduleRef.seedAll(rawRepository);
-    await saveModuleRuntimeState(
-      orgId,
-      'dispatch-command',
-      serializeDispatchRepositoryState(rawRepository) as unknown as Record<string, unknown>,
-    );
   }
 
   const repository = createPersistenceAwareDispatchRepository(orgId, rawRepository);

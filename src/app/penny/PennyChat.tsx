@@ -86,7 +86,7 @@ export default function PennyChat({ userName, userRole }: PennyChatProps) {
     {
       id: 'welcome',
       role: 'penny',
-      content: `Hey ${userName}! I'm Pipeline Penny. Ask me about CFR, ERG, and your indexed demo/company docs and I'll answer from the current knowledge catalog.`,
+      content: `Hey ${userName}! I'm Pipeline Penny. Ask me about CFR, ERG, and your company docs and I'll answer from the current knowledge catalog.`,
       timestamp: new Date(),
     },
   ]);

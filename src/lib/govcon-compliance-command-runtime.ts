@@ -440,95 +440,6 @@ function createPersistenceAwareGovConRepository(orgId: string, repository: any):
   });
 }
 
-async function seedGovConRuntimeIfEmpty(runtimeRef: GovConRuntime) {
-  const existingOpportunities = await runtimeRef.opportunityService.listOpportunities();
-  if (Array.isArray(existingOpportunities) && existingOpportunities.length > 0) return;
-
-  const now = new Date();
-
-  await runtimeRef.opportunityService.createOpportunity(
-    'Enterprise Data Governance Modernization',
-    'GSA-2026-DATA-101',
-    'General Services Administration',
-    new Date(now.getFullYear(), now.getMonth(), now.getDate() + 14),
-    'small_business',
-    '541512',
-    'Computer Systems Design Services',
-    'Modernize data governance workflows, reporting standards, and compliance automation across program offices.',
-    {
-      source: 'manual',
-      status: 'evaluating',
-      estimated_value: 240000,
-      place_of_performance: 'Washington, DC',
-      posted_date: new Date(now.getFullYear(), now.getMonth(), now.getDate() - 9),
-    },
-  );
-
-  await runtimeRef.opportunityService.createOpportunity(
-    'CUI Security Controls Implementation Support',
-    'VA-2026-CUI-044',
-    'Department of Veterans Affairs',
-    new Date(now.getFullYear(), now.getMonth(), now.getDate() + 5),
-    'SDVOSB',
-    '541519',
-    'Other Computer Related Services',
-    'Implement and validate NIST SP 800-171 control mappings for CUI handling and audit readiness.',
-    {
-      source: 'manual',
-      status: 'identified',
-      estimated_value: 165000,
-      place_of_performance: 'Remote / Washington, DC',
-      posted_date: new Date(now.getFullYear(), now.getMonth(), now.getDate() - 3),
-    },
-  );
-
-  await runtimeRef.outreachService.createContact(
-    'Alex Morgan',
-    'alex.morgan@gsa.gov',
-    'General Services Administration',
-    'Contracting Specialist',
-    {
-      office: 'Federal Acquisition Service',
-      phone: '202-555-0180',
-      osdbu: false,
-      status: 'warm',
-      notes: 'Engaged during pre-solicitation market research call.',
-    },
-  );
-
-  await runtimeRef.outreachService.createContact(
-    'Jordan Reyes',
-    'jordan.reyes@va.gov',
-    'Department of Veterans Affairs',
-    'OSDBU Liaison',
-    {
-      office: 'Office of Small and Disadvantaged Business Utilization',
-      phone: '202-555-0192',
-      osdbu: true,
-      status: 'active',
-      notes: 'Requested capability statement update for SDVOSB matching.',
-    },
-  );
-
-  await runtimeRef.complianceService.createComplianceItem(
-    'SAM Registration Renewal',
-    'System for Award Management annual renewal requirement.',
-    'renewal',
-    'SAM',
-    new Date(now.getFullYear(), now.getMonth(), now.getDate() + 22),
-    { status: 'current', reminder_days_before: 30 },
-  );
-
-  await runtimeRef.complianceService.createComplianceItem(
-    'SBA SDVOSB Certification Annual Validation',
-    'Annual certification validation for SDVOSB designation.',
-    'certification',
-    'SBA',
-    new Date(now.getFullYear(), now.getMonth(), now.getDate() + 58),
-    { status: 'current', reminder_days_before: 60 },
-  );
-}
-
 export async function getGovConRuntime(orgId: string): Promise<GovConRuntime> {
   const existing = runtimeByOrg.get(orgId);
   if (existing) return existing;
@@ -576,14 +487,6 @@ export async function getGovConRuntime(orgId: string): Promise<GovConRuntime> {
     outreachReport,
   };
 
-  if (!snapshot) {
-    await seedGovConRuntimeIfEmpty(runtimeRef);
-    await saveModuleRuntimeState(
-      orgId,
-      'govcon-compliance-command',
-      serializeGovConRepositoryState(rawRepo) as unknown as Record<string, unknown>,
-    );
-  }
   runtimeByOrg.set(orgId, runtimeRef);
   return runtimeRef;
 }

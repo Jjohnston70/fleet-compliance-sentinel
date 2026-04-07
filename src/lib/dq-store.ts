@@ -165,65 +165,8 @@ let nextDocId = 1000;
 
 function ensureOrgData(orgId: string): void {
   if (orgFiles.has(orgId)) return;
-
-  const now = new Date().toISOString();
-  const threeMonthsAgo = new Date(Date.now() - 90 * 86400000).toISOString();
-
-  const files: DqFile[] = [
-    { id: 1, org_id: orgId, driver_id: 'drv-001', driver_name: 'Marcus Johnson', cdl_holder: true, hire_date: '2025-06-15', status: 'incomplete', file_type: 'dqf', intake_token: null, intake_completed_at: threeMonthsAgo, retention_delete_after: null, created_at: threeMonthsAgo, updated_at: now },
-    { id: 2, org_id: orgId, driver_id: 'drv-001', driver_name: 'Marcus Johnson', cdl_holder: true, hire_date: '2025-06-15', status: 'incomplete', file_type: 'dhf', intake_token: null, intake_completed_at: threeMonthsAgo, retention_delete_after: null, created_at: threeMonthsAgo, updated_at: now },
-    { id: 3, org_id: orgId, driver_id: 'drv-002', driver_name: 'Angela Torres', cdl_holder: true, hire_date: '2024-03-01', status: 'complete', file_type: 'dqf', intake_token: null, intake_completed_at: '2024-03-05T00:00:00Z', retention_delete_after: null, created_at: '2024-03-01T00:00:00Z', updated_at: now },
-    { id: 4, org_id: orgId, driver_id: 'drv-002', driver_name: 'Angela Torres', cdl_holder: true, hire_date: '2024-03-01', status: 'complete', file_type: 'dhf', intake_token: null, intake_completed_at: '2024-03-05T00:00:00Z', retention_delete_after: null, created_at: '2024-03-01T00:00:00Z', updated_at: now },
-    { id: 5, org_id: orgId, driver_id: 'drv-003', driver_name: 'Kevin Briggs', cdl_holder: false, hire_date: '2026-03-10', status: 'incomplete', file_type: 'dqf', intake_token: 'tok-abc-123', intake_completed_at: null, retention_delete_after: null, created_at: now, updated_at: now },
-    { id: 6, org_id: orgId, driver_id: 'drv-003', driver_name: 'Kevin Briggs', cdl_holder: false, hire_date: '2026-03-10', status: 'incomplete', file_type: 'dhf', intake_token: null, intake_completed_at: null, retention_delete_after: null, created_at: now, updated_at: now },
-  ];
-  orgFiles.set(orgId, files);
-
-  // Scaffold documents for each file
-  const docs: DqDocument[] = [];
-  for (const file of files) {
-    const applicable = DQ_CHECKLIST_CONFIG.filter((cfg) => {
-      if (cfg.file_type !== file.file_type) return false;
-      if (cfg.required_for === 'cdl_only' && !file.cdl_holder) return false;
-      if (cfg.required_for === 'non_cdl_only' && file.cdl_holder) return false;
-      return true;
-    });
-    for (const cfg of applicable) {
-      const isComplete = file.status === 'complete';
-      const docStatus: DqDocStatus = isComplete
-        ? (cfg.source === 'generated' ? 'generated' : 'verified')
-        : 'missing';
-      // Give Angela's (complete) docs some expiry dates to test expiring-soon
-      let expiresAt: string | null = null;
-      if (isComplete && cfg.cadence === 'annual') {
-        expiresAt = new Date(Date.now() + 20 * 86400000).toISOString(); // 20 days out
-      }
-      if (isComplete && cfg.cadence === 'biennial') {
-        expiresAt = new Date(Date.now() + 180 * 86400000).toISOString();
-      }
-      docs.push({
-        id: nextDocId++,
-        dq_file_id: file.id,
-        org_id: orgId,
-        doc_type: cfg.doc_type,
-        doc_label: cfg.doc_label,
-        cfr_reference: cfg.cfr_reference,
-        status: docStatus,
-        required_for: cfg.required_for,
-        cadence: cfg.cadence,
-        file_type: cfg.file_type,
-        source: cfg.source,
-        expires_at: expiresAt,
-        uploaded_at: isComplete && cfg.source === 'uploaded' ? file.intake_completed_at : null,
-        generated_at: isComplete && cfg.source === 'generated' ? file.intake_completed_at : null,
-        file_path: null,
-        notes: null,
-        reviewed_by: null,
-        reviewed_at: null,
-      });
-    }
-  }
-  orgDocs.set(orgId, docs);
+  orgFiles.set(orgId, []);
+  orgDocs.set(orgId, []);
 }
 
 // ---------------------------------------------------------------------------
