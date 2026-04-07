@@ -1,9 +1,8 @@
 import path from 'node:path';
 import { readdir, readFile } from 'node:fs/promises';
-import { auth, currentUser } from '@clerk/nextjs/server';
+import { auth } from '@clerk/nextjs/server';
 import { NextResponse } from 'next/server';
 import { isClerkEnabled } from '@/lib/clerk';
-import { canAccessPenny, canBypassPennyRoleByEmail, resolvePennyRole } from '@/lib/penny-access';
 import { getModuleCatalog, getOrgModules } from '@/lib/modules';
 
 export const runtime = 'nodejs';
@@ -83,12 +82,8 @@ export async function GET() {
     return NextResponse.json({ ok: false, error: 'Unauthorized' }, { status: 401 });
   }
 
-  const user = await currentUser();
-  const role = resolvePennyRole(sessionClaims, user);
-  const hasEmailBypass = canBypassPennyRoleByEmail(user);
-  if (!canAccessPenny(role) && !hasEmailBypass) {
-    return NextResponse.json({ ok: false, error: 'Insufficient permissions' }, { status: 403 });
-  }
+  // Skills are base-model features available to every authenticated org member.
+  // The only gate is whether skill modules are toggled on for the org.
 
   if (!orgId) {
     return NextResponse.json({

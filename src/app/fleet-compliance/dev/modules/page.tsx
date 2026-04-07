@@ -35,6 +35,15 @@ interface ModuleGatewayToggleItem {
   enabled: boolean;
 }
 
+interface TelematicsProviderStatus {
+  provider: string;
+  label: string;
+  isActive: boolean;
+  hasCredentials: boolean;
+  lastValidatedAt: string | null;
+  consentRecordedAt: string | null;
+}
+
 export default function DevModulesPage() {
   const [orgs, setOrgs] = useState<OrgOption[]>([]);
   const [catalog, setCatalog] = useState<CatalogItem[]>([]);
@@ -43,11 +52,15 @@ export default function DevModulesPage() {
   const [moduleGatewayModules, setModuleGatewayModules] = useState<ModuleGatewayToggleItem[]>([]);
   const [planDefaults, setPlanDefaults] = useState<string[]>([]);
   const [recentToggles, setRecentToggles] = useState<ToggleLogEntry[]>([]);
+  const [telematicsProviders, setTelematicsProviders] = useState<TelematicsProviderStatus[]>([]);
   const [accessScope, setAccessScope] = useState<'platform' | 'org_admin' | null>(null);
   const [loading, setLoading] = useState(true);
   const [toggling, setToggling] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [forbidden, setForbidden] = useState(false);
+  const [exporting, setExporting] = useState(false);
+  const [wiping, setWiping] = useState(false);
+  const [wipeConfirmText, setWipeConfirmText] = useState('');
 
   const fetchData = useCallback(async (orgId?: string) => {
     setLoading(true);
@@ -70,6 +83,7 @@ export default function DevModulesPage() {
       setCatalog(data.catalog ?? []);
       setEnabledModules(data.enabledModules ?? []);
       setModuleGatewayModules(data.moduleGatewayModules ?? []);
+      setTelematicsProviders(data.telematicsProviders ?? []);
       setPlanDefaults(data.planDefaults ?? []);
       setRecentToggles(data.recentToggles ?? []);
       if (data.accessScope === 'platform' || data.accessScope === 'org_admin') {
@@ -175,6 +189,86 @@ export default function DevModulesPage() {
       setError(err instanceof Error ? err.message : 'Gateway toggle failed');
     } finally {
       setToggling(null);
+    }
+  };
+
+  const handleTelematicsToggle = async (provider: string, currentlyActive: boolean) => {
+    if (!selectedOrgId) return;
+    const toggleKey = `tel:${provider}`;
+    setToggling(toggleKey);
+    try {
+      const res = await fetch('/api/fleet-compliance/dev/modules', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          orgId: selectedOrgId,
+          action: 'telematics-toggle',
+          provider,
+          enabled: !currentlyActive,
+        }),
+      });
+      const data = await res.json();
+      if (data.ok) {
+        await fetchData(selectedOrgId);
+      } else {
+        setError(data.error ?? 'Telematics toggle failed');
+      }
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Telematics toggle failed');
+    } finally {
+      setToggling(null);
+    }
+  };
+
+  const handleExportOrgData = async () => {
+    if (!selectedOrgId) return;
+    setExporting(true);
+    try {
+      const res = await fetch('/api/fleet-compliance/dev/modules', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ orgId: selectedOrgId, action: 'export-org-data' }),
+      });
+      const data = await res.json();
+      if (data.ok) {
+        const blob = new Blob([JSON.stringify(data.data, null, 2)], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `org-${selectedOrgId}-export-${new Date().toISOString().slice(0, 19).replace(/[T:]/g, '-')}.json`;
+        a.click();
+        URL.revokeObjectURL(url);
+      } else {
+        setError(data.error ?? 'Export failed');
+      }
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Export failed');
+    } finally {
+      setExporting(false);
+    }
+  };
+
+  const handleWipeOrgData = async () => {
+    if (!selectedOrgId || wipeConfirmText !== selectedOrgId) return;
+    setWiping(true);
+    try {
+      const res = await fetch('/api/fleet-compliance/dev/modules', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ orgId: selectedOrgId, action: 'wipe-org-data', confirmOrgId: selectedOrgId }),
+      });
+      const data = await res.json();
+      if (data.ok) {
+        setWipeConfirmText('');
+        alert(`Org data wiped. Deleted counts:\n${Object.entries(data.deletedCounts).map(([t, c]) => `  ${t}: ${c}`).join('\n')}`);
+        await fetchData(selectedOrgId);
+      } else {
+        setError(data.error ?? 'Wipe failed');
+      }
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Wipe failed');
+    } finally {
+      setWiping(false);
     }
   };
 
@@ -654,6 +748,194 @@ export default function DevModulesPage() {
                 ))}
               </tbody>
             </table>
+          </div>
+        </section>
+      )}
+
+      {/* Telematics Provider Toggles */}
+      {selectedOrgId && !loading && telematicsProviders.length > 0 && (
+        <section className="fleet-compliance-section" style={{ marginTop: '2rem' }}>
+          <h3
+            style={{
+              textTransform: 'uppercase',
+              fontSize: '0.75rem',
+              letterSpacing: '0.12em',
+              color: '#94a3b8',
+              marginBottom: '0.75rem',
+              borderBottom: '1px solid rgba(255,255,255,0.08)',
+              paddingBottom: '0.4rem',
+            }}
+          >
+            Telematics Providers
+          </h3>
+          <p style={{ color: '#64748b', fontSize: '0.8rem', marginBottom: '0.75rem' }}>
+            Toggle telematics provider connections per org. Only platform admin can see and control these.
+          </p>
+          <div
+            style={{
+              display: 'grid',
+              gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))',
+              gap: '0.75rem',
+            }}
+          >
+            {telematicsProviders.map((tp) => {
+              const isBeingToggled = toggling === `tel:${tp.provider}`;
+              return (
+                <div
+                  key={tp.provider}
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '0.75rem',
+                    padding: '0.75rem 1rem',
+                    borderRadius: '8px',
+                    background: tp.isActive
+                      ? 'rgba(61, 142, 185, 0.08)'
+                      : 'rgba(255,255,255,0.02)',
+                    border: `1px solid ${tp.isActive ? 'rgba(61,142,185,0.3)' : 'rgba(255,255,255,0.06)'}`,
+                    opacity: isBeingToggled ? 0.6 : 1,
+                    transition: 'all 0.2s',
+                  }}
+                >
+                  <div style={{ flex: 1, minWidth: 0 }}>
+                    <span style={{ fontWeight: 600, fontSize: '0.9rem' }}>{tp.label}</span>
+                    <div style={{ fontSize: '0.75rem', color: '#64748b', marginTop: '0.25rem' }}>
+                      {tp.hasCredentials ? 'Credentials configured' : 'No credentials yet'}
+                      {tp.lastValidatedAt && (
+                        <span style={{ marginLeft: '0.5rem' }}>
+                          | Validated: {new Date(tp.lastValidatedAt).toLocaleDateString()}
+                        </span>
+                      )}
+                    </div>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => handleTelematicsToggle(tp.provider, tp.isActive)}
+                    disabled={isBeingToggled || toggling !== null}
+                    title={tp.isActive ? 'Click to deactivate' : 'Click to activate'}
+                    style={{
+                      position: 'relative',
+                      width: '44px',
+                      height: '24px',
+                      borderRadius: '12px',
+                      border: 'none',
+                      background: tp.isActive ? '#3d8eb9' : '#374151',
+                      cursor: toggling !== null ? 'not-allowed' : 'pointer',
+                      flexShrink: 0,
+                      transition: 'background 0.2s',
+                    }}
+                    aria-label={`Toggle ${tp.label}`}
+                  >
+                    <span
+                      style={{
+                        position: 'absolute',
+                        top: '2px',
+                        left: tp.isActive ? '22px' : '2px',
+                        width: '20px',
+                        height: '20px',
+                        borderRadius: '50%',
+                        background: '#fff',
+                        transition: 'left 0.2s',
+                      }}
+                    />
+                  </button>
+                </div>
+              );
+            })}
+          </div>
+        </section>
+      )}
+
+      {/* Org Data Management (Export + Wipe) */}
+      {selectedOrgId && !loading && (
+        <section className="fleet-compliance-section" style={{ marginTop: '2rem' }}>
+          <h3
+            style={{
+              textTransform: 'uppercase',
+              fontSize: '0.75rem',
+              letterSpacing: '0.12em',
+              color: '#94a3b8',
+              marginBottom: '0.75rem',
+              borderBottom: '1px solid rgba(255,255,255,0.08)',
+              paddingBottom: '0.4rem',
+            }}
+          >
+            Organization Data Management
+          </h3>
+
+          {/* Export */}
+          <div style={{ marginBottom: '1.5rem' }}>
+            <p style={{ fontSize: '0.85rem', marginBottom: '0.5rem' }}>
+              Export all org data to JSON for compliance archival before cancellation.
+            </p>
+            <button
+              type="button"
+              onClick={handleExportOrgData}
+              disabled={exporting}
+              style={{
+                padding: '0.5rem 1rem',
+                borderRadius: '6px',
+                border: '1px solid rgba(61,142,185,0.4)',
+                background: 'rgba(61,142,185,0.15)',
+                color: '#7bb8d9',
+                cursor: exporting ? 'not-allowed' : 'pointer',
+                fontSize: '0.85rem',
+              }}
+            >
+              {exporting ? 'Exporting...' : 'Export All Org Data'}
+            </button>
+          </div>
+
+          {/* Wipe - Danger Zone */}
+          <div
+            style={{
+              background: 'rgba(127, 29, 29, 0.15)',
+              border: '1px solid rgba(220, 38, 38, 0.3)',
+              borderRadius: '8px',
+              padding: '1rem',
+            }}
+          >
+            <h4 style={{ color: '#fca5a5', margin: '0 0 0.5rem', fontSize: '0.9rem' }}>
+              Danger Zone: Wipe Organization Data
+            </h4>
+            <p style={{ fontSize: '0.8rem', color: '#fca5a5', marginBottom: '0.75rem' }}>
+              Permanently deletes ALL data for this org (telematics, training, modules, audit logs).
+              Export data first. This action cannot be undone.
+            </p>
+            <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center', flexWrap: 'wrap' }}>
+              <input
+                type="text"
+                placeholder={`Type org ID to confirm: ${selectedOrgId.substring(0, 20)}...`}
+                value={wipeConfirmText}
+                onChange={(e) => setWipeConfirmText(e.target.value)}
+                style={{
+                  padding: '0.5rem 0.75rem',
+                  borderRadius: '6px',
+                  border: '1px solid #7a3333',
+                  background: '#1e293b',
+                  color: '#fff',
+                  fontSize: '0.8rem',
+                  minWidth: '280px',
+                }}
+              />
+              <button
+                type="button"
+                onClick={handleWipeOrgData}
+                disabled={wiping || wipeConfirmText !== selectedOrgId}
+                style={{
+                  padding: '0.5rem 1rem',
+                  borderRadius: '6px',
+                  border: '1px solid #dc2626',
+                  background: wipeConfirmText === selectedOrgId ? '#dc2626' : '#374151',
+                  color: '#fff',
+                  cursor: wiping || wipeConfirmText !== selectedOrgId ? 'not-allowed' : 'pointer',
+                  fontSize: '0.85rem',
+                  opacity: wipeConfirmText === selectedOrgId ? 1 : 0.5,
+                }}
+              >
+                {wiping ? 'Wiping...' : 'Wipe All Org Data'}
+              </button>
+            </div>
           </div>
         </section>
       )}

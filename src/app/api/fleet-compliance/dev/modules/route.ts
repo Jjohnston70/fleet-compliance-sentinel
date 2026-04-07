@@ -13,11 +13,50 @@ import {
 } from '@/lib/modules-gateway/persistence';
 import { listModuleCatalog } from '@/lib/modules-gateway/runner';
 import { isPlatformAdminUser } from '@/lib/platform-admin';
+import { auditLog } from '@/lib/audit-logger';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
 
 const ORG_WIDE_ACL_USER_ID = '*';
+
+const TELEMATICS_PROVIDERS = ['verizon_reveal', 'geotab', 'samsara'] as const;
+type TelematicsProvider = (typeof TELEMATICS_PROVIDERS)[number];
+
+const PROVIDER_LABELS: Record<TelematicsProvider, string> = {
+  verizon_reveal: 'Verizon Reveal',
+  geotab: 'Geotab',
+  samsara: 'Samsara',
+};
+
+interface TelematicsProviderStatus {
+  provider: TelematicsProvider;
+  label: string;
+  isActive: boolean;
+  hasCredentials: boolean;
+  lastValidatedAt: string | null;
+  consentRecordedAt: string | null;
+}
+
+// Tables that hold org-scoped client data, in deletion order
+const ORG_DATA_TABLES = [
+  'telematics_gps_events',
+  'telematics_dvir_records',
+  'telematics_alerts',
+  'telematics_hos_logs',
+  'telematics_drivers',
+  'telematics_vehicles',
+  'telematics_credentials',
+  'training_progress',
+  'training_assignments',
+  'module_gateway_invocation_audit',
+  'module_gateway_sandbox_events',
+  'module_gateway_retry_escalations',
+  'module_gateway_acl_rules',
+  'ai_usage_budget_alerts',
+  'ai_usage_cost_events',
+  'org_modules',
+] as const;
 
 type AccessScope = 'platform' | 'org_admin';
 
@@ -151,6 +190,126 @@ async function listGatewayModuleToggles(orgId: string): Promise<ModuleGatewayTog
   return toggles;
 }
 
+async function loadTelematicsProviderStatus(orgId: string): Promise<TelematicsProviderStatus[]> {
+  const sql = getSQL();
+  const rows = await sql`
+    SELECT provider, is_active, last_validated_at, consent_recorded_at
+    FROM telematics_credentials
+    WHERE org_id = ${orgId}
+  `;
+
+  const byProvider = new Map<string, typeof rows[0]>();
+  for (const row of rows) {
+    byProvider.set(String(row.provider ?? ''), row);
+  }
+
+  return TELEMATICS_PROVIDERS.map((provider) => {
+    const row = byProvider.get(provider);
+    return {
+      provider,
+      label: PROVIDER_LABELS[provider],
+      isActive: row?.is_active === true,
+      hasCredentials: Boolean(row),
+      lastValidatedAt: row?.last_validated_at ? String(row.last_validated_at) : null,
+      consentRecordedAt: row?.consent_recorded_at ? String(row.consent_recorded_at) : null,
+    };
+  });
+}
+
+async function exportOrgDataToCsv(orgId: string): Promise<Record<string, Record<string, unknown>[]>> {
+  const sql = getSQL();
+  const result: Record<string, Record<string, unknown>[]> = {};
+
+  // Organization info
+  const orgRows = await sql`SELECT id, name, plan, created_at, onboarding_complete, metadata FROM organizations WHERE id = ${orgId}`;
+  result['organizations'] = orgRows.map((r) => ({ ...r }));
+
+  // Modules
+  const modRows = await sql`SELECT module_id, enabled, enabled_at, enabled_by FROM org_modules WHERE org_id = ${orgId}`;
+  result['org_modules'] = modRows.map((r) => ({ ...r }));
+
+  // Telematics vehicles
+  const vRows = await sql`SELECT provider_vehicle_id, vehicle_number, make, model, year, vin, last_seen_at FROM telematics_vehicles WHERE org_id = ${orgId}`;
+  result['telematics_vehicles'] = vRows.map((r) => ({ ...r }));
+
+  // Telematics drivers
+  const dRows = await sql`SELECT provider_driver_id, driver_name, license_number, license_state, current_hos_status FROM telematics_drivers WHERE org_id = ${orgId}`;
+  result['telematics_drivers'] = dRows.map((r) => ({ ...r }));
+
+  // Training assignments
+  const taRows = await sql`SELECT id, employee_id, plan_id, status, assigned_at, completed_at FROM training_assignments WHERE org_id = ${orgId}`;
+  result['training_assignments'] = taRows.map((r) => ({ ...r }));
+
+  // Training progress
+  const tpRows = await sql`SELECT id, assignment_id, module_code, status, score, attempts, completed_at FROM training_progress WHERE org_id = ${orgId}`;
+  result['training_progress'] = tpRows.map((r) => ({ ...r }));
+
+  // Employee profiles
+  try {
+    const epRows = await sql`SELECT id, first_name, last_name, email, role, status, hired_at FROM employee_profiles WHERE org_id = ${orgId}`;
+    result['employee_profiles'] = epRows.map((r) => ({ ...r }));
+  } catch {
+    // Table may not exist in all deployments
+  }
+
+  // Audit events (last 500)
+  try {
+    const aeRows = await sql`SELECT action, user_id, resource_type, severity, created_at FROM org_audit_events WHERE org_id = ${orgId} ORDER BY created_at DESC LIMIT 500`;
+    result['audit_events'] = aeRows.map((r) => ({ ...r }));
+  } catch {
+    // Table may not exist
+  }
+
+  return result;
+}
+
+async function deleteFromTable(tableName: string, orgId: string): Promise<number> {
+  const sql = getSQL();
+  // Each table handled explicitly to avoid dynamic table name interpolation issues.
+  switch (tableName) {
+    case 'telematics_gps_events': { const r = await sql`DELETE FROM telematics_gps_events WHERE org_id = ${orgId}`; return (r as any).count ?? r.length; }
+    case 'telematics_dvir_records': { const r = await sql`DELETE FROM telematics_dvir_records WHERE org_id = ${orgId}`; return (r as any).count ?? r.length; }
+    case 'telematics_alerts': { const r = await sql`DELETE FROM telematics_alerts WHERE org_id = ${orgId}`; return (r as any).count ?? r.length; }
+    case 'telematics_hos_logs': { const r = await sql`DELETE FROM telematics_hos_logs WHERE org_id = ${orgId}`; return (r as any).count ?? r.length; }
+    case 'telematics_drivers': { const r = await sql`DELETE FROM telematics_drivers WHERE org_id = ${orgId}`; return (r as any).count ?? r.length; }
+    case 'telematics_vehicles': { const r = await sql`DELETE FROM telematics_vehicles WHERE org_id = ${orgId}`; return (r as any).count ?? r.length; }
+    case 'telematics_credentials': { const r = await sql`DELETE FROM telematics_credentials WHERE org_id = ${orgId}`; return (r as any).count ?? r.length; }
+    case 'training_progress': { const r = await sql`DELETE FROM training_progress WHERE org_id = ${orgId}`; return (r as any).count ?? r.length; }
+    case 'training_assignments': { const r = await sql`DELETE FROM training_assignments WHERE org_id = ${orgId}`; return (r as any).count ?? r.length; }
+    case 'module_gateway_invocation_audit': { const r = await sql`DELETE FROM module_gateway_invocation_audit WHERE org_id = ${orgId}`; return (r as any).count ?? r.length; }
+    case 'module_gateway_sandbox_events': { const r = await sql`DELETE FROM module_gateway_sandbox_events WHERE org_id = ${orgId}`; return (r as any).count ?? r.length; }
+    case 'module_gateway_retry_escalations': { const r = await sql`DELETE FROM module_gateway_retry_escalations WHERE org_id = ${orgId}`; return (r as any).count ?? r.length; }
+    case 'module_gateway_acl_rules': { const r = await sql`DELETE FROM module_gateway_acl_rules WHERE org_id = ${orgId}`; return (r as any).count ?? r.length; }
+    case 'ai_usage_budget_alerts': { const r = await sql`DELETE FROM ai_usage_budget_alerts WHERE org_id = ${orgId}`; return (r as any).count ?? r.length; }
+    case 'ai_usage_cost_events': { const r = await sql`DELETE FROM ai_usage_cost_events WHERE org_id = ${orgId}`; return (r as any).count ?? r.length; }
+    case 'org_modules': { const r = await sql`DELETE FROM org_modules WHERE org_id = ${orgId}`; return (r as any).count ?? r.length; }
+    default: return 0;
+  }
+}
+
+async function wipeOrgData(orgId: string, userId: string): Promise<Record<string, number>> {
+  const counts: Record<string, number> = {};
+
+  for (const table of ORG_DATA_TABLES) {
+    try {
+      counts[table] = await deleteFromTable(table, orgId);
+    } catch {
+      counts[table] = -1; // table may not exist in this deployment
+    }
+  }
+
+  auditLog({
+    action: 'admin.action',
+    userId,
+    orgId,
+    resourceType: 'organization',
+    severity: 'warn',
+    metadata: { operation: 'org_data_wipe', tablesProcessed: ORG_DATA_TABLES.length },
+  });
+
+  return counts;
+}
+
 function errorResponse(error: unknown): Response {
   if (error instanceof Error) {
     if (error.message === 'UNAUTHORIZED') {
@@ -231,6 +390,7 @@ export async function GET(request: Request) {
     let enabledModules: string[] = [];
     let planDefaults: string[] = [];
     let moduleGatewayModules: ModuleGatewayToggleItem[] = [];
+    let telematicsProviders: TelematicsProviderStatus[] = [];
 
     if (effectiveOrgId) {
       enabledModules = await getOrgModules(effectiveOrgId);
@@ -239,6 +399,9 @@ export async function GET(request: Request) {
       moduleGatewayModules = access.scope === 'platform'
         ? await listGatewayModuleToggles(effectiveOrgId)
         : [];
+      if (access.scope === 'platform') {
+        telematicsProviders = await loadTelematicsProviderStatus(effectiveOrgId);
+      }
     }
 
     let recentToggles: Array<Record<string, unknown>> = [];
@@ -274,6 +437,7 @@ export async function GET(request: Request) {
       planDefaults,
       recentToggles,
       moduleGatewayModules,
+      telematicsProviders,
       accessScope: access.scope,
     });
   } catch (error) {
@@ -323,6 +487,70 @@ export async function POST(request: Request) {
 
     if (!orgId) {
       return Response.json({ ok: false, error: 'orgId is required' }, { status: 400 });
+    }
+
+    // Telematics provider toggle
+    if (body.action === 'telematics-toggle') {
+      const provider = typeof body.provider === 'string' ? body.provider.trim() : '';
+      if (!TELEMATICS_PROVIDERS.includes(provider as TelematicsProvider)) {
+        return Response.json({ ok: false, error: `Invalid provider. Must be one of: ${TELEMATICS_PROVIDERS.join(', ')}` }, { status: 400 });
+      }
+      const enabled = body.enabled === true;
+      const sql = getSQL();
+
+      // Check if credentials exist
+      const existing = await sql`
+        SELECT id FROM telematics_credentials WHERE org_id = ${orgId} AND provider = ${provider} LIMIT 1
+      `;
+
+      if (existing.length === 0) {
+        // Create a placeholder row (credentials to be configured separately)
+        await sql`
+          INSERT INTO telematics_credentials (org_id, provider, username, password_enc, is_active)
+          VALUES (${orgId}, ${provider}, '', '', ${enabled})
+        `;
+      } else {
+        await sql`
+          UPDATE telematics_credentials
+          SET is_active = ${enabled}, updated_at = NOW()
+          WHERE org_id = ${orgId} AND provider = ${provider}
+        `;
+      }
+
+      auditLog({
+        action: 'admin.action',
+        userId: access.userId,
+        orgId,
+        resourceType: 'telematics_credentials',
+        severity: 'info',
+        metadata: { operation: 'telematics_toggle', provider, enabled },
+      });
+
+      return Response.json({ ok: true, action: 'telematics-toggle', provider, enabled });
+    }
+
+    // Export org data as JSON (client downloads and converts to Excel)
+    if (body.action === 'export-org-data') {
+      const data = await exportOrgDataToCsv(orgId);
+      auditLog({
+        action: 'admin.action',
+        userId: access.userId,
+        orgId,
+        resourceType: 'organization',
+        severity: 'info',
+        metadata: { operation: 'org_data_export', tableCount: Object.keys(data).length },
+      });
+      return Response.json({ ok: true, action: 'export-org-data', orgId, data });
+    }
+
+    // Wipe all org data (for cancelled clients)
+    if (body.action === 'wipe-org-data') {
+      const confirmOrgId = typeof body.confirmOrgId === 'string' ? body.confirmOrgId.trim() : '';
+      if (confirmOrgId !== orgId) {
+        return Response.json({ ok: false, error: 'confirmOrgId must match orgId to proceed with wipe' }, { status: 400 });
+      }
+      const counts = await wipeOrgData(orgId, access.userId);
+      return Response.json({ ok: true, action: 'wipe-org-data', orgId, deletedCounts: counts });
     }
 
     if (body.kind === 'module-gateway') {

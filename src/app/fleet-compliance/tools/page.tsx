@@ -6,7 +6,6 @@ import { isClerkEnabled } from '@/lib/clerk';
 import FleetComplianceErrorBoundary from '@/components/fleet-compliance/FleetComplianceErrorBoundary';
 import ModuleGatewayPanel from '@/components/fleet-compliance/ModuleGatewayPanel';
 import { getModuleCatalog, getOrgModules, type ModuleCatalogItem } from '@/lib/modules';
-import { isPlatformAdminUser } from '@/lib/platform-admin';
 
 export const dynamic = 'force-dynamic';
 export const metadata: Metadata = {
@@ -108,7 +107,6 @@ export default async function FleetComplianceToolsPage({ searchParams }: { searc
 
   const role = resolveOrgRole(sessionClaims);
   const isAdmin = role === 'admin';
-  const isPlatformAdmin = isPlatformAdminUser(userId);
 
   const resolved = await searchParams;
   const requestedSkill = firstParam(resolved.skill).trim().toLowerCase();
@@ -215,28 +213,15 @@ export default async function FleetComplianceToolsPage({ searchParams }: { searc
           )}
         </section>
 
-        {isAdmin && isPlatformAdmin ? (
+        {isAdmin ? (
           <ModuleGatewayPanel />
-        ) : isAdmin ? (
-          <section className="fleet-compliance-section">
-            <div className="fleet-compliance-empty-state" style={{ marginTop: 0 }}>
-              <h3>Platform-admin module gateway only</h3>
-              <p>
-                Direct module gateway execution (including ML tooling) is restricted to platform admins. Use Penny and
-                enabled skill workflows for client operations.
-              </p>
-              <p className="fleet-compliance-table-note" style={{ marginTop: '0.5rem' }}>
-                Set <code>FLEET_PLATFORM_ADMIN_USER_IDS</code> to include your Clerk user ID. Current user: <code>{userId}</code>
-              </p>
-            </div>
-          </section>
         ) : (
           <section className="fleet-compliance-section">
             <div className="fleet-compliance-empty-state" style={{ marginTop: 0 }}>
               <h3>Admin-only module gateway</h3>
               <p>
                 Direct module execution controls are restricted to organization admins. Skills above remain available
-                through Penny for permitted users.
+                through Penny for all org members.
               </p>
             </div>
           </section>

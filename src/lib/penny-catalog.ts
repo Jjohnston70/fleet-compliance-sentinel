@@ -26,7 +26,6 @@ interface CatalogOptions {
 }
 
 const CFR_DOCS_DIR = path.join(process.cwd(), 'knowledge', 'cfr-docs');
-const DEMO_DOCS_DIR = path.join(process.cwd(), 'knowledge', 'data', 'original_content');
 const TRAINING_DOCS_DIR = path.join(process.cwd(), 'knowledge', 'training-content', 'hazmat');
 
 function sanitizeLimit(limit: number | undefined, fallback: number): number {
@@ -40,16 +39,6 @@ function titleCase(value: string): string {
     .filter(Boolean)
     .map((token) => token.charAt(0).toUpperCase() + token.slice(1).toLowerCase())
     .join(' ');
-}
-
-function humanizeCategory(raw: string): string {
-  const normalized = raw.toLowerCase();
-  if (normalized === '01_realty-command') return 'Realty Command';
-  if (normalized === 'hubspot') return 'HubSpot';
-  if (normalized === 'tenstreet') return 'Tenstreet';
-  if (normalized === 'erg-hazmat') return 'ERG Hazmat';
-  if (normalized === 'jj-keller') return 'JJ Keller';
-  return titleCase(raw.replace(/^\d+[_-]?/, ''));
 }
 
 function humanizeFileStem(stem: string): string {
@@ -78,30 +67,6 @@ function buildCfrTitle(filePath: string, fileName: string): string {
   const stem = fileName.replace(/\.(md|txt)$/i, '');
   const partPrefix = part ? `Part ${part} - ` : '';
   return `${partPrefix}${humanizeFileStem(stem)}`;
-}
-
-function walkDocs(rootDir: string): string[] {
-  const files: string[] = [];
-  if (!existsSync(rootDir)) return files;
-  const stack = [rootDir];
-  while (stack.length > 0) {
-    const current = stack.pop();
-    if (!current) continue;
-    const entries = readdirSync(current, { withFileTypes: true });
-    for (const entry of entries) {
-      const fullPath = path.join(current, entry.name);
-      if (entry.isDirectory()) {
-        stack.push(fullPath);
-        continue;
-      }
-      if (!entry.isFile()) continue;
-      const lower = entry.name.toLowerCase();
-      if (lower.endsWith('.md') || lower.endsWith('.txt')) {
-        files.push(fullPath);
-      }
-    }
-  }
-  return files;
 }
 
 function sortDocs(docs: PennyCatalogDocument[]): PennyCatalogDocument[] {
@@ -166,22 +131,6 @@ export function buildLocalPennyCatalog(limit: number | undefined): PennyCatalogR
         title: title || stem,
         source: `training/${file}`,
         category: 'Training Modules',
-      });
-    }
-  }
-
-  if (existsSync(DEMO_DOCS_DIR)) {
-    const demoFiles = walkDocs(DEMO_DOCS_DIR);
-    for (const filePath of demoFiles) {
-      const rel = path.relative(DEMO_DOCS_DIR, filePath).replace(/\\/g, '/');
-      if (!rel || rel.startsWith('.')) continue;
-      const firstSegment = rel.split('/')[0] || 'demo';
-      const category = humanizeCategory(firstSegment);
-      const stem = path.basename(filePath).replace(/\.(md|txt)$/i, '');
-      documents.push({
-        title: humanizeFileStem(stem),
-        source: `demo/${rel}`,
-        category,
       });
     }
   }

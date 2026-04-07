@@ -102,7 +102,7 @@ export const SIDEBAR_SECTIONS: readonly SidebarSection[] = [
       { label: 'Email Analytics', href: '/fleet-compliance/email-analytics', icon: 'Mail', moduleId: 'email-analytics' },
       { label: 'Readiness', href: '/fleet-compliance/readiness', icon: 'Gauge', moduleId: 'readiness' },
       { label: 'GovCon & Compliance', href: '/fleet-compliance/govcon', icon: 'Landmark', moduleId: 'govcon' },
-      { label: 'Telematics', href: '/fleet-compliance/telematics', icon: 'MapPinned', moduleId: 'telematics' },
+      { label: 'Telematics', href: '/fleet-compliance/telematics', icon: 'MapPinned', moduleId: 'telematics', platformOnly: true },
     ],
   },
   {
@@ -130,7 +130,7 @@ export const SIDEBAR_SECTIONS: readonly SidebarSection[] = [
       { label: 'Import Data', href: '/fleet-compliance/import', icon: 'Upload' },
       { label: 'Feature Modules', href: '/fleet-compliance/settings/modules', icon: 'ToggleRight' },
       { label: 'Command Center', href: '/fleet-compliance/command-center', icon: 'Terminal', platformOnly: true },
-      { label: 'Module Tools', href: '/fleet-compliance/tools', icon: 'Wrench', platformOnly: true },
+      { label: 'Module Tools', href: '/fleet-compliance/tools', icon: 'Wrench' },
       { label: 'Penny AI', href: '/penny', icon: 'Bot' },
       { label: 'Developer Module Console', href: '/fleet-compliance/dev/modules', icon: 'TerminalSquare', platformOnly: true },
     ],

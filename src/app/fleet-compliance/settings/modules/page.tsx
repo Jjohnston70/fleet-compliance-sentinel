@@ -34,9 +34,8 @@ interface ToggleLogEntry {
 // Modules that are internal/developer-only and should not appear to clients.
 // Clients interact with these features through the UI -- they don't need to
 // know about the underlying module gateway or ML pipeline infrastructure.
-const DEV_ONLY_MODULES = new Set([
-  'petroleum-intel',
-  'ml-signals',
+const DEV_ONLY_MODULES = new Set<string>([
+  // petroleum-intel and ml-signals removed — clients can now toggle these
 ]);
 
 // Category display names for clean client presentation

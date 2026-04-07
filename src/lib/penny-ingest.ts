@@ -26,27 +26,8 @@ const TRAINING_DOCS_DIR = path.join(process.cwd(), 'knowledge', 'training-conten
 
 // CFR chunk index — built by scripts/build-cfr-index.mjs
 const CFR_INDEX_FILE = path.join(process.cwd(), 'knowledge', 'cfr-index', 'chunks.json')
-const DEMO_INDEX_FILE = path.join(process.cwd(), 'knowledge', 'demo-index', 'chunks.json')
-const DEMO_DOMAIN = 'demo-docs'
-const INCLUDE_DEMO_KNOWLEDGE_ALWAYS = ['1', 'true', 'yes', 'on'].includes(
-  (process.env.PENNY_INCLUDE_DEMO_KNOWLEDGE || 'true').trim().toLowerCase(),
-)
-
 // Per-org document chunks — built when orgs upload compliance docs
 const ORG_DATA_ROOT = path.join(process.cwd(), 'knowledge', 'org-data')
-
-function shouldSearchDemoKnowledge(query: string): boolean {
-  const q = query.toLowerCase()
-  return (
-    q.includes('hubspot') ||
-    q.includes('tenstreet') ||
-    q.includes('realty command') ||
-    q.includes('realty-command') ||
-    q.includes('crm') ||
-    q.includes('applicant tracking') ||
-    q.includes('driver recruiting')
-  )
-}
 
 /**
  * Builds the CFR chunk index from markdown files in knowledge/cfr-docs/.
@@ -165,7 +146,6 @@ export async function buildPennyContext(params: {
   topK?: number
 }): Promise<{ groundedPrompt: string; sources: string[] }> {
   const topK = params.topK ?? 5
-  const includeDemoKnowledge = INCLUDE_DEMO_KNOWLEDGE_ALWAYS || shouldSearchDemoKnowledge(params.query)
 
   // Search CFR knowledge base
   const cfrIndex = new JsonChunkIndex(CFR_INDEX_FILE)
@@ -190,22 +170,8 @@ export async function buildPennyContext(params: {
     }
   }
 
-  let demoChunks: typeof cfrChunks = []
-  if (includeDemoKnowledge) {
-    try {
-      const demoIndex = new JsonChunkIndex(DEMO_INDEX_FILE)
-      demoChunks = await demoIndex.search({
-        query: params.query,
-        topK: 4,
-        domainSlug: DEMO_DOMAIN,
-      })
-    } catch {
-      // Demo index not built yet — continue with org + CFR only
-    }
-  }
-
   // Org-specific chunks first (more relevant), CFR chunks second (regulatory context)
-  const allChunks = [...orgChunks, ...demoChunks, ...cfrChunks].slice(0, topK + 4)
+  const allChunks = [...orgChunks, ...cfrChunks].slice(0, topK + 3)
 
   const groundedPrompt = buildGroundedPrompt({
     question: params.query,
