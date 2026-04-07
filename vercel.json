@@ -1,6 +1,13 @@
 {
   "version": 2,
   "framework": "nextjs",
+  "functions": {
+    "api/ml/**/*.py": {
+      "runtime": "@vercel/python@4",
+      "maxDuration": 300,
+      "excludeFiles": "{**/venv_*/**,**/__pycache__/**,**/node_modules/**,**/.git/**,**/tests/**,**/*.test.py,**/test_*.py}"
+    }
+  },
   "headers": [
     {
       "source": "/(.*)",

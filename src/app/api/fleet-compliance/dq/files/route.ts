@@ -7,6 +7,7 @@ import {
   getOrgSummary,
   createDqFile,
   getChecklist,
+  ensureOrgHydrated,
 } from '@/lib/dq-store';
 import {
   requireFleetComplianceOrg,
@@ -23,6 +24,8 @@ export async function GET(req: NextRequest) {
     if (authResponse) return authResponse;
     return NextResponse.json({ ok: false, error: 'Unauthorized' }, { status: 401 });
   }
+
+  await ensureOrgHydrated(orgId);
 
   const fileTypeParam = req.nextUrl.searchParams.get('fileType');
   const fileType = fileTypeParam === 'dqf' || fileTypeParam === 'dhf' ? fileTypeParam : undefined;
@@ -83,6 +86,8 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ ok: false, error: 'Unauthorized' }, { status: 401 });
   }
 
+  await ensureOrgHydrated(orgId);
+
   const body = await req.json();
   const driverId = body.driver_id ?? body.driverId ?? '';
   const driverName = body.driver_name ?? body.driverName ?? '';
@@ -93,7 +98,7 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ ok: false, error: 'Driver Name is required' }, { status: 400 });
   }
 
-  const { dqf, dhf, intake_token } = createDqFile(orgId, {
+  const { dqf, dhf, intake_token } = await createDqFile(orgId, {
     driver_id: String(driverId || `drv-${crypto.randomUUID().slice(0, 8)}`),
     driver_name: driverName,
     cdl_holder: cdlHolder,

@@ -4,6 +4,7 @@ export const dynamic = 'force-dynamic';
 import { NextRequest, NextResponse } from 'next/server';
 import {
   getChecklist,
+  ensureOrgHydrated,
 } from '@/lib/dq-store';
 import {
   requireFleetComplianceOrg,
@@ -14,13 +15,16 @@ export async function GET(
   req: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
+  let orgId: string;
   try {
-    await requireFleetComplianceOrg(req);
+    ({ orgId } = await requireFleetComplianceOrg(req));
   } catch (error: unknown) {
     const authResponse = fleetComplianceAuthErrorResponse(error);
     if (authResponse) return authResponse;
     return NextResponse.json({ ok: false, error: 'Unauthorized' }, { status: 401 });
   }
+
+  await ensureOrgHydrated(orgId);
 
   const { id } = await params;
   const numericId = Number(id);

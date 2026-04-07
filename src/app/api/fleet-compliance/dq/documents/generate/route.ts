@@ -4,6 +4,7 @@ export const dynamic = 'force-dynamic';
 import { NextRequest, NextResponse } from 'next/server';
 import {
   generateDocument,
+  ensureOrgHydrated,
 } from '@/lib/dq-store';
 import {
   requireFleetComplianceOrgWithRole,
@@ -20,10 +21,12 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ ok: false, error: 'Unauthorized' }, { status: 401 });
   }
 
+  await ensureOrgHydrated(orgId);
+
   const body = await req.json();
   const { dq_file_id, doc_type } = body;
 
-  const document = generateDocument(orgId, Number(dq_file_id), doc_type);
+  const document = await generateDocument(orgId, Number(dq_file_id), doc_type);
 
   return NextResponse.json({
     ok: true,

@@ -8,6 +8,7 @@ import {
   getIntakeResponses,
   getIntakeStatus,
   completeIntake,
+  ensureOrgHydrated,
 } from '@/lib/dq-store';
 
 const INTAKE_SECTIONS = [
@@ -32,6 +33,8 @@ export async function GET(
       { status: 404 }
     );
   }
+
+  await ensureOrgHydrated(file.org_id);
 
   const intake_status = await getIntakeStatus(file.id);
 
@@ -58,6 +61,8 @@ export async function POST(
       { status: 404 }
     );
   }
+
+  await ensureOrgHydrated(file.org_id);
 
   const body = await req.json();
   const { section, response_data, action } = body;

@@ -4,6 +4,7 @@ export const dynamic = 'force-dynamic';
 import { NextRequest, NextResponse } from 'next/server';
 import {
   getGaps,
+  ensureOrgHydrated,
 } from '@/lib/dq-store';
 import {
   requireFleetComplianceOrg,
@@ -20,7 +21,9 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ ok: false, error: 'Unauthorized' }, { status: 401 });
   }
 
-  const expiringWithinDays = 
+  await ensureOrgHydrated(orgId);
+
+  const expiringWithinDays =
     parseInt(req.nextUrl.searchParams.get('expiringWithinDays') || '30', 10);
 
   const gaps = getGaps(orgId, expiringWithinDays);

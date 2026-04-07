@@ -1,9 +1,14 @@
 /**
- * In-memory DQ data store for the fleet-compliance DQ module UI.
- * Mirrors the dq-command tooling types. Will be replaced by Postgres in production.
+ * DQ data store backed by fleet_module_runtime_state Postgres persistence.
  *
- * Per PATH-2 architecture: "In-memory repository initially"
+ * In-memory Maps are the hot cache. On first access for an org, state is
+ * hydrated from Postgres. After every mutation, state is persisted back.
  */
+
+import {
+  loadModuleRuntimeState,
+  saveModuleRuntimeState,
+} from '@/lib/module-runtime-state';
 
 // ---------------------------------------------------------------------------
 // Types
@@ -150,7 +155,7 @@ const GENERATABLE_TYPES = new Set([
 ]);
 
 // ---------------------------------------------------------------------------
-// In-memory stores (org-scoped)
+// In-memory stores (org-scoped, hydrated from Postgres)
 // ---------------------------------------------------------------------------
 
 const orgFiles = new Map<string, DqFile[]>();
@@ -158,15 +163,53 @@ const orgDocs = new Map<string, DqDocument[]>();
 const intakeResponses: DqIntakeResponse[] = [];
 let nextFileId = 100;
 let nextDocId = 1000;
+const hydratedOrgs = new Set<string>();
 
 // ---------------------------------------------------------------------------
-// Seed data
+// Persistence helpers
 // ---------------------------------------------------------------------------
+
+async function hydrateOrg(orgId: string): Promise<void> {
+  if (hydratedOrgs.has(orgId)) return;
+  hydratedOrgs.add(orgId);
+
+  const snapshot = await loadModuleRuntimeState(orgId, 'dq-files');
+  if (snapshot) {
+    const files = Array.isArray(snapshot.files) ? snapshot.files as DqFile[] : [];
+    const docs = Array.isArray(snapshot.docs) ? snapshot.docs as DqDocument[] : [];
+    orgFiles.set(orgId, files);
+    orgDocs.set(orgId, docs);
+    if (typeof snapshot.nextFileId === 'number') nextFileId = Math.max(nextFileId, snapshot.nextFileId);
+    if (typeof snapshot.nextDocId === 'number') nextDocId = Math.max(nextDocId, snapshot.nextDocId);
+  } else {
+    orgFiles.set(orgId, []);
+    orgDocs.set(orgId, []);
+  }
+}
+
+async function persistOrg(orgId: string): Promise<void> {
+  const files = orgFiles.get(orgId) ?? [];
+  const docs = orgDocs.get(orgId) ?? [];
+  await saveModuleRuntimeState(orgId, 'dq-files', {
+    files,
+    docs,
+    nextFileId,
+    nextDocId,
+  } as unknown as Record<string, unknown>);
+}
 
 function ensureOrgData(orgId: string): void {
   if (orgFiles.has(orgId)) return;
   orgFiles.set(orgId, []);
   orgDocs.set(orgId, []);
+}
+
+/**
+ * Call before any read/write operation. Hydrates from Postgres on first access.
+ */
+export async function ensureOrgHydrated(orgId: string): Promise<void> {
+  await hydrateOrg(orgId);
+  ensureOrgData(orgId);
 }
 
 // ---------------------------------------------------------------------------
@@ -192,8 +235,8 @@ export function getFileByToken(token: string): DqFile | undefined {
   return undefined;
 }
 
-export function createDqFile(orgId: string, input: { driver_id: string; driver_name: string; cdl_holder: boolean; hire_date: string }): { dqf: DqFile; dhf: DqFile; intake_token: string } {
-  ensureOrgData(orgId);
+export async function createDqFile(orgId: string, input: { driver_id: string; driver_name: string; cdl_holder: boolean; hire_date: string }): Promise<{ dqf: DqFile; dhf: DqFile; intake_token: string }> {
+  await ensureOrgHydrated(orgId);
   const now = new Date().toISOString();
   const token = `tok-${crypto.randomUUID().slice(0, 8)}`;
 
@@ -263,6 +306,7 @@ export function createDqFile(orgId: string, input: { driver_id: string; driver_n
     }
   }
 
+  await persistOrg(orgId);
   return { dqf, dhf, intake_token: token };
 }
 
@@ -303,8 +347,8 @@ export function getChecklist(dqFileId: number): DqChecklistItem[] {
   });
 }
 
-export function uploadDocument(orgId: string, dqFileId: number, docType: string, filePath: string, expiresAt?: string): DqDocument | null {
-  ensureOrgData(orgId);
+export async function uploadDocument(orgId: string, dqFileId: number, docType: string, filePath: string, expiresAt?: string): Promise<DqDocument | null> {
+  await ensureOrgHydrated(orgId);
   const docs = orgDocs.get(orgId)!;
   const doc = docs.find((d) => d.dq_file_id === dqFileId && d.doc_type === docType);
   if (!doc) return null;
@@ -312,17 +356,19 @@ export function uploadDocument(orgId: string, dqFileId: number, docType: string,
   doc.uploaded_at = new Date().toISOString();
   doc.file_path = filePath;
   if (expiresAt) doc.expires_at = expiresAt;
+  await persistOrg(orgId);
   return doc;
 }
 
-export function generateDocument(orgId: string, dqFileId: number, docType: string): DqDocument | null {
-  ensureOrgData(orgId);
+export async function generateDocument(orgId: string, dqFileId: number, docType: string): Promise<DqDocument | null> {
+  await ensureOrgHydrated(orgId);
   if (!GENERATABLE_TYPES.has(docType)) return null;
   const docs = orgDocs.get(orgId)!;
   const doc = docs.find((d) => d.dq_file_id === dqFileId && d.doc_type === docType);
   if (!doc) return null;
   doc.status = 'generated';
   doc.generated_at = new Date().toISOString();
+  await persistOrg(orgId);
   return doc;
 }
 
@@ -413,6 +459,8 @@ export function getGaps(orgId: string, expiringWithinDays: number = 30): GapItem
 
 export function saveIntakeResponse(dqFileId: number, section: string, data: Record<string, unknown>): void {
   intakeResponses.push({ dq_file_id: dqFileId, section, response_data: data, submitted_at: new Date().toISOString() });
+  // Note: intake responses are session-scoped and not persisted to fleet_module_runtime_state.
+  // They are ephemeral by design (intake is completed in a single session).
 }
 
 export function getIntakeResponses(dqFileId: number): DqIntakeResponse[] {
@@ -426,11 +474,12 @@ export function getIntakeStatus(dqFileId: number): { completed_sections: string[
   return { completed_sections: completed, remaining_sections: remaining, is_complete: remaining.length === 0 };
 }
 
-export function completeIntake(token: string): boolean {
+export async function completeIntake(token: string): Promise<boolean> {
   const file = getFileByToken(token);
   if (!file) return false;
   file.intake_completed_at = new Date().toISOString();
   file.intake_token = null;
   file.updated_at = new Date().toISOString();
+  await persistOrg(file.org_id);
   return true;
 }

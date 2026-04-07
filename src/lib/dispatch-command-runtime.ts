@@ -21,7 +21,6 @@ interface DispatchCommandModule {
   DispatchAPIHandlers: new (repository: any) => any;
   DispatchDashboard: new (repository: any) => any;
   SLAService: new (repository: any) => any;
-  seedAll: (repository: any) => Promise<void>;
 }
 
 export interface DispatchRuntime {

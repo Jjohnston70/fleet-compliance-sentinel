@@ -1,6 +1,6 @@
 import { getSQL } from '@/lib/fleet-compliance-db';
 
-type ModuleRuntimeId = 'dispatch-command' | 'govcon-compliance-command';
+type ModuleRuntimeId = 'dispatch-command' | 'govcon-compliance-command' | 'dq-files' | 'proposal-command';
 
 let ensuredTable = false;
 let warnedUnavailable = false;

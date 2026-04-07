@@ -6,6 +6,7 @@ import {
   getFileById,
   getChecklist,
   getFiles,
+  ensureOrgHydrated,
 } from '@/lib/dq-store';
 import {
   requireFleetComplianceOrg,
@@ -24,6 +25,8 @@ export async function GET(
     if (authResponse) return authResponse;
     return NextResponse.json({ ok: false, error: 'Unauthorized' }, { status: 401 });
   }
+
+  await ensureOrgHydrated(orgId);
 
   const { id } = await params;
   const numericId = Number(id);

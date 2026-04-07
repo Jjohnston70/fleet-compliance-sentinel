@@ -886,6 +886,100 @@ async function executeRun(runId: string): Promise<void> {
     }
   }
 
+  // Vercel Python gateway: dispatch Python modules via HTTP instead of spawn
+  const vercelPythonGatewayUrl = process.env.ML_GATEWAY_URL || (process.env.VERCEL ? '/api/ml/run' : '');
+  const vercelPythonGatewayKey = process.env.ML_GATEWAY_INTERNAL_KEY || '';
+  const moduleDef = getModuleDefinition(run.moduleId);
+  const isPythonModule = moduleDef?.runtime === 'python';
+
+  if (isPythonModule && vercelPythonGatewayUrl && vercelPythonGatewayKey) {
+    try {
+      const gatewayUrl = vercelPythonGatewayUrl.startsWith('/')
+        ? `${process.env.SITE_URL || (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : 'http://localhost:3000')}${vercelPythonGatewayUrl}`
+        : vercelPythonGatewayUrl;
+
+      const res = await fetch(gatewayUrl, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'x-ml-gateway-key': vercelPythonGatewayKey,
+        },
+        body: JSON.stringify({
+          moduleId: run.moduleId,
+          command: run.command,
+          timeoutMs: run.timeoutMs,
+        }),
+      });
+
+      const body = await res.json() as Record<string, unknown>;
+      const endedAt = nowIso();
+      const durationMs = Date.now() - startedAtEpoch;
+
+      if (body.ok) {
+        const stdoutPreview = previewOutput(String(body.stdout || ''), false);
+        const stderrPreview = previewOutput(String(body.stderr || ''), false);
+        const exitCode = typeof body.exitCode === 'number' ? body.exitCode : 1;
+
+        if (exitCode === 0) {
+          updateRun(runId, (current) => ({
+            ...current,
+            status: 'success',
+            endedAt,
+            durationMs,
+            exitCode,
+            stdoutPreview: stdoutPreview.preview,
+            stderrPreview: stderrPreview.preview,
+            stdoutTruncated: stdoutPreview.wasPreviewTruncated,
+            stderrTruncated: stderrPreview.wasPreviewTruncated,
+            artifacts: collectRunArtifacts(run, String(body.stdout || '')),
+          }));
+        } else {
+          updateFailedRun(runId, (current) => ({
+            ...current,
+            status: 'fail',
+            endedAt,
+            durationMs,
+            exitCode,
+            stdoutPreview: stdoutPreview.preview,
+            stderrPreview: stderrPreview.preview,
+            stdoutTruncated: stdoutPreview.wasPreviewTruncated,
+            stderrTruncated: stderrPreview.wasPreviewTruncated,
+            error: {
+              code: 'EXEC_FAILED' as ModuleRunErrorCode,
+              message: `Process exited with code ${exitCode}`,
+            },
+          }));
+        }
+      } else {
+        updateFailedRun(runId, (current) => ({
+          ...current,
+          status: 'fail',
+          endedAt,
+          durationMs,
+          error: {
+            code: (String(body.code || 'INTERNAL_ERROR')) as ModuleRunErrorCode,
+            message: String(body.error || 'Python gateway error'),
+          },
+        }));
+      }
+      return;
+    } catch (error) {
+      const endedAt = nowIso();
+      const durationMs = Date.now() - startedAtEpoch;
+      updateFailedRun(runId, (current) => ({
+        ...current,
+        status: 'fail',
+        endedAt,
+        durationMs,
+        error: {
+          code: 'INTERNAL_ERROR',
+          message: `Python gateway call failed: ${error instanceof Error ? error.message : 'Unknown error'}`,
+        },
+      }));
+      return;
+    }
+  }
+
   try {
     const result = await new Promise<{ exitCode: number | null; spawnError?: Error }>((resolve) => {
       const child = spawn(run.command[0], run.command.slice(1), {
