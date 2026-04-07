@@ -129,6 +129,7 @@ Confirm before calling done:
 **Status:** Production (SOC 2 observation window active since March 24, 2026; Type I eligible June 22, 2026). All 8 SOC 2 phases complete. Module integration sprint complete. Training LMS (B1-B9) complete. Enterprise hardening (A0-A8) complete. Onboarding orchestration live. 6 critical training findings pending resolution before first paying client.
 
 **Critical Active Work:**
+
 - Fix 6 critical training findings (C-1 through C-6) before first paying client
 - Complete onboarding Phase 6 release gate (P6-T2 through P6-T4)
 - Establish compliance evidence collection cadence
@@ -137,6 +138,7 @@ Confirm before calling done:
 **Architecture summary:** Next.js 15 App Router on Vercel -> Clerk auth -> Neon PostgreSQL (org_id scoped) -> Module gateway (7 hardening layers) -> Railway FastAPI (Penny AI). Stripe billing with 4 tiers. 15+ command modules. Resend for email. Sentry/Datadog/UptimeRobot for monitoring. Upstash Redis for rate limiting.
 
 **Data Source Policy (Effective 2026-04-06):**
+
 - NO demo data, seed data, or synthetic data in production databases.
 - The ONLY external data entering the system is via the bulk import functions (`/api/fleet-compliance/import`) or direct user input through the UI.
 - Do NOT create test/demo records in database tables. Do NOT seed fake employees, assets, or training data.
@@ -145,3 +147,5 @@ Confirm before calling done:
 - All test data must be clearable via the admin data management API.
 
 **Read:** `.claude/ARCHITECTURE.md`, `.claude/SECURITY.md`, `.claude/STACK.md`, `.claude/COMMANDS.md`
+
+**ALWAYS END WITH A COMMIT MESSAGE FOR USR TO COPY AND NEVER COMMIT UNLESS ASKED**
