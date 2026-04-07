@@ -3,8 +3,8 @@
 **Organization:** True North Data Strategies LLC
 **Product:** Fleet-Compliance Sentinel + Pipeline Penny
 **Production URL:** https://www.pipelinepunks.com
-**Current Date:** April 6, 2026
-**Last Updated:** 2026-04-06
+**Current Date:** April 7, 2026
+**Last Updated:** 2026-04-07
 
 ---
 
@@ -312,9 +312,10 @@ The sidebar is organized into 6 collapsible sections, each with navigation items
 Two module-management pages now exist intentionally:
 
 - **Client-facing settings**: `/fleet-compliance/settings/modules`
-  - Audience: organization admins (all tenants)
+  - Audience: organization admins (view-only) and platform admins (management)
   - Scope: app feature modules only (for example telematics, tasks, DQ files, skills)
   - Excludes: module gateway/ML execution controls
+  - Write policy: `POST /api/fleet-compliance/dev/modules` is platform-admin only (org admins receive 403)
 - **Developer console**: `/fleet-compliance/dev/modules`
   - Audience: platform admins
   - Scope: multi-tenant org selection, app module toggles, and module gateway ACL controls
@@ -324,7 +325,8 @@ Two module-management pages now exist intentionally:
 
 - `/fleet-compliance/tools` (Module Tools) is visible only to platform admins.
 - `/api/modules/catalog`, `/api/modules/command-center/tools`, and `/api/modules/run` are platform-admin-only endpoints.
-- Org admins use `/fleet-compliance/settings/modules` as a view/manage surface for plan-governed app modules (no gateway execution controls).
+- Org admins use `/fleet-compliance/settings/modules` as a read-only visibility surface for plan-governed app modules.
+- Gateway/ML modules (for example `petroleum-intel`, `ml-signals`) are platform tooling and are not client-facing module controls.
 
 ### Navigation Implementation
 
@@ -513,12 +515,12 @@ The platform has 96 API routes. Key endpoints are organized by domain.
 | POST | `/api/v1/hazmat-training/[id]` | Enroll in HazMat |
 | GET | `/api/v1/hazmat-training/org/[id]/summary` | HazMat summary |
 
-### Pipeline Penny (3 routes)
+### Pipeline Penny (4 routes)
 
 | Method | Route | Purpose |
 |--------|-------|---------|
 | GET | `/api/penny/health` | Backend health check |
-| POST | `/api/penny/query` | Query AI (Clerk-protected proxy to Railway) |
+| POST | `/api/penny/query` | Query AI (supports `skill_mode`, `llm_provider`, `llm_model`) |
 | GET | `/api/penny/catalog` | Knowledge catalog (merged local + backend) |
 | GET | `/api/penny/skills` | Org-enabled Penny workflow/skill modes |
 
@@ -526,11 +528,11 @@ The platform has 96 API routes. Key endpoints are organized by domain.
 
 | Method | Route | Purpose |
 |--------|-------|---------|
-| GET | `/api/modules/catalog` | Module catalog |
+| GET | `/api/modules/catalog` | Module catalog (platform admin only) |
 | GET | `/api/modules/status/[id]` | Module status |
-| POST | `/api/modules/run` | Execute module |
+| POST | `/api/modules/run` | Execute module (platform admin only) |
 | GET | `/api/modules/artifact` | Fetch artifact |
-| GET | `/api/modules/command-center/tools` | Command center tools |
+| GET | `/api/modules/command-center/tools` | Command center tools (platform admin only) |
 
 ### Stripe Billing (3 routes)
 
@@ -642,8 +644,14 @@ Returns: { status: 'ok', version: '0.1.0' }
 **Query**
 ```
 POST /api/penny/query
-Body: { query: string, mode?: 'auto'|'rag'|'skill' }
-Returns: { response: string, mode: string, citations: [...] }
+Body: {
+  query: string,
+  chat_history?: Array<{ role: 'user'|'assistant'|'system', content: string }>,
+  skill_mode?: string,        // Selected workflow/skill id from /api/penny/skills
+  llm_provider?: string,      // anthro/openai/gemini/ollama (UI-configured)
+  llm_model?: string
+}
+Returns: { response: string, mode: string, citations: [...], ... }
 ```
 
 **Catalog**
@@ -651,6 +659,22 @@ Returns: { response: string, mode: string, citations: [...] }
 GET /api/penny/catalog
 Returns: { skills: [...], templates: [...] }
 ```
+
+**Skill Modes**
+```
+GET /api/penny/skills
+Returns: {
+  ok: true,
+  modes: [
+    { id: '', label: 'General Assistant', moduleId: null, moduleName: null },
+    { id: 'risk-manager', label: 'Risk Manager', moduleId: 'ai-readiness', moduleName: 'AI Readiness' },
+    ...
+  ]
+}
+```
+
+`/api/penny/skills` is org-scoped and only returns modes for enabled `skills` modules.
+Penny chat uses this endpoint to populate the Workflow dropdown and sends the selected value as `skill_mode` on each query request.
 
 ### Rate Limiting
 
@@ -1028,6 +1052,8 @@ npm run db:check-training-schema
 | `src/lib/training-certificate.ts` | Certificate generation + storage |
 | `src/lib/hazmat-training.ts` | HazMat compliance tracking |
 | `src/lib/penny-context.ts` | Penny API client |
+| `docs/USER_MANUAL.md` | End-user operations and permissions guide |
+| `src/components/fleet-compliance/UserManualModal.tsx` | In-app user manual content |
 | `next.config.js` | Next.js config + Sentry integration |
 | `vercel.json` | Vercel deployment + headers + crons |
 | `.env.example` | Environment variable template |

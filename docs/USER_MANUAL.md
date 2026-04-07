@@ -73,7 +73,7 @@ The system consolidates driver qualification files, permit management, complianc
 
 1. You need a Clerk organization and org admin credentials to set up the platform.
 2. Ensure your team members have a Clerk identity. Invite team members using their email address from the Clerk dashboard.
-3. Two roles exist: `admin` (full CRUD, import, configuration, alert management) and `member` (read-only, can create suspense items).
+3. Two tenant roles exist: `admin` (full CRUD, import, configuration, alert management) and `member` (read-focused, can create suspense items). A separate platform-admin allowlist controls developer/operator tooling.
 4. Use a modern browser: Chrome, Firefox, Safari, or Edge (latest versions). Mobile browsers are supported but full-width screens are recommended for data tables.
 5. Your subscription plan determines which modules are visible. Trial organizations see core operations and compliance tracking; Starter and Pro plans unlock additional intelligence and automation features.
 
@@ -86,10 +86,11 @@ After signing in through the Clerk portal, new organizations are guided through 
 3. **Confirmation**: Review your choices and submit to activate your organization.
 
 Once onboarding completes, you land on the **Dashboard** — your operational command post.
+After sign-in, users with an active organization session are redirected to `/fleet-compliance` (the workspace with the sidebar), not the public marketing landing page.
 
 The sidebar on the left is your primary navigation. Modules are organized into six groups: **Operations**, **Compliance**, **Training**, **Finance**, **Intelligence**, and **Admin**. Some modules are admin-only and appear only to members with the admin role. On mobile, tap "Menu" to expand the sidebar.
 
-Module visibility is configurable per organization. Admins can enable or disable modules from **Admin > Feature Modules** so each organization sees only the capabilities relevant to their operation.
+Module visibility is plan-governed and platform-managed per organization. Use **Admin > Feature Modules** to view what is active for your org and what is included in your current plan.
 
 ## Dashboard Overview
 
@@ -171,7 +172,7 @@ The Dispatch module provides fleet dispatch management and vehicle assignment tr
 
 **Dispatch Records Link**: Employees to assets with timestamps, notes, and location data. This module integrates with the Activity Log so all dispatch events appear in the fleet operational timeline.
 
-**Available When**: Dispatch is enabled per-organization through **Admin > Feature Modules**.
+**Available When**: Included in your plan and activated by the platform team (status shown in **Admin > Feature Modules**).
 
 ### Tasks
 
@@ -185,7 +186,7 @@ The Tasks module is a lightweight task management system for operational to-do i
 
 **Managing Tasks**: Filter tasks by status (open, in-progress, completed) and priority level. Click any task to edit or mark complete.
 
-**Available When**: Tasks is enabled per-organization through **Admin > Feature Modules**.
+**Available When**: Included in your plan and activated by the platform team (status shown in **Admin > Feature Modules**).
 
 ### Onboarding
 
@@ -252,7 +253,7 @@ The DQ Files module provides a structured view of Driver Qualification files as 
 4. Review all consolidated documents at a glance.
 5. Print or download the full file for the DOT inspector.
 
-**Available When**: DQ Files is enabled per-organization through **Admin > Feature Modules**.
+**Available When**: Included in your plan and activated by the platform team (status shown in **Admin > Feature Modules**).
 
 ### Suspense Items
 
@@ -415,7 +416,7 @@ The Courses & Workshops page lists the full catalog of available training conten
 
 **Course Format**: Slide-based delivery with embedded multiple-choice and scenario-based assessments. You must achieve the passing score threshold to earn a completion certificate.
 
-**Available When**: Courses & Workshops is enabled per-organization through **Admin > Feature Modules**.
+**Available When**: Included in your plan and activated by the platform team (status shown in **Admin > Feature Modules**).
 
 ## Finance & Business
 
@@ -429,7 +430,7 @@ The Financial module provides a high-level view of your fleet financial operatio
 - Profit margins
 - Cost-per-mile or cost-per-asset breakdowns when sufficient data is available
 
-**Available When**: Enabled per-organization through **Admin > Feature Modules**.
+**Available When**: Included in your plan and activated by the platform team (status shown in **Admin > Feature Modules**).
 
 ### Sales Analytics
 
@@ -453,7 +454,7 @@ The Sales module provides sales analytics, CSV import capability, and revenue fo
 - Revenue forecasting uses moving average projections.
 - Forecasts can be saved and compared against actual results over time.
 
-**Available When**: Enabled per-organization through **Admin > Feature Modules**.
+**Available When**: Included in your plan and activated by the platform team (status shown in **Admin > Feature Modules**).
 
 ### Invoices
 
@@ -481,7 +482,7 @@ The Invoices module tracks maintenance invoices with full vendor, amount, catego
 
 **Invoice Categories**: Maintenance, Permits, Fuel, Insurance, Other. These feed directly into the Spend Dashboard for financial visibility.
 
-**Available When**: Invoices is enabled per-organization through **Admin > Feature Modules**.
+**Available When**: Included in your plan and activated by the platform team (status shown in **Admin > Feature Modules**).
 
 ### Proposals
 
@@ -492,19 +493,19 @@ The Proposals module supports generation and tracking of business proposals.
 - Track status through the pipeline.
 - Manage revisions.
 
-**Available When**: Enabled per-organization through **Admin > Feature Modules**.
+**Available When**: Included in your plan and activated by the platform team (status shown in **Admin > Feature Modules**).
 
 ### Contracts
 
 The Contracts module tracks active contracts, renewal dates, and contract terms. It helps ensure fleet service agreements and vendor contracts stay current.
 
-**Available When**: Enabled per-organization through **Admin > Feature Modules**.
+**Available When**: Included in your plan and activated by the platform team (status shown in **Admin > Feature Modules**).
 
 ### Realty
 
 The Realty module tracks real estate and facility-related compliance for fleet operations — yard locations, terminal leases, storage facilities, and environmental permits tied to physical locations.
 
-**Available When**: Enabled per-organization through **Admin > Feature Modules**.
+**Available When**: Included in your plan and activated by the platform team (status shown in **Admin > Feature Modules**).
 
 ## Intelligence & Analytics
 
@@ -512,7 +513,7 @@ The Realty module tracks real estate and facility-related compliance for fleet o
 
 The Email Analytics module provides visibility into compliance email communications. Track alert delivery success rates, open rates, and response patterns to ensure your team is receiving and acting on compliance notifications.
 
-**Available When**: Enabled per-organization through **Admin > Feature Modules**.
+**Available When**: Included in your plan and activated by the platform team (status shown in **Admin > Feature Modules**).
 
 ### Readiness Scoring
 
@@ -523,7 +524,7 @@ The Readiness module provides a compliance readiness score for your fleet operat
 - Identify gaps in your compliance posture.
 - Benchmark your readiness over time.
 
-**Available When**: Enabled per-organization through **Admin > Feature Modules**.
+**Available When**: Included in your plan and activated by the platform team (status shown in **Admin > Feature Modules**).
 
 ### GovCon & Compliance
 
@@ -545,7 +546,7 @@ The GovCon & Compliance module manages the full federal contracting lifecycle:
 
 **Regulatory Backing**: 216 regulatory templates covering NIST 800-53, NIST 800-171, CMMC, SOC 2, FedRAMP, HIPAA, PCI DSS, GDPR, CCPA, and ISO 27001.
 
-**Available When**: Pro plan and above. Enabled per-organization through **Admin > Feature Modules**.
+**Available When**: Pro plan and above, with platform activation (status shown in **Admin > Feature Modules**).
 
 ### Telematics
 
@@ -572,7 +573,7 @@ The Telematics module displays real-time fleet risk scores from your connected t
 
 **Credentials**: Telematics credentials are encrypted at rest using pgcrypto and are never exposed to the frontend.
 
-**Available When**: Starter plan and above. Enabled per-organization through **Admin > Feature Modules**.
+**Available When**: Starter plan and above, with platform activation (status shown in **Admin > Feature Modules**).
 
 ## Import Data
 
@@ -650,6 +651,11 @@ Pipeline Penny is a document-grounded compliance assistant that searches the liv
 3. Penny responds with citations showing which source documents informed the answer.
 4. Use the sidebar to browse the indexed catalog and understand what knowledge is available.
 
+**Workflow Mode Selector**:
+- Penny includes a **Workflow** dropdown populated from your organization's enabled skill modules.
+- Choose **General Assistant** for broad Q&A, or choose a specific workflow mode (for example risk, readiness, or GovCon) to focus the response style.
+- The mode list is org-scoped and automatically reflects your active plan/module access.
+
 **Choosing Your LLM Provider**:
 - Click the settings gear icon.
 - Select your preferred provider and model:
@@ -683,6 +689,7 @@ Pipeline Penny is a document-grounded compliance assistant that searches the liv
 ## Module Tools & Skills
 
 Module Tools is a platform-admin operator panel for running integrated backend modules directly from the UI. It connects to the Module Gateway — a unified execution layer that orchestrates integrated tooling modules.
+Org admins and members do not have direct module-gateway execution access.
 
 **Available Modules**:
 1. **ML-EIA Petroleum Intel**: Energy market analysis and price forecasting (9 actions)
@@ -763,19 +770,20 @@ The Settings page manages your alert engine configuration and organization prefe
 
 ### Feature Modules
 
-The Feature Modules page (admin-only) lets you enable or disable individual modules for your organization.
+The Feature Modules page (**Admin > Feature Modules**) shows which app modules are active for your organization.
+For org admins this page is view-only; activation changes are platform-managed.
 
 **Using Feature Modules**:
 1. Click **Admin > Feature Modules**.
 2. Browse all available modules organized by category.
-3. Toggle each module on or off.
-4. Changes take effect immediately.
+3. Review status badges (`Always On`, `Included`, active/inactive state) to confirm current access.
+4. If you need a module activated, request it through the platform team.
 
-**What Happens When Toggled**:
-- **Off**: Module is hidden from the sidebar and its routes are inaccessible.
-- **On**: Module appears in the sidebar and team members can access it.
+**What Happens When Activation Changes**:
+- **Inactive**: Module stays hidden from the sidebar and related routes are unavailable.
+- **Active**: Module appears in the sidebar and users can access it based on role.
 
-**Why Use Toggles**: Allows each organization to have a tailored experience without unnecessary modules cluttering the interface. Default module states are configured at the platform level by plan tier.
+**Why This Page Matters**: It gives org admins clear visibility into plan-based entitlements and active modules without exposing developer controls.
 
 **Developer Console**: `/fleet-compliance/dev/modules` is reserved for platform admins and includes multi-tenant selection plus module gateway ACL controls.
 
@@ -930,7 +938,7 @@ The sidebar is your primary navigation hub. It's organized into six collapsible 
 - **Suspense Links**: Suspense items linked to source records (driver CDL, medical card, permit) include a direct link back to the originating record for quick reference.
 - **FMCSA History**: Save FMCSA snapshots from lookups — they appear on your Dashboard card and provide a historical record over time, useful for audits.
 - **Penny for Lookups**: Use Pipeline Penny for quick regulatory lookups — ask about specific CFR parts or your fleet data and get cited, verifiable answers.
-- **Module Customization**: Feature Modules (Admin) lets you customize which modules appear in the sidebar for your team, hiding clutter and keeping navigation focused.
+- **Module Visibility**: Feature Modules (Admin) shows exactly what modules are active for your organization and what requires plan/platform activation.
 
 ## Troubleshooting
 
@@ -985,13 +993,13 @@ The sidebar is your primary navigation hub. It's organized into six collapsible 
 **Module Not Appearing in Sidebar**
 
 1. Go to **Admin > Feature Modules**.
-2. Verify the module is toggled on.
+2. Verify the module is marked active.
 3. Verify your plan tier includes the module:
    - Trial: Core only (fleet compliance, onboarding)
    - Starter: Core + telematics, financial, sales, invoices, dq-files, readiness, proposals, tasks
    - Pro: Everything
-4. Verify your role can access the module (some are admin-only).
-5. Refresh the page — sidebar updates may take a moment.
+4. If the module is inactive but should be enabled, contact the platform team to activate it for your org.
+5. Verify your role can access the module (some are admin-only), then refresh the page.
 
 **Clerk/SSO Not Working**
 
@@ -1027,7 +1035,8 @@ The sidebar is your primary navigation hub. It's organized into six collapsible 
 
 **Authentication & Authorization**:
 - Handled by Clerk with org-scoped RBAC.
-- Two roles: admin (full CRUD, import/rollback, alert configuration, module tools) and member (read access, create suspense items).
+- Two tenant roles: admin (full CRUD, import/rollback, alert configuration, module-status visibility) and member (read access, create suspense items).
+- Platform-admin allowlist permissions (internal) gate Command Center, Module Tools, Developer Module Console, and module activation writes.
 - Subscription state enforcement (trial, active, past due, canceled) is managed through Stripe with automatic access gating.
 
 **Security Headers**:

@@ -1,6 +1,6 @@
 # ARCHITECTURE.md — Fleet-Compliance Sentinel
 
-**Version:** 1.0 | **Last Updated:** 2026-04-06
+**Version:** 1.0 | **Last Updated:** 2026-04-07
 **Status:** Production (SOC 2 observation window active, first paying client targeted Q2 2026)
 **Full doc:** `/docs/ARCHITECTURE.md`
 
@@ -114,6 +114,7 @@ Outbox events queued for async processing (retry/backoff)
 | Neon PostgreSQL multi-tenant | Live | 19+ migrations, org_id on every query |
 | Stripe billing integration | Live | Trial/starter/pro/enterprise, webhooks |
 | Module gateway (7 hardening layers) | Live | ACL, validation, sandbox, retry, cost, audit, tenant isolation |
+| Module access split | Live | Org admins view `/fleet-compliance/settings/modules`; platform admins control writes + gateway tooling |
 | Training LMS (12 hazmat modules) | Live | Decks, assessments, certificates, compliance auto-update |
 | Employee onboarding orchestration | Live | 7-step pipeline, intake tokens, outbox pattern |
 | Pipeline Penny AI | Live | CFR retrieval, org context, training index, catalog |
@@ -182,6 +183,9 @@ Outbox events queued for async processing (retry/backoff)
 | File | Location | Purpose |
 |------|---------|---------|
 | Full architecture | `/docs/ARCHITECTURE.md` | Complete system design |
+| Developer manual | `/DEVELOPER_MANUAL.md` | Engineering architecture, APIs, deployment, troubleshooting |
+| User manual | `/docs/USER_MANUAL.md` | End-user workflows and role-based usage guide |
+| In-app user manual source | `src/components/fleet-compliance/UserManualModal.tsx` | Manual content rendered inside app UI |
 | Security rules | `.claude/SECURITY.md` | Compliance controls, hard rules |
 | Stack versions | `.claude/STACK.md` | Versions, packages, conventions |
 | Dev commands | `.claude/COMMANDS.md` | Run, build, deploy, test |

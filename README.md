@@ -96,10 +96,12 @@ archive/           Historical snapshots from 4 cleanup cycles
 
 | File | Purpose |
 |------|---------|
-| `PLATFORM_OVERVIEW.md` | Canonical 20-section platform and control overview (1,447 lines) |
+| `docs/PLATFORM_OVERVIEW.md` | Canonical platform and control overview |
 | `DEVELOPER_MANUAL.md` | Developer troubleshooting and architecture guide (22 sections) |
-| `INDEX.md` | Current repository map with file counts |
-| `TODO-April 2-25 Sprint Plan.md` | Active sprint plan with task prompts |
+| `docs/USER_MANUAL.md` | User-facing operations guide for org admins and members |
+| `docs/INDEX.md` | Current documentation map and entry points |
+| `docs/ARCHITECTURE.md` | Architecture documentation entry point |
+| `docs/FLEET_COMPLIANCE_TODO_v2.md` | Fleet-Compliance implementation backlog and planning notes |
 | `docs/STATUS.md` | Execution status log and milestone history |
 | `docs/ROTATION_RUNBOOK.md` | Secret rotation procedures (18 secrets) |
 | `docs/GIT_WORKFLOW.md` | PR-only workflow and merge discipline |
