@@ -38,12 +38,6 @@ type DriverGPSCountRow = {
   event_count: number;
 };
 
-type TelematicsOrgCountsRow = {
-  vehicles: number;
-  drivers: number;
-  gps_events: number;
-};
-
 const DAY_MS = 24 * 60 * 60 * 1000;
 
 function clampScore(value: number): number {
@@ -83,34 +77,7 @@ function summarizeTopFlags(flags: string[]): string[] {
     .map(([flag]) => flag);
 }
 
-async function getTelematicsCountsForOrg(orgId: string): Promise<TelematicsOrgCountsRow> {
-  const sql = getSQL();
-  const rows = await sql`
-    SELECT
-      (SELECT COUNT(*)::int FROM telematics_vehicles WHERE org_id = ${orgId}) AS vehicles,
-      (SELECT COUNT(*)::int FROM telematics_drivers WHERE org_id = ${orgId}) AS drivers,
-      (SELECT COUNT(*)::int FROM telematics_gps_events WHERE org_id = ${orgId}) AS gps_events
-  `;
-  const row = rows[0] as TelematicsOrgCountsRow | undefined;
-  return {
-    vehicles: Number(row?.vehicles ?? 0),
-    drivers: Number(row?.drivers ?? 0),
-    gps_events: Number(row?.gps_events ?? 0),
-  };
-}
 
-async function resolveTelematicsDataOrgId(requestOrgId: string): Promise<string> {
-  const primaryCounts = await getTelematicsCountsForOrg(requestOrgId);
-  const hasPrimaryData = primaryCounts.vehicles > 0 || primaryCounts.drivers > 0 || primaryCounts.gps_events > 0;
-  if (hasPrimaryData) return requestOrgId;
-
-  const fallbackOrgId = (process.env.REVEAL_ORG_ID ?? '').trim();
-  if (!fallbackOrgId || fallbackOrgId === requestOrgId) return requestOrgId;
-
-  const fallbackCounts = await getTelematicsCountsForOrg(fallbackOrgId);
-  const hasFallbackData = fallbackCounts.vehicles > 0 || fallbackCounts.drivers > 0 || fallbackCounts.gps_events > 0;
-  return hasFallbackData ? fallbackOrgId : requestOrgId;
-}
 
 export async function GET(request: Request) {
   let userId: string;
@@ -124,8 +91,7 @@ export async function GET(request: Request) {
   }
 
   try {
-    const dataOrgId = await resolveTelematicsDataOrgId(orgId);
-    const usingFallbackOrg = dataOrgId !== orgId;
+    const dataOrgId = orgId;
 
     const [vehicles, drivers, gpsEventCountsLast7Days, lastEventByVehicle] = await Promise.all([
       getTelematicsVehicles(dataOrgId),
@@ -283,7 +249,6 @@ export async function GET(request: Request) {
         mediumRisk,
         lowRisk,
         dataOrgId,
-        usingFallbackOrg,
       },
       severity: highRisk > 0 ? 'warn' : 'info',
     });

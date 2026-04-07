@@ -102,13 +102,6 @@ export interface FleetComplianceResourceLink {
   note: string;
 }
 
-export interface FleetComplianceModuleSummary {
-  sourceSystems: number;
-  plannedCollections: number;
-  alertTracks: number;
-  pennyCorpus: string;
-}
-
 export interface FleetComplianceMlEiaInsight {
   runId: string;
   generatedAt: string | null;
@@ -1501,14 +1494,6 @@ export const fleetComplianceResourceLinks: FleetComplianceResourceLink[] = [
   { href: '/penny', label: 'CFR-backed Penny', note: 'Use Penny for CFR questions, permit cadence checks, and operational compliance prompts.' },
 ];
 
-export function getFleetComplianceModuleSummary(data: FleetComplianceData): FleetComplianceModuleSummary {
-  return {
-    sourceSystems: 9,
-    plannedCollections: 17,
-    alertTracks: fleetCompliancePermitCadence.length,
-    pennyCorpus: '49 CFR',
-  };
-}
 
 // ── Document link functions (static, no DB) ───────────────────────────────
 
