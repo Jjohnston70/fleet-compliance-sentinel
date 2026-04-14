@@ -11,6 +11,7 @@
 2. **Training Critical Fixes:** 6 critical findings (C-1 through C-6) from the April 2 production readiness audit must be resolved before first paying client. C-2 (server-side score validation) and C-3 (completion bypass) are highest compliance liability.
 3. **SOC 2 Evidence Collection:** Observation window is active (started March 24). Need to establish compliance evidence folder structure and begin monthly/weekly collection cadence.
 4. **First Client Preparation:** All critical/high findings must be resolved, documentation must be client-ready, and the onboarding flow must work end-to-end for a new org signup.
+5. **Knowledge Base Remediation:** clearinghouse.md replaced with employer compliance guidance (49 CFR §382 citations, citation level 4). chunks.json rebuild pending to index new content. COMMANDSTACK migration notes written to knowledge/COMMANDSTACK-MIGRATION-NOTES.md.
 
 ---
 
@@ -55,6 +56,7 @@ _Drop quick notes here during work sessions. Clear at start of next major phase.
 
 - 2026-04-06: Filled out all 8 .claude/ template files with FCS-specific content
 - 2026-04-06: Previous session fixed layout.tsx/FleetComplianceShell.tsx truncation, restored 13 corrupted files, completed Phase 6 P6-T1 through P6-T4, rewrote both manuals, updated UserManualModal
+- 2026-04-14: KB remediation session — replaced clearinghouse.md (Swagger dump → employer guidance), updated SOURCE_MANIFEST.json, audited chunks.json for contamination (0 found), produced COMMANDSTACK migration handoff document. chunks.json rebuild recommended to index new clearinghouse content.
 
 ---
 

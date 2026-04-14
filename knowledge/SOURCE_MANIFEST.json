@@ -1,6 +1,6 @@
 {
   "version": "1.0",
-  "lastChecked": "2026-04-06",
+  "lastChecked": "2026-04-14",
   "description": "Tracks knowledge base sources for freshness checking. Run npm run knowledge:check-freshness to verify.",
   "sources": [
     {
@@ -58,10 +58,12 @@
       "sourceUrl": "https://clearinghouse.fmcsa.dot.gov",
       "sourceAgency": "FMCSA / DOT",
       "localPath": "knowledge/domains/clearinghouse.md",
-      "lastUpdated": "2026-02-01",
-      "lastChecked": "2026-04-06",
+      "lastUpdated": "2026-04-14",
+      "lastChecked": "2026-04-14",
       "refreshCycle": "Quarterly check recommended",
-      "notes": "Clearinghouse rules and employer requirements."
+      "contentType": "employer-compliance-guidance",
+      "citationLevel": 4,
+      "notes": "Employer-facing Clearinghouse compliance guidance covering 49 CFR Part 382 Subpart G: pre-employment and annual query requirements, prohibited status obligations, reporting timelines, RTD process, record retention, and penalty thresholds. Replaced SDLA REST API Swagger dump on 2026-04-14."
     },
     {
       "id": "domains-audit-procedures",

@@ -127,3 +127,22 @@ tooling/MOD-PAPERSTACK-PP/invoice-module/*.docx
 
 # Sentry Config File
 .env.sentry-build-plugin
+
+# ======================================================
+# Phase 0 Cleanup Additions (COMMANDSTACK Migration)
+# Added: 2026-04-08
+# ======================================================
+
+# Railway backend artifacts
+railway-backend/__pycache__/
+railway-backend/.pytest_cache/
+railway-backend/venv/
+railway-backend/.venv/
+
+# SOC2 evidence should be versioned, but large reports excluded
+soc2-evidence/**/*.pdf
+soc2-evidence/**/*.xlsx
+
+# Evals output
+evals/output/
+evals/results/
