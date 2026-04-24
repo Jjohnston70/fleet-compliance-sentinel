@@ -155,3 +155,6 @@ tooling/MOD-PAPERSTACK-PP/invoice-module/invoice-samples/
 
 # filter-repo replacement mappings - contains originals, never commit
 pii-replacements.txt
+
+# filter-repo deletion list - paths scrubbed from history
+pdfs-to-delete.txt
