@@ -152,3 +152,6 @@ tooling/invoice-module/invoice-samples/
 tooling/MOD-PAPERSTACK-PP/invoice-samples/
 tooling/MOD-PAPERSTACK-PP/invoice-module/invoice-samples/
 **/invoice-samples/
+
+# filter-repo replacement mappings - contains originals, never commit
+pii-replacements.txt
