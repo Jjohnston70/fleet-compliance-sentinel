@@ -46,6 +46,19 @@ Six DOCX files were deleted from the working tree before the final commit. These
 - `tooling/MOD-PAPERSTACK-PP/TNDS_UserManual_InvoiceExtractionModule_2026-03-26.docx`
 - `tooling/MOD-PAPERSTACK-PP/invoice-module/TNDS_UserManual_InvoiceExtractionModule_2026-03-26.docx`
 
+### Client-branded asset directory deletion
+
+Two asset directories were removed from the entire git history via additional `--invert-paths` passes:
+
+- `tooling/chief-sentinel/assets/` (original location)
+- `tooling/fleet-compliance-sentinel/assets/` (renamed destination introduced by a later commit)
+
+Contents removed: a logo image, a KMZ map file referencing client delivery locations, and a user-manual document whose plain-text content contained an internal filesystem path. The manual file used a `.docx` extension but was committed as plain text rather than a ZIP-packed Office container. `git-filter-repo`'s `--replace-text` pass skipped it via file-extension heuristics for binary detection, so path-based deletion was used instead.
+
+The rename event required two deletion passes: the first targeted the original path; a follow-up pass targeted the rename destination after verification surfaced the surviving blobs.
+
+Deletion paths preserved privately in `paths-to-delete-v3.txt` and `paths-to-delete-v4.txt` (both gitignored).
+
 ## Preserved Content
 
 The following references remain intact and are intentionally public:
