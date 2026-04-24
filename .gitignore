@@ -146,3 +146,9 @@ soc2-evidence/**/*.xlsx
 # Evals output
 evals/output/
 evals/results/
+
+# Real invoice samples - never commit real vendor/customer invoice data
+tooling/invoice-module/invoice-samples/
+tooling/MOD-PAPERSTACK-PP/invoice-samples/
+tooling/MOD-PAPERSTACK-PP/invoice-module/invoice-samples/
+**/invoice-samples/
