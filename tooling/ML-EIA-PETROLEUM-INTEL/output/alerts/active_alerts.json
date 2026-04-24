@@ -1,0 +1,46 @@
+{
+  "generated_at": "2026-03-31T05:12:13+00:00",
+  "alert_count": 5,
+  "alerts": [
+    {
+      "type": "weekly_move",
+      "product": "New York Harbor No. 2 Heating Oil Spot Price FOB",
+      "severity": "medium",
+      "message": "New York Harbor No. 2 Heating Oil Spot Price FOB moved 7.74% over the last week.",
+      "value": 7.735396105628157,
+      "date": "2026-03-23"
+    },
+    {
+      "type": "weekly_move",
+      "product": "New York Harbor Ultra-Low Sulfur No 2 Diesel Spot Price",
+      "severity": "medium",
+      "message": "New York Harbor Ultra-Low Sulfur No 2 Diesel Spot Price moved 7.44% over the last week.",
+      "value": 7.441621760328471,
+      "date": "2026-03-23"
+    },
+    {
+      "type": "spread_deviation",
+      "product": "Diesel",
+      "severity": "medium",
+      "message": "Diesel spread deviated -12.35% vs 30-day average.",
+      "value": -12.347749753107767,
+      "date": "2025-07-25"
+    },
+    {
+      "type": "spread_deviation",
+      "product": "Dyed Diesel",
+      "severity": "medium",
+      "message": "Dyed Diesel spread deviated -16.59% vs 30-day average.",
+      "value": -16.588940706195906,
+      "date": "2025-07-25"
+    },
+    {
+      "type": "spread_deviation",
+      "product": "Unleaded",
+      "severity": "high",
+      "message": "Unleaded spread deviated -35.27% vs 30-day average.",
+      "value": -35.26769154679951,
+      "date": "2025-07-25"
+    }
+  ]
+}

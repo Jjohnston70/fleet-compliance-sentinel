@@ -46,12 +46,12 @@ This is intentionally simple and deterministic. It does not depend on an LLM-as-
 
 ## Current Files
 
-- Eval dataset: [evals/penny_eval_questions.json](<REPO_ROOT>\Desktop\website-pipeline-punks-pipelinex-v2\evals\penny_eval_questions.json)
-- Eval runner: [scripts/run-penny-evals.mjs](<REPO_ROOT>\Desktop\website-pipeline-punks-pipelinex-v2\scripts\run-penny-evals.mjs)
+- Eval dataset: [evals/penny_eval_questions.json](./evals\penny_eval_questions.json)
+- Eval runner: [scripts/run-penny-evals.mjs](./scripts\run-penny-evals.mjs)
 - Latest results:
-  - [latest.json](<REPO_ROOT>\Desktop\website-pipeline-punks-pipelinex-v2\evals\results\latest.json)
-  - [latest.md](<REPO_ROOT>\Desktop\website-pipeline-punks-pipelinex-v2\evals\results\latest.md)
-- Retrieval debug endpoint: [main.py](<REPO_ROOT>\Desktop\website-pipeline-punks-pipelinex-v2\railway-backend\app\main.py)
+  - [latest.json](./evals\results\latest.json)
+  - [latest.md](./evals\results\latest.md)
+- Retrieval debug endpoint: [main.py](./railway-backend\app\main.py)
 
 ## How To Run
 
@@ -87,3 +87,4 @@ Once the current retrieval quality is stable, the next best-practice upgrades ar
 - No CI gate yet
 
 Those are good later steps, but they are not the right first step while corpus coverage and retrieval are still being corrected.
+

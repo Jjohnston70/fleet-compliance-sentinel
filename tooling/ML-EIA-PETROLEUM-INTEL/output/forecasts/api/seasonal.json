@@ -1,0 +1,57 @@
+{
+  "generated_at": "2026-04-01T00:30:10.128387+00:00",
+  "seasonal": {
+    "current_season_year": 2026,
+    "current_season_avg": 2.4199914529914532,
+    "last_5_season_avg": 2.420568036322675,
+    "yoy_delta_pct": -0.023820166282027978,
+    "peak_demand_week": "2022-10-17",
+    "confidence": "high",
+    "season_table": [
+      {
+        "season_year": 2016,
+        "avg_price": 1.1283333333333332
+      },
+      {
+        "season_year": 2017,
+        "avg_price": 1.5034079999999999
+      },
+      {
+        "season_year": 2018,
+        "avg_price": 1.8541129032258064
+      },
+      {
+        "season_year": 2019,
+        "avg_price": 1.9887868852459016
+      },
+      {
+        "season_year": 2020,
+        "avg_price": 1.7250887096774195
+      },
+      {
+        "season_year": 2021,
+        "avg_price": 1.4133306451612901
+      },
+      {
+        "season_year": 2022,
+        "avg_price": 2.615184
+      },
+      {
+        "season_year": 2023,
+        "avg_price": 3.190520325203252
+      },
+      {
+        "season_year": 2024,
+        "avg_price": 2.7097642276422764
+      },
+      {
+        "season_year": 2025,
+        "avg_price": 2.1740409836065573
+      },
+      {
+        "season_year": 2026,
+        "avg_price": 2.4199914529914532
+      }
+    ]
+  }
+}

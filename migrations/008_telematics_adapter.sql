@@ -254,7 +254,7 @@ CREATE INDEX idx_gps_events_speeding
 
 COMMENT ON TABLE telematics_gps_events IS
     'High-volume real-time GPS stream. Consider partitioning by week '
-    'once Example Fleet Co test data volume is understood. '
+    'once Sample Fleet test data volume is understood. '
     'Retention policy: 90 days active, archive to cold storage.';
 
 
@@ -284,3 +284,4 @@ CREATE INDEX idx_sync_log_org_type
 COMMENT ON TABLE telematics_sync_log IS
     'Audit trail for all telematics sync jobs. '
     'Used by cron health check dead-man switch and SOC 2 evidence.';
+

@@ -237,7 +237,7 @@ async def main():
         # ── FINAL COUNT ───────────────────────────────────────────
         print("")
         print("=" * 60)
-        print("SYNC COMPLETE — Example Fleet Co in Neon")
+        print("SYNC COMPLETE — Sample Fleet in Neon")
         print("=" * 60)
         row1 = await db.fetchrow("SELECT COUNT(*) as c FROM telematics_vehicles WHERE org_id = $1", ORG_ID)
         row2 = await db.fetchrow("SELECT COUNT(*) as c FROM telematics_drivers WHERE org_id = $1", ORG_ID)
@@ -264,3 +264,4 @@ async def main():
     await db.close()
 
 asyncio.run(main())
+

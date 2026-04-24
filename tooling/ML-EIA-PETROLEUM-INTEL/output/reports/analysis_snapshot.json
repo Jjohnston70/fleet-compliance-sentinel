@@ -1,0 +1,107 @@
+{
+  "generated_at": "2026-03-31T05:12:13.349721+00:00",
+  "regime": {
+    "current_regime": "volatile",
+    "days_in_regime": 24,
+    "transition_probability": 0.035046728971962614,
+    "volatility_20d": 0.06177594597795967,
+    "momentum_20d": 0.5564547206165702
+  },
+  "seasonal": {
+    "current_season_year": 2026,
+    "current_season_avg": 2.4199914529914532,
+    "last_5_season_avg": 2.420568036322675,
+    "yoy_delta_pct": -0.023820166282027978,
+    "peak_demand_week": "2022-10-17",
+    "confidence": "high",
+    "season_table": [
+      {
+        "season_year": 2016,
+        "avg_price": 1.1283333333333332
+      },
+      {
+        "season_year": 2017,
+        "avg_price": 1.5034079999999999
+      },
+      {
+        "season_year": 2018,
+        "avg_price": 1.8541129032258064
+      },
+      {
+        "season_year": 2019,
+        "avg_price": 1.9887868852459016
+      },
+      {
+        "season_year": 2020,
+        "avg_price": 1.7250887096774195
+      },
+      {
+        "season_year": 2021,
+        "avg_price": 1.4133306451612901
+      },
+      {
+        "season_year": 2022,
+        "avg_price": 2.615184
+      },
+      {
+        "season_year": 2023,
+        "avg_price": 3.190520325203252
+      },
+      {
+        "season_year": 2024,
+        "avg_price": 2.7097642276422764
+      },
+      {
+        "season_year": 2025,
+        "avg_price": 2.1740409836065573
+      },
+      {
+        "season_year": 2026,
+        "avg_price": 2.4199914529914532
+      }
+    ]
+  },
+  "pricing_strategy": {
+    "overall_recommendation": "opis_plus",
+    "products": {
+      "Diesel": {
+        "latest_date": "2025-07-25",
+        "latest_opis_price": 2.7189,
+        "latest_cost_basis_price": 2.48,
+        "latest_spread": -0.2389000000000001,
+        "latest_spread_pct": -8.786641656552286,
+        "avg_spread_pct_30d": -8.139853920689019,
+        "recommended_strategy": "opis_plus"
+      },
+      "Dyed Diesel": {
+        "latest_date": "2025-07-25",
+        "latest_opis_price": 2.7375,
+        "latest_cost_basis_price": 2.51,
+        "latest_spread": -0.22750000000000004,
+        "latest_spread_pct": -8.310502283105023,
+        "avg_spread_pct_30d": -7.455017459491372,
+        "recommended_strategy": "opis_plus"
+      },
+      "Unleaded": {
+        "latest_date": "2025-07-25",
+        "latest_opis_price": 2.1794,
+        "latest_cost_basis_price": 2.07,
+        "latest_spread": -0.10939999999999994,
+        "latest_spread_pct": -5.0197302009727425,
+        "avg_spread_pct_30d": -3.687322030990397,
+        "recommended_strategy": "opis_plus"
+      }
+    }
+  },
+  "weather_correlation": {
+    "rows_used": 195,
+    "correlation": -0.08959261835526224,
+    "regression_slope": -0.0008491686744025534,
+    "cold_snap_price_impact_pct": 0.034463593457790716,
+    "confidence": "high"
+  },
+  "alerts": {
+    "alert_count": 5,
+    "output_file": "C:\\Users\\truenorth\\Desktop\\00 PIPLINE PUNKS GIT\\00-FLEET-COMPLIANCE-SENTINEL\\tooling\\ML-EIA-PETROLEUM-INTEL\\output\\alerts\\active_alerts.json"
+  }
+}

@@ -21,7 +21,7 @@ GENERATED_VALIDATION_REPORT_PATH = GENERATED_DIR / "validation_report.json"
 GENERATED_VALIDATION_REPORT_MD_PATH = GENERATED_DIR / "validation_report.md"
 GENERATED_TEMPLATE_TS_PATH = WEBSITE_ROOT / "src" / "lib" / "chief-upload-template.generated.ts"
 
-ORG_ID = "example-fleet-co"
+ORG_ID = "sample-fleet"
 TODAY = date(2026, 3, 17)
 
 
@@ -765,27 +765,27 @@ def generate_suspense_items(collections: dict[str, list[dict[str, Any]]]) -> lis
 
     for row in collections["employee_compliance"]:
         person_id = row.get("personId") or row.get("employeeId") or row.get("driverId") or "driver"
-        owner = "fleet@examplefleetco.com"
+        owner = "fleet@samplefleet.example"
         if row.get("medicalExpiration"):
             add_item("employee_compliance", str(person_id), f"Medical card expiration for {person_id}", row["medicalExpiration"], owner, "high")
         if row.get("nextMvrDue"):
             add_item("employee_compliance", str(person_id), f"MVR review due for {person_id}", row["nextMvrDue"], owner, "medium")
         if row.get("tsaExpiration"):
-            add_item("employee_compliance", str(person_id), f"TSA / HazMat threat assessment renewal for {person_id}", row["tsaExpiration"], "compliance@examplefleetco.com", "medium")
+            add_item("employee_compliance", str(person_id), f"TSA / HazMat threat assessment renewal for {person_id}", row["tsaExpiration"], "compliance@samplefleet.example", "medium")
 
     for row in collections["permit_license_records"]:
         due_date = row.get("renewalDueDate") or row.get("expirationDate")
-        owner = "compliance@examplefleetco.com"
+        owner = "compliance@samplefleet.example"
         title = f"{row.get('templateId') or row.get('permitType') or 'Permit'} renewal due"
         add_item("permit_license_records", str(row.get("recordId")), title, due_date, owner, "medium")
 
     for row in collections["assets"]:
         if row.get("nextServiceDue"):
-            add_item("assets", str(row.get("assetId")), f"Service due for {row.get('name')}", row["nextServiceDue"], "maintenance@examplefleetco.com", "medium")
+            add_item("assets", str(row.get("assetId")), f"Service due for {row.get('name')}", row["nextServiceDue"], "maintenance@samplefleet.example", "medium")
 
     for row in collections["tank_assets"]:
         if row.get("nextLeakTestDue"):
-            add_item("tank_assets", str(row.get("tankId") or row.get("assetId")), f"Leak test due for tank {row.get('tankId')}", row["nextLeakTestDue"], "operations@examplefleetco.com", "high")
+            add_item("tank_assets", str(row.get("tankId") or row.get("assetId")), f"Leak test due for tank {row.get('tankId')}", row["nextLeakTestDue"], "operations@samplefleet.example", "high")
 
     deduped = {item["suspenseItemId"]: item for item in items}
     return sorted(deduped.values(), key=lambda item: item["dueDate"])
@@ -943,3 +943,4 @@ def main() -> int:
 
 if __name__ == "__main__":
     raise SystemExit(main())
+

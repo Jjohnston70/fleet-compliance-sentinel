@@ -94,7 +94,7 @@ Production values for all of the above exist in Vercel env vars. If not already 
 - **Do NOT upgrade `@clerk/nextjs` to v7.** Stay on v6.x to avoid Core 3 breaking changes. The codebase uses `auth()`, `currentUser()`, `clerkClient()`, `SignedIn/SignedOut`, session claims for RBAC, and org-based access control — all of which have breaking changes in v7.
 - **Do NOT duplicate sensitive values in code.** All credentials must stay in environment variables (Vercel for Next.js, Railway for the Python backend).
 - **Railway builds from `railway-backend/` as Docker context.** Any files the container needs must be inside that directory or the Dockerfile must be updated to use a broader context.
-- **The sync script has hardcoded driver IDs for ELD logbook settings** (lines 100-106 of `reveal_sync_neon.py`). These are specific to the Example Fleet Co account. This is tech debt but not blocking.
+- **The sync script has hardcoded driver IDs for ELD logbook settings** (lines 100-106 of `reveal_sync_neon.py`). These are specific to the Sample Fleet account. This is tech debt but not blocking.
 - **SOC 2 compliance is active.** Follow secure practices: no PII in logs, no secrets in code, maintain audit trail.
 
 ---
@@ -151,3 +151,4 @@ Production values for all of the above exist in Vercel env vars. If not already 
 6. Load `https://www.pipelinepunks.com/fleet-compliance/telematics` — should show populated tables
 7. Check Sentry for any new errors on the `pipeline-punks-nextjs` project
 8. Confirm the `needs_client_trust` Clerk error is resolved in Sentry (mark as resolved if still open)
+

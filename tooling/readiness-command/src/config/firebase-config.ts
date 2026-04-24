@@ -3,7 +3,7 @@
 
 export const firebaseConfig = {
   projectId: 'singular-silo-463000-j6',
-  apiKey: process.env.FIREBASE_API_KEY || 'AIzaSyA86q366KJHruakT8RJnByGs5J06LB0A-E',
+  apiKey: process.env.FIREBASE_API_KEY || '',
   authDomain: 'singular-silo-463000-j6.firebaseapp.com',
   storageBucket: 'singular-silo-463000-j6.appspot.com',
   messagingSenderId: '116121097012087457497',
@@ -24,3 +24,4 @@ export const assessmentConfig = {
   appUrl: process.env.APP_URL || 'http://localhost:3000',
   timezone: process.env.TIMEZONE || 'America/Denver',
 };
+

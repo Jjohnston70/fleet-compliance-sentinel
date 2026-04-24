@@ -3,7 +3,7 @@
 **Date**: 2026-03-27
 **System**: Fleet-Compliance Sentinel — Telematics Integration Layer
 **Provider**: Verizon Connect Reveal (Fleetmatics)
-**Client**: Example Fleet Co
+**Client**: Sample Fleet
 **Org ID**: `example-fleet-co`
 
 ---
@@ -128,3 +128,4 @@ Verified via direct Neon queries after sync completion:
 2. Implement GPS webhook receiver for real-time GPS push events
 3. Implement 90-day retention policy on `telematics_gps_events`
 4. Extend sync to HOS logs, alerts, and DVIR records (adapter methods implemented but not called in sync script)
+

@@ -46,10 +46,10 @@ Additional improvements applied beyond audit scope:
 
 - **File**: `scripts/onboard_chief_petroleum.py` line 10
 - **Code**: `PASSWORD = "[REDACTED_COMPROMISED_SECRET]"`
-- **Impact**: Verizon Connect API password for Example Fleet Co is committed to the git repository in plaintext. Anyone with repo access can authenticate as Example Fleet Co's Reveal integration account.
+- **Impact**: Verizon Connect API password for Sample Fleet is committed to the git repository in plaintext. Anyone with repo access can authenticate as Sample Fleet's Reveal integration account.
 - **Control**: CC6.1 (Logical Access), CC6.7 (Transmission Security)
 - **Remediation**:
-  1. Immediately rotate the Example Fleet Co Reveal API credentials via the Verizon Reveal Marketplace dashboard.
+  1. Immediately rotate the Sample Fleet Reveal API credentials via the Verizon Reveal Marketplace dashboard.
   2. Remove the hardcoded password from `onboard_chief_petroleum.py` — read from environment variable instead.
   3. Run `git filter-branch` or BFG Repo-Cleaner to purge the password from git history.
   4. Audit all branches and forks for the exposed credential.
@@ -407,3 +407,4 @@ Additional improvements applied beyond audit scope:
 | `src/app/api/fleet-compliance/telematics-sync/route.ts`           | 155   | Vercel cron route             |
 | `src/app/api/fleet-compliance/telematics-risk/route.ts`           | 267   | Risk score API route          |
 | `src/lib/telematics-db.ts`                                        | 207   | Neon query functions          |
+

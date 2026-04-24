@@ -1,0 +1,10 @@
+{
+  "generated_at": "2026-04-01T00:30:10.128387+00:00",
+  "regime": {
+    "current_regime": "volatile",
+    "days_in_regime": 24,
+    "transition_probability": 0.035046728971962614,
+    "volatility_20d": 0.06177594597795967,
+    "momentum_20d": 0.5564547206165702
+  }
+}

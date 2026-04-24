@@ -43,7 +43,7 @@ PROVIDER = TelematicsProvider.VERIZON_REVEAL
 # ---------------------------------------------------------------------------
 
 # DOT compliance relevance drives risk weight (1-10 scale)
-# Tuned for petroleum/fuel fleet operations (Example Fleet Co profile)
+# Tuned for petroleum/fuel fleet operations (Sample Fleet profile)
 ALERT_TYPE_MAP: dict[str, tuple[str, AlertSeverity, float]] = {
     # (category, severity, risk_weight)
     "Speeding": ("speeding", AlertSeverity.MEDIUM, 5.0),
@@ -380,3 +380,4 @@ def _parse_ignition(val: Optional[str]) -> Optional[bool]:
     if val is None:
         return None
     return val.lower() in ("on", "true", "1", "yes")
+

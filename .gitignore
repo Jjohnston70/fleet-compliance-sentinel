@@ -1,147 +1,38 @@
-# dependencies
-/node_modules
-/.pnp
-.pnp.js
-.yarn/install-state.gz
+# Dependencies and build
+node_modules/
+**/node_modules/
+.next/
+**/.next/
+dist/
+out/
+coverage/
+*.tsbuildinfo
 
-# testing
-/coverage
-
-# next.js
-/.next/
-/out/
-
-# production
-/build
-
-# misc
-.DS_Store
-desktop.ini
-*.pem
-/archive/
-
-# debug
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-
-# local env files
+# Env and secrets
 .env
-.env.local
 .env.*
 !.env.example
-
-# vercel
-.vercel
-
-# typescript
-*.tsbuildinfo
-next-env.d.ts
+**/.env
+**/.env.*
 
 # Python
 __pycache__/
 *.py[cod]
 .pytest_cache/
+.venv/
+venv/
+**/.venv/
+**/venv/
+venv_tnds-signal-engine/
 
-# Zip files
-*.zip
-
-
-# dependencies
-node_modules/
-
-# Next.js
-.next/
-
-# logs
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-
-# env
-.env*
-
-# External projects
-Chief_Route_Opt_Dash/
-NextGenERP2/
-true-north-github-setup/
-
-# Editor directories and files
-.idea
-.vscode
-*.suo
-*.ntvs*
-*.njsproj
-*.sln
-*.sw?
-.env*.local
-
-# TNDS Knowledge Runtime (generated at build/runtime, not committed)
-knowledge/cfr-index/
-knowledge/demo-index/
-knowledge/org-data/
-knowledge/timeline/
-
-# Security pentest artifacts (keep folder, not reports)
+# Tooling and local artifacts
+.vercel/
+.claude/
 SECURITY_REPORTS/*.html
 SECURITY_REPORTS/*.pdf
-
-# Non-gov source backup (in repo for integration only, not deployed)
-pipeline_x_non_gov-main/
-
-# Generated demo data
-demo-fleet-data.xlsx
-
-# Tooling module build artifacts
-tooling/command-center/node_modules/
-tooling/command-center/.next/
-
-# Integrated module payloads: keep source/data, ignore local build artifacts
-tooling/ML-EIA-PETROLEUM-INTEL/.git/
-tooling/ML-EIA-PETROLEUM-INTEL/__pycache__/
-tooling/ML-EIA-PETROLEUM-INTEL/.pytest_cache/
-tooling/ML-EIA-PETROLEUM-INTEL/output/
-
-tooling/ML-SIGNAL-STACK-TNCC/.git/
-tooling/ML-SIGNAL-STACK-TNCC/__pycache__/
-tooling/ML-SIGNAL-STACK-TNCC/.pytest_cache/
-tooling/ML-SIGNAL-STACK-TNCC/.claude/
-tooling/ML-SIGNAL-STACK-TNCC/venv_tnds-signal-engine/
-tooling/ML-SIGNAL-STACK-TNCC/.venv/
-tooling/ML-SIGNAL-STACK-TNCC/venv/
-tooling/ML-SIGNAL-STACK-TNCC/reports/
-tooling/ML-SIGNAL-STACK-TNCC/visuals/
-tooling/ML-SIGNAL-STACK-TNCC/output/
-
-tooling/MOD-PAPERSTACK-PP/.git/
-tooling/MOD-PAPERSTACK-PP/__pycache__/
-tooling/MOD-PAPERSTACK-PP/.pytest_cache/
-tooling/MOD-PAPERSTACK-PP/node_modules/
-tooling/MOD-PAPERSTACK-PP/.venv/
-tooling/MOD-PAPERSTACK-PP/venv/
-tooling/MOD-PAPERSTACK-PP/invoice-samples/
-tooling/MOD-PAPERSTACK-PP/invoice-module/invoice-samples/
-tooling/MOD-PAPERSTACK-PP/*.pdf
-tooling/MOD-PAPERSTACK-PP/*.docx
-tooling/MOD-PAPERSTACK-PP/invoice-module/*.docx
-
-# Sentry Config File
-.env.sentry-build-plugin
-
-# ======================================================
-# Phase 0 Cleanup Additions (COMMANDSTACK Migration)
-# Added: 2026-04-08
-# ======================================================
-
-# Railway backend artifacts
-railway-backend/__pycache__/
-railway-backend/.pytest_cache/
-railway-backend/venv/
-railway-backend/.venv/
-
-# SOC2 evidence should be versioned, but large reports excluded
 soc2-evidence/**/*.pdf
 soc2-evidence/**/*.xlsx
+archive/
 
 # Evals output
 evals/output/
@@ -158,3 +49,8 @@ pii-replacements.txt
 
 # filter-repo deletion list - paths scrubbed from history
 pdfs-to-delete.txt
+# OS/editor
+.DS_Store
+desktop.ini
+.vscode/
+.idea/

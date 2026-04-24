@@ -1,0 +1,33 @@
+{
+  "generated_at": "2026-04-01T00:30:10.128387+00:00",
+  "overall_recommendation": "opis_plus",
+  "products": {
+    "Diesel": {
+      "latest_date": "2025-07-25",
+      "latest_opis_price": 2.7189,
+      "latest_cost_basis_price": 2.48,
+      "latest_spread": -0.2389000000000001,
+      "latest_spread_pct": -8.786641656552286,
+      "avg_spread_pct_30d": -8.139853920689019,
+      "recommended_strategy": "opis_plus"
+    },
+    "Dyed Diesel": {
+      "latest_date": "2025-07-25",
+      "latest_opis_price": 2.7375,
+      "latest_cost_basis_price": 2.51,
+      "latest_spread": -0.22750000000000004,
+      "latest_spread_pct": -8.310502283105023,
+      "avg_spread_pct_30d": -7.455017459491372,
+      "recommended_strategy": "opis_plus"
+    },
+    "Unleaded": {
+      "latest_date": "2025-07-25",
+      "latest_opis_price": 2.1794,
+      "latest_cost_basis_price": 2.07,
+      "latest_spread": -0.10939999999999994,
+      "latest_spread_pct": -5.0197302009727425,
+      "avg_spread_pct_30d": -3.687322030990397,
+      "recommended_strategy": "opis_plus"
+    }
+  }
+}

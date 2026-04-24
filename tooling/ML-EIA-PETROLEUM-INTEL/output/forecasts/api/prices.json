@@ -1,0 +1,49 @@
+{
+  "generated_at": "2026-04-01T00:30:10.128387+00:00",
+  "prices": {
+    "Cushing, OK WTI Spot Price FOB": {
+      "date": "2026-03-23",
+      "value": 89.33
+    },
+    "Europe Brent Spot Price FOB": {
+      "date": "2026-03-23",
+      "value": 103.79
+    },
+    "Los Angeles Reformulated RBOB Regular Gasoline Spot Price": {
+      "date": "2026-03-23",
+      "value": 3.341
+    },
+    "Los Angeles, CA Ultra-Low Sulfur CARB Diesel Spot Price": {
+      "date": "2026-03-23",
+      "value": 3.952
+    },
+    "Mont Belvieu, TX Propane Spot Price FOB": {
+      "date": "2026-03-23",
+      "value": 0.724
+    },
+    "New York Harbor Conventional Gasoline Regular Spot Price FOB": {
+      "date": "2026-03-23",
+      "value": 2.998
+    },
+    "New York Harbor No. 2 Heating Oil Spot Price FOB": {
+      "date": "2026-03-23",
+      "value": 4.039
+    },
+    "New York Harbor Ultra-Low Sulfur No 2 Diesel Spot Price": {
+      "date": "2026-03-23",
+      "value": 4.187
+    },
+    "U.S. Gulf Coast Conventional Gasoline Regular Spot Price FOB": {
+      "date": "2026-03-23",
+      "value": 2.936
+    },
+    "U.S. Gulf Coast Kerosene-Type Jet Fuel Spot Price FOB": {
+      "date": "2026-03-23",
+      "value": 3.929
+    },
+    "U.S. Gulf Coast Ultra-Low Sulfur No 2 Diesel Spot Price": {
+      "date": "2026-03-23",
+      "value": 4.132
+    }
+  }
+}

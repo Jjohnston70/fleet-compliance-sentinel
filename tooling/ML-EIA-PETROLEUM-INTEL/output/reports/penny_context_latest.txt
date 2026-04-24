@@ -1,0 +1,31 @@
+Petroleum Market Intelligence Context
+Generated: 2026-04-01T00:30:10.198896+00:00
+
+Market Regime:
+- Current: volatile | Days in regime: 24 | Transition probability: 0.035046728971962614
+
+Pricing Strategy:
+- Overall recommendation: opis_plus
+- Diesel: spread_pct=-8.79 | recommendation=opis_plus
+- Dyed Diesel: spread_pct=-8.31 | recommendation=opis_plus
+- Unleaded: spread_pct=-5.02 | recommendation=opis_plus
+
+Latest Spot Prices:
+- Cushing, OK WTI Spot Price FOB: 89.33 (2026-03-23)
+- Europe Brent Spot Price FOB: 103.79 (2026-03-23)
+- Los Angeles Reformulated RBOB Regular Gasoline Spot Price: 3.341 (2026-03-23)
+- Los Angeles, CA Ultra-Low Sulfur CARB Diesel Spot Price: 3.952 (2026-03-23)
+- Mont Belvieu, TX Propane Spot Price FOB: 0.724 (2026-03-23)
+- New York Harbor Conventional Gasoline Regular Spot Price FOB: 2.998 (2026-03-23)
+- New York Harbor No. 2 Heating Oil Spot Price FOB: 4.039 (2026-03-23)
+- New York Harbor Ultra-Low Sulfur No 2 Diesel Spot Price: 4.187 (2026-03-23)
+- U.S. Gulf Coast Conventional Gasoline Regular Spot Price FOB: 2.936 (2026-03-23)
+- U.S. Gulf Coast Kerosene-Type Jet Fuel Spot Price FOB: 3.929 (2026-03-23)
+- U.S. Gulf Coast Ultra-Low Sulfur No 2 Diesel Spot Price: 4.132 (2026-03-23)
+
+Active Alerts (5):
+- [medium] New York Harbor No. 2 Heating Oil Spot Price FOB moved 7.74% over the last week.
+- [medium] New York Harbor Ultra-Low Sulfur No 2 Diesel Spot Price moved 7.44% over the last week.
+- [medium] Diesel spread deviated -12.35% vs 30-day average.
+- [medium] Dyed Diesel spread deviated -16.59% vs 30-day average.
+- [high] Unleaded spread deviated -35.27% vs 30-day average.

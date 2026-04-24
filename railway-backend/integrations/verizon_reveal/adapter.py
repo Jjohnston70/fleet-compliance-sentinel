@@ -16,7 +16,7 @@ Usage:
 
     # Onboarding — save client credentials
     await adapter.save_credentials(
-        username="REST@examplefleetco.verizonconnect.com",
+        username="REST@samplefleet.verizonconnect.com",
         password="<from-reveal-email>",
         consent_recorded_at=datetime.utcnow(),
     )
@@ -170,3 +170,4 @@ class RevealAdapter(BaseTelematicsAdapter):
                 "org_id is required. Pass it at call time or set default "
                 "at RevealAdapter construction."
             )
+

@@ -25,7 +25,7 @@ The NextGenERP.dev research package (Q1 2025) documented the ERP evaluation land
 2. It maps the competitive ERP vendor landscape that CommandStack modules will augment, integrate with, or displace.
 3. It informs how Financial Command should be scoped and positioned as an industry module.
 
-The findings below are operational intelligence, not academic. They reflect real operator pain from the Example Fleet Co environment and have direct bearing on module design decisions.
+The findings below are operational intelligence, not academic. They reflect real operator pain from the Sample Fleet environment and have direct bearing on module design decisions.
 
 ---
 
@@ -575,7 +575,7 @@ Financial Command is not a bookkeeping tool. It does not replace QuickBooks. It 
 - [ ] Integration test with Fleet Command data (IFTA mileage)
 - [ ] Load test with 12 months of transaction data
 - [ ] Validate alert engine fires correctly on all conditions
-- [ ] Pilot with one FCS tenant (Example Fleet Co data — anonymized)
+- [ ] Pilot with one FCS tenant (Sample Fleet data — anonymized)
 - [ ] Document API in README
 
 ---

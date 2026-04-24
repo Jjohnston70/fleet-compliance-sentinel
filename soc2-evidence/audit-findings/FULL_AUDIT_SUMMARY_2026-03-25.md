@@ -265,7 +265,7 @@ The Fleet-Compliance platform has completed 10 phases of SOC 2 control implement
 | **Current Score**  | 6.5/10 — **Conditional Pass**                  |
 | **Blockers**       | 2 Critical findings                            |
 
-**What was delivered:** Verizon Connect Reveal telematics adapter (adapter pattern, per-org credentials, pgcrypto encryption, REST polling client, webhook receiver, normalized data models), 8 new Neon tables, telematics sync cron route, risk score API route, credential security controls, first client sync (Example Fleet Co: 30 vehicles, 24 drivers, 320 GPS events).
+**What was delivered:** Verizon Connect Reveal telematics adapter (adapter pattern, per-org credentials, pgcrypto encryption, REST polling client, webhook receiver, normalized data models), 8 new Neon tables, telematics sync cron route, risk score API route, credential security controls, first client sync (Sample Fleet: 30 vehicles, 24 drivers, 320 GPS events).
 
 **Critical findings requiring immediate remediation:**
 
@@ -286,7 +286,7 @@ The Fleet-Compliance platform has completed 10 phases of SOC 2 control implement
 
 **Open items:**
 
-- **Rotate Example Fleet Co Reveal credentials** (CRITICAL, immediate)
+- **Rotate Sample Fleet Reveal credentials** (CRITICAL, immediate)
 - **Purge plaintext password from git history** (CRITICAL, immediate)
 - **Fix SQL injection in encryption key SET statements** (CRITICAL, immediate)
 - Add `pgp_sym_decrypt` to credential read query (HIGH, this sprint)
@@ -406,7 +406,7 @@ The Fleet-Compliance platform has completed 10 phases of SOC 2 control implement
 - [x] Phase 6: Rate limiting, dependency audit, Next.js upgrade, xlsx replacement
 - [x] Phase 7: Incident response plan, 13-vendor subprocessor registry, offboarding automation
 - [x] Phase 8: 8 SOC 2 policies, privacy/terms page remediation, CODEOWNERS
-- [x] Phase 9: Verizon Connect Reveal telematics adapter, 9 new tables, sync cron, risk score API, credential encryption, first client sync (Example Fleet Co)
+- [x] Phase 9: Verizon Connect Reveal telematics adapter, 9 new tables, sync cron, risk score API, credential encryption, first client sync (Sample Fleet)
 
 ### Remaining (external execution + Phase 9 remediation)
 
@@ -415,7 +415,7 @@ The Fleet-Compliance platform has completed 10 phases of SOC 2 control implement
 - [ ] Apply branch protection to `main` + screenshot (~10min)
 - [ ] Run ZAP scan from Docker-capable environment (~2h)
 - [ ] Delete Clerk test org (~5min)
-- [ ] **CRITICAL**: Rotate Example Fleet Co Reveal credentials and purge password from git history (~2h)
+- [ ] **CRITICAL**: Rotate Sample Fleet Reveal credentials and purge password from git history (~2h)
 - [ ] **CRITICAL**: Fix SQL injection in encryption key SET statements (~30min)
 - [ ] Fix missing `pgp_sym_decrypt` in credential read query (~30min)
 - [ ] Fix timing-safe comparison in Railway API key check (~15min)
@@ -443,10 +443,11 @@ The codebase controls from Phases 0-8 are complete and verified. Phase 9 (telema
 
 **Priority order:**
 
-1. **Immediate**: Rotate Example Fleet Co Reveal credentials and purge plaintext password from git history (CS-1)
+1. **Immediate**: Rotate Sample Fleet Reveal credentials and purge plaintext password from git history (CS-1)
 2. **Immediate**: Fix SQL injection in encryption key SET statements (CS-2)
 3. **This sprint**: Fix `pgp_sym_decrypt` missing from credential read, timing-safe Railway key comparison (CS-3, CR-1)
 4. **Before webhook activation**: Implement webhook authentication and SSRF protection (WH-1, WH-2)
 5. **Within observation window**: GPS retention policy, remaining Phases 0-8 external tasks
 
 When all critical/high Phase 9 findings are remediated and the 5 Phase 0-8 external items are completed, run `npm run compliance:ops-check` to confirm. The platform will return to 8.5+/10 readiness for SOC 2 Type I engagement.
+

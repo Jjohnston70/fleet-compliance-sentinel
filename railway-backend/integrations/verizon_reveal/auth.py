@@ -4,11 +4,11 @@ True North Data Strategies LLC — Fleet-Compliance Sentinel
 Verizon Connect Reveal — Credential Management
 
 How Reveal credentials work:
-  1. Example Fleet Co (or any Reveal client) logs into their Reveal account
+  1. Sample Fleet (or any Reveal client) logs into their Reveal account
   2. They go to: User Icon → Marketplace → API Integrations → GET STARTED
   3. They enter TNDS as the third-party company and your email as developer
   4. Verizon emails YOU credentials in the form:
-       username: REST@examplefleetco.verizonconnect.com (example format)
+       username: REST@samplefleet.verizonconnect.com (example format)
        password: [generated]
   5. You store those credentials here, scoped to their org_id
   6. All API calls use HTTP Basic Auth with those credentials
@@ -290,3 +290,4 @@ async def validate_reveal_credentials(creds: RevealCredentials) -> bool:
             extra={"org_id": creds.org_id, "error": str(e)},
         )
         return False
+
